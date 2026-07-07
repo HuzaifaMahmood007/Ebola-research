@@ -3,3 +3,7 @@
 
 #Docs
 docs/
+Reports/
+
+#Baseline Models
+baselines/*
