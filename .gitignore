@@ -7,3 +7,6 @@ Reports/
 
 #Baseline Models
 baselines/*
+
+#Virtual Environment
+.venv/

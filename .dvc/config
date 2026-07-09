@@ -1,0 +1,5 @@
+[core]
+    remote = ebola
+['remote "ebola"']
+    url = azure://ebola-dataset/
+    account_name = ebola
