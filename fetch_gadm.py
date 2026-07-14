@@ -1,14 +1,13 @@
 """Fetch the GADM 4.1 shapefiles the project's graphs and covariates are built from.
 
-GADM 4.1 is a frozen, versioned, publicly-hosted release, so a fetch script + SHA-256
-manifest gives the same reproducibility guarantee as vendoring the 461 MB into the DVC
-remote -- at zero storage, and without redistributing it (GADM's licence forbids
-redistribution for commercial use).
+GADM 4.1 is a frozen, versioned, publicly-hosted release, so fetching it against a SHA-256
+manifest gives the same reproducibility guarantee as storing a copy -- at no storage cost, and
+without redistributing it (the licence forbids redistribution for commercial use).
 
     python fetch_gadm.py            # download whatever is missing, verify every file
     python fetch_gadm.py --verify   # verify only; never touch the network
 
-Exits non-zero on any checksum mismatch, so it can gate build_datasets.py
+Exits non-zero on any checksum mismatch, so it can gate build_datasets.py.
 
 Provenance: https://gadm.org  (GADM 4.1, released 2022-07-16)
 Used by: dengue graph + C (12 countries), Ebola graph (GIN/LBR/SLE), influenza C (JPN/USA).

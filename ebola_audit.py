@@ -31,7 +31,7 @@ YEAR_MIN, YEAR_MAX = 2014, 2016
 # node: it has no polygon and its counts belong to 3+ districts we cannot separate.
 BLOB_RE = re.compile(r"[,()]|\band\b", flags=re.I)
 
-# Appendix-A expectations. The audit is a GATE, so these are asserted, not printed.
+# The expected counts. This audit is a gate, so these are asserted, not merely printed.
 EXPECT = dict(districts=64, guinea=32, liberia=15, sierra_leone=17,
               mean_weeks=27.1, ge20=53)
 

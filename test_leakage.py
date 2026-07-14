@@ -24,7 +24,7 @@ import sys
 
 import numpy as np
 
-from to_schema import CORE_FEATURES, DiseaseTensors, fit_scalers_masked, rolling_origin_masks
+from to_schema import CORE_FEATURES, DiseaseTensors, fit_scalers_masked, rolling_origin_masks  # noqa: F401
 
 PASS, FAIL = [], []
 
@@ -73,6 +73,12 @@ def gate_scaler_provenance(name: str, dt: DiseaseTensors) -> None:
     raw = _raw_from(dt)
     fit, per_disease, held = _fit_mask(dt)
     ship = dt.meta["scaler"]
+    # Nodes with no train cell of their own take their country's pooled TRAIN statistics, so the
+    # refits below must be given the same grouping or they will not reproduce the shipped scaler.
+    # This does not soften the probe: the group pool is built from fit cells only, so poisoning
+    # the held-out cells must still leave it unmoved.
+    groups = (None if per_disease
+              else [n.split("|", 1)[0] for n in dt.meta["node_ids"]])
 
     if not held.any():
         _gate(f"{name}: scaler provenance", False, "no held-out cells to probe with")
@@ -80,7 +86,7 @@ def gate_scaler_provenance(name: str, dt: DiseaseTensors) -> None:
 
     # The shipped scaler must reproduce from the fit cells alone. Fit on anything wider (all
     # observed cells, or support+query), it will not reproduce here.
-    base = fit_scalers_masked(raw, fit, per_disease=per_disease)
+    base = fit_scalers_masked(raw, fit, per_disease=per_disease, groups=groups)
     _gate(f"{name}: SHIPPED scaler reproduces from the fit-mask alone",
           np.allclose(ship["mean"], base["mean"], atol=1e-4)
           and np.allclose(ship["std"], base["std"], atol=1e-4),
@@ -90,7 +96,7 @@ def gate_scaler_provenance(name: str, dt: DiseaseTensors) -> None:
     # a refit still lands on the shipped scaler. One that ever touched them could not.
     poisoned = raw.copy()
     poisoned[held] *= 1000.0
-    after = fit_scalers_masked(poisoned, fit, per_disease=per_disease)
+    after = fit_scalers_masked(poisoned, fit, per_disease=per_disease, groups=groups)
     _gate(f"{name}: shipped scaler unmoved by 1000x poisoning of held-out cells",
           np.allclose(ship["mean"], after["mean"], atol=1e-4)
           and np.allclose(ship["std"], after["std"], atol=1e-4),
@@ -161,8 +167,17 @@ def gate_splits(name: str, dt: DiseaseTensors) -> None:
               not ((tr & va).any() or (tr & te).any() or (va & te).any()))
         _gate(f"{name}: the three splits partition the observed cells",
               np.array_equal(tr | va | te, obs))
-        _gate(f"{name}: every node has >=1 train cell (no undefined scaler)",
-              bool((tr.sum(1) > 0).all()))
+        # A node whose reporting begins after its country's train boundary legitimately has no
+        # train cell; it inherits its country's pooled train scaler. What must never happen is
+        # a node with NO scaler at all -- neither its own train cells nor its country's.
+        no_train = ~(tr.sum(1) > 0)
+        country_of = dt.meta["node_country"]
+        trained_countries = {country_of[n] for i, n in enumerate(dt.meta["node_ids"])
+                             if tr[i].any()}
+        orphan = [n for i, n in enumerate(dt.meta["node_ids"])
+                  if no_train[i] and country_of[n] not in trained_countries]
+        _gate(f"{name}: every node has a scaler (own train cells, or its country's)",
+              not orphan, f"{len(orphan)} node(s) with no fit set: {orphan[:3]}")
     else:
         _gate(f"{name}: train_end < val_end < T",
               sp["train_end"] < sp["val_end"] < dt.M.shape[1])
@@ -197,8 +212,68 @@ def gate_rolling_origins(name: str, dt: DiseaseTensors) -> None:
     _gate(f"{name}: rolling-origin window expands monotonically", ok_grow)
 
 
+def gate_mass_conservation(name: str, dt: DiseaseTensors) -> None:
+    """A weekly series derived from a cumulative one must not sum to more than the cumulative
+    series climbed.
+
+    The reference is computed from the source column by cumulative_reference_mass(), not by the
+    transform under test. Without that independence the gate would only re-run the bug: this is
+    the check that was missing when max(0, dC) turned single-week reporting dropouts into
+    phantom outbreaks -- the recovery back to the previous level was released as new cases.
+    """
+    ref = dt.meta.get("cumulative_reference")
+    if ref is None:
+        return                                   # not a cumulative-sourced disease
+    raw, ids = dt.raw, dt.meta["node_ids"]
+    over = {}
+    for i, n in enumerate(ids):
+        if n not in ref:
+            continue
+        got, want = float(raw[i].sum()), ref[n]
+        if got > want + 0.5:                     # 0.5 absorbs the epi-week boundary rounding
+            over[n] = (got, want)
+    total_got = sum(float(raw[i].sum()) for i, n in enumerate(ids) if n in ref)
+    total_want = sum(ref[n] for n in ids if n in ref)
+    excess = total_got - total_want
+    worst = sorted(over.items(), key=lambda kv: kv[1][0] - kv[1][1], reverse=True)[:3]
+    _gate(f"{name}: weekly incidence invents no cases (sum <= max(C) - C_first)",
+          not over,
+          f"{len(over)} node(s) over, +{excess:,.0f} cases "
+          f"({100 * excess / max(total_want, 1):+.1f}%); worst: "
+          + ", ".join(f"{n} {g:,.0f}>{w:,.0f}" for n, (g, w) in worst))
+
+
+def gate_phase_purity(name: str, dt: DiseaseTensors) -> None:
+    """No (country, week) column may hold cells from more than one split phase.
+
+    A GNN aggregates over neighbours, so a train cell sitting beside a test cell in the same week
+    pulls the test period into the training forward pass. Splitting per country is what makes the
+    country block the unit of separation; any per-node fallback that re-cuts a node inside that
+    block breaks it.
+    """
+    sp = dt.meta["split"]
+    if not dt.meta["split_scheme"].startswith("per_country"):
+        return
+    tr, va, te = (sp[k].astype(bool) for k in ("train_mask", "val_mask", "test_mask"))
+    country_of = dt.meta["node_country"]
+    ids = dt.meta["node_ids"]
+    countries = {}
+    for i, n in enumerate(ids):
+        countries.setdefault(country_of[n], []).append(i)
+
+    bad_cols, bad_cells = 0, 0
+    for idx in countries.values():
+        mixed = (tr[idx].any(0).astype(int) + va[idx].any(0).astype(int)
+                 + te[idx].any(0).astype(int)) > 1
+        bad_cols += int(mixed.sum())
+        bad_cells += int(dt.M[idx][:, mixed].sum())
+    _gate(f"{name}: every (country, week) column is in a single phase",
+          bad_cols == 0,
+          f"{bad_cols} mixed-phase column(s), {bad_cells:,} observed cells in them")
+
+
 # --------------------------------------------------------------------------- #
-# CROSS-DISEASE: the disease-agnosticism guarantee (§6.1 / guide §0.3)
+# CROSS-DISEASE: the disease-agnosticism guarantee
 # --------------------------------------------------------------------------- #
 def gate_transfer_agnosticism(bundles: dict[str, DiseaseTensors]) -> None:
     """The shared encoder must not be able to infer which disease it is looking at.
@@ -246,6 +321,8 @@ def run_leakage_suite(bundles: dict[str, DiseaseTensors]) -> bool:
         gate_mask_semantics(name, dt)
         gate_splits(name, dt)
         gate_rolling_origins(name, dt)
+        gate_mass_conservation(name, dt)
+        gate_phase_purity(name, dt)
 
     print("\n--- cross-disease (disease-agnosticism) ---")
     gate_transfer_agnosticism(bundles)
@@ -292,6 +369,24 @@ def self_test(bundles: dict[str, DiseaseTensors]) -> bool:
     FAIL.clear(); PASS.clear()
     gate_no_future_leakage("NEGCTL japan(leaky)", fl)
     fired.append(("future target planted in an input channel", bool(FAIL)))
+
+    # 4. fabricated incidence: the defect max(0, dC) actually shipped, in miniature
+    mb = copy.deepcopy(bundles["ebola"])
+    mb.raw[0] = mb.raw[0] * 2.0
+    FAIL.clear(); PASS.clear()
+    gate_mass_conservation("NEGCTL ebola(fabricated)", mb)
+    fired.append(("weekly incidence exceeding the cumulative reference", bool(FAIL)))
+
+    # 5. a node re-cut inside its country's block, which is what the split fallback used to do
+    pb = copy.deepcopy(bundles["dengue"])
+    sp = pb.meta["split"]
+    te = sp["test_mask"].astype(bool)
+    i, t = (int(x[0]) for x in np.where(te))          # some node's test cell
+    sp["test_mask"][i, t] = 0
+    sp["train_mask"][i, t] = 1                        # ... now a train cell in a test column
+    FAIL.clear(); PASS.clear()
+    gate_phase_purity("NEGCTL dengue(mixed-phase)", pb)
+    fired.append(("a train cell inside a test column", bool(FAIL)))
 
     FAIL.clear(); PASS.clear()
     ok = all(f for _, f in fired)

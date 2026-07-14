@@ -123,13 +123,19 @@ def _seasonality(dates: pd.DatetimeIndex) -> tuple[np.ndarray, np.ndarray]:
 
 
 def fit_scalers_masked(raw_counts: np.ndarray, fit_mask: np.ndarray,
-                       per_disease: bool = False) -> dict:
+                       per_disease: bool = False,
+                       groups: Optional[Sequence[str]] = None) -> dict:
     """Fit log1p+zscore stats using only the cells where `fit_mask` is true.
 
     The leakage-safe primitive: pass a train-slice mask for development diseases, or a
     few-shot support mask for the held-out disease. `per_disease=True` pools every cell
     into one (mean, std), for when each node has too few fit cells for a stable per-node
     scale (a 2-week Ebola support set).
+
+    `groups` (one label per node, e.g. its country) supplies a fallback for nodes with no
+    fit cell of their own: they take their group's pooled statistics, computed from that
+    group's fit cells and so still visible at train time. Without it such a node would get
+    (0, 1) and enter the model on a different scale from every one of its neighbours.
     """
     N, T = raw_counts.shape
     logc = np.log1p(np.clip(raw_counts, 0, None))
@@ -140,10 +146,23 @@ def fit_scalers_masked(raw_counts: np.ndarray, fit_mask: np.ndarray,
         sd = np.full(N, flat.std() if flat.size else 1.0)
     else:
         mu, sd = np.zeros(N), np.ones(N)
+        empty = []
         for i in range(N):
             v = logc[i][fm[i]]
             if v.size:
                 mu[i], sd[i] = v.mean(), v.std()
+            else:
+                empty.append(i)
+        if empty and groups is not None:
+            by_group = {}
+            for i in range(N):
+                if fm[i].any():
+                    by_group.setdefault(groups[i], []).append(logc[i][fm[i]])
+            for i in empty:
+                pool = by_group.get(groups[i])
+                if pool:
+                    v = np.concatenate(pool)
+                    mu[i], sd[i] = v.mean(), v.std()
     sd[sd < 1e-8] = 1.0  # guard zero-variance nodes (sporadic Ebola districts)
     return {"transform": "log1p_z", "mean": mu.astype(np.float32),
             "std": sd.astype(np.float32)}
@@ -173,13 +192,16 @@ def cumulative_to_weekly_incidence(df: pd.DataFrame, node_col: str, date_col: st
                                    value_col: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Cumulative sit-report counts -> weekly new incidence.
 
-    Resample to the epi-week (last cumulative per week), forward-fill, diff, clip
-    negatives (downward revisions are reporting reconciliation, not negative incidence),
-    and mask the forward-filled weeks.
+    Resample to the epi-week (last cumulative per week), forward-fill, then difference the
+    running maximum. Forward-filled weeks are masked, as are weeks whose report falls below
+    the running maximum, which are corrupt reports rather than observed zeros.
 
     Each node's FIRST observed week is masked: at a node's first report there is no
     preceding cumulative, so the increment is not identifiable. Assigning C_0 there
     would instead dump the node's entire back-log into week 0.
+
+    Increments sum to max(C) - C_first per node, which cumulative_reference_mass() computes
+    independently and the leakage suite checks.
 
     Returns (incidence[N,T], mask[N,T]), both indexed by node and week.
     """
@@ -198,7 +220,22 @@ def cumulative_to_weekly_incidence(df: pd.DataFrame, node_col: str, date_col: st
         weekly_obs = s.resample(WEEK_ANCHOR).last()  # last cumulative in each epi-week
         observed = weekly_obs.notna()                # weeks with an actual report
         weekly_cum = weekly_obs.ffill()
-        new = weekly_cum.diff().clip(lower=0)        # clip downward revisions
+
+        # A cumulative count cannot fall. Where the report does fall, the report is wrong --
+        # a single-week data-entry dropout, not a downward revision. Differencing the monotone
+        # envelope absorbs it: the week itself yields no increment, and the recovery yields
+        # only the rise above the previous high-water mark. Clipping the difference instead
+        # (max(0, dC)) would release the whole climb back to the prior level as new cases,
+        # which is how one Sierra Leonean district came to carry 2.5x the cases it ever
+        # recorded. The envelope conserves mass by construction: the increments sum to
+        # max(C) - C_first, which is what cumulative_reference_mass() checks.
+        envelope = weekly_cum.cummax()
+        new = envelope.diff()
+        # Weeks whose report sits below the running maximum are corrupt, not observations of
+        # zero. Masked, so they are neither scored nor fed to a scaler.
+        dropout = observed & (weekly_obs < envelope.shift())
+        observed = observed & ~dropout
+
         new.iloc[0] = 0.0                            # no preceding cumulative ->
         observed.iloc[0] = False                     # week 0 is not an observation
         inc_frames[node] = new
@@ -208,6 +245,31 @@ def cumulative_to_weekly_incidence(df: pd.DataFrame, node_col: str, date_col: st
     msk = pd.DataFrame(mask_frames).T.reindex_like(inc).fillna(0).astype(np.uint8)
     inc = inc.fillna(0.0)
     return inc, msk
+
+
+def cumulative_reference_mass(df: pd.DataFrame, node_col: str, date_col: str,
+                              value_col: str) -> dict[str, float]:
+    """Per node, max(C) - C_first on the epi-week grid: the total new cases a cumulative series
+    can imply.
+
+    Gives the leakage suite a mass reference the increment logic did not produce. It shares the
+    weekly resampling with cumulative_to_weekly_incidence -- both must agree on what a week is --
+    but nothing else: no differencing, no envelope, no clipping. That is enough, because the
+    fabrication this guards against lives entirely in the increment step. A weekly series summing
+    to more than this has invented cases.
+    """
+    d = df.copy()
+    d["_node"] = d[node_col].map(_canon)
+    d["_date"] = pd.to_datetime(d[date_col], errors="coerce")
+    d[value_col] = pd.to_numeric(d[value_col], errors="coerce")
+    d = d.dropna(subset=["_date", value_col])
+    ref = {}
+    for node, g in d.groupby("_node"):
+        s = g.set_index("_date")[value_col].sort_index()
+        s = s[~s.index.duplicated(keep="last")]
+        weekly = s.resample(WEEK_ANCHOR).last().dropna()
+        ref[node] = float(weekly.max() - weekly.iloc[0])
+    return ref
 
 
 def _assemble_X(inc_norm: np.ndarray, dates: pd.DatetimeIndex, obs_mask: np.ndarray,
@@ -244,11 +306,17 @@ def per_country_chronological_split(node_ids: Sequence[str], obs_mask: np.ndarra
     country separately gives every one a real train/val/test, and all of a country's nodes
     share the boundary, so at any week a whole country-block is in one phase.
 
-    Only observed cells are assigned. A node whose observations all fall past its country's
-    train boundary is re-cut on its own observed weeks, so no scaler is fit on an empty set.
+    Only observed cells are assigned, and every node of a country takes that country's
+    boundary without exception. A node whose reporting begins after its country's train
+    boundary therefore gets no train cell: it is scored, and remains a neighbour in the
+    graph, but its scaler comes from its country's pooled train statistics rather than from
+    its own history (fit_scalers_masked(groups=...)). Re-cutting such a node on its own weeks
+    would put its train cells inside its neighbours' test period, and a GNN aggregates over
+    neighbours -- which is the leak this split exists to prevent.
 
     Returns dict(train_mask, val_mask, test_mask : [N,T] uint8,
-                 bounds : {country -> (train_end_col, val_end_col)}).
+                 bounds : {country -> (train_end_col, val_end_col)},
+                 nodes_without_train : [node ids scored but never trained on]).
     """
     if country_of is None:
         country_of = lambda n: n.split("|", 1)[0]
@@ -280,22 +348,18 @@ def per_country_chronological_split(node_ids: Sequence[str], obs_mask: np.ndarra
             row = np.where(obs_mask[i] == 1)[0]
             if row.size == 0:
                 continue
-            if not any(t in tr_cols for t in row):
-                # no observation in the country's train window -> cut this node on its own
-                rtr, rva, _ = _cut(list(row), ratios)
-                if not rtr:                       # <2 observations: still needs a train cell
-                    rtr = {row[0]}
-                    rva = rva - rtr
-            else:
-                rtr, rva = tr_cols, va_cols
             for t in row:
-                if t in rtr:
+                if t in tr_cols:
                     train[i, t] = 1
-                elif t in rva:
+                elif t in va_cols:
                     val[i, t] = 1
                 else:
                     test[i, t] = 1
-    return dict(train_mask=train, val_mask=val, test_mask=test, bounds=bounds)
+
+    no_train = [node_ids[i] for i in range(N)
+                if obs_mask[i].any() and not train[i].any()]
+    return dict(train_mask=train, val_mask=val, test_mask=test, bounds=bounds,
+                nodes_without_train=no_train)
 
 
 # --------------------------------------------------------------------------- #
@@ -1131,6 +1195,8 @@ def load_ebola(csv_path: str, cols: dict = EBOLA_COLS,
     # query cell: it is a graph node that is never scored. Recorded so evaluation cannot
     # silently count it as one.
     dt.meta["nodes_without_query"] = [n for i, n in enumerate(node_ids) if q[i].sum() == 0]
+    ref = cumulative_reference_mass(cases, "_node", cols["date"], cols["value"])
+    dt.meta["cumulative_reference"] = {n: ref[n] for n in node_ids if n in ref}
 
     # Same C contract as dengue and influenza: raw, static, and NOT transfer-safe (the
     # diseases occupy disjoint geography, so a centroid identifies the disease).
@@ -1402,7 +1468,10 @@ def _finalise(raw, mask, node_ids, dates, ratios, disease, adm_level, t_res,
         scaler = fit_scalers_masked(raw, fit_mask, per_disease=True)
     elif split_masks is not None:
         fit_mask = mask.astype(bool) & split_masks["train_mask"].astype(bool)
-        scaler = fit_scalers_masked(raw, fit_mask, per_disease=False)
+        # groups = country: a node whose reporting starts after its country's train boundary
+        # has no fit cell of its own and takes the country's pooled train statistics.
+        countries = [n.split("|", 1)[0] for n in node_ids]
+        scaler = fit_scalers_masked(raw, fit_mask, per_disease=False, groups=countries)
     else:
         fit_mask = None
         scaler = fit_scalers(raw, mask, train_end)
@@ -1416,7 +1485,9 @@ def _finalise(raw, mask, node_ids, dates, ratios, disease, adm_level, t_res,
         extended = {}
         for nm, arr in extended_raw.items():
             if few_shot or split_masks is not None:
-                sc = fit_scalers_masked(arr, fit_mask, per_disease=few_shot)
+                sc = fit_scalers_masked(
+                    arr, fit_mask, per_disease=few_shot,
+                    groups=None if few_shot else [n.split("|", 1)[0] for n in node_ids])
             else:
                 sc = fit_scalers(arr, mask, train_end)   # own leakage-safe scaler
             extended[nm] = np.where(mask == 1, apply_scaler(arr, sc), 0.0).astype(np.float32)
@@ -1441,7 +1512,8 @@ def _finalise(raw, mask, node_ids, dates, ratios, disease, adm_level, t_res,
                  "train_mask": split_masks["train_mask"].astype(np.uint8),
                  "val_mask": split_masks["val_mask"].astype(np.uint8),
                  "test_mask": split_masks["test_mask"].astype(np.uint8),
-                 "country_bounds": split_masks["bounds"]}
+                 "country_bounds": split_masks["bounds"],
+                 "nodes_without_train": split_masks.get("nodes_without_train", [])}
         split_scheme = "per_country_chronological_50_20_30"
     else:
         split = {"train_end": train_end, "val_end": val_end}
