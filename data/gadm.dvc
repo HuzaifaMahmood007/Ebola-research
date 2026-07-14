@@ -1,0 +1,6 @@
+outs:
+- md5: 1e8ac1f875c9dc90f9465214c354fb4c.dir
+  size: 486319681
+  nfiles: 16
+  hash: md5
+  path: gadm

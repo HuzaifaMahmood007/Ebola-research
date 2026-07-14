@@ -10,3 +10,9 @@ baselines/*
 
 #Virtual Environment
 .venv/
+
+#pycache__/
+__pycache__/
+
+#Environment Variables
+.env
