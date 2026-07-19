@@ -132,10 +132,12 @@ def fit_scalers_masked(raw_counts: np.ndarray, fit_mask: np.ndarray,
     into one (mean, std), for when each node has too few fit cells for a stable per-node
     scale (a 2-week Ebola support set).
 
-    `groups` (one label per node, e.g. its country) supplies a fallback for nodes with no
-    fit cell of their own: they take their group's pooled statistics, computed from that
-    group's fit cells and so still visible at train time. Without it such a node would get
-    (0, 1) and enter the model on a different scale from every one of its neighbours.
+    `groups` (one label per node, e.g. its country) supplies a fallback for nodes the per-node
+    fit cannot scale: those with no fit cell, and those whose fit cells are constant (zero
+    variance in the train window, though not necessarily in the held-out period). Both would
+    otherwise get sd=1 and enter the model un-normalised, on a different scale from every
+    neighbour. They instead take their group's pooled statistics, computed from that group's
+    fit cells only and so still visible at train time.
     """
     N, T = raw_counts.shape
     logc = np.log1p(np.clip(raw_counts, 0, None))
@@ -146,24 +148,25 @@ def fit_scalers_masked(raw_counts: np.ndarray, fit_mask: np.ndarray,
         sd = np.full(N, flat.std() if flat.size else 1.0)
     else:
         mu, sd = np.zeros(N), np.ones(N)
-        empty = []
+        degenerate = []                              # no fit cells, or a constant fit window
         for i in range(N):
             v = logc[i][fm[i]]
             if v.size:
                 mu[i], sd[i] = v.mean(), v.std()
-            else:
-                empty.append(i)
-        if empty and groups is not None:
-            by_group = {}
+            if not v.size or sd[i] < 1e-8:
+                degenerate.append(i)
+        if degenerate and groups is not None:
+            by_group = {}                            # pool only nodes that actually vary
             for i in range(N):
-                if fm[i].any():
-                    by_group.setdefault(groups[i], []).append(logc[i][fm[i]])
-            for i in empty:
+                v = logc[i][fm[i]]
+                if v.size and v.std() >= 1e-8:
+                    by_group.setdefault(groups[i], []).append(v)
+            for i in degenerate:
                 pool = by_group.get(groups[i])
                 if pool:
                     v = np.concatenate(pool)
                     mu[i], sd[i] = v.mean(), v.std()
-    sd[sd < 1e-8] = 1.0  # guard zero-variance nodes (sporadic Ebola districts)
+    sd[sd < 1e-8] = 1.0  # last resort: a whole group constant in its fit window
     return {"transform": "log1p_z", "mean": mu.astype(np.float32),
             "std": sd.astype(np.float32)}
 
@@ -1075,6 +1078,7 @@ def load_ebola(csv_path: str, cols: dict = EBOLA_COLS,
                countries: Optional[Sequence[str]] = None,
                exclude_regions: Optional[Sequence[str]] = None,
                few_shot_support_weeks: int = 2,
+               few_shot_support_cutoff: Optional[str] = None,
                ratios=(0.5, 0.2, 0.3),
                gadm_dir: Optional[str] = None) -> DiseaseTensors:
     """OCHA ROWCA Ebola (long, cumulative) -> DiseaseTensors. Node id = 'country|district'.
@@ -1092,11 +1096,22 @@ def load_ebola(csv_path: str, cols: dict = EBOLA_COLS,
     countries=None keeps every country in the file; pass EBOLA_CORE_COUNTRIES for the main
     experiment. `exclude_regions` drops named districts.
 
-    Few-shot protocol: the support set is the first `few_shot_support_weeks` OBSERVED weeks
-    per district, and every later observed week is the query set. Because week 0 is masked
-    (cumulative_to_weekly_incidence), support holds real increments rather than a back-log.
-    The scaler is fit on the pooled support cells only: two weeks per node is far too few for
-    a stable per-node scale, and fitting past support would leak the outbreak's magnitude.
+    Few-shot protocol. Two support regimes:
+
+      calendar-prefix (`few_shot_support_cutoff` set): support = every observed cell dated on
+        or before the cutoff; query = every observed cell after it. This is calendar-causal by
+        construction -- no query cell is ever earlier in time than a support cell -- which is
+        the only reading of "the first weeks of an emerging outbreak" that survives review.
+        Districts entering after the cutoff receive no support (the genuine few-shot case).
+
+      per-district (`few_shot_support_cutoff` None): support = the first
+        `few_shot_support_weeks` OBSERVED weeks of each district. Retained for comparison; it
+        is NOT calendar-causal, because districts enter at different dates.
+
+    Because week 0 is masked (cumulative_to_weekly_incidence), support holds real increments
+    rather than a back-log. The scaler is fit on the pooled support cells only: far too few
+    per node for a stable per-node scale, and fitting past support would leak the outbreak's
+    magnitude.
 
     Pass `gadm_dir` to build the district graph.
     """
@@ -1160,12 +1175,20 @@ def load_ebola(csv_path: str, cols: dict = EBOLA_COLS,
     mask = msk.to_numpy().astype(np.uint8)
     deaths_raw = dth.to_numpy(dtype=np.float64)
 
-    # 8. support = the first `few_shot_support_weeks` OBSERVED weeks per district. Week 0 is
-    #    already masked, so these are real increments, not the back-log.
+    # 8. support set. Week 0 is already masked, so support holds real increments, not back-log.
     support_mask = np.zeros_like(mask)
-    for i in range(mask.shape[0]):
-        obs_idx = np.where(mask[i] == 1)[0][:max(0, few_shot_support_weeks)]
-        support_mask[i, obs_idx] = 1
+    if few_shot_support_cutoff is not None:
+        # calendar-prefix: every observed cell dated on or before the cutoff is support.
+        cutoff = pd.Timestamp(few_shot_support_cutoff)
+        pre = np.asarray(dates <= cutoff)
+        support_mask[:, pre] = mask[:, pre]
+        support_scheme = f"calendar_prefix<= {cutoff.date()}"
+    else:
+        # per-district: the first few_shot_support_weeks observed weeks of each district.
+        for i in range(mask.shape[0]):
+            obs_idx = np.where(mask[i] == 1)[0][:max(0, few_shot_support_weeks)]
+            support_mask[i, obs_idx] = 1
+        support_scheme = f"per_district_first_{few_shot_support_weeks}_obs_weeks"
 
     A_geo, C_geo, adj_report, A_geo_kind = None, None, None, "deferred"
     if gadm_dir:
@@ -1182,6 +1205,7 @@ def load_ebola(csv_path: str, cols: dict = EBOLA_COLS,
 
     q = dt.meta["split"]["query_mask"]
     dt.meta["ebola_first_week_masked"] = True
+    dt.meta["few_shot_support_scheme"] = support_scheme
     dt.meta["nodes_dropped"] = {
         n: EBOLA_DROP_NODES.get(n) or EBOLA_DROP_LABELS.get(n.split("|", 1)[-1])
         for n in dropped}
@@ -1191,9 +1215,8 @@ def load_ebola(csv_path: str, cols: dict = EBOLA_COLS,
     dt.meta["graph_is_block_diagonal"] = False    # cross-border edges are real here
     dt.meta["shapefile_source"] = "GADM 4.1 (gadm.org)" if gadm_dir else None
     dt.meta["adjacency_report"] = adj_report
-    # A district with <= few_shot_support_weeks observed weeks yields a support cell but no
-    # query cell: it is a graph node that is never scored. Recorded so evaluation cannot
-    # silently count it as one.
+    # A district whose observed cells all fall in the support set yields no query cell: it is a
+    # graph node that is never scored. Recorded so evaluation cannot silently count it as one.
     dt.meta["nodes_without_query"] = [n for i, n in enumerate(node_ids) if q[i].sum() == 0]
     ref = cumulative_reference_mass(cases, "_node", cols["date"], cols["value"])
     dt.meta["cumulative_reference"] = {n: ref[n] for n in node_ids if n in ref}

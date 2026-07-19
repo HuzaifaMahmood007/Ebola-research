@@ -1,0 +1,30 @@
+{
+  "dengue": {
+    "level": "auto",
+    "t_res_filter": "Week",
+    "min_weeks": 52,
+    "min_nodes_per_country": 3,
+    "ratios": [
+      0.5,
+      0.2,
+      0.3
+    ]
+  },
+  "influenza": {
+    "ratios": [
+      0.5,
+      0.2,
+      0.3
+    ],
+    "adjacency": "shipped(diag_zeroed)"
+  },
+  "ebola": {
+    "few_shot_support_cutoff": "2014-05-24",
+    "countries": "EBOLA_CORE_COUNTRIES"
+  },
+  "shapefiles": "GADM 4.1",
+  "rolling_origins": {
+    "n_origins": 5,
+    "horizon": 1
+  }
+}

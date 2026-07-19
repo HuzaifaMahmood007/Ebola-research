@@ -1,0 +1,21 @@
+# Conda environment for the Emerging Disease Forecasting data pipeline.
+#   conda env create -f environment.yml
+#   conda activate ebola
+#   python fetch_gadm.py && python build_datasets.py
+#
+# Versions are pinned to those the released datasets were built and verified against
+# (recorded in full in data/processed/env.txt after a build). geopandas + libpysal pull in
+# the GEOS/GDAL/PROJ stack via conda-forge, which is why this is a conda env, not a pip
+# requirements file.
+name: ebola
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - numpy=2.2
+  - pandas=2.3
+  - geopandas=1.1
+  - libpysal=4.13
+  - shapely=2.1
+  - openpyxl=3.1
+  - pip

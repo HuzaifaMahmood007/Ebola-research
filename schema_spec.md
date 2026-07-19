@@ -143,7 +143,9 @@ block used for cross-disease transfer) and an **extended** block that is disease
 **Incidence transform (`incidence_norm`).** Counts are heavily right-skewed and vary orders of magnitude
 across nodes/diseases, so: `log1p(count)` → standardise. Incidence is normalised **raw counts, not a
 per-capita rate** (client decision **D10**) — no population is joined into channel 0. Standardisation stats are
-**fit on the training split only** (§4). Guard zero-variance nodes (sporadic Ebola districts) with `std := 1`.
+**fit on the training split only** (§4). A node whose training window is constant (zero variance) takes its
+**country's pooled training statistics** rather than `std := 1`, so it is never left un-normalised while its
+neighbours are standardised (the pool is train-only, so no leakage).
 Store `(transform, mean, std)` per node in `meta.scaler` so predictions invert back to real counts for
 RMSE/MAE. **Imputed steps** (`obs_mask=0`) are set to **0 in normalised space** (the per-node mean), a neutral
 fill — not the transform of a raw 0 — and the `obs_mask` channel flags them.
@@ -157,11 +159,12 @@ fill — not the transform of a raw 0 — and the `obs_mask` channel flags them.
   to fall on a fixed weekday, so alignment is robust to how each source labels week starts.
 - **Development diseases:** scaler fit on observed **train** cells only (mask==1 and `t < train_end`), per node
   (zero-variance guarded), applied to val/test. Never fit on val/test. Parameters stored for inverse-transform.
-- **Few-shot holdout (Ebola):** the scaler is fit on the **support set only** — the first
-  `few_shot_support_weeks` (default **2**, i.e. "14 days" per **D22**) observed weeks per district — and pooled
-  **per-disease** (one mean/std), because 2 weeks per node is far too few for a stable per-node scaler and
-  fitting on anything past support would leak the outbreak scale into the "few-shot" result. Support and query
-  masks are stored in `meta.split`.
+- **Few-shot holdout (Ebola):** the scaler is fit on the **support set only** — a **calendar prefix**, every
+  observed cell dated on or before `few_shot_support_cutoff` (released **2014-05-24**) — pooled **per-disease**
+  (one mean/std), because the handful of early cells is far too few for a stable per-node scaler and fitting on
+  anything past support would leak the outbreak scale into the "few-shot" result. The prefix is
+  **calendar-causal** (no query cell precedes a support cell) and gated; see §5. Support and query masks are in
+  `meta.split`.
 - **Chronological only.** No shuffling; dev split is a time cut (default **50/20/30**, EpiGNN; rolling-origin
   available — see `problem_and_protocol.md`).
 - **Graph structure is static geography** (fit-free) or, if *learned* later, learned on train only.
@@ -180,20 +183,62 @@ train the model on a monotone step function. Conversion, per `(country, district
 1. Canonicalise district id (accent-stripped, §7); parse `date` as `dd/mm/yyyy`.
 2. **Resample to MMWR weeks** (Sun–Sat): take the **last cumulative value** within each week; forward-fill weeks
    with no sit-report.
-3. **Difference** consecutive weekly cumulatives → weekly new cases/deaths.
-4. **Clip negatives to 0.** Cumulative series occasionally *decrease* when authorities correct
-   double-counting; a negative "new-case" count is an artefact, not signal. (Clip is the standard, defensible
-   choice; note it in the paper.)
-5. **First observed week** = its cumulative value (series effectively starts near zero at outbreak onset).
+3. **Difference the running maximum** (`cummax().diff()`), not the raw series.
+4. **Weeks whose report falls below the running maximum are masked (`M=0`).** They are corrupt reports, not
+   observations of zero.
+5. **First observed week is masked (`M=0`).** At a district's first report there is no preceding cumulative,
+   so the increment is not identifiable.
 6. Weeks that were forward-filled (no underlying report) are marked **`M=0`** so they are imputed for input
    continuity but **excluded from loss and evaluation**.
 7. Deaths handled identically → `deaths_norm` extended channel.
 
+**Steps 3–5 are corrections. The original spec was wrong on both, and the code implemented it faithfully.**
+
+- **The original step 3–4 said "difference, then clip negatives to 0", on the reasoning that a decrease is a
+  double-counting correction.** It is not. A cumulative count cannot fall; where the report falls, the report
+  is a single-week data-entry dropout. Clipping zeroed the fall and then released the *recovery* — a climb
+  back to cases already counted — as new incidence. This **fabricated 8,786 cases, 35.8 per cent of the Ebola
+  target** (33,338 released against 24,552 real), put the six largest cells in the dataset there as artefacts,
+  and displaced the national epidemic peak from late 2014 to February 2015. Differencing the monotone envelope
+  is mass-preserving by construction: increments sum to `max(C) - C_first` exactly.
+- **The original step 5 said "first observed week = its cumulative value".** Because the compilation opens
+  months into an outbreak already under way, this assigned every district's entire back-log to its first week
+  and fed those numbers straight into the pooled support scaler for the whole held-out disease.
+
+**Invariant, enforced by a gate rather than by this prose:** a weekly series derived from a cumulative one must
+sum to no more than `max(C) - C_first`, where that reference is computed **from the source column by
+`cumulative_reference_mass()`** — independently of the transform under test. The original defect survived 83
+gates precisely because no check compared the transform against anything the transform had not itself produced.
+
+**Known limitation, not corrected:** differencing recovers *how many* cases accrued between two reports, not
+*when* within that interval. Where a district falls silent and then files, the whole multi-week increment lands
+on the week the report arrived. 7 per cent of inter-report intervals exceed one week (longest 24). No cases are
+invented and the curve is correctly shaped, but peaks are inflated and adjacent weeks flattened. **Client
+decision (A4): disclose and proceed** — the shape is right and both remedies (redistribute, or score only
+contiguous runs) cost more than the distortion; quote any weekly Ebola magnitude with this stated.
+
 **Few-shot protocol (D22).** Ebola is `role="few_shot_holdout"`, *not* a 50/20/30 development disease. The
-**support set** is the first 2 observed weeks per district (what the model adapts on); the **query set** is
-every later observed week (what it is scored on). The support/query masks and the support-fit scaler are in
-`meta.split` / `meta.scaler`. This is the one place a subtle leak would silently inflate the headline result,
-so the support-only scaler is enforced in code, not left to the training loop.
+**support set** is a **calendar prefix**: every observed cell dated on or before `few_shot_support_cutoff`
+(released value **2014-05-24**) is support; every later observed cell is query. The support/query masks and the
+support-fit scaler are in `meta.split` / `meta.scaler`. The support-only scaler is enforced in code, not left
+to the training loop.
+
+**Calendar-causal by construction.** Because the split is a date threshold shared by every district, no query
+cell is ever earlier in time than any support cell — verified by a build gate (every support cell dated `<=`
+every query cell), with a negative control that plants an acausal support cell and requires the gate to fail.
+On the released build: 27 support cells (the 9 districts reporting by the cutoff), 1,272 query cells, and 52 of
+61 districts are pure zero-shot — the genuine emerging-outbreak regime.
+
+**This replaced a per-district scheme that was not causal.** The earlier support set was the first *n* observed
+weeks of *each district*; because districts enter at different dates, 85 per cent of query cells were earlier in
+calendar time than the last support cell, so the pooled scaler normalising an early cell drew on peak-epidemic
+magnitudes. The old suite could not detect this — it *defined* `support_mask` as the legitimate fit set — which
+is why the calendar-causality gate checks the cells' **dates**, not the mask.
+
+**Window size (D22, deferred).** The size of the early window — equivalently, how far the cutoff sits from the
+record's start — may later widen from the current eight-week prefix. `few_shot_support_cutoff` is a parameter,
+so this is a rebuild, not a code change; and it must be decided together with the causality property, since a
+later cutoff pulls more of the epidemic into support.
 
 The same routine differences dengue only if a source is cumulative; OpenDengue `dengue_total` is already
 per-period incidence, so dengue is used as-is (`NA`/suppressed → `M=0`).
@@ -227,12 +272,19 @@ per-period incidence, so dengue is used as-is (`NA`/suppressed → `M=0`).
 - **Dengue / Ebola:** GADM shapefiles → **queen contiguity** (share a boundary) via `geopandas`. Row order
   aligned to `meta.node_ids`. Dengue is **block-diagonal** across countries (intra-country contiguity only;
   `build_dengue_adjacency`).
-- **Joins are by name, not code (D17).** The client will not supply GADM/GAUL code columns, so series↔geometry
-  matching is on canonicalised names. `_canon` strips accents/diacritics and whitespace (so *Guéckédou* ==
-  *gueckedou*); residual mismatches are fixed via a `name_aliases` map (data-name → shapefile-name), and any
-  node left unmatched **raises with the full list** rather than being silently dropped or misaligned. This
-  name-join is a known fragility (logged as D17) mitigated, not eliminated — verify the unmatched-node report
-  in the Week-2 audit.
+- **Joins are by name, verified against codes where codes exist (D17).** The original D17 rationale — "the
+  client will not supply GADM/GAUL code columns" — was **wrong**: OpenDengue ships `FAO_GAUL_code`,
+  `RNE_iso_code` and `IBGE_code` at ~100 per cent. But a code join is not the fix it appears to be.
+  `FAO_GAUL_code` is **not injective on our nodes** (7,443 → 7,027: 416 nodes would silently *merge*, because
+  GAUL is a coarser ancestor geography — Taiwan alone collapses 287→2), so joining on it is unsafe. `RNE_iso`
+  maps to GADM's `ISO_1` at only ~74 per cent, and GADM carries **no** code at all for the 1,476 Colombia/Peru/
+  Argentina/Taiwan Admin-2 nodes. So the name join is unavoidable for four of five Admin-2 countries. It stays:
+  `_canon` strips accents/diacritics/whitespace (*Guéckédou* == *gueckedou*), residual mismatches are fixed via
+  the `name_aliases` map (234 entries), and any unmatched node **raises with the full list** rather than being
+  silently dropped. Where a code *does* exist it is used as an **oracle, not a key**: Brazil's `IBGE_code`
+  matches GADM `CC_2` for all 5,517 nodes, and the name join lands on the identical polygon for every one
+  (0 disagreements) — a stronger reproducibility claim than a code join, since it validates both the names and
+  the codes. Recommended as a build gate.
 - **Disconnected units** (islands; or a district with no reporting neighbour): fall back to **k-nearest
   centroids** (default k=4) for those nodes so the graph has no isolated vertices, and flag them
   (`A_geo_kind="queen+knn"`). GNN message passing degenerates on isolated nodes, so this is a correctness fix,
@@ -261,10 +313,16 @@ default avoids silently introducing an un-provenanced covariate into a publicati
 - `to_schema.py` — `load_dengue / load_influenza / load_ebola → DiseaseTensors`, plus
   `dengue_country_coverage`, `fit_scalers*` / `apply_scaler` / `invert_scaler`, `build_adjacency` /
   `build_dengue_adjacency`, and `DiseaseTensors.transfer_view()`.
-- `test_schema.py` — 15 passing tests: shape contracts on all three diseases **plus** the tricky invariants —
-  cumulative→incidence (clip + mask), leakage-safe train scaler, few-shot 2-week support + disjoint query +
+- `test_schema.py` — shape contracts on all three diseases **plus** the tricky invariants —
+  cumulative→incidence (envelope + mask), leakage-safe train scaler, few-shot support + disjoint query +
   pooled scaler, `obs_mask` core channel, `transfer_view` core-only, accent-stripped joins, multi-country
   coverage prune.
+- `test_leakage.py` — **86 gates** across the five datasets, gating the build, with **6 negative controls**
+  that plant a real defect and require the corresponding gate to fail. A gate that has never failed establishes
+  nothing: three defects (the clip above; a per-node split fallback that put training cells inside neighbours'
+  test period; and an acausal per-district support set) passed 83 gates green and were caught only in
+  adversarial review. The gate count is not a measure of coverage — the mass-conservation, phase-purity and
+  calendar-causality gates were added precisely because the properties they test were previously untested.
 
 ## 10. Open items that still change the schema
 - **`[CONFIRM-1]`** target = **cases** (default) vs cases+deaths → whether `deaths_norm`/`y_deaths` is a
@@ -277,5 +335,18 @@ default avoids silently introducing an un-provenanced covariate into a publicati
 
 **Resolved by client review:** D2 (dengue endemic multi-country), D3 (Ebola region control), D5 (weekly
 everywhere), D6 (MMWR epi-weeks), D9 (encoder = core only), D10 (incidence = raw counts), D15 (`obs_mask` as a
-core channel), D17 (name joins, accent-stripped, no code columns), D20 (covariates deferred, flagged),
-D22 (few-shot support = 2 weeks), D24 (Ebola cumulative→incidence), D27 (ColaGNN start weeks from the repo).
+core channel), D17 (name joins, accent-stripped, verified against codes — **rationale corrected, see above**),
+D20 (covariates deferred, flagged),
+D24 (Ebola cumulative→incidence — **method since corrected, see §5**), D27 (ColaGNN start weeks from the repo).
+
+**Raised by the Phase-2 client review, and their resolutions** (see `client_decisions.md`,
+`remediation_plan.md`):
+- **Ebola few-shot causality** — RESOLVED: calendar-prefix support, cutoff 2014-05-24, now gated.
+- **Dengue case definitions** — RESOLVED: measured to a 2.8× (Mexico) / 1.6× (Bolivia) step on 41 nodes, not
+  the ×220 of the raw-file group-by; kept as built and disclosed.
+- **Ebola Western Area** — RESOLVED: parent stays dropped (Urban + Rural are already separate nodes; keeping
+  the parent would triple-count), 61 nodes.
+- **D22 (few-shot window size)** — DEFERRED: the eight-week cutoff may later widen; decide with the causality
+  property, since a later cutoff pulls more of the epidemic into support.
+- **Ebola gap-lumping** — RESOLVED: disclose and proceed (A4); the shape is correct and both remedies cost
+  more than the distortion.

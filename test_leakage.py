@@ -161,6 +161,19 @@ def gate_splits(name: str, dt: DiseaseTensors) -> None:
         _gate(f"{name}: support is a subset of observed", bool((s & ~obs).sum() == 0))
         _gate(f"{name}: support+query == every observed cell",
               np.array_equal(s | q, obs))
+        # Calendar causality: no query cell may be earlier in time than any support cell. The
+        # scaler is fit on support, so a query cell dated before the last support cell would be
+        # normalised by magnitudes from its own future. This is the property the per-district
+        # support scheme could not provide and the suite previously could not test, because it
+        # defined the support mask as legitimate by construction rather than checking its dates.
+        dates = np.asarray(dt.meta["dates"], dtype="datetime64[ns]")
+        s_cols, q_cols = np.where(s.any(0))[0], np.where(q.any(0))[0]
+        causal = (s_cols.size == 0 or q_cols.size == 0
+                  or dates[s_cols].max() <= dates[q_cols].min())
+        _gate(f"{name}: every support cell is dated <= every query cell (calendar-causal)",
+              bool(causal),
+              "" if causal else
+              f"last support {dates[s_cols].max()} > first query {dates[q_cols].min()}")
     elif dt.meta["split_scheme"].startswith("per_country"):
         tr, va, te = (sp[k].astype(bool) for k in ("train_mask", "val_mask", "test_mask"))
         _gate(f"{name}: train/val/test are pairwise disjoint",
@@ -387,6 +400,20 @@ def self_test(bundles: dict[str, DiseaseTensors]) -> bool:
     FAIL.clear(); PASS.clear()
     gate_phase_purity("NEGCTL dengue(mixed-phase)", pb)
     fired.append(("a train cell inside a test column", bool(FAIL)))
+
+    # 6. an acausal support cell: move one support cell to after a query cell in calendar time
+    eb2 = copy.deepcopy(bundles["ebola"])
+    sp = eb2.meta["split"]
+    s = sp["support_mask"].astype(bool)
+    q = sp["query_mask"].astype(bool)
+    si = int(np.where(s.any(0))[0][0])                # some support column
+    qi = int(np.where(q.any(0))[0][-1])              # a strictly-later query column
+    row = int(np.where(s[:, si])[0][0])
+    sp["support_mask"][row, si] = 0
+    sp["support_mask"][row, qi] = 1                  # support cell now dated after a query cell
+    FAIL.clear(); PASS.clear()
+    gate_splits("NEGCTL ebola(acausal-support)", eb2)
+    fired.append(("a support cell dated after a query cell", bool(FAIL)))
 
     FAIL.clear(); PASS.clear()
     ok = all(f for _, f in fired)

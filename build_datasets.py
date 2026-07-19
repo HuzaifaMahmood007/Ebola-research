@@ -55,7 +55,7 @@ CONFIG = dict(
     dengue=dict(level="auto", t_res_filter="Week", min_weeks=52,
                 min_nodes_per_country=3, ratios=[0.5, 0.2, 0.3]),
     influenza=dict(ratios=[0.5, 0.2, 0.3], adjacency="shipped(diag_zeroed)"),
-    ebola=dict(few_shot_support_weeks=2, countries="EBOLA_CORE_COUNTRIES"),
+    ebola=dict(few_shot_support_cutoff="2014-05-24", countries="EBOLA_CORE_COUNTRIES"),
     shapefiles="GADM 4.1",
     rolling_origins=dict(n_origins=5, horizon=1),
 )
@@ -121,7 +121,7 @@ def build_all() -> dict[str, ts.DiseaseTensors]:
 
     b["ebola"] = load_ebola(
         str(EBOLA_XLSX), countries=ts.EBOLA_CORE_COUNTRIES,
-        few_shot_support_weeks=CONFIG["ebola"]["few_shot_support_weeks"], gadm_dir=GADM)
+        few_shot_support_cutoff=CONFIG["ebola"]["few_shot_support_cutoff"], gadm_dir=GADM)
 
     return b
 

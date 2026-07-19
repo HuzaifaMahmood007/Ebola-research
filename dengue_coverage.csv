@@ -1,0 +1,4 @@
+country,n_nodes,max_weeks_per_node,start,end,endemic
+brazil,4809,156,2001-01-01,2013-01-12,True
+nepal,77,36,2022-01-01,2024-01-12,True
+philippines,65,204,1994-01-01,2010-01-12,True
