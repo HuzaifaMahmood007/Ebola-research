@@ -48,7 +48,7 @@ class DiseaseTensors:
     """
 
     X: np.ndarray                    # [N, T, F] float32
-    A_geo: np.ndarray               # [N, N]   float32
+    A_geo: np.ndarray                # [N, N]   float32
     C: np.ndarray                    # [N, S]   float32
     M: np.ndarray                    # [N, T]   uint8 (1 observed / 0 missing)
     y: np.ndarray                    # [N, T]   float32 (model space)
@@ -181,6 +181,7 @@ def fit_scalers(raw_counts: np.ndarray, mask: np.ndarray, train_end: int,
 
 
 def apply_scaler(raw_counts: np.ndarray, scaler: dict) -> np.ndarray:
+    """Raw counts -> model space (log1p + per-node z-score)."""
     logc = np.log1p(np.clip(raw_counts, 0, None))
     return ((logc - scaler["mean"][:, None]) / scaler["std"][:, None]).astype(np.float32)
 
@@ -330,8 +331,7 @@ def per_country_chronological_split(node_ids: Sequence[str], obs_mask: np.ndarra
 
     def _cut(cols, ratios):
         n = len(cols)
-        tr = int(round(n * ratios[0]))
-        va = int(round(n * (ratios[0] + ratios[1])))
+        tr, va = chronological_split(n, ratios)
         return set(cols[:tr]), set(cols[tr:va]), set(cols[va:])
 
     groups = {}
@@ -391,7 +391,6 @@ def _gadm_gdf(gadm_dir: str, iso3: str, level: str, country: Optional[str] = Non
     Admin2 -> 'name_1|name_2'. The Admin2 key carries the parent because leaf names repeat
     within a country (Brazil has 239 municipality names used in 2-5 states each)."""
     import geopandas as gpd
-    from pathlib import Path
     zp = Path(gadm_dir) / f"gadm41_{iso3}_shp.zip"
     if not zp.exists():
         raise FileNotFoundError(
