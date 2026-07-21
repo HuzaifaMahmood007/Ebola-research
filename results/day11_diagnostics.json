@@ -1,0 +1,50 @@
+{
+  "origins_by_phase": {
+    "dengue": {
+      "train": 1138,
+      "val": 594,
+      "test": 630
+    },
+    "influenza_japan": {
+      "train": 152,
+      "val": 82,
+      "test": 104
+    },
+    "influenza_us-regions": {
+      "train": 370,
+      "val": 170,
+      "test": 235
+    },
+    "influenza_us-states": {
+      "train": 158,
+      "val": 84,
+      "test": 108
+    },
+    "ebola": {
+      "support": 0,
+      "query": 18
+    }
+  },
+  "fit_window_node_mean_variance": {
+    "dengue": 0.0387127660214901,
+    "influenza_japan": 8.916296554437129e-16,
+    "influenza_us-regions": 1.0189675065362409e-14,
+    "influenza_us-states": 1.4541656656488593e-14,
+    "ebola": 0.7031696438789368
+  },
+  "scaler_scope": {
+    "dengue": "per_node_train",
+    "influenza_japan": "per_node_train",
+    "influenza_us-regions": "per_node_train",
+    "influenza_us-states": "per_node_train",
+    "ebola": "per_disease_support"
+  },
+  "n_fit_nodes": {
+    "dengue": 6690,
+    "influenza_japan": 47,
+    "influenza_us-regions": 10,
+    "influenza_us-states": 49,
+    "ebola": 9
+  },
+  "confirm_p7_triggered": true
+}

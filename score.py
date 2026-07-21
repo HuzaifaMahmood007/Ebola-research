@@ -19,6 +19,30 @@ Two rules the metric depends on, both settled here so a caller cannot get them w
 
 Horizon-resolved reporting is the caller's job: call this once per horizon h with that
 horizon's predictions. The aggregation is identical each time.
+
+METRICS added in Week 3 (Task 13.1), all per-node scalars over a node's observed eval cells
+(in time order), count space:
+  * sMAPE = mean(2*|yh-y| / (|y|+|yh|)) * 100, range 0-200. Cells with y==yh==0 are UNDEFINED and
+    EXCLUDED from the mean -- never counted as zero error. dengue is ~78% imputed and Ebola has
+    districts that never record a case, so a "0/0 == perfect" convention would hand a large free
+    credit on exactly the sparsest data. A node whose every scored cell is 0/0 scores NaN.
+  * peak_intensity = |max(yh) - max(y)| over the eval cells, in counts.
+  * peak_timing = |argmax(yh) - argmax(y)| in observed-eval-cell steps (== weeks for the dense
+    influenza panels; approximate where the mask is sparse). Undefined on a constant node, which
+    is already excluded by default -- the self-check proves that exclusion.
+CRPS / PICP / interval-width are UQ metrics left as stubs here; Week 5 (G4) fills them.
+
+EBOLA METRIC RULES -- pre-registered now, in Week 3, while no Ebola number exists (Task 13.1). Ebola
+is scored once in Week 5; fixing the rules here is what makes them demonstrably independent of the
+data. Ebola runs at mask density 0.2175 with districts that never record a case, so PCC is
+near-meaningless on much of the panel and sMAPE is undefined at zero:
+  * MAE and RMSE are PRIMARY for Ebola.
+  * PCC is reported only over districts with >= 5 observed non-zero cells, with the qualifying
+    district count printed beside it.
+  * sMAPE inherits the 0/0-excluded rule; if qualifying cells fall below 30% of the query set, drop
+    sMAPE for Ebola entirely and say so.
+  * peak_timing is undefined for districts with no peak; exclude them and report the count.
+These are decisions, not defaults to revisit after seeing results.
 """
 from __future__ import annotations
 
@@ -42,7 +66,39 @@ def _pcc(yh, y):
     return float(np.corrcoef(yh, y)[0, 1])
 
 
-METRICS = {"rmse": _rmse, "mae": _mae, "pcc": _pcc}
+def _smape(yh, y):
+    """0-200 sMAPE; cells with y==yh==0 (denominator 0) are excluded, not scored as perfect."""
+    denom = np.abs(y) + np.abs(yh)
+    defined = denom > 0
+    if not defined.any():
+        return float("nan")               # every scored cell was 0/0 -> undefined for this node
+    return float(np.mean(2.0 * np.abs(yh - y)[defined] / denom[defined]) * 100.0)
+
+
+def _peak_intensity(yh, y):
+    return float(abs(np.max(yh) - np.max(y)))
+
+
+def _peak_timing(yh, y):
+    return float(abs(int(np.argmax(yh)) - int(np.argmax(y))))
+
+
+METRICS = {"rmse": _rmse, "mae": _mae, "pcc": _pcc,
+           "smape": _smape, "peak_intensity": _peak_intensity, "peak_timing": _peak_timing}
+
+
+# UQ metrics -- Week 5 (G4) fills these; they need the full quantile prediction, not a point
+# forecast, so they do not belong in the point-metric METRICS dict above.
+def _crps(*_a, **_k):                     # noqa: D401 - stub
+    raise NotImplementedError("CRPS is a Week-5 deliverable (G4)")
+
+
+def _picp(*_a, **_k):
+    raise NotImplementedError("PICP is a Week-5 deliverable (G4)")
+
+
+def _interval_width(*_a, **_k):
+    raise NotImplementedError("interval width is a Week-5 deliverable (G4)")
 
 
 def per_node_scores(pred, truth, mask, node_country, score_constant=False):
@@ -57,12 +113,13 @@ def per_node_scores(pred, truth, mask, node_country, score_constant=False):
         m = mask[i].astype(bool)
         if not m.any():
             continue                                   # nothing to score for this node
-        y, yh = truth[i][m], pred[i][m]
+        y, yh = truth[i][m], pred[i][m]                # observed eval cells, in time order
         constant = bool(y.std() < 1e-8)
         if constant and not score_constant:
             continue                                   # trivially predictable; kept in graph
-        out[i] = dict(country=node_country[i], n_cells=int(m.sum()), constant=constant,
-                      rmse=_rmse(yh, y), mae=_mae(yh, y), pcc=_pcc(yh, y))
+        rec = dict(country=node_country[i], n_cells=int(m.sum()), constant=constant)
+        rec.update({name: fn(yh, y) for name, fn in METRICS.items()})   # extend via METRICS, not here
+        out[i] = rec
     return out
 
 
@@ -136,9 +193,26 @@ def _demo():
     _, ns_all = score_bundle(raw.copy(), raw, test, ids, ncmap, score_constant=True)
     assert len(ns_all) > n_default, "score_constant=True must score more nodes"
     n_const = sum(1 for s in ns_all.values() if s["constant"])
+
+    # (4) sMAPE 0/0 rule: an all-(0,0) node is NaN (undefined), not 0 (perfect), and the excluded
+    # cells are not silently scored as zero. Discriminating case: [0,0,5] vs [0,0,3] -> only the
+    # third cell is defined, sMAPE = 2*2/(5+3)*100 = 50 (excluded), not 16.67 ("0/0 == 0").
+    assert np.isnan(_smape(np.zeros(3), np.zeros(3))), "all-0/0 must be undefined, not perfect"
+    assert abs(_smape(np.array([0., 0., 3.]), np.array([0., 0., 5.])) - 50.0) < 1e-9, "0/0 not excluded"
+    assert _smape(np.array([5., 10.]), np.array([5., 10.])) == 0.0, "perfect predictor sMAPE must be 0"
+
+    # (5) peak metrics: exact for a perfect predictor; peak_timing catches a shifted peak.
+    yv = np.array([1., 5., 2., 8., 3.])
+    assert _peak_intensity(yv, yv) == 0.0 and _peak_timing(yv, yv) == 0.0
+    assert _peak_timing(np.array([8., 1., 1.]), np.array([1., 1., 8.])) == 2.0   # peak moved 2 steps
+    # constant-truth node is excluded by default, so peak_timing is never computed on an undefined peak
+    assert all(not s["constant"] for s in ns.values()), "a constant node leaked into the default scoring"
+
     print(f"ok  perfect-predictor macro exact; dominance neutralised "
           f"(node-mean {node_mae:.3f} vs country-macro {macro_mae:.3f} for a Bolivia-only error);")
     print(f"ok  {n_default} nodes scored, {n_const} constant nodes excluded by default")
+    print(f"ok  sMAPE 0/0 excluded (all-0/0 -> NaN); peak intensity/timing exact for a perfect predictor")
+    print(f"    metrics live: {list(METRICS)}")
     print(f"    country-macro is the mean of {agg['rmse']['n_countries']} per-country scores; "
           f"node-mean pools {agg['rmse']['n_nodes']} nodes")
 

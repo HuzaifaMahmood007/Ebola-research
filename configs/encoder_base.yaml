@@ -1,0 +1,35 @@
+# Encoder base configuration -- the frozen Week-3 hyperparameters (encoder_architecture_plan.md §7).
+# HUMAN RECORD ONLY: the code's source of truth is models/config.py (architecture) and
+# train/loop.py defaults (optimisation). Keep this file in sync when those change; it exists so a
+# reviewer can read the config without reading code, and so "what did you run?" has a written answer.
+
+architecture:
+  temporal: tcn                 # dilated causal TCN (P1); GRU is the Week-6 ablation alternative
+  tcn_dilations: [1, 2, 4, 8, 16]   # kernel 2 -> receptive field 32 >= lookback w=20 (Correction B)
+  tcn_kernel: 2
+  hidden_dim: 64                # d
+  spatial_layers: 2             # L (3+ over-smooths on the dense dengue graph)
+  spatial_gate: learned         # gated inductive mixing (P8, locked); 'off' = g==0 ablation cell
+  ltr: true                     # degree feature reusing D~ (guide Task 12.1a)
+  head: quantile                # levels [0.05, 0.25, 0.5, 0.75, 0.95], pinball loss (P4)
+  adapter: film_plus_head       # per-disease adaptation surface (P5), ~388 params
+
+windowing:
+  lookback_w: 20
+  horizons: [3, 5, 10, 15]      # direct multi-horizon, no autoregressive rollout (C5)
+
+optimisation:
+  optimiser: adamw
+  lr: 1.0e-3
+  weight_decay: 1.0e-4
+  lr_schedule: cosine           # CosineAnnealingLR(T_max=epochs); 5-epoch warmup is a refinement
+  grad_clip: 1.0
+  batch_origins: 8              # gradient accumulation; one optimiser step per round
+  max_epochs: 80
+  early_stopping:
+    monitor: val_pinball        # NEVER on Ebola (C8)
+    patience: 15
+  seeds: [42, 52, 62, 72, 82]   # 5-seed reporting (frozen protocol)
+
+loss_space: model               # pinball in log1p+z space; all metrics in count space (score.py)
+sampler: uniform                # within-dengue: uniform primary, country-balanced is the Week-6 ablation
