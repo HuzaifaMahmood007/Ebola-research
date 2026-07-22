@@ -9,6 +9,10 @@ from bundles import HORIZONS, W
 
 def window_slice(Z, t):
     """Input window for origin t: Z[:, t-w+1 : t+1, :] -> [N, w, F]."""
+    # t < W-1 makes the start index negative, which slices from the tail instead of erroring --
+    # a silent wrong window. Ebola's short-window few-shot path (t<19) needs zero left-padding
+    # (P7 split protocol); that's Week-4 work. Until then, refuse the short window loudly.
+    assert t >= W - 1, f"origin {t} < W-1={W - 1}: short-window left-pad path is Week-4 work (P7)"
     return Z[:, t - (W - 1):t + 1, :]
 
 

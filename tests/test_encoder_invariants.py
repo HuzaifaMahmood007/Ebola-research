@@ -8,13 +8,14 @@ from __future__ import annotations
 
 import inspect
 
+import numpy as np
 import torch
 import torch.nn as nn
 
 import bundles
 from models import (Adapter, SharedEncoder, node_indexed_params, normalise_adj, pinball_loss,
                     sparse_from_dense_np)
-from models.spatial import LTR
+from models.spatial import LTR, mask_aware_adj
 from models.temporal import DilatedTCN
 
 
@@ -104,6 +105,29 @@ def main():
             hb = enc2(Zb, sparse_from_dense_np(b.A_geo))
         assert hb.shape == (b.X.shape[0], d)
     print("ok  size-agnostic: one weight set ran on N=47, 49, 7165 with no reshape")
+
+    # Gate 8 -- mask_aware_adj (plan §3.3): a masked-out neighbour contributes nothing, and a node
+    # whose only neighbour is masked falls back to its self-loop (never NaN). Line graph 0-1-2.
+    Aline = sparse_from_dense_np(np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]], dtype=float))
+    full = mask_aware_adj(Aline, torch.ones(3)).to_dense()
+    masked = mask_aware_adj(Aline, torch.tensor([1., 0., 1.])).to_dense()   # node 1 unobserved
+    assert full[0, 1] > 0, "mask_aware_adj: an observed neighbour should contribute"
+    assert masked[0, 1] == 0, "mask_aware_adj: a masked neighbour still contributes"
+    assert masked[0, 0] == 1 and masked[2, 2] == 1, "isolated node should fall back to self-loop=1"
+    assert torch.isfinite(masked).all(), "mask_aware_adj produced a non-finite weight"
+    print("ok  mask_aware_adj gate: masked neighbour drops out; isolated node falls back to self-loop")
+
+    # Gate 9 -- permutation equivariance: relabelling the nodes relabels the output identically.
+    # The strongest check on the sparse index plumbing (normalise_adj + mask_aware_adj + sparse mm).
+    enc.eval()
+    perm = torch.randperm(Z.shape[0])
+    Mt = torch.tensor(jb.M[:, 100], dtype=torch.float32)
+    Aperm = sparse_from_dense_np(jb.A_geo[perm.numpy()][:, perm.numpy()])
+    with torch.no_grad():
+        out = enc(Z, A, Mt)
+        out_p = enc(Z[perm], Aperm, Mt[perm])
+    assert torch.allclose(out_p, out[perm], atol=1e-4), "encoder is not permutation-equivariant (index bug)"
+    print("ok  permutation-equivariance gate: relabelling nodes relabels the output (atol 1e-4)")
 
     print("\nA_hat self-loop-inclusive degree (min/median/max/mean) per dataset (Task 12.6.2):")
     for name, (lo, med, hi, mean) in deg_dist.items():

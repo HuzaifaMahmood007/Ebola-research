@@ -74,13 +74,16 @@ def train_one(name, seed, epochs=80, lr=1e-3, wd=1e-4, batch_origins=8, patience
     tgt0, _ = targets_and_mask(ymod, Mt, masks["train"], tr[0], device)
     assert float(tgt0.abs().median()) < 10, "targets not in model space -- loss space is wrong"
 
+    params = list(enc.parameters()) + list(ad.parameters())
+
     def run_phase(origins, train_mode):
         enc.train(train_mode); ad.train(train_mode)
         total, n = 0.0, 0
         order = np.random.permutation(origins) if train_mode else origins
         if train_mode:
             opt.zero_grad()
-        for k, t in enumerate(order):
+        pending = 0                     # backward()s since the last opt.step(); NOT the origin index
+        for t in order:
             tgt, msk = targets_and_mask(ymod, Mt, masks["train" if train_mode else "val"], t, device)
             if msk.sum() == 0:
                 continue
@@ -90,11 +93,13 @@ def train_one(name, seed, epochs=80, lr=1e-3, wd=1e-4, batch_origins=8, patience
                 loss = pinball_loss(pred, tgt, msk)
             if train_mode:
                 loss.backward()
-                if (k + 1) % batch_origins == 0:
-                    torch.nn.utils.clip_grad_norm_(list(enc.parameters()) + list(ad.parameters()), 1.0)
-                    opt.step(); opt.zero_grad()
+                pending += 1
+                if pending == batch_origins:
+                    torch.nn.utils.clip_grad_norm_(params, 1.0)
+                    opt.step(); opt.zero_grad(); pending = 0
             total += float(loss) * int(msk.sum()); n += int(msk.sum())
-        if train_mode:
+        if train_mode and pending:                     # clip the trailing partial batch too; skip if empty
+            torch.nn.utils.clip_grad_norm_(params, 1.0)
             opt.step(); opt.zero_grad()
         return total / max(n, 1)
 
@@ -158,27 +163,47 @@ def naive_predictions(b, te):
 
 
 def score_predictions(model_name, dataset, seed, pred_by_h, b, origins, phase="test"):
-    """Score {h: [N,T] count preds} through score.py per horizon; return one record per metric."""
+    """Score {h: [N,T] count preds} through score.py per horizon. Returns (records, pernode):
+    one aggregate record per metric, plus the per-node score dict per horizon (kept, not
+    discarded) so Week-6 can bootstrap CIs and run paired Wilcoxon -- neither is reconstructable
+    from the two aggregates alone (Task 13.2 / review #7)."""
     raw = b.raw.astype(np.float64)
     phase_mask = b.masks()[phase].astype(np.uint8)
     ids, ncmap = b.meta["node_ids"], b.group_of()
-    records = []
+    records, pernode = [], {}
     for h in bundles.HORIZONS:
         mask_h = np.zeros_like(phase_mask)
         for t in origins:
             mask_h[:, t + h] = phase_mask[:, t + h]                          # observed folded into the phase mask
-        agg, _ = score.score_bundle(pred_by_h[h], raw, mask_h, ids, ncmap)
+        agg, ns = score.score_bundle(pred_by_h[h], raw, mask_h, ids, ncmap)
+        pernode[h] = ns
         for metric, a in agg.items():
             records.append(dict(model=model_name, dataset=dataset, horizon=h, seed=seed,
                                 metric=metric, country_macro=a["country_macro"],
                                 node_mean=a["node_mean"], n_countries=a["n_countries"],
                                 n_nodes=a["n_nodes"]))
-    return records
+    return records, pernode
 
 
 def write_records(records, fname):
     RESULTS.mkdir(exist_ok=True)
     (RESULTS / fname).write_text(json.dumps(records, indent=2))
+
+
+def write_per_node(pernode, fname):
+    """Per-node scores as compact npz (review #7). npz not JSON: dengue is 7165 nodes x 4 horizons,
+    so this is a few hundred KB of arrays, not a megabyte of dict text. One node_idx array per
+    horizon (the scored set differs by horizon -- constant-window nodes are dropped per horizon)."""
+    RESULTS.mkdir(exist_ok=True)
+    arrays = {}
+    for h, ns in pernode.items():
+        idx = sorted(ns)
+        arrays[f"h{h}__node_idx"] = np.array(idx, dtype=np.int32)
+        arrays[f"h{h}__country"] = np.array([ns[i]["country"] for i in idx])
+        arrays[f"h{h}__n_cells"] = np.array([ns[i]["n_cells"] for i in idx], dtype=np.int32)
+        for metric in score.METRICS:
+            arrays[f"h{h}__{metric}"] = np.array([ns[i][metric] for i in idx], dtype=np.float32)
+    np.savez_compressed(RESULTS / fname, **arrays)
 
 
 def run_dataset(name, seeds=SEEDS, **kw):
@@ -187,14 +212,17 @@ def run_dataset(name, seeds=SEEDS, **kw):
     naive, fb_rate = naive_predictions(b, te)                              # deterministic; seed is null
     naive_recs = []
     for mname, preds in naive.items():
-        recs = score_predictions(mname, name, None, preds, b, te)
+        recs, pernode = score_predictions(mname, name, None, preds, b, te)
         for r in recs:
             r["seasonal_fallback_rate"] = round(fb_rate, 4) if mname == "seasonal" else None
         naive_recs += recs
+        write_per_node(pernode, f"naive__{name}__{mname}__pernode.npz")
     write_records(naive_recs, f"naive__{name}.json")
     print(f"  naive floors scored ({name}); seasonal fallback rate {fb_rate:.1%}")
     for s in seeds:
-        write_records(train_one(name, s, **kw), f"encoder__{name}__seed{s}.json")
+        recs, pernode = train_one(name, s, **kw)
+        write_records(recs, f"encoder__{name}__seed{s}.json")
+        write_per_node(pernode, f"encoder__{name}__seed{s}__pernode.npz")
         print(f"  encoder scored ({name} seed{s})")
 
 
@@ -227,15 +255,18 @@ def main():
     t0 = time.time()
     if a.smoke:
         _selfcheck()
-        recs = train_one("influenza_japan", 42, epochs=5)
+        recs, pernode = train_one("influenza_japan", 42, epochs=5)
         write_records(recs, "encoder__influenza_japan__seed42__smoke.json")
+        write_per_node(pernode, "encoder__influenza_japan__seed42__smoke__pernode.npz")
         print(f"smoke done in {time.time()-t0:.0f}s; wrote {len(recs)} records")
     elif a.all:
         for name in bundles.DEV_BUNDLE_NAMES:
             run_dataset(name, epochs=a.epochs)
         print(f"all datasets done in {(time.time()-t0)/60:.1f} min")
     elif a.dataset and a.seed:
-        write_records(train_one(a.dataset, a.seed, epochs=a.epochs), f"encoder__{a.dataset}__seed{a.seed}.json")
+        recs, pernode = train_one(a.dataset, a.seed, epochs=a.epochs)
+        write_records(recs, f"encoder__{a.dataset}__seed{a.seed}.json")
+        write_per_node(pernode, f"encoder__{a.dataset}__seed{a.seed}__pernode.npz")
         print(f"done in {time.time()-t0:.0f}s")
     else:
         ap.error("give --dataset+--seed, or --all, or --smoke, or --selfcheck")

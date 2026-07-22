@@ -18,6 +18,10 @@ class Adapter(nn.Module):
         self.gamma = nn.Parameter(torch.ones(d))
         self.beta = nn.Parameter(torch.zeros(d))
         self.head = nn.Linear(d, self.nH * self.nQ)           # direct multi-horizon, one shot (C5)
+        # ponytail: plain Linear can emit crossing quantiles (q05>q95). The median (point forecast)
+        # is unaffected; only intervals are. Decision #6: sort the 5 quantiles post-hoc at Week-5
+        # inference, before PICP/CRPS -- do NOT reparametrise the trunk. Upgrade path if post-hoc
+        # sort proves insufficient: monotone cumulative-softplus head (forces a full dev re-run).
 
     def forward(self, h):
         h = self.gamma * h + self.beta

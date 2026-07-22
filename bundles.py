@@ -59,7 +59,11 @@ class Bundle:
         groups = None
         if self.meta.get("node_country"):
             groups = [self.meta["node_country"][nid] for nid in self.meta["node_ids"]]
-        scaler = fit_scalers_masked(self.raw, fit_mask, per_disease=False, groups=groups)
+        # Ebola ships a disease-pooled scaler (scaler_scope='per_disease_support', §0.9): its 27
+        # support cells are too few for a stable per-node scale. Hardcoding per-node here would
+        # silently rescale Ebola wrong in a Week-5 few-shot refit. Derive it from the bundle.
+        per_disease = self.meta.get("scaler_scope") == "per_disease_support"
+        scaler = fit_scalers_masked(self.raw, fit_mask, per_disease=per_disease, groups=groups)
         inc_norm = np.where(self.M == 1, apply_scaler(self.raw, scaler), 0.0).astype(np.float32)
         X = self.X.copy()
         X[:, :, 0] = inc_norm
@@ -145,6 +149,26 @@ def _demo():
 
     print("ok  all five bundles: transfer_view==4ch, y==X[:,:,0], masks partition M, "
           "group_of covers every node")
+    _refit_check()
+
+
+def _refit_check():
+    """The §0.3 leakage trap (review #2): refit must rebuild X[:,:,0], not only y -- else the
+    model's INPUTS stay on the headline scaler while its targets move, leaking the eval
+    distribution back in invisibly. Refit on a window the headline didn't use, so the scaler
+    must move, then prove the rebuilt inputs track y (and that a y-only refit would not)."""
+    b = load("influenza_japan")
+    obs = b.M.astype(bool)
+    fit = b.masks()["train"].astype(bool) | b.masks()["val"].astype(bool)   # != headline (train only)
+    X2, y2, _ = b.refit(fit)
+    assert np.array_equal(y2, X2[:, :, 0]), "refit: X[:,:,0] not rebuilt to match y (leakage trap)"
+    assert not np.allclose(X2[:, :, 0][obs], b.X[:, :, 0][obs]), \
+        "refit on a different window left inputs unchanged -- scaler was not re-applied to X"
+    # negative control: the ORIGINAL inputs no longer equal the refit y, so a y-only refit
+    # (rebuilding y but not X) would leave X[:,:,0] stale. That inconsistency is the bug refit avoids.
+    assert not np.allclose(b.X[:, :, 0][obs], y2[obs]), \
+        "control void: headline X[:,:,0] already == refit y (pick a window that moves the scaler)"
+    print("ok  refit rebuilds X[:,:,0] together with y (§0.3); a y-only refit would leave inputs stale")
 
 
 if __name__ == "__main__":
