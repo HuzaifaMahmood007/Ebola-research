@@ -21,7 +21,7 @@ Run from the repo root as a module:
   python -m train.joint --all                    # 5 seeds x (joint train -> per-dataset test)
   python -m train.joint --seed 42                # one joint run, all 4 datasets scored
   python -m train.joint --smoke                  # 3 small datasets, few epochs (CI-cheap)
-  python -m train.joint --equiv                  # the block==solo central-claim gate only
+  python -m train.joint --equiv                  # central-claim gates: block==solo + routing isolation
 """
 from __future__ import annotations
 
@@ -203,6 +203,36 @@ def _equiv_check(device="cpu"):
     print("ok  block-diagonal forward == per-dataset solo forward (no cross-node coupling)")
 
 
+def _routing_check(device="cpu"):
+    """Central-claim gate #2: a loss from ONE dataset must give every OTHER adapter exactly zero
+    gradient. This is the strict isolation Week-4's MAML inner loop depends on -- adapting on one
+    task cannot perturb another task's adapter. Holds because each adapter is applied only to its
+    own block's rows; if a future change ever mis-routed a node, this fails loudly."""
+    torch.manual_seed(0); np.random.seed(0)
+    names = ["influenza_japan", "influenza_us-regions", "influenza_us-states"]
+    ds, A_block = _prepare(names, device)
+    enc = SharedEncoder().to(device)
+    adapters = nn.ModuleList([Adapter().to(device) for _ in names])
+    ts = [d.tr[0] for d in ds]
+    Zc = torch.cat([window_slice(d.Z, ts[i]) for i, d in enumerate(ds)], dim=0)
+    Mcol = torch.cat([ds[i].Mt[:, ts[i]] for i in range(len(ds))], dim=0)
+    h = enc(Zc, A_block, Mcol)
+
+    B = 1                                                   # loss from dataset B only
+    tgt, msk = targets_and_mask(ds[B].ymod, ds[B].Mt, ds[B].mtr, ts[B], device)
+    pinball_loss(adapters[B](h[ds[B].start:ds[B].end]), tgt, msk).backward()
+
+    for i, d in enumerate(ds):
+        if i == B:
+            assert any(p.grad is not None for p in adapters[i].parameters()), \
+                f"{d.name}: adapter in the batch got NO gradient"
+        else:
+            assert all(p.grad is None for p in adapters[i].parameters()), \
+                f"{d.name}: adapter LEAKED gradient from a B-only loss (routing broken)"
+    assert any(p.grad is not None for p in enc.parameters()), "shared trunk got no gradient"
+    print("ok  one-dataset loss -> every other adapter grad is exactly None (routing isolated)")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int)
@@ -214,9 +244,9 @@ def main():
 
     t0 = time.time()
     if a.equiv:
-        _equiv_check()
+        _equiv_check(); _routing_check()
     elif a.smoke:
-        _equiv_check()
+        _equiv_check(); _routing_check()
         small = ["influenza_japan", "influenza_us-regions", "influenza_us-states"]
         train_joint(42, epochs=3, names=small)
         print(f"smoke done in {time.time()-t0:.0f}s")
