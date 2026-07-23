@@ -50,7 +50,8 @@ from bundles import DEV_BUNDLE_NAMES, HORIZONS, W, load
 from models import (MEDIAN_IDX, Adapter, SharedEncoder, pinball_loss, sparse_from_dense_np,
                     targets_and_mask, window_slice)
 from to_schema import invert_scaler
-from train.loop import (DEVICE, RESULTS, SEEDS, _round_trip_ok, score_predictions, write_per_node,
+from train.loop import (DEVICE, RESULTS, SEEDS, _round_trip_ok, gate_spatial_readout,
+                        score_predictions, write_gate, write_per_node, write_per_origin,
                         write_records)
 
 
@@ -157,9 +158,11 @@ def _val_pinball(enc, adapters, ds, node_w, w_base):
 
 
 @torch.no_grad()
-def _test_dataset(enc, ad, d, seed, model_name):
+def _test_dataset(enc, ad, d, seed, model_name, run_meta):
     """Score one dataset's test fold through the shared encoder + its own adapter (median = point
-    forecast), inverted to count space. Metrics are UNWEIGHTED -- weights are a training device only."""
+    forecast), inverted to count space. Metrics are UNWEIGHTED -- weights are a training device only.
+    Returns (records, pernode, perorigin, gate) -- full artifact parity with the single trainer's
+    train_one, so analysis.py can bootstrap origins and read the gate for joint runs too."""
     enc.eval(); ad.eval()
     T = d.b.X.shape[1]
     pred_by_h = {h: np.zeros((d.N, T), dtype=np.float64) for h in HORIZONS}
@@ -167,18 +170,24 @@ def _test_dataset(enc, ad, d, seed, model_name):
         med = ad(enc(window_slice(d.Z, t), d.A_solo, d.Mt[:, t]))[:, :, MEDIAN_IDX].cpu().numpy()  # [N,H]
         for j, h in enumerate(HORIZONS):
             pred_by_h[h][:, t + h] = invert_scaler(med[:, j:j + 1], d.b.scaler)[:, 0]
-    return score_predictions(model_name, d.name, seed, pred_by_h, d.b, d.te)
+    recs, pernode, perorigin = score_predictions(model_name, d.name, seed, pred_by_h, d.b, d.te,
+                                                 run_meta=run_meta)
+    gate = gate_spatial_readout(enc, ad, d.Z, d.A_solo, d.Mt, d.va, DEVICE)   # items 7-8, per dataset
+    return recs, pernode, perorigin, gate
 
 
 def train_joint(seed, steps=91000, val_every=1000, patience=12, lr=1e-3, wd=1e-4,
-                sampler="uniform", dengue_balance="uniform", device=DEVICE, verbose=True,
-                names=DEV_BUNDLE_NAMES):
+                sampler="uniform", dengue_balance="uniform", gate_mode="learned", device=DEVICE,
+                verbose=True, names=DEV_BUNDLE_NAMES):
     """Joint-train the shared encoder + per-dataset adapters over the block-diagonal supergraph,
-    select on the pooled weighted val, test per dataset. Returns {dataset_name: (records, pernode)}."""
+    select on the pooled weighted val, test per dataset. Returns
+    {dataset_name: (records, pernode, perorigin, gate)}."""
+    assert "ebola" not in names, \
+        "ebola must never enter joint trunk training/selection (§0.5, C8); Week-5 few-shot is separate"
     torch.manual_seed(seed); np.random.seed(seed)
     ds, A_block = _prepare(names, device)
 
-    enc = SharedEncoder().to(device)
+    enc = SharedEncoder(gate_mode=gate_mode).to(device)
     adapters = nn.ModuleList([Adapter().to(device) for _ in names])
     params = list(enc.parameters()) + list(adapters.parameters())
     opt = torch.optim.AdamW(params, lr=lr, weight_decay=wd)
@@ -187,6 +196,8 @@ def train_joint(seed, steps=91000, val_every=1000, patience=12, lr=1e-3, wd=1e-4
     w_base = dataset_weights(ds, sampler)                                  # sum 1
     node_w = [_node_weight(d.name, d.b, dengue_balance, device) for d in ds]
     model_name = f"encoder_joint:{sampler}-{dengue_balance}"
+    run_meta = dict(training_regime="joint", sampler=f"{sampler}-{dengue_balance}",
+                    gate_mode=gate_mode, topo_aug="none")   # schema parity with the single trainer
 
     # loss-space guard (Task 13.2): model-space targets are ~unit scale.
     tgt0, _ = targets_and_mask(ds[0].ymod, ds[0].Mt, ds[0].mtr, ds[0].tr[0], device)
@@ -231,16 +242,20 @@ def train_joint(seed, steps=91000, val_every=1000, patience=12, lr=1e-3, wd=1e-4
     if best_state:
         enc.load_state_dict(best_state[0]); adapters.load_state_dict(best_state[1])
 
-    return {d.name: _test_dataset(enc, ad, d, seed, model_name) for ad, d in zip(adapters, ds)}
+    return {d.name: _test_dataset(enc, ad, d, seed, model_name, run_meta)
+            for ad, d in zip(adapters, ds)}
 
 
 def run_joint(seeds=SEEDS, sampler="uniform", dengue_balance="uniform", **kw):
+    _equiv_check()                     # assert the block-diagonal premise BEFORE producing the numbers
     tag = f"{sampler}-{dengue_balance}"
     for s in seeds:
         res = train_joint(s, sampler=sampler, dengue_balance=dengue_balance, **kw)
-        for name, (recs, pernode) in res.items():
+        for name, (recs, pernode, perorigin, gate) in res.items():
             write_records(recs, f"encoder_joint__{tag}__{name}__seed{s}.json")
             write_per_node(pernode, f"encoder_joint__{tag}__{name}__seed{s}__pernode.npz")
+            write_per_origin(perorigin, f"encoder_joint__{tag}__{name}__seed{s}__perorigin.npz")
+            write_gate(gate, f"encoder_joint__{tag}__{name}__seed{s}__gate.npz")
             print(f"  joint [{tag}] scored ({name} seed{s})")
 
 
@@ -315,6 +330,18 @@ def _balance_check():
           f"(spread {hi / lo:.4f}x); w=None unchanged")
 
 
+def _selection_check():
+    """Gate #4 / C8 (§0.5): ebola must never enter joint trunk training/selection. Data-layer
+    exclusion + a runtime guard in train_joint that fires if ebola is ever passed in `names`."""
+    assert "ebola" not in DEV_BUNDLE_NAMES, "ebola leaked into DEV_BUNDLE_NAMES"
+    try:
+        train_joint(0, names=list(DEV_BUNDLE_NAMES) + ["ebola"], steps=1)
+        raise SystemExit("C8 control did not fire: train_joint accepted ebola in names")
+    except AssertionError:
+        pass
+    print("ok  C8: ebola excluded from DEV_BUNDLE_NAMES; train_joint guard fires on ebola in names")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int)
@@ -324,21 +351,23 @@ def main():
     ap.add_argument("--steps", type=int, default=91000)
     ap.add_argument("--sampler", choices=["uniform", "proportional", "sqrt"], default="uniform")
     ap.add_argument("--dengue-balance", choices=["uniform", "country"], default="uniform")
+    ap.add_argument("--gate-mode", choices=["learned", "off"], default="learned")
     a = ap.parse_args()
 
     t0 = time.time()
     if a.equiv:
-        _equiv_check(); _routing_check(); _balance_check()
+        _equiv_check(); _routing_check(); _balance_check(); _selection_check()
     elif a.smoke:
         _equiv_check(); _routing_check()
         small = ["influenza_japan", "influenza_us-regions", "influenza_us-states"]
-        train_joint(42, steps=300, val_every=100, patience=99, names=small)
+        train_joint(42, steps=300, val_every=100, patience=99, names=small, gate_mode=a.gate_mode)
         print(f"smoke done in {time.time()-t0:.0f}s")
     elif a.all:
-        run_joint(steps=a.steps, sampler=a.sampler, dengue_balance=a.dengue_balance)
+        run_joint(steps=a.steps, sampler=a.sampler, dengue_balance=a.dengue_balance, gate_mode=a.gate_mode)
         print(f"all joint seeds done in {(time.time()-t0)/60:.1f} min")
     elif a.seed:
-        run_joint(seeds=(a.seed,), steps=a.steps, sampler=a.sampler, dengue_balance=a.dengue_balance)
+        run_joint(seeds=(a.seed,), steps=a.steps, sampler=a.sampler,
+                  dengue_balance=a.dengue_balance, gate_mode=a.gate_mode)
         print(f"done in {time.time()-t0:.0f}s")
     else:
         ap.error("give --seed, or --all, or --smoke, or --equiv")

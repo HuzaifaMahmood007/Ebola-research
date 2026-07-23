@@ -53,20 +53,26 @@ def _round_trip_ok(b):
 
 
 def train_one(name, seed, epochs=80, lr=1e-3, wd=1e-4, batch_origins=8, patience=15,
-              device=DEVICE, verbose=True):
+              device=DEVICE, verbose=True, zero_channels=None,
+              training_regime="single", sampler=None, gate_mode="learned", topo_aug="none",
+              gate_read=True):
+    assert name != "ebola", \
+        "ebola must never enter trunk training/selection (§0.5, C8); Week-5 few-shot is a separate path"
     torch.manual_seed(seed)
     np.random.seed(seed)
     b = bundles.load(name)
     assert _round_trip_ok(b), f"{name}: scaler round-trip failed -- transforms mis-ordered"
 
     Z = torch.tensor(b.transfer_view(), dtype=torch.float32, device=device)     # [N,T,4]
+    if zero_channels:                       # ablation hook: zero given core channels (still 4-ch, C1 holds)
+        Z[:, :, list(zero_channels)] = 0.0  # e.g. (1,2) = drop sin_doy/cos_doy seasonal phase
     ymod = torch.tensor(b.y, dtype=torch.float32, device=device)                 # [N,T] model space
     Mt = torch.tensor(b.M, dtype=torch.float32, device=device)                  # [N,T]
     A = sparse_from_dense_np(b.A_geo).to(device)
     masks = {p: torch.tensor(m, dtype=torch.float32, device=device) for p, m in b.masks().items()}
     tr, va, te = (b.origins(phase="train"), b.origins(phase="val"), b.origins(phase="test"))
 
-    enc, ad = SharedEncoder().to(device), Adapter().to(device)
+    enc, ad = SharedEncoder(gate_mode=gate_mode).to(device), Adapter().to(device)
     opt = torch.optim.AdamW(list(enc.parameters()) + list(ad.parameters()), lr=lr, weight_decay=wd)
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=epochs)
 
@@ -130,7 +136,12 @@ def train_one(name, seed, epochs=80, lr=1e-3, wd=1e-4, batch_origins=8, patience
             med = ad(enc(window_slice(Z, t), A, Mt[:, t]))[:, :, MEDIAN_IDX].cpu().numpy()   # [N,H]
             for j, h in enumerate(bundles.HORIZONS):
                 pred_by_h[h][:, t + h] = invert_scaler(med[:, j:j + 1], b.scaler)[:, 0]
-    return score_predictions("encoder", name, seed, pred_by_h, b, te)
+    run_meta = dict(training_regime=training_regime, sampler=sampler,
+                    gate_mode=gate_mode, topo_aug=topo_aug)
+    gate = gate_spatial_readout(enc, ad, Z, A, Mt, va, device) if gate_read else None
+    recs, pernode, perorigin = score_predictions("encoder", name, seed, pred_by_h, b, te,
+                                                 run_meta=run_meta)
+    return recs, pernode, perorigin, gate
 
 
 # --------------------------------------------------------------------------- #
@@ -162,27 +173,60 @@ def naive_predictions(b, te):
     return out, (fallback / max(total, 1))
 
 
-def score_predictions(model_name, dataset, seed, pred_by_h, b, origins, phase="test"):
-    """Score {h: [N,T] count preds} through score.py per horizon. Returns (records, pernode):
-    one aggregate record per metric, plus the per-node score dict per horizon (kept, not
-    discarded) so Week-6 can bootstrap CIs and run paired Wilcoxon -- neither is reconstructable
-    from the two aggregates alone (Task 13.2 / review #7)."""
+def _per_origin_country(pred_h, raw, mask_h, origins, h, scored_idx, ccol, n_countries):
+    """Per (origin, country) error sufficient stats at horizon h, count space, over scored nodes.
+    Returns sae, sse [K,C] float and n [K,C] int (K=len(origins), C=n_countries). Vectorised: no
+    per-node python loop. These are the bootstrap-over-origins material (item 6) -- resample origins,
+    per-country MAE = sum(sae)/sum(n), RMSE = sqrt(sum(sse)/sum(n)), then macro over countries."""
+    K, C = len(origins), n_countries
+    sae = np.zeros((K, C)); sse = np.zeros((K, C)); nn = np.zeros((K, C), dtype=np.int64)
+    if scored_idx.size == 0:
+        return sae, sse, nn
+    cols = np.array([t + h for t in origins])
+    m = mask_h[np.ix_(scored_idx, cols)].astype(bool)                    # [S,K] observed & in-phase
+    e = (pred_h[np.ix_(scored_idx, cols)] - raw[np.ix_(scored_idx, cols)]) * m
+    abse, sqe = np.abs(e), e * e
+    for j in range(C):
+        rows = ccol == j
+        if rows.any():
+            sae[:, j] = abse[rows].sum(0); sse[:, j] = sqe[rows].sum(0); nn[:, j] = m[rows].sum(0)
+    return sae, sse, nn
+
+
+def score_predictions(model_name, dataset, seed, pred_by_h, b, origins, phase="test", run_meta=None):
+    """Score {h: [N,T] count preds} through score.py per horizon. Returns (records, pernode, perorigin):
+    the aggregate record per metric; the per-node score dict per horizon (paired Wilcoxon / per-node
+    bootstrap, review #7); and per (origin, country) error sufficient stats for bootstrap-CI OVER
+    ORIGINS, incl. the country-macro CI (item 6) -- none reconstructable from the aggregates alone.
+    run_meta (training_regime/sampler/gate_mode/topo_aug) is merged into every record."""
     raw = b.raw.astype(np.float64)
     phase_mask = b.masks()[phase].astype(np.uint8)
     ids, ncmap = b.meta["node_ids"], b.group_of()
+    countries = sorted({ncmap[n] for n in ids})
+    cidx = {c: j for j, c in enumerate(countries)}
     records, pernode = [], {}
+    perorigin = {"countries": np.array(countries), "origins": np.array(origins, dtype=np.int32)}
     for h in bundles.HORIZONS:
         mask_h = np.zeros_like(phase_mask)
         for t in origins:
             mask_h[:, t + h] = phase_mask[:, t + h]                          # observed folded into the phase mask
         agg, ns = score.score_bundle(pred_by_h[h], raw, mask_h, ids, ncmap)
         pernode[h] = ns
+        scored_idx = np.array(sorted(ns), dtype=np.int64)                    # non-constant scored nodes
+        ccol = np.array([cidx[ncmap[ids[i]]] for i in scored_idx], dtype=np.int64)
+        sae, sse, nn = _per_origin_country(pred_by_h[h], raw, mask_h, origins, h, scored_idx, ccol,
+                                           len(countries))
+        perorigin[f"h{h}__sae"] = sae.astype(np.float32)
+        perorigin[f"h{h}__sse"] = sse.astype(np.float32)
+        perorigin[f"h{h}__n"] = nn.astype(np.int32)
         for metric, a in agg.items():
-            records.append(dict(model=model_name, dataset=dataset, horizon=h, seed=seed,
-                                metric=metric, country_macro=a["country_macro"],
-                                node_mean=a["node_mean"], n_countries=a["n_countries"],
-                                n_nodes=a["n_nodes"]))
-    return records, pernode
+            rec = dict(model=model_name, dataset=dataset, horizon=h, seed=seed,
+                       metric=metric, country_macro=a["country_macro"],
+                       node_mean=a["node_mean"], n_countries=a["n_countries"], n_nodes=a["n_nodes"])
+            if run_meta:
+                rec.update(run_meta)
+            records.append(rec)
+    return records, pernode, perorigin
 
 
 def write_records(records, fname):
@@ -206,23 +250,69 @@ def write_per_node(pernode, fname):
     np.savez_compressed(RESULTS / fname, **arrays)
 
 
+def write_per_origin(perorigin, fname):
+    """Per (origin, country) error sufficient stats (item 6). npz: countries[C], origins[K], and
+    per horizon sae/sse [K,C] + n [K,C]. Node-pooled within country, count space, scored (non-
+    constant) nodes -- the same population as the headline metric. Reconstructs a country-macro CI
+    by resampling origins: per-country MAE=sum(sae)/sum(n), RMSE=sqrt(sum(sse)/sum(n)), macro over C.
+
+    NOTE: this is a CELL-POOLED country-macro (sum over the country's cells), whereas the headline
+    aggregate() is NODE-AVERAGED (mean of per-node metrics). They coincide on the dense influenza
+    panels (near-equal cells/node) and diverge on dengue. The item-6 CI is therefore on the
+    cell-pooled metric -- documented in analysis.py."""
+    RESULTS.mkdir(exist_ok=True)
+    np.savez_compressed(RESULTS / fname, **perorigin)
+
+
+def gate_spatial_readout(enc, ad, Z, A, Mt, origins, device):
+    """Free reads 7-8: per-node gate g and normalised spatial contribution, meaned over the val
+    origins. Both are PRE-HEAD (computed once per forward, before the multi-horizon head), so they
+    are horizon-independent -- read once per origin, not per horizon. Returns {mean_g[N], mean_sc[N]}
+    (float32); the per-dataset distribution/IQR/frac(g<0.05) is assembled offline in analysis.py."""
+    from models.encoder import spatial_contribution
+    enc.eval(); ad.eval()
+    N = Z.shape[0]
+    g_sum, sc_sum, k = np.zeros(N), np.zeros(N), 0
+    with torch.no_grad():
+        for t in origins:
+            enc(window_slice(Z, t), A, Mt[:, t])                     # populates enc.last_g/last_h/last_h_s
+            g_sum += enc.last_g.squeeze(-1).cpu().numpy()
+            sc_sum += spatial_contribution(enc.last_g, enc.last_h, enc.last_h_s).cpu().numpy()
+            k += 1
+    return {"mean_g": (g_sum / max(k, 1)).astype(np.float32),
+            "mean_sc": (sc_sum / max(k, 1)).astype(np.float32)}
+
+
+def write_gate(gate, fname):
+    """Per-node gate/spatial readout (items 7-8) as compact npz."""
+    RESULTS.mkdir(exist_ok=True)
+    np.savez_compressed(RESULTS / fname, **gate)
+
+
+NAIVE_META = dict(training_regime="single", sampler=None, gate_mode=None, topo_aug=None)
+
+
 def run_dataset(name, seeds=SEEDS, **kw):
     b = bundles.load(name)
     te = b.origins(phase="test")
     naive, fb_rate = naive_predictions(b, te)                              # deterministic; seed is null
     naive_recs = []
     for mname, preds in naive.items():
-        recs, pernode = score_predictions(mname, name, None, preds, b, te)
+        recs, pernode, perorigin = score_predictions(mname, name, None, preds, b, te, run_meta=NAIVE_META)
         for r in recs:
             r["seasonal_fallback_rate"] = round(fb_rate, 4) if mname == "seasonal" else None
         naive_recs += recs
         write_per_node(pernode, f"naive__{name}__{mname}__pernode.npz")
+        write_per_origin(perorigin, f"naive__{name}__{mname}__perorigin.npz")
     write_records(naive_recs, f"naive__{name}.json")
     print(f"  naive floors scored ({name}); seasonal fallback rate {fb_rate:.1%}")
     for s in seeds:
-        recs, pernode = train_one(name, s, **kw)
+        recs, pernode, perorigin, gate = train_one(name, s, **kw)
         write_records(recs, f"encoder__{name}__seed{s}.json")
         write_per_node(pernode, f"encoder__{name}__seed{s}__pernode.npz")
+        write_per_origin(perorigin, f"encoder__{name}__seed{s}__perorigin.npz")
+        if gate is not None:
+            write_gate(gate, f"encoder__{name}__seed{s}__gate.npz")
         print(f"  encoder scored ({name} seed{s})")
 
 
@@ -240,6 +330,41 @@ def _selfcheck():
     print(f"ok  seasonal-naive fallback accounting correct (rate {rate:.3f} on the synthetic case)")
 
 
+def _perorigin_selfcheck():
+    """Per-(origin,country) sufficient stats reconstruct the pooled MAE/RMSE and group by country
+    correctly (item 6 artifact). 3 nodes: countries A={0,1}, B={2}; 2 origins; known errors."""
+    raw = np.zeros((3, 30)); pred_h = np.zeros((3, 30)); mask_h = np.zeros((3, 30), np.uint8)
+    origins, h = [10, 12], 5                                        # target cols 15, 17
+    truth = {(0, 15): 10, (1, 15): 20, (2, 15): 30, (0, 17): 4, (1, 17): 5, (2, 17): 6}
+    err = {(0, 15): 2, (1, 15): -4, (2, 15): 3, (0, 17): 1, (1, 17): 0, (2, 17): -1}
+    for (i, c), v in truth.items():
+        raw[i, c] = v; mask_h[i, c] = 1; pred_h[i, c] = v + err[(i, c)]
+    scored_idx, ccol = np.array([0, 1, 2]), np.array([0, 0, 1])     # A,A,B
+    sae, sse, nn = _per_origin_country(pred_h, raw, mask_h, origins, h, scored_idx, ccol, 2)
+    assert (sae[0] == [6, 3]).all() and (sse[0] == [20, 9]).all() and (nn[0] == [2, 1]).all()   # col15
+    assert (sae[1] == [1, 1]).all() and (sse[1] == [1, 1]).all() and (nn[1] == [2, 1]).all()   # col17
+    macA_mae = sae[:, 0].sum() / nn[:, 0].sum()                     # pooled country-A MAE over origins
+    assert abs(macA_mae - (6 + 1) / (2 + 2)) < 1e-9, "per-origin sae/n does not reconstruct pooled MAE"
+    # an unobserved cell must contribute nothing (mask gates it out)
+    mask_h[0, 15] = 0
+    sae2, _, nn2 = _per_origin_country(pred_h, raw, mask_h, origins, h, scored_idx, ccol, 2)
+    assert nn2[0, 0] == 1 and sae2[0, 0] == 4, "masked-out cell still contributed"
+    print("ok  per-origin x country sufficient stats reconstruct pooled MAE/RMSE; mask gates cells")
+
+
+def _ebola_isolation_check():
+    """C8 (§0.5): ebola must never enter a trunk training/selection loop. Two-part guarantee -- the
+    data-layer exclusion (ebola exists but is not in the dev set) AND a runtime guard in train_one
+    that fires if ANY caller passes 'ebola', regardless of how the dataset list was built."""
+    assert "ebola" in bundles.BUNDLE_NAMES and "ebola" not in bundles.DEV_BUNDLE_NAMES, \
+        "ebola must exist as a bundle but be excluded from DEV_BUNDLE_NAMES"
+    try:
+        train_one("ebola", 42); raise SystemExit("C8 control did not fire: train_one accepted ebola")
+    except AssertionError:
+        pass
+    print("ok  C8: ebola excluded from DEV_BUNDLE_NAMES; train_one('ebola') guard fires")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dataset", choices=bundles.DEV_BUNDLE_NAMES)
@@ -251,22 +376,26 @@ def main():
     a = ap.parse_args()
 
     if a.selfcheck:
-        _selfcheck(); return
+        _selfcheck(); _perorigin_selfcheck(); _ebola_isolation_check(); return
     t0 = time.time()
     if a.smoke:
-        _selfcheck()
-        recs, pernode = train_one("influenza_japan", 42, epochs=5)
+        _selfcheck(); _perorigin_selfcheck()
+        recs, pernode, perorigin, gate = train_one("influenza_japan", 42, epochs=5)
         write_records(recs, "encoder__influenza_japan__seed42__smoke.json")
         write_per_node(pernode, "encoder__influenza_japan__seed42__smoke__pernode.npz")
+        write_per_origin(perorigin, "encoder__influenza_japan__seed42__smoke__perorigin.npz")
+        write_gate(gate, "encoder__influenza_japan__seed42__smoke__gate.npz")
         print(f"smoke done in {time.time()-t0:.0f}s; wrote {len(recs)} records")
     elif a.all:
         for name in bundles.DEV_BUNDLE_NAMES:
             run_dataset(name, epochs=a.epochs)
         print(f"all datasets done in {(time.time()-t0)/60:.1f} min")
     elif a.dataset and a.seed:
-        recs, pernode = train_one(a.dataset, a.seed, epochs=a.epochs)
+        recs, pernode, perorigin, gate = train_one(a.dataset, a.seed, epochs=a.epochs)
         write_records(recs, f"encoder__{a.dataset}__seed{a.seed}.json")
         write_per_node(pernode, f"encoder__{a.dataset}__seed{a.seed}__pernode.npz")
+        write_per_origin(perorigin, f"encoder__{a.dataset}__seed{a.seed}__perorigin.npz")
+        write_gate(gate, f"encoder__{a.dataset}__seed{a.seed}__gate.npz")
         print(f"done in {time.time()-t0:.0f}s")
     else:
         ap.error("give --dataset+--seed, or --all, or --smoke, or --selfcheck")

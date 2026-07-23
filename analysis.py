@@ -47,13 +47,14 @@ def _load_perorigin(path, h):
         z[f"h{h}__n"].astype(np.float64)                       # each [K origins, C countries]
 
 
-def _encoder_stats(name, h, seeds):
+def _encoder_stats(name, h, seeds, prefix="encoder"):
     """Seed-mean sufficient stats. n is model-independent (same observed cells every seed), so the
     seed-mean of sae/sse divided by n IS the mean-over-seeds cell-pooled metric -- exactly the
-    quantity the bootstrap should put a CI around."""
+    quantity the bootstrap should put a CI around. prefix='encoder' (single) or
+    'encoder_joint__<tag>' (a joint run) -- same file layout, different leading token."""
     saes, sses, ns = [], [], []
     for s in seeds:
-        sae, sse, n = _load_perorigin(RESULTS / f"encoder__{name}__seed{s}__perorigin.npz", h)
+        sae, sse, n = _load_perorigin(RESULTS / f"{prefix}__{name}__seed{s}__perorigin.npz", h)
         saes.append(sae); sses.append(sse); ns.append(n)
     return np.mean(saes, 0), np.mean(sses, 0), ns[0]
 
@@ -86,15 +87,16 @@ def _point_macro(sae, sse, n, metric):
     return float(np.nanmean(per_c))
 
 
-def bootstrap_ci(name, B=B_DEFAULT, metrics=("rmse", "mae"), seeds=SEEDS, seed=0, verbose=True):
+def bootstrap_ci(name, B=B_DEFAULT, metrics=("rmse", "mae"), seeds=SEEDS, seed=0, verbose=True,
+                 prefix="encoder"):
     from scipy.stats import wilcoxon
     rng = np.random.default_rng(seed)
     out = {}
     if verbose:
-        print(f"\n{'=' * 92}\n{name}  paired bootstrap over origins (B={B}, cell-pooled country-macro)"
-              f"\n{'=' * 92}")
+        print(f"\n{'=' * 92}\n{prefix} :: {name}  paired bootstrap over origins "
+              f"(B={B}, cell-pooled country-macro)\n{'=' * 92}")
     for h in HORIZONS:
-        se_enc = _encoder_stats(name, h, seeds)                    # (sae,sse,n) seed-mean
+        se_enc = _encoder_stats(name, h, seeds, prefix)            # (sae,sse,n) seed-mean
         K = se_enc[0].shape[0]
         CNT = _cnt_matrix(K, B, rng)
         naive_stats = {nm: _load_perorigin(RESULTS / f"naive__{name}__{nm}__perorigin.npz", h)
@@ -105,7 +107,7 @@ def bootstrap_ci(name, B=B_DEFAULT, metrics=("rmse", "mae"), seeds=SEEDS, seed=0
             enc_lo, enc_hi = np.nanpercentile(enc_dist, [2.5, 97.5])
             # per-seed encoder point values, for the (supporting) Wilcoxon
             enc_seed_pts = np.array([_point_macro(
-                *_load_perorigin(RESULTS / f"encoder__{name}__seed{s}__perorigin.npz", h), metric)
+                *_load_perorigin(RESULTS / f"{prefix}__{name}__seed{s}__perorigin.npz", h), metric)
                 for s in seeds])
             row = dict(point=enc_pt, ci=(enc_lo, enc_hi), vs={})
             if verbose:
@@ -133,17 +135,17 @@ def bootstrap_ci(name, B=B_DEFAULT, metrics=("rmse", "mae"), seeds=SEEDS, seed=0
 # --------------------------------------------------------------------------- #
 # Items 7-8 -- gate distribution + normalised spatial contribution, per dataset.
 # --------------------------------------------------------------------------- #
-def gate_reads(names=DEV, seeds=SEEDS, verbose=True):
+def gate_reads(names=DEV, seeds=SEEDS, verbose=True, prefix="encoder"):
     out = {}
     if verbose:
-        print(f"\n{'=' * 92}\ngate + spatial contribution per dataset (pooled over seeds x nodes; "
-              f"pre-head, horizon-independent)\n{'=' * 92}")
+        print(f"\n{'=' * 92}\n{prefix} :: gate + spatial contribution per dataset (pooled over "
+              f"seeds x nodes; pre-head, horizon-independent)\n{'=' * 92}")
         print(f"  {'dataset':22} {'g mean':>8} {'g IQR':>16} {'g<0.05':>8}   "
               f"{'sc mean':>8} {'sc IQR':>16}")
     for name in names:
         gs, scs = [], []
         for s in seeds:
-            p = RESULTS / f"encoder__{name}__seed{s}__gate.npz"
+            p = RESULTS / f"{prefix}__{name}__seed{s}__gate.npz"
             if not p.exists():
                 continue
             z = np.load(p)
@@ -204,15 +206,18 @@ def main():
     ap.add_argument("--reads", action="store_true")
     ap.add_argument("--selfcheck", action="store_true")
     ap.add_argument("--dataset", choices=DEV)
+    ap.add_argument("--joint", metavar="TAG",
+                    help="analyse a joint run: reads encoder_joint__TAG__* (e.g. --joint uniform-uniform)")
     ap.add_argument("-B", type=int, default=B_DEFAULT)
     a = ap.parse_args()
+    prefix = f"encoder_joint__{a.joint}" if a.joint else "encoder"
     if a.selfcheck or not (a.ci or a.reads):
         _selfcheck()
     if a.reads:
-        gate_reads()
+        gate_reads(prefix=prefix)
     if a.ci:
         for name in ([a.dataset] if a.dataset else DEV):
-            bootstrap_ci(name, B=a.B)
+            bootstrap_ci(name, B=a.B, prefix=prefix)
 
 
 if __name__ == "__main__":
