@@ -28,12 +28,17 @@ class Adapter(nn.Module):
         return self.head(h).view(h.shape[0], self.nH, self.nQ)   # [N, |H|, |Q|]
 
 
-def pinball_loss(pred, target, mask, quantiles=QUANTILES):
-    """pred [N,H,Q], target [N,H], mask [N,H] (1=observed & in phase). MODEL space (plan §5)."""
+def pinball_loss(pred, target, mask, quantiles=QUANTILES, w=None):
+    """pred [N,H,Q], target [N,H], mask [N,H] (1=observed & in phase). MODEL space (plan §5).
+
+    Optional w [N]: per-node weight for the joint trainer's within-dataset balance (e.g. dengue
+    per-cell country balance). w=None is the plain mean, so single-disease callers are bit-identical.
+    """
     q = torch.tensor(quantiles, device=pred.device).view(1, 1, -1)
     err = target.unsqueeze(-1) - pred
     loss = torch.maximum(q * err, (q - 1) * err).mean(-1)     # avg over quantiles -> [N,H]
-    return (loss * mask).sum() / mask.sum().clamp(min=1)
+    m = mask if w is None else mask * w.view(-1, 1)           # fold node weight into the mask
+    return (loss * m).sum() / m.sum().clamp(min=1)
 
 
 def shared_params(enc):

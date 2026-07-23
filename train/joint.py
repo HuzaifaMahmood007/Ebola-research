@@ -9,19 +9,29 @@ the TCN treats nodes as the conv batch dim, spatial message passing follows edge
 no BatchNorm. So each block's math is identical whether run alone or inside the supergraph
 (_equiv_check asserts this: block == solo). No cross-block edges => no inter-dataset leakage.
 
-Loss weighting, not sampling: a naive mean over 7271 nodes hands dengue 98.5% of the gradient (it is
-7165 of the nodes). Instead each dataset's masked pinball is weighted by 1/(4*n_obs_i) -- which is
-exactly the MEAN of the four per-dataset pinball means (pinball_loss already divides by n_obs_i), so
-`pinball_loss` is reused unchanged. Same objective as uniform per-step sampling, lower variance.
+Samplers as loss weights (not sampling), two orthogonal vectors:
+  * ACROSS datasets  w_i : uniform (P2 primary) | proportional | sqrt, from TRAIN n_obs. uniform
+    hands each dataset 1/4 (dengue's 98.5% node share -> 25%); proportional = the dengue-dominated
+    pooled mean; sqrt = the Week-6 middle ground (dengue ~81%).
+  * WITHIN dengue  v_node : uniform | country -- per-CELL country balance (v proportional to
+    1/train_obs_c) so each of dengue's 12 countries contributes equal mass. Per-cell not per-node
+    because obs density spans 97x across countries; per-node would NOT actually balance them.
+The two compose cleanly: v balances inside a dataset (L_i stays a proper mean), w balances across.
+uniform+uniform is bit-identical to the pre-weighting loss (mean of the 4 per-dataset means).
+
+Training is in STEPS, not epochs -- "epoch" is ill-defined when 4 datasets contribute at a fixed
+ratio every step (one pass over dengue is ~24 passes over japan). Val every val_every steps,
+patience counted in val-checks.
 
 Architecture: ONE shared encoder (the transferable trunk) + one small Adapter per dataset (FiLM +
 head, ~388 params each, P5). A new disease = one new adapter few-shot-fit with the trunk frozen.
 
 Run from the repo root as a module:
-  python -m train.joint --all                    # 5 seeds x (joint train -> per-dataset test)
-  python -m train.joint --seed 42                # one joint run, all 4 datasets scored
-  python -m train.joint --smoke                  # 3 small datasets, few epochs (CI-cheap)
-  python -m train.joint --equiv                  # central-claim gates: block==solo + routing isolation
+  python -m train.joint --all                              # 5 seeds, uniform-uniform (primary)
+  python -m train.joint --all --sampler sqrt --dengue-balance country   # a Week-6 ablation cell
+  python -m train.joint --seed 42                          # one joint run, all 4 datasets scored
+  python -m train.joint --smoke                            # 3 small datasets, few steps (CI-cheap)
+  python -m train.joint --equiv                            # gates: block==solo, routing, balance
 """
 from __future__ import annotations
 
@@ -78,54 +88,78 @@ def _prepare(names, device):
     return ds, block_diag_sparse(A_list, device)
 
 
-def _train_epoch(enc, adapters, ds, A_block, opt, params, K):
-    """One epoch = K block-diagonal steps. Each step samples one origin per dataset, stacks the
-    windows into [SigmaN,20,4], runs one forward/backward/step. Loss = mean of the per-dataset
-    pinball means (= 1/(4*n_obs_i) weighting). Small datasets cycle their origins (K=max len)."""
-    enc.train(); [ad.train() for ad in adapters]
-    orders = [np.random.permutation(d.tr) for d in ds]
-    for k in range(K):
-        ts = [orders[i][k % len(orders[i])] for i in range(len(ds))]
-        Zc = torch.cat([window_slice(d.Z, ts[i]) for i, d in enumerate(ds)], dim=0)      # [SigmaN,20,4]
-        Mcol = torch.cat([ds[i].Mt[:, ts[i]] for i in range(len(ds))], dim=0)             # [SigmaN]
-        h = enc(Zc, A_block, Mcol)                                                         # [SigmaN,d]
-        losses = []
-        for i, (ad, d) in enumerate(zip(adapters, ds)):
-            tgt, msk = targets_and_mask(d.ymod, d.Mt, d.mtr, ts[i], DEVICE)
-            if msk.sum() == 0:
-                continue
-            losses.append(pinball_loss(ad(h[d.start:d.end]), tgt, msk))
-        if not losses:
-            continue
-        opt.zero_grad()
-        (sum(losses) / len(losses)).backward()
-        torch.nn.utils.clip_grad_norm_(params, 1.0)
-        opt.step()
+# --------------------------------------------------------------------------- #
+# The two weight vectors.
+# --------------------------------------------------------------------------- #
+def dataset_weights(ds, scheme):
+    """Across-dataset weights w_i (sum 1) from TRAIN n_obs. uniform=P2 primary; proportional=the
+    dengue-dominated pooled-mean endpoint; sqrt=middle ground (Week-6 ablation)."""
+    assert scheme in {"uniform", "proportional", "sqrt"}
+    if scheme == "uniform":
+        w = np.ones(len(ds))
+    else:
+        size = np.array([float(d.mtr.sum().item()) for d in ds])          # train observed cells
+        w = size ** (1.0 if scheme == "proportional" else 0.5)
+    return (w / w.sum()).tolist()
+
+
+def per_cell_country_weight(b):
+    """dengue within-dataset country balance: node weight v proportional to 1/(train obs cells in
+    its country), so every country contributes equal mass to the weighted mean. Per-CELL (not
+    per-node) because obs density spans 97x across the 12 countries -- per-node would leave that
+    97x imbalance. Train cells only (the weight must not peek at val/test observation density)."""
+    g, ids = b.group_of(), b.meta["node_ids"]
+    countries = np.array([g[i] for i in ids])
+    obs_per_node = b.masks()["train"].astype(bool).sum(1).astype(np.float64)   # [N]
+    v = np.zeros(len(ids))
+    for c in np.unique(countries):
+        m = countries == c
+        v[m] = 1.0 / max(obs_per_node[m].sum(), 1.0)
+    return (v / v.mean()).astype(np.float32)     # mean-1 scale (scale-free; keeps float32 comfy)
+
+
+def _node_weight(name, b, mode, device):
+    """Within-dataset per-node weight. Only dengue differs; the 3 influenza sets are single-country
+    so 'country' balance == uniform for them (returns None -> plain mean)."""
+    assert mode in {"uniform", "country"}
+    if name != "dengue" or mode == "uniform":
+        return None
+    return torch.tensor(per_cell_country_weight(b), dtype=torch.float32, device=device)
+
+
+def _origin_stream(origins, seed):
+    """Infinite origin stream, reshuffled each pass -- even coverage, no with-replacement variance.
+    Own RNG so it doesn't consume the global torch/numpy stream (model init, dropout)."""
+    rng = np.random.default_rng(seed)
+    arr = np.asarray(origins)
+    while True:
+        for t in rng.permutation(arr):
+            yield int(t)
 
 
 @torch.no_grad()
-def _val_pinball(enc, adapters, ds):
-    """Full val pass, per dataset on its SOLO graph (== its block, by _equiv_check), averaged to a
-    dataset mean, then averaged across datasets -- the same 1/4-each weighting used in training."""
+def _val_pinball(enc, adapters, ds, node_w, w_base):
+    """Weighted val objective mirroring training (within-dataset node weights + across-dataset w_i),
+    per dataset on its SOLO graph (== its block, by _equiv_check). Selection optimises what we train."""
     enc.eval()
-    tot, k = 0.0, 0
-    for ad, d in zip(adapters, ds):
+    tot = 0.0
+    for wi, ad, d, nw in zip(w_base, adapters, ds, node_w):
         ad.eval()
         s, n = 0.0, 0
         for t in d.va:
             tgt, msk = targets_and_mask(d.ymod, d.Mt, d.mva, t, DEVICE)
             if msk.sum() == 0:
                 continue
-            s += float(pinball_loss(ad(enc(window_slice(d.Z, t), d.A_solo, d.Mt[:, t])), tgt, msk))
+            s += float(pinball_loss(ad(enc(window_slice(d.Z, t), d.A_solo, d.Mt[:, t])), tgt, msk, w=nw))
             n += 1
-        tot += s / max(n, 1); k += 1
-    return tot / max(k, 1)
+        tot += wi * (s / max(n, 1))
+    return tot
 
 
 @torch.no_grad()
-def _test_dataset(enc, ad, d, seed):
+def _test_dataset(enc, ad, d, seed, model_name):
     """Score one dataset's test fold through the shared encoder + its own adapter (median = point
-    forecast), inverted to count space. Reuses train.loop.score_predictions unchanged."""
+    forecast), inverted to count space. Metrics are UNWEIGHTED -- weights are a training device only."""
     enc.eval(); ad.eval()
     T = d.b.X.shape[1]
     pred_by_h = {h: np.zeros((d.N, T), dtype=np.float64) for h in HORIZONS}
@@ -133,13 +167,14 @@ def _test_dataset(enc, ad, d, seed):
         med = ad(enc(window_slice(d.Z, t), d.A_solo, d.Mt[:, t]))[:, :, MEDIAN_IDX].cpu().numpy()  # [N,H]
         for j, h in enumerate(HORIZONS):
             pred_by_h[h][:, t + h] = invert_scaler(med[:, j:j + 1], d.b.scaler)[:, 0]
-    return score_predictions("encoder_joint", d.name, seed, pred_by_h, d.b, d.te)
+    return score_predictions(model_name, d.name, seed, pred_by_h, d.b, d.te)
 
 
-def train_joint(seed, epochs=80, lr=1e-3, wd=1e-4, patience=15, device=DEVICE, verbose=True,
+def train_joint(seed, steps=91000, val_every=1000, patience=12, lr=1e-3, wd=1e-4,
+                sampler="uniform", dengue_balance="uniform", device=DEVICE, verbose=True,
                 names=DEV_BUNDLE_NAMES):
-    """Joint train the shared encoder + per-dataset adapters, select on pooled val, test per dataset.
-    Returns {dataset_name: (records, pernode)}."""
+    """Joint-train the shared encoder + per-dataset adapters over the block-diagonal supergraph,
+    select on the pooled weighted val, test per dataset. Returns {dataset_name: (records, pernode)}."""
     torch.manual_seed(seed); np.random.seed(seed)
     ds, A_block = _prepare(names, device)
 
@@ -147,46 +182,75 @@ def train_joint(seed, epochs=80, lr=1e-3, wd=1e-4, patience=15, device=DEVICE, v
     adapters = nn.ModuleList([Adapter().to(device) for _ in names])
     params = list(enc.parameters()) + list(adapters.parameters())
     opt = torch.optim.AdamW(params, lr=lr, weight_decay=wd)
-    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=epochs)
-    K = max(len(d.tr) for d in ds)                          # dengue's origin count; small sets cycle
+    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=steps)
+
+    w_base = dataset_weights(ds, sampler)                                  # sum 1
+    node_w = [_node_weight(d.name, d.b, dengue_balance, device) for d in ds]
+    model_name = f"encoder_joint:{sampler}-{dengue_balance}"
 
     # loss-space guard (Task 13.2): model-space targets are ~unit scale.
     tgt0, _ = targets_and_mask(ds[0].ymod, ds[0].Mt, ds[0].mtr, ds[0].tr[0], device)
     assert float(tgt0.abs().median()) < 10, "targets not in model space -- loss space is wrong"
 
+    streams = [_origin_stream(d.tr, seed + i) for i, d in enumerate(ds)]
     best_val, best_state, bad = float("inf"), None, 0
-    for ep in range(epochs):
-        _train_epoch(enc, adapters, ds, A_block, opt, params, K)
-        val = _val_pinball(enc, adapters, ds)
-        sched.step()
-        if val < best_val - 1e-5:
-            best_val, bad = val, 0
-            best_state = ({k: v.detach().clone() for k, v in enc.state_dict().items()},
-                          {k: v.detach().clone() for k, v in adapters.state_dict().items()})
-        else:
-            bad += 1
-        if verbose:
-            print(f"    joint seed{seed} ep{ep:02d} val_pinball={val:.4f} best={best_val:.4f}")
-        if bad >= patience:
-            break
+    enc.train(); [ad.train() for ad in adapters]
+    for step in range(1, steps + 1):
+        ts = [next(s) for s in streams]                                    # one origin per dataset
+        Zc = torch.cat([window_slice(d.Z, ts[i]) for i, d in enumerate(ds)], dim=0)      # [SigmaN,20,4]
+        Mcol = torch.cat([ds[i].Mt[:, ts[i]] for i in range(len(ds))], dim=0)             # [SigmaN]
+        h = enc(Zc, A_block, Mcol)                                                         # [SigmaN,d]
+        losses, wts = [], []
+        for i, (ad, d) in enumerate(zip(adapters, ds)):
+            tgt, msk = targets_and_mask(d.ymod, d.Mt, d.mtr, ts[i], device)
+            if msk.sum() == 0:
+                continue
+            losses.append(pinball_loss(ad(h[d.start:d.end]), tgt, msk, w=node_w[i]))
+            wts.append(w_base[i])
+        if not losses:
+            continue
+        wt = torch.tensor(wts, device=device); wt = wt / wt.sum()          # renorm over contributors
+        loss = sum(a * L for a, L in zip(wt, losses))
+        opt.zero_grad(); loss.backward()
+        torch.nn.utils.clip_grad_norm_(params, 1.0)
+        opt.step(); sched.step()
+
+        if step % val_every == 0:
+            val = _val_pinball(enc, adapters, ds, node_w, w_base)
+            if val < best_val - 1e-5:
+                best_val, bad = val, 0
+                best_state = ({k: v.detach().clone() for k, v in enc.state_dict().items()},
+                              {k: v.detach().clone() for k, v in adapters.state_dict().items()})
+            else:
+                bad += 1
+            if verbose:
+                print(f"    joint seed{seed} step{step:6d} val={val:.4f} best={best_val:.4f}")
+            enc.train(); [ad.train() for ad in adapters]
+            if bad >= patience:
+                break
     if best_state:
         enc.load_state_dict(best_state[0]); adapters.load_state_dict(best_state[1])
 
-    return {d.name: _test_dataset(enc, ad, d, seed) for ad, d in zip(adapters, ds)}
+    return {d.name: _test_dataset(enc, ad, d, seed, model_name) for ad, d in zip(adapters, ds)}
 
 
-def run_joint(seeds=SEEDS, epochs=80, **kw):
+def run_joint(seeds=SEEDS, sampler="uniform", dengue_balance="uniform", **kw):
+    tag = f"{sampler}-{dengue_balance}"
     for s in seeds:
-        for name, (recs, pernode) in train_joint(s, epochs=epochs, **kw).items():
-            write_records(recs, f"encoder_joint__{name}__seed{s}.json")
-            write_per_node(pernode, f"encoder_joint__{name}__seed{s}__pernode.npz")
-            print(f"  joint encoder scored ({name} seed{s})")
+        res = train_joint(s, sampler=sampler, dengue_balance=dengue_balance, **kw)
+        for name, (recs, pernode) in res.items():
+            write_records(recs, f"encoder_joint__{tag}__{name}__seed{s}.json")
+            write_per_node(pernode, f"encoder_joint__{tag}__{name}__seed{s}__pernode.npz")
+            print(f"  joint [{tag}] scored ({name} seed{s})")
 
 
+# --------------------------------------------------------------------------- #
+# Central-claim gates -- run under --equiv (and the cheap two under --smoke).
+# --------------------------------------------------------------------------- #
 def _equiv_check(device="cpu"):
-    """Central-claim gate: block-diagonal forward == per-dataset solo forward, node-for-node. If this
-    fails, something couples across nodes that shouldn't (the block-diagonal premise is void). Uses
-    the 3 small datasets so it stays CI-cheap (dengue would just be 7165 more identical rows)."""
+    """Gate #1: block-diagonal forward == per-dataset solo forward, node-for-node. If this fails,
+    something couples across nodes that shouldn't (the block-diagonal premise is void). Uses the 3
+    small datasets so it stays CI-cheap (dengue would just be 7165 more identical rows)."""
     torch.manual_seed(0); np.random.seed(0)
     names = ["influenza_japan", "influenza_us-regions", "influenza_us-states"]
     enc = SharedEncoder().to(device).eval()
@@ -204,10 +268,9 @@ def _equiv_check(device="cpu"):
 
 
 def _routing_check(device="cpu"):
-    """Central-claim gate #2: a loss from ONE dataset must give every OTHER adapter exactly zero
-    gradient. This is the strict isolation Week-4's MAML inner loop depends on -- adapting on one
-    task cannot perturb another task's adapter. Holds because each adapter is applied only to its
-    own block's rows; if a future change ever mis-routed a node, this fails loudly."""
+    """Gate #2: a loss from ONE dataset must give every OTHER adapter exactly zero gradient. This is
+    the strict isolation Week-4's MAML inner loop depends on -- adapting on one task cannot perturb
+    another task's adapter. Holds because each adapter is applied only to its own block's rows."""
     torch.manual_seed(0); np.random.seed(0)
     names = ["influenza_japan", "influenza_us-regions", "influenza_us-states"]
     ds, A_block = _prepare(names, device)
@@ -233,28 +296,49 @@ def _routing_check(device="cpu"):
     print("ok  one-dataset loss -> every other adapter grad is exactly None (routing isolated)")
 
 
+def _balance_check():
+    """Gate #3: per-cell country balance equalises each dengue country's mass in the weighted mean
+    (robust to the 97x obs-density spread); and w=None leaves pinball_loss bit-identical, so the
+    single-disease trainer is unaffected."""
+    b = load("dengue")
+    v = per_cell_country_weight(b)
+    g, ids = b.group_of(), b.meta["node_ids"]
+    countries = np.array([g[i] for i in ids])
+    opn = b.masks()["train"].astype(bool).sum(1)
+    mass = {c: float((opn[countries == c] * v[countries == c]).sum()) for c in np.unique(countries)}
+    lo, hi = min(mass.values()), max(mass.values())
+    assert hi / lo < 1.01, f"country mass not balanced (spread {hi / lo:.3f}x): {mass}"
+    pred, tgt, msk = torch.randn(6, 4, 5), torch.randn(6, 4), torch.ones(6, 4)
+    assert torch.allclose(pinball_loss(pred, tgt, msk), pinball_loss(pred, tgt, msk, w=torch.ones(6))), \
+        "w=ones != w=None -- the unweighted (single-disease) path changed"
+    print(f"ok  per-cell country balance: all {len(mass)} dengue countries equal mass "
+          f"(spread {hi / lo:.4f}x); w=None unchanged")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int)
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--smoke", action="store_true")
     ap.add_argument("--equiv", action="store_true")
-    ap.add_argument("--epochs", type=int, default=80)
+    ap.add_argument("--steps", type=int, default=91000)
+    ap.add_argument("--sampler", choices=["uniform", "proportional", "sqrt"], default="uniform")
+    ap.add_argument("--dengue-balance", choices=["uniform", "country"], default="uniform")
     a = ap.parse_args()
 
     t0 = time.time()
     if a.equiv:
-        _equiv_check(); _routing_check()
+        _equiv_check(); _routing_check(); _balance_check()
     elif a.smoke:
         _equiv_check(); _routing_check()
         small = ["influenza_japan", "influenza_us-regions", "influenza_us-states"]
-        train_joint(42, epochs=3, names=small)
+        train_joint(42, steps=300, val_every=100, patience=99, names=small)
         print(f"smoke done in {time.time()-t0:.0f}s")
     elif a.all:
-        run_joint(epochs=a.epochs)
+        run_joint(steps=a.steps, sampler=a.sampler, dengue_balance=a.dengue_balance)
         print(f"all joint seeds done in {(time.time()-t0)/60:.1f} min")
     elif a.seed:
-        run_joint(seeds=(a.seed,), epochs=a.epochs)
+        run_joint(seeds=(a.seed,), steps=a.steps, sampler=a.sampler, dengue_balance=a.dengue_balance)
         print(f"done in {time.time()-t0:.0f}s")
     else:
         ap.error("give --seed, or --all, or --smoke, or --equiv")
