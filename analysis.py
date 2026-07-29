@@ -30,6 +30,8 @@ from pathlib import Path
 
 import numpy as np
 
+from results_paths import rpath
+
 RESULTS = Path("results")
 SEEDS = (42, 52, 62, 72, 82)
 HORIZONS = (3, 5, 10, 15)
@@ -54,7 +56,7 @@ def _encoder_stats(name, h, seeds, prefix="encoder"):
     'encoder_joint__<tag>' (a joint run) -- same file layout, different leading token."""
     saes, sses, ns = [], [], []
     for s in seeds:
-        sae, sse, n = _load_perorigin(RESULTS / f"{prefix}__{name}__seed{s}__perorigin.npz", h)
+        sae, sse, n = _load_perorigin(rpath(f"{prefix}__{name}__seed{s}__perorigin.npz"), h)
         saes.append(sae); sses.append(sse); ns.append(n)
     return np.mean(saes, 0), np.mean(sses, 0), ns[0]
 
@@ -99,7 +101,7 @@ def bootstrap_ci(name, B=B_DEFAULT, metrics=("rmse", "mae"), seeds=SEEDS, seed=0
         se_enc = _encoder_stats(name, h, seeds, prefix)            # (sae,sse,n) seed-mean
         K = se_enc[0].shape[0]
         CNT = _cnt_matrix(K, B, rng)
-        naive_stats = {nm: _load_perorigin(RESULTS / f"naive__{name}__{nm}__perorigin.npz", h)
+        naive_stats = {nm: _load_perorigin(rpath(f"naive__{name}__{nm}__perorigin.npz"), h)
                        for nm in NAIVES}
         for metric in metrics:
             enc_dist = _macro_dist(*se_enc, CNT, metric)
@@ -107,7 +109,7 @@ def bootstrap_ci(name, B=B_DEFAULT, metrics=("rmse", "mae"), seeds=SEEDS, seed=0
             enc_lo, enc_hi = np.nanpercentile(enc_dist, [2.5, 97.5])
             # per-seed encoder point values, for the (supporting) Wilcoxon
             enc_seed_pts = np.array([_point_macro(
-                *_load_perorigin(RESULTS / f"{prefix}__{name}__seed{s}__perorigin.npz", h), metric)
+                *_load_perorigin(rpath(f"{prefix}__{name}__seed{s}__perorigin.npz"), h), metric)
                 for s in seeds])
             row = dict(point=enc_pt, ci=(enc_lo, enc_hi), vs={})
             if verbose:
@@ -145,7 +147,7 @@ def gate_reads(names=DEV, seeds=SEEDS, verbose=True, prefix="encoder"):
     for name in names:
         gs, scs = [], []
         for s in seeds:
-            p = RESULTS / f"{prefix}__{name}__seed{s}__gate.npz"
+            p = rpath(f"{prefix}__{name}__seed{s}__gate.npz")
             if not p.exists():
                 continue
             z = np.load(p)
@@ -167,6 +169,93 @@ def gate_reads(names=DEV, seeds=SEEDS, verbose=True, prefix="encoder"):
         print("  read: g near 0 or a high g<0.05 fraction => the gate is ~off => the Day-14 2x2's "
               "{gate on vs g==0} arm is measuring little.")
     return out
+
+
+# --------------------------------------------------------------------------- #
+# Transfer table -- LODO vs single-disease, paired over ORIGINS.
+#
+# WHY THIS EXISTS (2026-07-29). train/lodo.py::_report compared LODO against seed-42's OWN single
+# run, while results_summary.txt and the direction doc quoted 5-seed means. The two were never
+# readable against each other, and seed 42 is an unusually BAD single-disease seed (dengue RMSE h3
+# z=+1.31, us-regions RMSE h5 z=+1.35), so a seed-matched reference systematically flattered LODO --
+# that is the "+3% printed for a 17% worsening" the client caught.
+#
+# Fix: report BOTH references, labelled on the table, and put a real dispersion on the delta. The
+# dispersion is a paired bootstrap over TIME ORIGINS (the axis the client asked for), which works at
+# 1 LODO seed. The seed-CV column is a secondary "would a different init change this" screen, kept
+# PER HORIZON -- never averaged across horizons, because CV swings from 14.4% (dengue h3) to 0.4%
+# (dengue h15) and an averaged floor silently mis-tags both ends.
+#
+# CAVEAT carried from train/loop.py::write_per_origin: this CI is on the CELL-POOLED metric while
+# the headline tables are NODE-AVERAGED. They coincide on the dense influenza panels and diverge on
+# dengue, so dengue's CI and its headline delta are not the same quantity.
+# --------------------------------------------------------------------------- #
+LOWER_BETTER = ("rmse", "mae", "smape")
+CV_SCREEN_MULT = 1.96          # secondary screen only; the origin CI is the verdict
+
+
+def _pct(single, lodo, metric):
+    """Signed improvement %, sign fixed so + always means LODO better."""
+    if metric in LOWER_BETTER:
+        return (single - lodo) / single * 100.0
+    return (lodo - single) / np.abs(single) * 100.0
+
+
+def _seed_cv(name, h, metric, seeds=SEEDS):
+    """CV% of the SINGLE-disease run across seeds, for this exact (dataset, horizon, metric)."""
+    pts = np.array([_point_macro(
+        *_load_perorigin(rpath(f"encoder__{name}__seed{s}__perorigin.npz"), h), metric)
+        for s in seeds])
+    return float(100 * pts.std(ddof=1) / abs(pts.mean()))
+
+
+def transfer_ci(name, B=B_DEFAULT, metrics=("rmse", "mae"), lodo_seeds=(42,), single_seeds=SEEDS,
+                seed=0, verbose=True, prefix="encoder_lodo"):
+    rng = np.random.default_rng(seed)
+    out = {}
+    if verbose:
+        print(f"\n{'=' * 118}\n{prefix} :: {name}   TRANSFER vs single-disease")
+        print(f"  ref A = single-disease MEAN over seeds {tuple(single_seeds)}   "
+              f"ref B = single-disease seed {lodo_seeds[0]} only   LODO seeds {tuple(lodo_seeds)}")
+        print(f"  CI = paired bootstrap over time origins (B={B}), the VERDICT.  "
+              f"CV = seed spread of the single run at this horizon, a secondary screen.")
+        print(f"  + = LODO better.\n{'=' * 118}")
+        print(f"  {'h':>3} {'metric':6} {'singleA':>9} {'singleB':>9} {'lodo':>9} "
+              f"{'d% vs A':>9} {'95% CI on d% vs A':>22} {'d% vs B':>9} {'CV%':>6}  verdict")
+    for h in HORIZONS:
+        s_all = _encoder_stats(name, h, single_seeds, "encoder")     # seed-mean sufficient stats
+        s_one = _encoder_stats(name, h, lodo_seeds, "encoder")       # the seed-matched reference
+        l_one = _encoder_stats(name, h, lodo_seeds, prefix)
+        K = s_all[0].shape[0]
+        CNT = _cnt_matrix(K, B, rng)
+        for metric in metrics:
+            sA, sB, lo = (_point_macro(*x, metric) for x in (s_all, s_one, l_one))
+            dA, dB = _pct(sA, lo, metric), _pct(sB, lo, metric)
+            # paired: the SAME resampled origins drive both arms, so shared origin noise cancels
+            pct_dist = _pct(_macro_dist(*s_all, CNT, metric), _macro_dist(*l_one, CNT, metric), metric)
+            c_lo, c_hi = (float(x) for x in np.nanpercentile(pct_dist, [2.5, 97.5]))
+            cv = _seed_cv(name, h, metric, single_seeds)
+            real = (c_lo > 0) or (c_hi < 0)                          # origin CI excludes 0
+            clears_cv = abs(dA) >= CV_SCREEN_MULT * cv
+            out[(h, metric)] = dict(single_mean=sA, single_matched=sB, lodo=lo, d_vs_mean=dA,
+                                    d_vs_matched=dB, ci=(c_lo, c_hi), cv=cv,
+                                    clears_ci=bool(real), clears_cv=bool(clears_cv))
+            if verbose:
+                v = ("LODO better" if c_lo > 0 else "LODO worse") if real else "within noise"
+                if real and not clears_cv:
+                    v += " (fails CV screen)"
+                print(f"  {h:>3} {metric.upper():6} {sA:>9.3f} {sB:>9.3f} {lo:>9.3f} "
+                      f"{dA:>+8.1f}% [{c_lo:>+8.1f}%, {c_hi:>+8.1f}%] {dB:>+8.1f}% {cv:>6.1f}  {v}")
+    if verbose:
+        print(f"  Verdict = origin CI excludes 0. '(fails CV screen)' means the delta is smaller than "
+              f"{CV_SCREEN_MULT}x the\n  single-disease seed spread: stable across test periods, but "
+              f"not distinguishable from a different init.\n  LODO is 1 seed, so it contributes no "
+              f"seed dispersion of its own -- treat every row as provisional.")
+    return out
+
+
+def transfer_table(names=DEV, **kw):
+    return {n: transfer_ci(n, **kw) for n in names}
 
 
 # --------------------------------------------------------------------------- #
@@ -196,8 +285,16 @@ def _selfcheck():
     # (4) reads aggregation: frac(g<0.05) and IQR on a known vector.
     g = np.array([0.01, 0.02, 0.04, 0.5, 0.9, 0.95])
     assert abs((g < 0.05).mean() - 0.5) < 1e-9, "gate frac<0.05 wrong"
+    # (5) transfer delta sign: + must mean LODO better for BOTH metric directions. Getting this
+    #     backwards is exactly how a 17% worsening got printed as +3%.
+    assert _pct(100.0, 80.0, "rmse") > 0, "lower-better: smaller lodo must read positive"
+    assert _pct(100.0, 120.0, "rmse") < 0, "lower-better: larger lodo must read negative"
+    assert _pct(0.50, 0.60, "pcc") > 0, "higher-better: larger lodo must read positive"
+    assert _pct(0.50, 0.40, "pcc") < 0, "higher-better: smaller lodo must read negative"
+    assert abs(_pct(42.06, 48.53, "rmse") + 15.38) < 0.05, "dengue h3 must read -15.4%, not +3%"
     print("ok  bootstrap engine == brute force (MAE+RMSE); perfect-model CI at 0; paired diff one-signed")
     print("ok  reads aggregation: frac(g<0.05) correct")
+    print("ok  transfer delta sign correct in both metric directions (dengue h3 reads -15.4%)")
 
 
 def main():
@@ -205,19 +302,24 @@ def main():
     ap.add_argument("--ci", action="store_true")
     ap.add_argument("--reads", action="store_true")
     ap.add_argument("--selfcheck", action="store_true")
+    ap.add_argument("--transfer", action="store_true",
+                    help="LODO vs single-disease, both references + paired origin-bootstrap CI")
     ap.add_argument("--dataset", choices=DEV)
     ap.add_argument("--joint", metavar="TAG",
                     help="analyse a joint run: reads encoder_joint__TAG__* (e.g. --joint uniform-uniform)")
     ap.add_argument("-B", type=int, default=B_DEFAULT)
     a = ap.parse_args()
     prefix = f"encoder_joint__{a.joint}" if a.joint else "encoder"
-    if a.selfcheck or not (a.ci or a.reads):
+    if a.selfcheck or not (a.ci or a.reads or a.transfer):
         _selfcheck()
     if a.reads:
         gate_reads(prefix=prefix)
     if a.ci:
         for name in ([a.dataset] if a.dataset else DEV):
             bootstrap_ci(name, B=a.B, prefix=prefix)
+    if a.transfer:
+        for name in ([a.dataset] if a.dataset else DEV):
+            transfer_ci(name, B=a.B)
 
 
 if __name__ == "__main__":
