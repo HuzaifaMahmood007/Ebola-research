@@ -1,0 +1,80 @@
+Updated baseline + encoder scores -- regenerated 2026-07-30 00:47
+Scored through score.py (country-macro primary). nrmse = RMSE / mean(y) per node, added Week 4.
+Encoder nrmse backfilled offline by rescore_encoder.py (48/48 verified against recorded n_cells).
+HeatGNN is mid-queue: us-regions only, h3 (5 seeds) + h5 (4 seeds). Cola-GNN is influenza-only.
+MTGNN dengue seeds are near-identical -- sd 0.00 at h5/h10/h15, worth a look.
+
+
+=== dengue ===   country-macro, mean +/- sd over seeds
+model        h                   rmse              nrmse   seeds
+encoder      3        42.06 +/-   6.04      1.802 +/-0.035   n=5
+encoder      5        49.94 +/-   6.04      1.912 +/-0.034   n=5
+encoder     10        56.21 +/-   0.62      2.099 +/-0.076   n=5
+encoder     15        57.38 +/-   0.21      2.081 +/-0.029   n=5
+EpiGNN       3        81.42 +/-  19.12     18.873 +/-7.540   n=5
+EpiGNN       5       109.08 +/-  12.38     29.448 +/-4.639   n=5
+EpiGNN      10       117.40 +/-  23.50     30.438 +/-9.606   n=5
+EpiGNN      15       138.06 +/-  18.10     37.792 +/-7.116   n=5
+MTGNN        3        36.33 +/-   1.23      1.413 +/-0.043   n=5
+MTGNN        5        50.84 +/-   0.00      1.921 +/-0.000   n=5
+MTGNN       10        50.80 +/-   0.00      1.921 +/-0.000   n=5
+MTGNN       15        50.76 +/-   0.00      1.922 +/-0.000   n=5
+
+=== influenza_japan ===   country-macro, mean +/- sd over seeds
+model        h                   rmse              nrmse   seeds
+encoder      3       734.89 +/-  58.53      1.273 +/-0.120   n=5
+encoder      5       841.11 +/-  35.42      1.261 +/-0.043   n=5
+encoder     10      1063.02 +/-  74.93      1.333 +/-0.082   n=5
+encoder     15      1031.39 +/- 121.02      1.303 +/-0.150   n=5
+EpiGNN       3       876.37 +/-  50.15      1.136 +/-0.067   n=5
+EpiGNN       5       950.03 +/- 263.26      1.236 +/-0.377   n=5
+EpiGNN      10      1286.71 +/-  78.70      1.699 +/-0.112   n=5
+EpiGNN      15      1199.57 +/- 157.26      1.572 +/-0.218   n=5
+Cola-GNN     3       804.14 +/-  54.45      1.027 +/-0.069   n=5
+Cola-GNN     5       877.31 +/-  71.03      1.122 +/-0.096   n=5
+Cola-GNN    10      1125.29 +/-  49.45      1.471 +/-0.066   n=5
+Cola-GNN    15      1113.52 +/-  36.76      1.447 +/-0.048   n=5
+MTGNN        3      1301.85 +/-   0.00      2.514 +/-0.000   n=5
+MTGNN        5      1449.13 +/-   0.00      2.344 +/-0.000   n=5
+MTGNN       10      1597.14 +/-   0.00      2.104 +/-0.000   n=5
+MTGNN       15      1561.43 +/-   0.00      2.107 +/-0.000   n=5
+
+=== influenza_us-regions ===   country-macro, mean +/- sd over seeds
+model        h                   rmse              nrmse   seeds
+encoder      3       613.15 +/-  82.33      0.473 +/-0.035   n=5
+encoder      5       728.23 +/-  76.32      0.561 +/-0.042   n=5
+encoder     10       787.81 +/-  40.54      0.631 +/-0.030   n=5
+encoder     15       812.80 +/-  68.06      0.662 +/-0.050   n=5
+EpiGNN       3       532.78 +/-  31.45      0.471 +/-0.025   n=5
+EpiGNN       5       755.41 +/-  45.13      0.661 +/-0.049   n=5
+EpiGNN      10       903.97 +/-  50.43      0.839 +/-0.099   n=5
+EpiGNN      15       954.32 +/-  90.59      0.904 +/-0.134   n=5
+Cola-GNN     3       585.09 +/-  29.77      0.485 +/-0.031   n=5
+Cola-GNN     5       764.77 +/-  28.91      0.618 +/-0.019   n=5
+Cola-GNN    10       967.82 +/-  60.23      0.780 +/-0.048   n=5
+Cola-GNN    15      1025.73 +/- 105.45      0.821 +/-0.062   n=5
+HeatGNN      3       548.31 +/-  27.06      0.443 +/-0.018   n=5
+HeatGNN      5       746.43 +/-  57.59      0.579 +/-0.042   n=4
+MTGNN        3      1345.04 +/-  32.17      1.515 +/-0.060   n=5
+MTGNN        5      1350.80 +/-  10.33      1.544 +/-0.053   n=5
+MTGNN       10      1343.24 +/-  13.67      1.526 +/-0.039   n=5
+MTGNN       15      1329.34 +/-  31.15      1.524 +/-0.016   n=5
+
+=== influenza_us-states ===   country-macro, mean +/- sd over seeds
+model        h                   rmse              nrmse   seeds
+encoder      3       113.42 +/-   3.88      0.624 +/-0.014   n=5
+encoder      5       136.80 +/-   4.31      0.769 +/-0.010   n=5
+encoder     10       151.46 +/-   1.94      0.950 +/-0.046   n=5
+encoder     15       154.13 +/-   4.16      1.029 +/-0.031   n=5
+EpiGNN       3       110.86 +/-   3.08      0.814 +/-0.026   n=5
+EpiGNN       5       134.00 +/-   7.83      1.041 +/-0.063   n=5
+EpiGNN      10       151.79 +/-   6.78      1.193 +/-0.131   n=5
+EpiGNN      15       158.20 +/-   5.31      1.208 +/-0.093   n=5
+Cola-GNN     3       117.44 +/-   4.34      0.710 +/-0.023   n=5
+Cola-GNN     5       148.29 +/-   5.63      0.913 +/-0.046   n=5
+Cola-GNN    10       169.82 +/-  10.91      1.128 +/-0.119   n=5
+Cola-GNN    15       162.46 +/-  11.15      1.142 +/-0.109   n=5
+MTGNN        3       309.26 +/-   4.49      4.190 +/-0.066   n=5
+MTGNN        5       301.39 +/-  10.94      4.041 +/-0.551   n=5
+MTGNN       10       296.04 +/-  18.96      4.235 +/-0.735   n=5
+MTGNN       15       302.74 +/-   4.13      4.831 +/-0.285   n=5

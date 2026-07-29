@@ -30,7 +30,27 @@ METRICS added in Week 3 (Task 13.1), all per-node scalars over a node's observed
   * peak_timing = |argmax(yh) - argmax(y)| in observed-eval-cell steps (== weeks for the dense
     influenza panels; approximate where the mask is sparse). Undefined on a constant node, which
     is already excluded by default -- the self-check proves that exclusion.
-CRPS / PICP / interval-width are UQ metrics left as stubs here; Week 5 (G4) fills them.
+
+METRICS added in Week 4 (Review Doc para. 7 -- "a scale normalised error alongside raw counts,
+because across 7,165 dengue regions raw RMSE is dominated by the biggest ones"):
+  * nrmse = RMSE / mean(y) over the node's scored cells -- relative RMSE, a.k.a. CV(RMSE). Each
+    node is expressed in units of its own level, so a 7,000-case region and a 5-case region
+    contribute comparably. UNDEFINED (NaN) when mean(y) <= 0, never 0 and never clipped: a node
+    that records no cases has no scale to normalise by. Raw rmse is reported alongside, unchanged
+    -- this is an addition, not a replacement.
+
+UQ METRICS (Week 4, same Review Doc para.) live below METRICS, not in it: they consume the full
+QUANTILE prediction [.., nQ], not a point forecast, so they cannot flow through per_node_scores.
+Week 5 (G4) wires them into a scoring path once quantile artifacts exist on disk. Implemented and
+self-checked here so the calibration claim is not resting on a NotImplementedError:
+  * wis        -- Weighted Interval Score, Bracher et al. (2021), the CDC FluSight / Forecast Hub
+                  standard. Decomposes into sharpness + under/over-prediction penalties.
+  * crps       -- quantile approximation, 2 * mean pinball over the quantile grid.
+  * coverage   -- empirical coverage of each central interval vs its nominal level (PICP).
+  * interval_width -- mean width of each central interval, the sharpness half of the story.
+  * pit        -- PIT values for the histogram; 5 quantiles gives a coarse histogram, say so.
+All of them call sort_quantiles first -- the Adapter's plain Linear head can emit CROSSING
+quantiles (q05 > q95, models/adapters.py:21) and every interval metric is garbage if it does.
 
 EBOLA METRIC RULES -- pre-registered now, in Week 3, while no Ebola number exists (Task 13.1). Ebola
 is scored once in Week 5; fixing the rules here is what makes them demonstrably independent of the
@@ -83,22 +103,131 @@ def _peak_timing(yh, y):
     return float(abs(int(np.argmax(yh)) - int(np.argmax(y))))
 
 
-METRICS = {"rmse": _rmse, "mae": _mae, "pcc": _pcc,
-           "smape": _smape, "peak_intensity": _peak_intensity, "peak_timing": _peak_timing}
+def _nrmse(yh, y):
+    """RMSE / mean(y): relative RMSE. NaN when the node's mean level is <= 0 -- a node with no
+    cases has no scale to normalise by, and 0 would read as a perfect score."""
+    scale = float(np.mean(y))
+    if scale <= 0:
+        return float("nan")
+    return _rmse(yh, y) / scale
 
 
-# UQ metrics -- Week 5 (G4) fills these; they need the full quantile prediction, not a point
-# forecast, so they do not belong in the point-metric METRICS dict above.
-def _crps(*_a, **_k):                     # noqa: D401 - stub
-    raise NotImplementedError("CRPS is a Week-5 deliverable (G4)")
+METRICS = {"rmse": _rmse, "mae": _mae, "pcc": _pcc, "smape": _smape,
+           "peak_intensity": _peak_intensity, "peak_timing": _peak_timing, "nrmse": _nrmse}
 
 
-def _picp(*_a, **_k):
-    raise NotImplementedError("PICP is a Week-5 deliverable (G4)")
+# --------------------------------------------------------------------------- #
+# UQ metrics. These take the QUANTILE prediction qp [n, nQ] against truth y [n], not a point
+# forecast, so they are deliberately outside METRICS. `levels` must match models.config.QUANTILES.
+# --------------------------------------------------------------------------- #
+QUANTILE_LEVELS = (0.05, 0.25, 0.5, 0.75, 0.95)          # mirrors models/config.py QUANTILES
 
 
-def _interval_width(*_a, **_k):
-    raise NotImplementedError("interval width is a Week-5 deliverable (G4)")
+def sort_quantiles(qp):
+    """Enforce monotone quantiles by sorting along the last axis.
+
+    The Adapter's quantile head is a plain Linear, so nothing stops it emitting q05 > q95
+    (models/adapters.py:21, Decision #6). Sorting is the agreed post-hoc fix: it leaves the median
+    of a 5-quantile set untouched (sorting cannot move the middle order statistic off the middle
+    slot), so RMSE/MAE/PCC are unaffected, while every interval metric becomes well-defined.
+    """
+    return np.sort(np.asarray(qp, dtype=np.float64), axis=-1)
+
+
+def _interval_pairs(levels):
+    """Central-interval (lower_idx, upper_idx, alpha) triples implied by a symmetric level set."""
+    levels = tuple(float(v) for v in levels)
+    pairs = []
+    for i, lo in enumerate(levels):
+        if lo >= 0.5:
+            continue
+        hi = 1.0 - lo
+        for j, v in enumerate(levels):
+            if abs(v - hi) < 1e-12:
+                pairs.append((i, j, 2.0 * lo))            # alpha = 2*lo -> (1-alpha) central PI
+                break
+    return pairs
+
+
+def _median_index(levels):
+    for i, v in enumerate(levels):
+        if abs(float(v) - 0.5) < 1e-12:
+            return i
+    raise ValueError("quantile level set must contain the median (0.5)")
+
+
+def interval_score(lower, upper, y, alpha):
+    """Interval score IS_alpha = width + (2/alpha)*undershoot + (2/alpha)*overshoot."""
+    lower, upper, y = np.asarray(lower), np.asarray(upper), np.asarray(y)
+    return ((upper - lower)
+            + (2.0 / alpha) * np.maximum(lower - y, 0.0)
+            + (2.0 / alpha) * np.maximum(y - upper, 0.0))
+
+
+def wis(qp, y, levels=QUANTILE_LEVELS):
+    """Weighted Interval Score (Bracher et al. 2021) -- the FluSight / Forecast Hub standard.
+
+    WIS = (1/(K + 1/2)) * ( (1/2)|y - median| + sum_k (alpha_k/2) * IS_{alpha_k} ),
+    K = number of central intervals. Lower is better, same units as the data, and it reduces to
+    MAE for a point forecast (all quantiles equal) -- which is exactly how a deterministic
+    baseline enters a WIS table.
+    """
+    qp, y = sort_quantiles(qp), np.asarray(y, dtype=np.float64)
+    pairs = _interval_pairs(levels)
+    total = 0.5 * np.abs(y - qp[..., _median_index(levels)])
+    for lo_i, hi_i, alpha in pairs:
+        total = total + (alpha / 2.0) * interval_score(qp[..., lo_i], qp[..., hi_i], y, alpha)
+    return total / (len(pairs) + 0.5)
+
+
+def crps(qp, y, levels=QUANTILE_LEVELS):
+    """CRPS by its quantile approximation: 2 * mean pinball loss over the quantile grid.
+
+    Exact CRPS is 2 * integral of the pinball loss over tau in (0,1); with a 5-point grid this is
+    a coarse Riemann average, and it is biased low relative to the true CRPS. Report it as
+    "CRPS (5-quantile approximation)" -- do not print it as CRPS unqualified.
+    """
+    qp, y = sort_quantiles(qp), np.asarray(y, dtype=np.float64)[..., None]
+    tau = np.asarray(levels, dtype=np.float64)
+    err = y - qp                                          # [.., nQ]
+    pinball = np.maximum(tau * err, (tau - 1.0) * err)
+    return 2.0 * pinball.mean(axis=-1)
+
+
+def coverage(qp, y, levels=QUANTILE_LEVELS):
+    """Empirical coverage (PICP) per central interval: {nominal: observed_fraction}."""
+    qp, y = sort_quantiles(qp), np.asarray(y, dtype=np.float64)
+    out = {}
+    for lo_i, hi_i, alpha in _interval_pairs(levels):
+        inside = (y >= qp[..., lo_i]) & (y <= qp[..., hi_i])
+        out[round(1.0 - alpha, 10)] = float(np.mean(inside))
+    return out
+
+
+def interval_width(qp, levels=QUANTILE_LEVELS):
+    """Mean width per central interval: {nominal: mean_width}. The sharpness half of calibration --
+    coverage alone is trivially satisfied by an infinitely wide interval."""
+    qp = sort_quantiles(qp)
+    return {round(1.0 - alpha, 10): float(np.mean(qp[..., hi_i] - qp[..., lo_i]))
+            for lo_i, hi_i, alpha in _interval_pairs(levels)}
+
+
+def pit(qp, y, levels=QUANTILE_LEVELS):
+    """PIT values F(y) estimated by linear interpolation on the predictive quantile curve.
+
+    Well-calibrated forecasts give a UNIFORM histogram; a U shape means intervals are too narrow,
+    a hump means too wide. With only 5 quantiles the curve is coarse and values saturate at 0/1
+    whenever y falls outside [q05, q95] -- report the bin count and the saturated fraction beside
+    the histogram rather than pretending to a smooth PIT.
+    """
+    qp, y = sort_quantiles(qp), np.asarray(y, dtype=np.float64)
+    tau = np.asarray(levels, dtype=np.float64)
+    flat_q, flat_y = qp.reshape(-1, qp.shape[-1]), y.reshape(-1)
+    vals = np.array([np.interp(flat_y[i], flat_q[i], tau) for i in range(flat_y.size)])
+    below = flat_y < flat_q[:, 0]
+    above = flat_y > flat_q[:, -1]
+    vals[below], vals[above] = 0.0, 1.0
+    return vals.reshape(y.shape)
 
 
 def per_node_scores(pred, truth, mask, node_country, score_constant=False):
@@ -208,11 +337,56 @@ def _demo():
     # constant-truth node is excluded by default, so peak_timing is never computed on an undefined peak
     assert all(not s["constant"] for s in ns.values()), "a constant node leaked into the default scoring"
 
+    # (6) nrmse: relative to the node's own level, undefined (not 0) on a node with no cases.
+    assert abs(_nrmse(np.full(3, 11.0), np.full(3, 10.0)) - 0.1) < 1e-12, "nrmse must be rmse/mean(y)"
+    assert _nrmse(np.zeros(3), np.zeros(3)) != 0.0 and np.isnan(_nrmse(np.zeros(3), np.zeros(3))), \
+        "a zero-level node has no scale; nrmse must be NaN, not a perfect 0"
+    assert abs(agg["nrmse"]["country_macro"]) < 1e-9, "perfect predictor must score nrmse 0"
+    # the point of the metric: a big-region and a small-region error of equal RELATIVE size score
+    # equally, where raw rmse would be 100x apart.
+    big = _nrmse(np.full(4, 1100.0), np.full(4, 1000.0))
+    small = _nrmse(np.full(4, 11.0), np.full(4, 10.0))
+    assert abs(big - small) < 1e-12, f"nrmse must be scale-free: {big} vs {small}"
+    assert abs(_rmse(np.full(4, 1100.0), np.full(4, 1000.0))
+               / _rmse(np.full(4, 11.0), np.full(4, 10.0)) - 100.0) < 1e-9, "raw rmse is 100x apart"
+
+    # (7) UQ metrics. qc crosses on purpose -- every interval metric below must survive it.
+    lv = QUANTILE_LEVELS
+    qc = np.array([5., 4., 3., 2., 1.])                    # fully crossed
+    assert np.allclose(sort_quantiles(qc), [1., 2., 3., 4., 5.]), "sort_quantiles must fix crossing"
+    assert sort_quantiles(qc)[_median_index(lv)] == 3.0, "sorting must not move the median"
+
+    q = np.array([1., 2., 3., 4., 5.])
+    # hand-computed: |y-m|=0; IS(90%)=4 w=0.05 -> .2; IS(50%)=2 w=0.25 -> .5; (0+.2+.5)/2.5 = 0.28
+    assert abs(float(wis(q, 3.0)) - 0.28) < 1e-12, f"WIS hand-check failed: {wis(q, 3.0)}"
+    assert abs(float(wis(qc, 3.0)) - 0.28) < 1e-12, "WIS must be invariant to crossed input order"
+
+    # WIS and CRPS both reduce to |y - m| for a DEGENERATE (point) forecast. This is what lets a
+    # deterministic baseline enter a WIS table at all -- its WIS is exactly its MAE.
+    deg = np.full(5, 3.0)
+    assert abs(float(wis(deg, 5.0)) - 2.0) < 1e-12, "point forecast: WIS must equal MAE"
+    assert abs(float(crps(deg, 5.0)) - 2.0) < 1e-12, "point forecast: CRPS must equal MAE"
+    assert abs(float(crps(deg, 1.0)) - 2.0) < 1e-12, "CRPS must be symmetric in the residual sign"
+    assert float(wis(q, 3.0)) < float(wis(deg, 5.0)), "a sharp correct interval must beat a wrong point"
+
+    # coverage / width: y inside both intervals, then inside only the 90%
+    assert coverage(q, np.array([3.0]), lv) == {0.9: 1.0, 0.5: 1.0}
+    assert coverage(q, np.array([4.5]), lv) == {0.9: 1.0, 0.5: 0.0}, "4.5 is outside [2,4]"
+    assert interval_width(q, lv) == {0.9: 4.0, 0.5: 2.0}
+
+    # PIT: median -> 0.5, saturates at the tails rather than extrapolating off the quantile curve
+    assert abs(float(pit(q, np.array([3.0]))[0]) - 0.5) < 1e-12, "y at the median must give PIT 0.5"
+    assert float(pit(q, np.array([0.5]))[0]) == 0.0 and float(pit(q, np.array([6.0]))[0]) == 1.0
+
     print(f"ok  perfect-predictor macro exact; dominance neutralised "
           f"(node-mean {node_mae:.3f} vs country-macro {macro_mae:.3f} for a Bolivia-only error);")
     print(f"ok  {n_default} nodes scored, {n_const} constant nodes excluded by default")
     print(f"ok  sMAPE 0/0 excluded (all-0/0 -> NaN); peak intensity/timing exact for a perfect predictor")
+    print(f"ok  nrmse scale-free (1100-vs-1000 == 11-vs-10) where raw rmse is 100x apart; NaN at zero level")
+    print(f"ok  UQ: crossing quantiles sorted (median fixed); WIS hand-check 0.28; "
+          f"WIS==CRPS==MAE for a point forecast; coverage/width/PIT exact")
     print(f"    metrics live: {list(METRICS)}")
+    print(f"    UQ (quantile input, not in METRICS): wis, crps, coverage, interval_width, pit")
     print(f"    country-macro is the mean of {agg['rmse']['n_countries']} per-country scores; "
           f"node-mean pools {agg['rmse']['n_nodes']} nodes")
 

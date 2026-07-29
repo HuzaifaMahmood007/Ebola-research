@@ -1,0 +1,238 @@
+# Decision log — Phase 3 Week 4
+
+**Started:** 2026-07-29 · **Progress:** `Day15_Progress.md` · **Work order:** `Phase3_Week4_Work_Order.md`
+
+One row per decision that would be expensive to re-litigate. Client decisions are marked. Earlier
+phases: `decisions_day_13.md`, `Phase3_Week3_Day15_Baselines_Status.md`.
+
+---
+
+## D1 · Direction: transfer, with the folds fixed first — **CLIENT**
+2026-07-28, `Review Doc.md`
+
+5-seed LODO spend is **on hold** until fold structure is fixed. Three of four dev datasets are
+influenza, so leave-one-out holds out a *population*, not a *disease*. Report two tables:
+leave-one-**dataset**-out (current, keep) and leave-one-**disease**-out (3 flu as one fold vs dengue).
+
+**Why:** the two strongest folds are the ones with the most flu leakage. A reviewer reads that the
+same way we now do. Spending seeds on the wrong fold structure buys nothing.
+
+---
+
+## D2 · Meta-learning is required, not optional — **CLIENT**
+2026-07-28, `Review Doc.md`
+
+Freeze-then-adapt is transfer learning with a linear probe, not meta-learning. Brief has meta-learning
+as REQUIRED under G2, and the encoder was chosen for cheap second-order grads. Build episodic
+meta-training (MAML / Reptile / ProtoNet — our pick, we justify). Freeze-and-adapt becomes the ablation.
+
+**Why:** lets us answer "does meta-learning beat a linear probe" with a number instead of an assertion.
+Client: *"don't quietly absorb it"* — if it doesn't fit the schedule, say so this week.
+
+---
+
+## D3 · Reporting standards, effective immediately — **CLIENT**
+2026-07-28, `Review Doc.md`
+
+Dispersion on every number (mean ± sd minimum; bootstrap CIs over regions and time origins for
+headlines) · never average across datasets · state the comparison reference **on** the table · cells
+under the noise floor say "within noise", not a direction.
+
+---
+
+## D4 · Ebola audit — figures settled
+2026-07-29, computed from `data/processed/ebola.npz`
+
+Weekly, N=61, T=52 (2014-03-24 → 2015-03-28), 41% observed (1299/3172), mean 21.3 obs weeks/node.
+Graph usable: 146 edges, 0 isolated, 21 cross-border.
+
+- **Support** = calendar prefix ≤2014-05-24 = weeks 1–7 → **27 cells across 9 of 61 districts**
+- **Adaptation pairs:** full 20-week window → **0 at every horizon**. With P7 left-pad:
+  **h3 = 16 pairs / 8 nodes, h5 = 6 pairs / 2 nodes, h10 = 0, h15 = 0**
+- **Query/eval:** 1151 / 1075 / 866 / 642 pairs at h3/h5/h10/h15 over 61/61/59/58 districts
+
+**Two corrections owed to the client:** the 27-example design floor came from **Ebola's own support**,
+not the smallest dev set; and h10/h15 **are** evaluable — they are zero-shot, not unmeasurable
+(their ~17-origin arithmetic was per-node; pooling over 61 districts rescues it).
+
+**Real problem to raise instead:** h5 adaptation is 6 examples on 2 districts. Practical adaptation
+horizon is **h3 only**.
+
+---
+
+## D5 · Transfer-table reference and dispersion
+2026-07-29 · client complaint root-caused, method chosen with client
+
+`train/lodo.py::_report` compared LODO to **seed-42's own** single run; the docs quoted **5-seed
+means**. Never readable against each other. Seed 42 is an unusually bad single-disease seed
+(dengue RMSE h3 z=+1.31, us-regions RMSE h5 z=+1.35), so a seed-matched reference flattered LODO —
+that is the "+3% printed for a 17% worsening". **The formula at `train/lodo.py:287` is correct.**
+
+**Decided:**
+- Report **both references**, 5-seed mean primary, both labelled on the table
+- **Paired origin-bootstrap CI** (B=10000) is the verdict — the axis the client asked for, and it
+  works at 1 LODO seed
+- **Seed-CV at 1.96×**, per horizon, as a secondary screen
+- Correct the Week-3 docs **in place** with a dated correction note
+- Patch `_report` so future runs are correct by construction
+
+**Why per-horizon CV:** the floor swings from 14.4% (dengue h3) to 0.4% (dengue h15). An averaged
+floor mis-tags both ends.
+
+**Known wrinkle:** the origin CI is **cell-pooled**; headline tables are **node-averaged**. They
+coincide on dense influenza and diverge on dengue. Document, don't reconcile.
+
+**Deferred:** telling the client that 5 seeds will likely confirm the thin story rather than rescue
+it. Client chose to run the seeds first and report what happens.
+
+---
+
+## D6 · HeatGNN epoch budget stays at the paper's 1500
+2026-07-29
+
+Verified in the paper (*Epidemiology-informed GNN for Heterogeneity-aware Epidemic Forecasting*,
+Implementation Details): *"the early stopping strategy with the patience of 200 epochs, the batch
+size to 32, and the number of epochs to 1500."* Split there is 60/20/20; we force 50/20/30 for
+pipeline comparability (pre-existing, documented).
+
+**Why it matters:** an earlier 150-epoch repro run was the **deviation**, not the standard. Cutting
+epochs would have meant diverging from the paper while claiming we matched it. Speed must come from
+parallelism instead.
+
+`torch.autograd.set_detect_anomaly(True)` (`train.py:109`) ships on and stays on.
+
+---
+
+## D7 · HeatGNN NaN — isolated nodes, fixed with self-loops on HeatGNN's staged graph only
+2026-07-29 · confirmed by `export_heatgnn.py --nan-test`
+
+japan and us-states each carry **2 degree-0 nodes** (Okinawa; Alaska/Hawaii); us-regions carries
+none — and us-regions was the only one that trained. `getLaplaceMat`
+(`baselines/HeatGNN-14DB/src/utils.py:70-87`) never folds in the identity; the block that would is
+**commented out**, leaving `sum(adj)+1e-12`, so an isolated node is scaled by ~1e12 rather than
+erroring. Forward survives, backward overflows → `MulBackward0 returned nan values`.
+
+**Test:** original graph NaN at seeds 999 **and** 992; same data + self-loops trains clean.
+
+**Scope: HeatGNN's staged adjacency only.** EpiGNN/Cola/MTGNN already ran and are untouched. Note
+this brings HeatGNN *into* line with our own encoder, which adds I before normalising
+(`models/encoder.py:59-60`, C3 guard). **Disclose in paper + failure log.**
+
+### D7a · EpiGNN's islands — document, do not rerun
+EpiGNN's `getLaplaceMat` is byte-identical and equally lacks the identity; it survives only because
+it has no SIR loss to amplify it. Quantified: japan islands are 1.25–1.42× other-node RMSE (rank 8
+and 23 of 47); us-states islands are **0.31–0.38×** (*easier*, rank 47 and 27 of 49). Dropping them
+shifts node_mean −1.0..−1.8% (japan) / +2.6..+2.9% (us-states) — **opposite signs, so idiosyncrasy
+not bias.**
+
+**Limit of this evidence:** it shows islands are not anomalous *in EpiGNN's own errors*. It does not
+show what EpiGNN would score *with* self-loops. Only a rerun answers that, and we chose not to.
+
+---
+
+## D8 · The CSV skip trap
+2026-07-29
+
+`baselines/HeatGNN-14DB/src/train.py:99-105` exits immediately when `HeatGNN_results_test.csv` holds
+a row matching (model, dataset, window, horizon, seed) — prints "Experiment exists", no training.
+Our runner decides work from `_preds/*.npz`, so a **row without an npz** (crash or kill after the CSV
+write) blocks that run forever.
+
+`export_heatgnn.py` purges seed 990–999 rows and keeps a `.bak`. Real-seed collisions are not
+auto-purged — they stop and report.
+
+**Cost of learning this:** one wasted probe. Reusing seed 999 across combos made the second combo
+exit in 6 s with no error.
+
+---
+
+## D9 · HeatGNN runtime model and launch config
+2026-07-29 · measured, `export_heatgnn.py --probe`
+
+**Cost tracks training windows, not nodes.** Steady s/epoch: us-regions 17.40 (368 windows, 10
+nodes), japan 8.73 (150 windows, 47 nodes), us-states 8.84 (156 windows, 49 nodes). japan has 4.7×
+the nodes and runs **2× faster**.
+
+**Not thread-bound:** ±10% across thread settings; single-thread is *faster* on us-regions
+(15.78 vs 17.40). Parallel is therefore near-linear.
+
+**Do not project per-run cost as `s/epoch × 1500`** — runs early-stop near ~440 epochs. Use the
+measured us-regions ground truth (**2.13 h/run** over 8 completed runs) scaled by the per-epoch ratio.
+
+**Launched:** `--workers 8 --threads 1`, order **japan → us-states → us-regions** (the two unrun
+datasets first, so a full-length run proves the self-loop fix early; us-regions is slowest per run
+and tails the queue). 51 runs, ~8.9 h projected.
+
+### D9a · Seed count stays at 5
+An earlier decision to cut HeatGNN to 3 seeds was **reversed** once the real cost was measured —
+at 8-way parallel the full 5-seed matrix fits inside the 1–1.5 day window, so the dispersion rule
+(D3) is not broken and no disclosure is needed.
+
+---
+
+## D10 · Reproduction failure log — scope — **CLIENT**
+2026-07-28/29
+
+Two sections: **A** repos we could not reproduce (MepoGNN, MSGNN, STOEP), **B** comparisons we could
+not make like-with-like (dengue ⅓-subsample non-comparability, Cola/Heat influenza-only on CPU,
+HeatGNN's self-loop deviation, EpiGNN's island handling).
+
+Client also requires each usable baseline validated against its source paper's published numbers
+before it enters the comparison table — can't get close, it doesn't go in.
+
+**Not created yet.**
+
+---
+
+## D11 · Independent audit of steps 1 and 2 — both GREEN, three fixes deferred
+2026-07-29 · adversarial audit against artifacts on disk, not against claims
+
+**Step 1 GREEN.** Run plan re-derived without trusting `remaining()` (60 target, 9 present, 51
+missing, exact match, no already-done cell in the plan). Launch order confirmed japan → us-states →
+us-regions. Self-loops verified present on **staged** adjacencies and absent from the **source**
+exports — `staged − source` nonzero **only** on the diagonal for all three, source mtime 07-27,
+two days before the fix. Isolated-node counts confirmed: japan 2 (idx 10, 19), us-states 2 (idx 1, 9),
+us-regions 0. No probe artifacts. No in-matrix CSV orphan can block a run.
+
+**Step 2 GREEN.** All 16 RMSE cells re-derived from raw JSON **without importing `analysis.py`** —
+every cell within **0.03 pp**. Every number in both corrected tables independently reproduced, zero
+discrepancies. `--selfcheck` exit 0, `_report('dengue',42)` prints −15.4% / +2.9% as claimed.
+
+**Three fixes DEFERRED by decision, not oversight** (detail in `Day15_Progress.md`): the `--dry-run`
+side-effect, the missing `-u`, and an `INFLUENZA`/`ORDER` display mismatch. All three only bite on a
+**relaunch**; the queue is mid-flight and will not be relaunched during the review. **Apply only on
+explicit confirmation.**
+
+**Two audit findings corrected by later measurement:**
+- The audit measured 0.22 cores/worker and projected a badly blown ETA. That sample was taken while
+  MTGNN was still co-resident. Re-measured at 23:40 with MTGNN finished: **0.57 cores/worker, 4.53
+  of 6 physical**. Revised ETA ~14.5 h, inside the window. Queue not restarted.
+- The audit called the full-length self-loop proof unobservable. Partly true — but a NaN exits
+  `train.py` non-zero, so it would surface as a `[FAIL]`. 8 workers alive 1,899 s at ~124 epochs with
+  zero deaths. Held well past the 5-epoch proof; still **not** a completed 1500-epoch run.
+
+**Findings accepted and left open:**
+- `results/lodo/*.json` were produced by a version of `train/lodo.py` that was never committed and no
+  longer exists, and `results/` is gitignored. **The transfer table's evidentiary base has zero
+  version provenance.** Committing `train/lodo.py`, `analysis.py`, `results_paths.py` is the fix —
+  a user decision, not taken here.
+- `run_fold` is unchanged **by assertion, not evidence** — no pre-edit artifact exists to diff
+  against. Structural argument only: the whole changed surface is reachable solely from `_report`,
+  which `run_fold` calls at `:245` **after** all six artifacts are written, so it cannot alter output.
+- Node identities behind the isolated indices (Okinawa / Alaska / Hawaii) are **unverified** —
+  `meta.json` node_ids are anonymised (`us-states_0`…). Counts match; the names in the docstring
+  and in D7 are an inference.
+- `train/loop.py` was modified between the single runs and the LODO runs, which would break
+  comparability if scoring had changed. Checked: the diff is **purely write-path routing**
+  (`RESULTS / fname` → `rpath(...)`), no metric math. Artifacts remain comparable.
+
+---
+
+## Reversed or superseded
+
+| was | now | why |
+|---|---|---|
+| Cut HeatGNN to 3 seeds | 5 seeds kept (D9a) | parallel measurement made it affordable |
+| Cut HeatGNN epochs to 150 | 1500, the paper's value (D6) | 150 was the deviation, not the standard |
+| NaN caused by dead/constant nodes | isolated nodes (D7) | checked — no constant nodes exist |
+| "5-seed LODO is the one gate" (`Phase3_Week3_Results_and_Direction.md` §6) | on hold pending fold fix (D1) | client countermanded |
