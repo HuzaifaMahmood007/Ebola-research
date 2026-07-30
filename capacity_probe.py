@@ -367,10 +367,18 @@ def _selfcheck():
 
 def banner(allow_cpu=False):
     """Fail loudly rather than spend a night on the CPU by accident."""
-    ok = torch.cuda.is_available() and DEVICE.type == "cuda"
-    name = torch.cuda.get_device_name(0) if torch.cuda.is_available() else "n/a"
+    # train.loop.DEVICE is a plain string ("cuda"/"cpu"), not a torch.device -- accept either.
+    dev = DEVICE if isinstance(DEVICE, str) else DEVICE.type
+    # is_available() can be True while the device list is empty (CUDA_VISIBLE_DEVICES=""), and
+    # get_device_name(0) then raises. Gate on the count so this check reports rather than crashes.
+    n_gpu = torch.cuda.device_count() if torch.cuda.is_available() else 0
+    ok = n_gpu > 0 and str(dev).startswith("cuda")
+    try:
+        name = torch.cuda.get_device_name(0) if n_gpu else "n/a"
+    except Exception as e:                       # never let the device CHECK be what kills the run
+        name, ok = f"unavailable ({e})", False
     print(f"[device] torch {torch.__version__} | cuda_available={torch.cuda.is_available()} "
-          f"| DEVICE={DEVICE} | gpu={name}")
+          f"| n_gpu={n_gpu} | DEVICE={DEVICE} | gpu={name}")
     if not ok and not allow_cpu:
         sys.exit("[device] REFUSING TO START: DEVICE is not cuda. This run is hours on a GPU and "
                  "far longer on CPU. Fix the environment, or pass --allow-cpu if you really mean it.")
