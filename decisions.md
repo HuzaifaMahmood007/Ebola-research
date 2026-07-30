@@ -228,6 +228,81 @@ explicit confirmation.**
 
 ---
 
+## D12 · Cross-disease transfer is negative — the Week-3 headline was leakage plus a reference artifact
+2026-07-30, `Reports/Encoder_Results_Consolidated.md`, `Results_Matrix.md`
+
+Under the corrected leave-one-**disease**-out fold (D1): **12 of 16 RMSE cells significantly negative,
+4 within noise, 0 positive**, identical tally on MAE. The three largest LODO gains (+28.0%, +24.0%,
++19.9%) were all influenza panels with influenza still in training.
+
+Separately, holding the transfer number fixed and varying only the comparison reference reproduces
+**all three** of the client's arithmetic complaints to the decimal: us-regions h3 +19.9% (seed-matched)
+vs **+9.9%** (5-seed mean) against their 9.8%; japan h5 +4.5% vs **+7.4%** against their 7.4%. Dengue
+h3 **flips sign**, +2.9% → **−15.4%**, because single-disease dengue seed 42 is an outlier (49.98 vs
+~37–47). Corroborated by `analysis.py`, which asserts −15.4% through a separate code path.
+
+**Why it matters:** the paper's central claim as previously framed is not supported by our own
+corrected experiment. `transfer-mechanism-finding`'s escape clause (*"Option B is off the table unless
+the confirmation collapses the effect"*) has therefore **triggered — Option B is live.**
+
+**Standing consequence:** every delta table states its comparison reference on the table, and the
+check is automated (`results_matrix.py`), not remembered.
+
+---
+
+## D13 · Meta-learning: ANIL, and the schedule answer is no for the full scope
+2026-07-31, `Reports/MAML_Decision.md` (answers D2)
+
+**Algorithm — ours to call, and called.** MAML restricted to the adapter (**ANIL**), exact
+second-order. ProtoNet excluded on task grounds (nearest-centroid classifier vs continuous
+multi-horizon regression). Reptile excluded because it carries **no support/query meta-objective**, so
+it cannot produce the controlled comparison D2 asks for — *not* on structural grounds, which the first
+draft overstated.
+
+**Schedule — no for the full scope**, option C may fit; a measured timing probe settles it. The
+blocker is dependency order: ANIL sits upstream of a single-shot Ebola evaluation, so it serialises
+Weeks 5 and 6 rather than running beside them.
+
+**Scope is NOT decided here — deliberately.** Options A–D go to the client and Nora without a
+recommendation, matching `Ebola_Support_Set_Decision.md`. Taking that decision for them is what this
+document exists not to do.
+
+**Three corrections we are on record for** (an adversarial audit; two re-verified directly):
+- *"What we built is not a linear probe"* is **false**. Trunk frozen ⇒ `Adapter(h)` is an exact affine
+  map of frozen features, `max deviation = 0.0`. **The client's description was right**, and the draft
+  had simultaneously asserted ANIL while denying the property ANIL requires.
+- The adapter is **1,428 params, not 388**; 388 predates the five-quantile head.
+- **Nine trunk runs exist, not ten** — dengue→flu has 4 seeds (no seed 42).
+
+**Also on record:** two zero-shot figures were within-noise cells quoted directionally, breaching D3;
+the deficit range is **−1.5% to −51.3%**, not −16% to −51%; "monotone in horizon" is false for dengue.
+
+**The objection we raise against ourselves:** with two dev diseases, LDO leaves **one** meta-train
+disease, so episodes vary population and origin — the axis that already works. ANIL would be trained
+on the non-problem. The structural fix is a third disease, which is why COVID is option D. **COVID is
+not on disk** (no raw, no processed) — a full Phase-2 job, not a config flag. If it is added, the fold
+must stay leave-one-**disease**-out.
+
+---
+
+## D14 · No further trunk run without checkpointing and quantile archiving
+2026-07-31, `train/loop.py`
+
+Both applied. Neither depends on any pending decision, both are cheap now and unrecoverable later.
+
+- **Trunk checkpoints.** `find *.pt` outside `baselines/` returned **ZERO files**. `_fit_trunk` held
+  the best state in memory and never wrote it, so **every LDO result rests on a trunk that no longer
+  exists** — and the Ebola protocol ("freeze the trunk, fit the adapter") had nothing to freeze.
+- **Quantile predictions.** Every scoring path took `[:, :, MEDIAN_IDX]` and discarded four of five
+  quantiles at source. WIS, CRPS, coverage, interval width and PIT are implemented and self-checked
+  but unusable without them, so the calibrated-uncertainty claim had **no evidence behind it**. This
+  was the largest outstanding gap against D3's metric set and it blocked G4 entirely.
+
+Wired via an optional `quant_out` dict so no call-site arity changed. Verified: checkpoint restores
+trunk 142,305 + adapter 1,428 params exactly; `results_paths` self-check now covers 19 families.
+
+---
+
 ## Reversed or superseded
 
 | was | now | why |
@@ -236,3 +311,7 @@ explicit confirmation.**
 | Cut HeatGNN epochs to 150 | 1500, the paper's value (D6) | 150 was the deviation, not the standard |
 | NaN caused by dead/constant nodes | isolated nodes (D7) | checked — no constant nodes exist |
 | "5-seed LODO is the one gate" (`Phase3_Week3_Results_and_Direction.md` §6) | on hold pending fold fix (D1) | client countermanded |
+| Freeze-then-adapt transfer is POSITIVE (Week-3 LODO, 1 seed) | **NEGATIVE** under the disease-level fold (D12) | fold leakage + a seed-matched reference against an outlier seed |
+| "What we built is not a linear probe" (first MAML draft) | it **is** an exact affine read-out on frozen features (D13) | measured, `max deviation = 0.0`; the client was right |
+| Adapter is ~388 params (4 code/doc sites) | **1,428** (D13) | 388 predates the five-quantile head |
+| Reptile excluded "structurally" (first MAML draft) | excluded for having no support/query meta-objective (D13) | the structural argument described a variant nobody proposes |

@@ -5,7 +5,15 @@ it without dragging in the torch/model stack.
   results/
     single/   encoder__<ds>__seed<S>[.json | __pernode.npz | __perorigin.npz | __gate.npz]
     joint/    encoder_joint__<tag>__<ds>__seed<S>...        (tag = sampler-balance, e.g. uniform-uniform)
-    lodo/     encoder_lodo[_zeroshot]__<ds>__seed<S>...      (leave-one-disease-out transfer probe)
+    lodo/     encoder_lodo[_zeroshot]__<ds>__seed<S>...      (leave-one-DATASET-out transfer probe)
+              encoder_ldo[_zeroshot]__<ds>__seed<S>...       (leave-one-DISEASE-out, Week-4 fold fix)
+
+  Two fold structures live side by side in lodo/ and MUST stay distinguishable (client D1: "report
+  both structures as separate tables"). `encoder_lodo__` holds out one DATASET; `encoder_ldo__` holds
+  out one DISEASE (all 3 influenza sets as a single fold, vs dengue). Records also carry an explicit
+  `fold_structure` field -- the filename is the fast path, the field is the one a reader can trust.
+  Note `encoder_ldo__` and `encoder_lodo__` are distinct strings, neither a prefix of the other, so
+  route order between them is not load-bearing; zeroshot goes first only to match the existing style.
     naive/    naive__<ds>.json + naive__<ds>__<floor>__{pernode,perorigin}.npz
     reports/  *.txt / *.log  human-readable summaries and run logs
     misc/     anything unrouted, and *smoke* throwaways
@@ -23,6 +31,8 @@ RESULTS = Path("results")
 _ROUTES = (
     ("encoder_lodo_zeroshot__", "lodo"),
     ("encoder_lodo__", "lodo"),
+    ("encoder_ldo_zeroshot__", "lodo"),
+    ("encoder_ldo__", "lodo"),
     ("encoder_joint__", "joint"),
     ("encoder__", "single"),
     ("naive__", "naive"),
@@ -59,6 +69,17 @@ def _demo():
         "encoder_joint__uniform-uniform__dengue__seed42.json": "joint",
         "encoder_lodo__influenza_japan__seed42.json": "lodo",
         "encoder_lodo_zeroshot__influenza_japan__seed42.json": "lodo",
+        "encoder_ldo__dengue__seed42.json": "lodo",
+        "encoder_ldo__influenza_japan__seed42__pernode.npz": "lodo",
+        "encoder_ldo_zeroshot__influenza_us-states__seed42.json": "lodo",
+        # G4 quantile archives and trunk checkpoints (added 2026-07-31). New EXTENSIONS, not new
+        # prefixes -- they must route by prefix like every other artifact, and in particular .pt must
+        # not fall through to misc/ the way an unrouted extension would.
+        "encoder_ldo__dengue__seed42__quantiles.npz": "lodo",
+        "encoder_ldo__dengue2flu__seed42__ckpt.pt": "lodo",
+        "encoder_lodo__influenza_japan__seed42__ckpt.pt": "lodo",
+        "encoder__dengue__seed42__quantiles.npz": "single",
+        "encoder_joint__uniform-uniform__dengue__seed42__ckpt.pt": "joint",
         "naive__dengue.json": "naive",
         "naive__dengue__persistence__perorigin.npz": "naive",
         "gated+spatial_Contribution.txt": "reports",

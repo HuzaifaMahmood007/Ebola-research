@@ -37,6 +37,7 @@ import score
 from models import (MEDIAN_IDX, Adapter, SharedEncoder, pinball_loss, sparse_from_dense_np,
                     targets_and_mask, window_slice)
 from to_schema import apply_scaler, invert_scaler
+from results_paths import rpath
 
 RESULTS = Path("results")
 SEEDS = (42, 52, 62, 72, 82)
@@ -230,15 +231,13 @@ def score_predictions(model_name, dataset, seed, pred_by_h, b, origins, phase="t
 
 
 def write_records(records, fname):
-    RESULTS.mkdir(exist_ok=True)
-    (RESULTS / fname).write_text(json.dumps(records, indent=2))
+    rpath(fname, root=RESULTS, make=True).write_text(json.dumps(records, indent=2))
 
 
 def write_per_node(pernode, fname):
     """Per-node scores as compact npz (review #7). npz not JSON: dengue is 7165 nodes x 4 horizons,
     so this is a few hundred KB of arrays, not a megabyte of dict text. One node_idx array per
     horizon (the scored set differs by horizon -- constant-window nodes are dropped per horizon)."""
-    RESULTS.mkdir(exist_ok=True)
     arrays = {}
     for h, ns in pernode.items():
         idx = sorted(ns)
@@ -247,7 +246,46 @@ def write_per_node(pernode, fname):
         arrays[f"h{h}__n_cells"] = np.array([ns[i]["n_cells"] for i in idx], dtype=np.int32)
         for metric in score.METRICS:
             arrays[f"h{h}__{metric}"] = np.array([ns[i][metric] for i in idx], dtype=np.float32)
-    np.savez_compressed(RESULTS / fname, **arrays)
+    np.savez_compressed(rpath(fname, root=RESULTS, make=True), **arrays)
+
+
+def write_quantiles(quant_by_h, origins, fname):
+    """Archive the FULL quantile forecast, not just the median (Review Doc para. 7 / G4).
+
+    Every scoring path takes `[:, :, MEDIAN_IDX]` to get a point forecast and drops the other four
+    quantiles at the moment they are produced. WIS, CRPS, empirical coverage, interval width and PIT
+    are all implemented and self-checked in score.py, and all of them are UNUSABLE without these
+    arrays -- so the calibrated-uncertainty claim has no evidence behind it until a run writes this.
+    It is cheap on a run and cannot be reconstructed afterwards without retraining, which is why it
+    goes in before any further trunk run rather than after.
+
+    Stored per horizon as [N, K, Q] over the K scored ORIGINS (not the full T timeline): the dense
+    [N, T, Q] form is ~20x larger and all but the origin columns are zeros. `origins` and `quantile
+    levels` are stored beside the data so a reader never has to guess the axis order. COUNT space,
+    matching the point forecasts -- quantiles are equivariant under the monotone per-node scaler, so
+    inverting each level independently is exact.
+    """
+    arrays = {"origins": np.asarray(origins, dtype=np.int32),
+              "quantiles": np.asarray(score.QUANTILE_LEVELS, dtype=np.float32)}
+    for h, q in quant_by_h.items():
+        arrays[f"h{h}__quantiles"] = np.asarray(q, dtype=np.float32)      # [N, K, Q]
+    np.savez_compressed(rpath(fname, root=RESULTS, make=True), **arrays)
+
+
+def write_checkpoint(enc, ad, fname, extra=None):
+    """Save the trunk + adapter weights. Without this every result rests on a model that no longer
+    exists: `_fit_trunk` keeps the best state in memory and never writes it, so a search for *.pt
+    outside baselines/ returned ZERO files before 2026-07-31.
+
+    That blocks more than reproducibility. The Ebola protocol is "freeze the trunk, fit an adapter on
+    the support set" -- with no saved trunk there is nothing to freeze, and any re-probe, capacity
+    sweep or re-adaptation costs a full retrain. torch.save of ~144k parameters is a fraction of a
+    second and a few hundred KB.
+    """
+    payload = {"encoder": enc.state_dict(),
+               "adapter": (ad.state_dict() if ad is not None else None),
+               "meta": dict(extra or {})}
+    torch.save(payload, rpath(fname, root=RESULTS, make=True))
 
 
 def write_per_origin(perorigin, fname):
@@ -260,8 +298,7 @@ def write_per_origin(perorigin, fname):
     aggregate() is NODE-AVERAGED (mean of per-node metrics). They coincide on the dense influenza
     panels (near-equal cells/node) and diverge on dengue. The item-6 CI is therefore on the
     cell-pooled metric -- documented in analysis.py."""
-    RESULTS.mkdir(exist_ok=True)
-    np.savez_compressed(RESULTS / fname, **perorigin)
+    np.savez_compressed(rpath(fname, root=RESULTS, make=True), **perorigin)
 
 
 def gate_spatial_readout(enc, ad, Z, A, Mt, origins, device):
@@ -285,8 +322,7 @@ def gate_spatial_readout(enc, ad, Z, A, Mt, origins, device):
 
 def write_gate(gate, fname):
     """Per-node gate/spatial readout (items 7-8) as compact npz."""
-    RESULTS.mkdir(exist_ok=True)
-    np.savez_compressed(RESULTS / fname, **gate)
+    np.savez_compressed(rpath(fname, root=RESULTS, make=True), **gate)
 
 
 NAIVE_META = dict(training_regime="single", sampler=None, gate_mode=None, topo_aug=None)

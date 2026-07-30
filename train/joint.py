@@ -24,7 +24,8 @@ ratio every step (one pass over dengue is ~24 passes over japan). Val every val_
 patience counted in val-checks.
 
 Architecture: ONE shared encoder (the transferable trunk) + one small Adapter per dataset (FiLM +
-head, ~388 params each, P5). A new disease = one new adapter few-shot-fit with the trunk frozen.
+head, 1,428 params each at d=64/|H|=4/|Q|=5, P5). A new disease = one new adapter few-shot-fit with
+the trunk frozen.
 
 Run from the repo root as a module:
   python -m train.joint --all                              # 5 seeds, uniform-uniform (primary)
@@ -46,6 +47,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+import score
 from bundles import DEV_BUNDLE_NAMES, HORIZONS, W, load
 from models import (MEDIAN_IDX, Adapter, SharedEncoder, pinball_loss, sparse_from_dense_np,
                     targets_and_mask, window_slice)
@@ -158,18 +160,30 @@ def _val_pinball(enc, adapters, ds, node_w, w_base):
 
 
 @torch.no_grad()
-def _test_dataset(enc, ad, d, seed, model_name, run_meta):
+def _test_dataset(enc, ad, d, seed, model_name, run_meta, quant_out=None):
     """Score one dataset's test fold through the shared encoder + its own adapter (median = point
     forecast), inverted to count space. Metrics are UNWEIGHTED -- weights are a training device only.
     Returns (records, pernode, perorigin, gate) -- full artifact parity with the single trainer's
-    train_one, so analysis.py can bootstrap origins and read the gate for joint runs too."""
+    train_one, so analysis.py can bootstrap origins and read the gate for joint runs too.
+
+    `quant_out`: optional dict, filled in place with {h: [N, K, Q]} count-space quantiles over the K
+    test origins (G4, train.loop.write_quantiles). Out-parameter rather than a fifth return value so
+    the existing 4-tuple call sites are untouched."""
     enc.eval(); ad.eval()
     T = d.b.X.shape[1]
+    nQ = len(score.QUANTILE_LEVELS)
     pred_by_h = {h: np.zeros((d.N, T), dtype=np.float64) for h in HORIZONS}
-    for t in d.te:
-        med = ad(enc(window_slice(d.Z, t), d.A_solo, d.Mt[:, t]))[:, :, MEDIAN_IDX].cpu().numpy()  # [N,H]
+    if quant_out is not None:
+        for h in HORIZONS:
+            quant_out[h] = np.zeros((d.N, len(d.te), nQ), dtype=np.float32)
+    for k, t in enumerate(d.te):
+        out = ad(enc(window_slice(d.Z, t), d.A_solo, d.Mt[:, t])).cpu().numpy()      # [N, H, Q]
+        med = out[:, :, MEDIAN_IDX]
         for j, h in enumerate(HORIZONS):
             pred_by_h[h][:, t + h] = invert_scaler(med[:, j:j + 1], d.b.scaler)[:, 0]
+            if quant_out is not None:
+                for qi in range(nQ):                  # monotone scaler -> invert each level exactly
+                    quant_out[h][:, k, qi] = invert_scaler(out[:, j, qi:qi + 1], d.b.scaler)[:, 0]
     recs, pernode, perorigin = score_predictions(model_name, d.name, seed, pred_by_h, d.b, d.te,
                                                  run_meta=run_meta)
     gate = gate_spatial_readout(enc, ad, d.Z, d.A_solo, d.Mt, d.va, DEVICE)   # items 7-8, per dataset
