@@ -157,83 +157,144 @@ def stage1_fold(skip=False, verbose=True):
     return ck
 
 
-def stage2_sweep(ck_path, verbose=True):
-    """Fit each surface on the SAME frozen trunk, score all three flu bundles, return results."""
+def load_trunk(ck_path):
+    """The ONE frozen trunk both sweeps share. Sharing it is what makes the control a control."""
     enc = SharedEncoder().to(DEVICE)
     ck = torch.load(ck_path, map_location=DEVICE, weights_only=False)
     enc.load_state_dict(ck["encoder"])
     for p in enc.parameters():
         p.requires_grad_(False)
     enc.eval()
-    print(f"[stage2] trunk loaded from {ck_path} ({sum(v.numel() for v in ck['encoder'].values()):,} params)")
+    print(f"[trunk] loaded {ck_path} "
+          f"({sum(v.numel() for v in ck['encoder'].values()):,} params, frozen)")
+    return enc
 
+
+def sweep(enc, names, tag, verbose=True):
+    """Fit every surface in the ladder on the SAME frozen trunk over `names`, score, return rows."""
     out = []
     for label, factory in SURFACES:
         t0 = time.time()
-        print(f"\n[stage2] surface '{label}' ({n_params(factory):,} params) -- fitting")
-        ad, ds = _fit_shared_adapter(enc, list(FLU_NAMES), SEED, DEVICE, verbose=verbose,
+        print(f"\n[{tag}] surface '{label}' ({n_params(factory):,} params) -- fitting on {list(names)}")
+        ad, ds = _fit_shared_adapter(enc, list(names), SEED, DEVICE, verbose=verbose,
                                      adapter_factory=factory)
         per = {}
         for d in ds:
-            recs, _, _, _ = _test_dataset(enc, ad, d, SEED, f"capacity:{label}",
-                                          dict(training_regime="capacity_probe", surface=label))
+            recs, _, _, _ = _test_dataset(enc, ad, d, SEED, f"capacity:{tag}:{label}",
+                                          dict(training_regime="capacity_probe", surface=label,
+                                               arm=tag))
             per.update(rmse_of(recs))
         mins = (time.time() - t0) / 60
         out.append(dict(label=label, params=n_params(factory), minutes=round(mins, 1),
                         rmse={f"{k[0]}|h{k[1]}": v for k, v in per.items()}))
-        print(f"[stage2] '{label}' done in {mins:.1f} min")
+        print(f"[{tag}] '{label}' done in {mins:.1f} min")
     return out
 
 
-def report(results):
+def gains_vs_control(rows):
+    """Per-cell improvement % of every larger surface over the affine control, same trunk."""
+    base = next((r for r in rows if r["label"] == SURFACES[0][0]), None)
+    if not base:
+        return []
+    g = []
+    for r in rows:
+        if r["label"] == base["label"]:
+            continue
+        for k, v in r["rmse"].items():
+            d = improvement(v, base["rmse"].get(k))
+            if d is not None:
+                g.append(d)
+    return g
+
+
+def _block(A, rows, title, note):
+    """One arm: surfaces, absolute RMSE, and change vs the affine control."""
+    A(f"\n## {title}\n")
+    A(f"\n{note}\n")
+    keys = sorted({k for r in rows for k in r["rmse"]})
+    A("\n| surface | params | fit (min) | " + " | ".join(keys) + " |")
+    A("|---|---|---|" + "---|" * len(keys))
+    for r in rows:
+        A(f"| {r['label']} | {r['params']:,} | {r['minutes']} | " + " | ".join(
+            f"{r['rmse'][k]:,.1f}" if k in r["rmse"] else "—" for k in keys) + " |")
+    base = next((r for r in rows if r["label"] == SURFACES[0][0]), None)
+    if base:
+        A("\nChange vs the affine control on the same trunk, positive = better:\n")
+        A("\n| surface | " + " | ".join(keys) + " |")
+        A("|---|" + "---|" * len(keys))
+        for r in rows:
+            if r["label"] == base["label"]:
+                continue
+            A(f"| {r['label']} | " + " | ".join(
+                (lambda d: f"{d:+.1f}%" if d is not None else "—")(
+                    improvement(r["rmse"].get(k), base["rmse"].get(k))) for k in keys) + " |")
+
+
+def read_verdict(cross, control):
+    """Mechanical read, so the morning decision is not a matter of taste.
+
+    The control is what makes the cross-disease number interpretable. A capacity gain that appears
+    on BOTH arms means the adapter was simply undersized all along and says nothing about transfer;
+    a gain that appears only cross-disease is transfer-specific and is the interesting result.
+    """
+    gc, gi = gains_vs_control(cross), gains_vs_control(control)
+    if not gc:
+        return "INCONCLUSIVE", "No cross-disease gains computed."
+    bc, mc = max(gc), float(np.median(gc))
+    bi, mi = (max(gi), float(np.median(gi))) if gi else (float("nan"), float("nan"))
+    if bc < 2.0:
+        return ("REPRESENTATION-BOUND (provisional)",
+                f"No larger surface beats the affine control by more than {bc:+.1f}% on any "
+                f"cross-disease cell (median {mc:+.1f}%). The frozen trunk does not carry "
+                f"recoverable cross-disease signal, so no read-out can recover it. ANIL adds no "
+                f"read-out capacity, so it is unlikely to close a deficit of this size. "
+                f"RECOMMENDATION: do not spend a week on ANIL on this evidence.")
+    if gi and bi >= 0.6 * bc:
+        return ("GENERAL UNDER-SIZING, NOT TRANSFER-SPECIFIC (provisional)",
+                f"Larger surfaces help cross-disease (best {bc:+.1f}%, median {mc:+.1f}%) but help "
+                f"the in-domain control about as much (best {bi:+.1f}%, median {mi:+.1f}%). The "
+                f"adapter was simply too small everywhere. That is a cheap win worth taking, but it "
+                f"is NOT evidence about cross-disease transfer and is not an argument for ANIL.")
+    if bc >= 10.0:
+        return ("ADAPTER-BOUND AND TRANSFER-SPECIFIC (provisional)",
+                f"Larger surfaces recover up to {bc:+.1f}% cross-disease (median {mc:+.1f}%) while "
+                f"the in-domain control gains only {bi:+.1f}%. The adaptation surface was a real, "
+                f"transfer-specific bottleneck. There is a cheap partial fix available now AND a "
+                f"genuine prior that shaping the trunk for adaptability will pay. Strongest case "
+                f"for ANIL this evidence could produce.")
+    return ("PARTIAL (provisional)",
+            f"Cross-disease best {bc:+.1f}% (median {mc:+.1f}%), in-domain best {bi:+.1f}%. Some "
+            f"capacity effect, well short of the deficit. Neither reading is clean.")
+
+
+def report(cross, control):
     ref = single_reference()
-    base = next((r for r in results if r["label"] == "affine (current)"), None)
+    verdict, detail = read_verdict(cross, control)
     L = []
     A = L.append
     A("# Capacity Probe: is the deficit adapter-bound or representation-bound?\n")
-    A(f"\nGenerated by `capacity_probe.py`. Fold: **dengue -> influenza**, seed {SEED}, ONE frozen "
-      "trunk shared by every row. Only the adaptation surface varies; the fitting protocol "
-      "(80 epochs, patience 15, lr 1e-3, wd 1e-4, uniform 1/3 sampler, pooled pinball validation) "
-      "is held fixed by reusing `train.lodo._fit_shared_adapter`.\n")
-    A("\n**How to read this.** The decisive comparison is each row against **`affine (current)`**, "
-      "which is exactly the surface that produced the reported LDO result. If the larger surfaces "
-      "do not beat it, the frozen representation does not carry the information and no read-out can "
-      "recover it -- in which case ANIL, which adds no capacity, is unlikely to close the gap. If "
-      "they do beat it, the surface was a real bottleneck.\n")
+    A(f"\nGenerated by `capacity_probe.py`, seed {SEED}. **ONE frozen trunk (dengue-trained) is shared "
+      "by every row in both arms.** Only the adaptation surface varies; the fitting protocol "
+      "(80 epochs, patience 15, lr 1e-3, wd 1e-4, uniform sampler, pooled pinball validation) is held "
+      "fixed by reusing `train.lodo._fit_shared_adapter`.\n")
+    A("\n**Why there are two arms.** Arm 1 asks whether a bigger read-out recovers the cross-disease "
+      "deficit. Arm 2 runs the identical ladder on the trunk's OWN disease. Without arm 2 a positive "
+      "result is ambiguous: 'bigger adapter helps' could just mean the adapter was undersized all "
+      "along, which would say nothing about transfer. The control separates those two stories.\n")
 
-    A("\n## Adaptation surfaces\n")
-    A("\n| surface | params | fit time (min) |")
-    A("|---|---|---|")
-    for r in results:
-        A(f"| {r['label']} | {r['params']:,} | {r['minutes']} |")
+    _block(A, cross, "Arm 1 - cross-disease (dengue trunk, adapters fitted on influenza)",
+           "This is the transfer setting. The affine row is exactly the surface that produced the "
+           "reported LDO result.")
+    _block(A, control, "Arm 2 - in-domain control (same trunk, adapters fitted on dengue)",
+           "Same trunk, same ladder, but the trunk's own disease. Any gain here is a general "
+           "capacity effect, not a transfer effect.")
 
-    keys = sorted({k for r in results for k in r["rmse"]})
-    A("\n## Country-macro RMSE (lower is better)\n")
+    keys = sorted({k for r in cross for k in r["rmse"]})
+    A("\n## Context: arm 1 vs the single-disease 5-seed mean (positive = better)\n")
+    A("\nThe headline transfer comparison, for orientation only. **1 seed, not a significance test.**\n")
     A("\n| surface | " + " | ".join(keys) + " |")
     A("|---|" + "---|" * len(keys))
-    for r in results:
-        A(f"| {r['label']} | " + " | ".join(
-            f"{r['rmse'][k]:,.1f}" if k in r["rmse"] else "—" for k in keys) + " |")
-
-    if base:
-        A("\n## Change vs the current affine surface, same trunk (positive = better)\n")
-        A("\n| surface | " + " | ".join(keys) + " |")
-        A("|---|" + "---|" * len(keys))
-        for r in results:
-            if r["label"] == base["label"]:
-                continue
-            cells = []
-            for k in keys:
-                d = improvement(r["rmse"].get(k), base["rmse"].get(k))
-                cells.append(f"{d:+.1f}%" if d is not None else "—")
-            A(f"| {r['label']} | " + " | ".join(cells) + " |")
-
-    A("\n## Context: same rows vs the single-disease 5-seed mean (positive = better)\n")
-    A("\nThis is the headline transfer comparison, shown for orientation only. It is a **1-seed** "
-      "figure and is not a significance test.\n")
-    A("\n| surface | " + " | ".join(keys) + " |")
-    A("|---|" + "---|" * len(keys))
-    for r in results:
+    for r in cross:
         cells = []
         for k in keys:
             ds, h = k.split("|h")
@@ -241,50 +302,21 @@ def report(results):
             cells.append(f"{d:+.1f}%" if d is not None else "—")
         A(f"| {r['label']} | " + " | ".join(cells) + " |")
 
-    # the read, stated mechanically so the morning decision is not a matter of taste
-    verdict = "INCONCLUSIVE"
-    detail = ""
-    if base:
-        gains = []
-        for r in results:
-            if r["label"] == base["label"]:
-                continue
-            for k in keys:
-                d = improvement(r["rmse"].get(k), base["rmse"].get(k))
-                if d is not None:
-                    gains.append(d)
-        if gains:
-            best, med = max(gains), float(np.median(gains))
-            if best < 2.0:
-                verdict = "REPRESENTATION-BOUND (provisional)"
-                detail = (f"No larger surface beats the affine control by more than {best:+.1f}% on "
-                          f"any cell (median {med:+.1f}%). On this evidence the frozen trunk does not "
-                          f"carry recoverable cross-disease signal, and ANIL - which adds no capacity "
-                          f"to the read-out - is unlikely to close a deficit of this size.")
-            elif best >= 10.0:
-                verdict = "ADAPTER-BOUND (provisional)"
-                detail = (f"A larger surface recovers up to {best:+.1f}% (median {med:+.1f}%) over the "
-                          f"affine control on the same trunk. The adaptation surface was a real "
-                          f"bottleneck: there is a cheap partial fix available now, and a genuine "
-                          f"prior that optimising the trunk for adaptability will pay.")
-            else:
-                verdict = "PARTIAL (provisional)"
-                detail = (f"Best gain {best:+.1f}%, median {med:+.1f}%. Some capacity effect, but far "
-                          f"short of the deficit. Neither reading is clean.")
     A(f"\n---\n\n## Read: **{verdict}**\n")
     A(f"\n{detail}\n")
-    A("\n**Provisional, and here is exactly why.** One seed, one direction, one trunk. Head capacity "
-      "only - a genuinely mid-trunk FiLM injection is not tested here because it requires changing "
-      "the encoder forward pass, and this run deliberately changes nothing but the read-out. A null "
-      "result bounds what a *read-out* can recover from this frozen representation; it does not prove "
-      "no trunk can transfer. That is the correct bound for the ANIL question, because ANIL keeps the "
+    A("\n**Provisional, and here is exactly why.** One seed, one trunk, one direction. Head capacity "
+      "only - a genuinely mid-trunk FiLM injection is not tested, because that needs a change to the "
+      "encoder forward pass and this run deliberately changes nothing but the read-out. A null result "
+      "bounds what a *read-out* can recover from this frozen representation; it does not prove that no "
+      "trunk can transfer. That is the right bound for the ANIL question, because ANIL keeps the "
       "read-out small by construction.\n")
 
     OUT_MD.parent.mkdir(parents=True, exist_ok=True)
     OUT_MD.write_text("\n".join(L) + "\n", encoding="utf-8")
     OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
-    OUT_JSON.write_text(json.dumps(dict(seed=SEED, verdict=verdict, results=results), indent=2))
-    print(f"\n{'=' * 72}\nVERDICT: {verdict}\n{detail}\n{'=' * 72}")
+    OUT_JSON.write_text(json.dumps(dict(seed=SEED, verdict=verdict, detail=detail,
+                                        cross_disease=cross, in_domain_control=control), indent=2))
+    print(f"\n{'=' * 78}\nVERDICT: {verdict}\n\n{detail}\n{'=' * 78}")
     print(f"wrote {OUT_MD} and {OUT_JSON}")
     return verdict
 
@@ -311,9 +343,39 @@ def _selfcheck():
     assert abs(improvement(90.0, 100.0) - 10.0) < 1e-9, "positive must mean better (lower error)"
     assert improvement(110.0, 100.0) < 0
     assert improvement(1.0, 0.0) is None and improvement(float("nan"), 1.0) is None
+
+    # the verdict logic is what the morning decision reads, so exercise every branch
+    def rows(base, other):
+        return [dict(label=SURFACES[0][0], params=1, minutes=0, rmse={"d|h3": base}),
+                dict(label="mlp-64", params=2, minutes=0, rmse={"d|h3": other})]
+    flat = rows(100.0, 100.0)                       # no gain anywhere
+    big_cross, big_ctrl = rows(100.0, 80.0), rows(100.0, 79.0)     # 20% both arms
+    v, _ = read_verdict(flat, flat)
+    assert v.startswith("REPRESENTATION-BOUND"), v
+    v, _ = read_verdict(big_cross, big_ctrl)
+    assert v.startswith("GENERAL UNDER-SIZING"), v          # control gains too -> not transfer
+    v, _ = read_verdict(big_cross, flat)
+    assert v.startswith("ADAPTER-BOUND AND TRANSFER-SPECIFIC"), v  # control flat -> transfer-specific
+    v, _ = read_verdict(rows(100.0, 95.0), flat)
+    assert v.startswith("PARTIAL"), v
+    assert read_verdict([], [])[0] == "INCONCLUSIVE"
+
     print("ok  4 surfaces emit [N,H,Q]; ladder strictly exceeds the 1,428-param control; "
-          "MLP is genuinely non-affine; improvement sign correct")
+          "MLP is genuinely non-affine; improvement sign correct; all 5 verdict branches fire")
     print(f"    ladder: {[f'{l}={s:,}' for (l, _), s in zip(SURFACES, sizes)]}")
+
+
+def banner(allow_cpu=False):
+    """Fail loudly rather than spend a night on the CPU by accident."""
+    ok = torch.cuda.is_available() and DEVICE.type == "cuda"
+    name = torch.cuda.get_device_name(0) if torch.cuda.is_available() else "n/a"
+    print(f"[device] torch {torch.__version__} | cuda_available={torch.cuda.is_available()} "
+          f"| DEVICE={DEVICE} | gpu={name}")
+    if not ok and not allow_cpu:
+        sys.exit("[device] REFUSING TO START: DEVICE is not cuda. This run is hours on a GPU and "
+                 "far longer on CPU. Fix the environment, or pass --allow-cpu if you really mean it.")
+    if ok:
+        torch.cuda.reset_peak_memory_stats()
 
 
 if __name__ == "__main__":
@@ -321,13 +383,22 @@ if __name__ == "__main__":
     ap.add_argument("--selfcheck", action="store_true")
     ap.add_argument("--skip-fold", action="store_true",
                     help="reuse an existing trunk checkpoint instead of running stage 1")
+    ap.add_argument("--no-control", action="store_true",
+                    help="skip arm 2; the cross-disease result is then ambiguous, see the report")
+    ap.add_argument("--allow-cpu", action="store_true")
     ap.add_argument("--quiet", action="store_true")
     a = ap.parse_args()
     if a.selfcheck:
         _selfcheck()
     else:
+        banner(allow_cpu=a.allow_cpu)
         t0 = time.time()
         ck = stage1_fold(skip=a.skip_fold, verbose=not a.quiet)
-        res = stage2_sweep(ck, verbose=not a.quiet)
-        report(res)
+        enc = load_trunk(ck)
+        cross = sweep(enc, FLU_NAMES, "arm1-cross-disease", verbose=not a.quiet)
+        control = [] if a.no_control else sweep(enc, ["dengue"], "arm2-in-domain",
+                                                verbose=not a.quiet)
+        report(cross, control)
+        if torch.cuda.is_available():
+            print(f"peak GPU memory {torch.cuda.max_memory_allocated() / 1e9:.2f} GB")
         print(f"total {(time.time() - t0) / 60:.1f} min")

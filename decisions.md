@@ -303,6 +303,40 @@ trunk 142,305 + adapter 1,428 params exactly; `results_paths` self-check now cov
 
 ---
 
+## D15 · Capacity probe runs with an in-domain CONTROL arm, not alone
+2026-07-31, `capacity_probe.py`
+
+The probe asks whether a richer adaptation surface recovers any of the cross-disease deficit. **Run
+alone it cannot answer that question**, and adding the control is what makes it interpretable.
+
+- **Arm 1, cross-disease.** Dengue trunk, capacity ladder fitted on influenza. The transfer setting.
+- **Arm 2, in-domain control.** *Same frozen trunk*, same ladder, fitted on dengue — the trunk's own
+  disease. Costs no second trunk run.
+
+**Why the control is not optional:** if bigger surfaces help arm 1, there are two explanations and
+only the control separates them — (a) the surface was a genuine *transfer* bottleneck, the
+interesting result, or (b) the adapter was simply undersized all along and helps everywhere, which
+says nothing about transfer and is not an argument for ANIL. Reporting (b) as (a) would be exactly
+the class of error D12 records.
+
+Ladder is a strict capacity chain: affine **1,428** (the control, the surface that produced the LDO
+result) → mlp-64 **5,460** → film+mlp-64 **5,588** → mlp-256 **21,780**. Only the surface varies;
+`_fit_shared_adapter` holds epochs, patience, lr, wd, sampler and validation objective fixed.
+
+Verdict is derived **mechanically** in code (five branches, all self-checked) so the morning call is
+not a matter of taste: REPRESENTATION-BOUND / GENERAL UNDER-SIZING / ADAPTER-BOUND AND
+TRANSFER-SPECIFIC / PARTIAL / INCONCLUSIVE.
+
+**Scope of a null result, stated in advance:** it bounds what a *read-out* can recover from this
+frozen representation. It does not prove no trunk can transfer. That is the correct bound for the
+ANIL question, because ANIL keeps the read-out small by construction. Head capacity only — mid-trunk
+FiLM is not tested, as that needs an encoder change and this run deliberately varies nothing else.
+
+The probe **refuses to start unless `DEVICE` is cuda** (`--allow-cpu` to override). Confirmed:
+torch 2.6.0+cu124, RTX 3060.
+
+---
+
 ## Reversed or superseded
 
 | was | now | why |

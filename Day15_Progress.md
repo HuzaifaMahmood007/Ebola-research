@@ -73,20 +73,48 @@ recoverable cross-disease signal and ANIL — which adds no read-out capacity �
 partial fix and a real prior for ANIL. The script writes `Reports/Capacity_Probe_Result.md` with a
 mechanically-derived verdict so the call is not a matter of taste.
 
+**Second arm added (D15) — the control that makes arm 1 readable.** Arm 2 runs the identical ladder
+on the *same frozen trunk* but fitted on **dengue**, the trunk's own disease. No second trunk run.
+Without it, "bigger adapter helps" is ambiguous between a real transfer fix and the adapter simply
+having been undersized all along — and only the second story would be worthless for the ANIL case.
+
+Verdict derived **mechanically**, five branches, all self-checked: REPRESENTATION-BOUND / GENERAL
+UNDER-SIZING / ADAPTER-BOUND AND TRANSFER-SPECIFIC / PARTIAL / INCONCLUSIVE.
+
 `--selfcheck` passes: all 4 surfaces emit `[N,H,Q]`, the ladder is strictly larger than the control,
-and the MLP is verified **genuinely non-affine** (otherwise the probe would be vacuous).
+the MLP is verified **genuinely non-affine** (else the probe would be vacuous), and every verdict
+branch fires.
+
+**GPU enforced.** The probe exits rather than start on CPU (`--allow-cpu` overrides). Confirmed
+torch 2.6.0+cu124, `DEVICE=cuda`, RTX 3060.
 
 ```
 conda run -n ebola-train python capacity_probe.py
 ```
 
+### Client documents — 3 ready to send
+
+| document | words | state |
+|---|---|---|
+| `Reports/Encoder_Results_Stakeholder_Brief.docx` | 1,459 | ready |
+| `Reports/Ebola_Support_Set_Decision.docx` | 1,274 | ready |
+| `Reports/MAML_Decision.docx` | 1,514 | ready |
+
+`MAML_Decision.md` was **rewritten in the stakeholder register** (short, plain language, no parameter
+counts or cost models) to match the encoder brief, on client instruction. All three verified: house
+style matches `Week3_Results_Summary.docx`, **0 markdown leaks, exact numeric round-trip md→docx**.
+The academic `Encoder_Results_Consolidated` stays internal — client asked for the stakeholder one only.
+
 ### Open / not done
 
-- [ ] Run it. Not launched.
-- [ ] `MAML_Decision.md` not rendered to `.docx`, not sent.
-- [ ] `Meta_Learning_Decision.md` (the superseded first draft) still sits at repo root — supersede or delete.
+- [ ] Run the probe. **Not launched.**
+- [ ] `Meta_Learning_Decision.md` (superseded first draft, repo root) — **delete before anyone sends
+      it by mistake.** It contains the "you're wrong about the linear probe" claim and the 388 figure.
+- [ ] `Ebola_Audit_Note.md` — **do not send unchanged**, predates issues #3/#4.
 - [ ] Conformal variant (ACI / CQR / EnbPI) still unanswered; client asked directly.
 - [ ] Integrated Gradients scoping note still not written; client suggested it over SHAP.
+- [ ] **`Reports/` is gitignored** (`.gitignore:6`), so none of the three client documents has version
+      history — the same missing-provenance class the audit flagged for `results/lodo/*.json`.
 
 ---
 
