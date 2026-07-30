@@ -1,0 +1,128 @@
+================================================================================
+PHASE 3 · WEEK 3 — RESULTS SUMMARY                                    2026-07-24
+Single-disease (train.loop) + multi-disease joint (train.joint, uniform+uniform)
+4 dev datasets x 4 horizons x 5 seeds. Count space. Ebola NOT touched.
+Full write-up: Phase3_Week3_Results_and_Direction.md
+================================================================================
+
+HEADLINE
+--------
+* Single-disease encoder: clean win over naive floors on US-STATES only.
+  Mixed on the other three (loses short-horizon on dengue, loses to seasonal
+  on Japan). Real forecaster, not a uniform slam-dunk vs trivial baselines.
+* Multi-disease JOINT training: helps NOTHING, hurts the two SMALLEST datasets
+  (Japan, US-regions) -- the Ebola-scale regime. => NEGATIVE TRANSFER on the
+  regime the thesis targets. This is the critical result.
+
+================================================================================
+1) SINGLE-DISEASE ENCODER vs BEST NAIVE FLOOR  (mean over 5 seeds, headline field)
+   floors: persistence (y_t), seasonal (y_t-52), per-node train mean
+================================================================================
+DENGUE (country-macro, 7165 nodes)   -- wins LONG, loses SHORT
+  RMSE  h3  42.06 vs persist 31.53  LOSE   h10 56.21 vs tmean 57.02  WIN
+        h5  49.94 vs persist 43.82  LOSE   h15 57.38 vs tmean 56.97  lose
+  MAE   h3  18.37 vs persist 14.84  LOSE   h10 26.61 vs tmean 30.51  WIN
+                                          h15 27.47 vs tmean 30.46  WIN
+  PCC   h3  0.422 vs persist 0.458  lose   h10 0.197 vs persist 0.129 WIN
+        h5  0.335 vs persist 0.312  WIN    h15 0.106 vs seas   0.034 WIN
+  sMAPE wins h3-h10, loses h15.
+
+JAPAN influenza (node-level, 47 nodes) -- LOSES to seasonal EVERYWHERE
+  RMSE  h3 734.9 / h5 841.1 / h10 1063.0 / h15 1031.4   (seasonal 547/580/674/680)
+  MAE   h3 261.5 / h5 323.5 / h10 445.0  / h15 443.8    (seasonal 238/258/320/334)
+  PCC   h3 0.872 / h5 0.899 / h10 0.844  / h15 0.837    (seasonal 0.911/0.913/0.879/0.869)
+  => structural: w=20 lookback can't reach last-year amplitude (y[t-52]).
+     Encoder DOES use seasonal phase (zeroing sin/cos costs ~0.07 PCC).
+
+US-REGIONS influenza (node-level, 10 nodes) -- MIXED, noisy (10 nodes)
+  Wins h3 (RMSE/MAE/PCC/sMAPE); loses to seasonal at h10/h15. Low info content.
+
+US-STATES influenza (node-level, 49 nodes) -- CLEAN WIN, all h, all metrics
+  RMSE  h3 113.4 / h5 136.8 / h10 151.5 / h15 154.1   (best floor 124/163/195/190)
+  MAE   h3  68.3 / h5  84.0 / h10  96.9 / h15 100.3   (best floor  81/112/119/115)
+  PCC   h3 0.808 / h5 0.707 / h10 0.641 / h15 0.640   (best floor 0.72/0.53/0.45/0.46)
+  sMAPE beats floors at every horizon.
+
+Paired origin-bootstrap (B=10000) in results/reports/gated+spatial_Contribution.txt
+confirms these signs; dengue h3/h5 LOSE vs persistence, h10/h15 WIN (significant).
+
+================================================================================
+2) JOINT vs SINGLE  -- THE TRANSFER SIGNAL (mean help% across 4 horizons)
+   +help% = joint better ; -help% = joint WORSE
+================================================================================
+                          RMSE      MAE      PCC     NET
+  dengue (7165 nodes)     -0.4%    +0.3%    -3.1%    flat  (dengue dominates trunk)
+  us-states (49 nodes)    +0.1%    -0.6%    +0.8%    flat
+  us-regions (10 nodes)   -4.9%    -7.3%   -10.2%    HURT
+  japan (47 nodes)        -8.0%    -6.9%    -3.1%    HURT
+  worst cells: japan h15 RMSE -18% ; us-regions h15 PCC -21%
+  No MATERIAL/consistent gain anywhere: only scattered sub-3% wins on the two
+  flat datasets (e.g. dengue MAE h10 +2.4%), none stable across metrics.
+
+  READ:
+  - dengue flat = it is 98.5% of nodes, joint ~ single by construction (not a test).
+  - the SMALL diseases (the real test) got WORSE -> negative transfer.
+  - the datasets hurt most (10, 47 nodes) are the Ebola-scale ones (Ebola=61).
+  - TWO explanations, undistinguished by this run:
+      (a) genuine negative transfer (different disease dynamics fight one trunk)
+      (b) weighting artifact (uniform over-cycles tiny data ~24x -> overfit)
+    -> resolvable cheaply: re-run sqrt/proportional weighting + LODO probe.
+
+================================================================================
+3) SECONDARY
+================================================================================
+  Spatial gate is ON (g mean 0.27 japan .. 0.60 dengue; 0% near-off nodes)
+    -> {gate on vs g==0} ablation would measure something real.
+  Per-node scaling limits graph to TIMING co-movement, not magnitude (documented).
+  G4/G5 (CRPS/PICP/SHAP) = Week 5, untouched. Quantile head trained & in place.
+  P9 topo-aug = formally deferred out of Week-3 scope (2026-07-24).
+
+================================================================================
+3b) LODO TRANSFER PROBE  -- CORRECTED 2026-07-29 (numbers below replaced)
+================================================================================
+  *** THE 2026-07-27 TABLE HERE WAS REFERENCED WRONG. Do not re-quote it. ***
+  It compared LODO to seed 42's OWN single run while every other table in this
+  file quotes 5-SEED MEANS. Seed 42 is an unusually BAD single-disease seed
+  (dengue rmse h3 z=+1.31, us-regions rmse h5 z=+1.35), so a seed-matched
+  reference flattered LODO: a dengue h3 result that is a 15% WORSENING against
+  the 5-seed mean printed as +3%. Formula (train/lodo.py:287) was right, the
+  reference was not. Raised by the client in "Review Doc.md".
+  SUPERSEDED: us-regions +24%/+26% ; japan +14%/+10% ; us-states +5%/+5% ;
+              dengue +4%/-6%.
+
+  Mechanism unchanged: train trunk on 3 diseases, FREEZE, fit small adapter on
+  held-out 4th (== the Week-5 Ebola path). +% = LODO better.
+  VERDICT = paired bootstrap over TIME ORIGINS (B=10000), cell-pooled metric.
+  RMSE, vs 5-seed single-disease mean:
+
+                     h3                h5              h10             h15
+  japan        +21.1% [+8.7,+31.5]  +7.6% NOISE   -20.0% WORSE    -27.2% WORSE
+  us-regions   +13.1% [+3.8,+20.4]* +20.0%*       + 9.2%*         + 2.5%*
+  us-states    + 2.5% NOISE         + 0.4% NOISE  - 1.8% WORSE*   - 3.0% WORSE*
+  dengue       -20.9% WORSE*        -10.4% WORSE* - 4.4% WORSE    - 1.3% WORSE
+    * = origin CI excludes 0, but delta < 1.96x the single-disease SEED CV at
+        that horizon: stable across test periods, NOT distinguishable from a
+        different random init.
+
+  READ (corrected): the ONLY cell that is both origin-stable AND clears the
+  seed-noise screen as a POSITIVE is JAPAN h3. us-regions is positive and
+  time-stable everywhere but seed-fragile throughout -- the "+24%, biggest on
+  the smallest graph" claim does NOT survive the right reference. us-states is
+  nothing at short h. DENGUE -- the only genuinely held-out DISEASE here -- is
+  NEGATIVE at every horizon. That is the flu-leakage pattern the client called.
+  Zero-shot (no adapt) = good PCC, bad RMSE -> trunk gets SHAPE, adapter fixes
+  SCALE (unchanged).
+
+  TWO AXES DISAGREE: this CI is CELL-POOLED, the section-1/2 headline tables are
+  NODE-AVERAGED. Coincide on dense influenza, diverge on dengue.
+  CAVEATS: LODO is 1 SEED -> no seed dispersion of its own, all rows provisional.
+  Long-horizon transfer genuinely hurts (trunk early-stopped at step 1k-9k of
+  91k -- may be under-trained).
+  5-SEED CONFIRMATION IS ON HOLD: client requires the FOLD STRUCTURE fixed first
+  (3 of 4 datasets are influenza -> we held out a POPULATION, not a DISEASE).
+  See Phase3_Week4_Work_Order.md S2-S3 and decisions.md D1/D5.
+  Regenerate: python analysis.py --transfer
+
+================================================================================
+4) DIRECTION (see stakeholder doc for full options)
+================================================================================

@@ -278,17 +278,24 @@ dataset list was built (Week-5 few-shot is a separate adapter-fit path, delibera
 through these). Named gates verify both: `train.loop --selfcheck` and `train.joint --equiv` each fire
 a C8 control.
 
-### Still open (surfaced by the advisory): P9 `topo_aug`
+### Resolved: P9 `topo_aug` — **formally deferred out of Week-3 scope** (2026-07-24)
 The advisor confirmed **annealed edge dropout (P9 / `topo_aug`) is not implemented** — it's only a
 schema field defaulting `"none"`; there is no edge-dropout code or annealing schedule anywhere.
 Consequence: the primary 2×2 ablation `{gate on, g≡0} × {aug none, edge_drop}` can't be run — the
-`edge_drop` arm doesn't exist. **Decision needed: build it this week, or formally defer it out of
-Week-3 scope.** Not decided yet.
+`edge_drop` arm doesn't exist.
+
+**Decision: defer.** P9 is a robustness *ablation*, not part of the primary model, and it is only
+meaningful once we know the shared trunk is worth hardening — which the Day-14 transfer result now
+puts in question (see `Phase3_Week3_Results_and_Direction.md`). Building edge-dropout + annealing +
+the 2×2 this week would spend a day protecting a spatial channel whose value is unconfirmed. The
+`topo_aug` schema field stays (`"none"` default), so nothing regresses; the 2×2 moves to **Week 6**
+alongside the other ablations, or is dropped entirely if the direction review retires the spatial
+apparatus. No code change required to defer.
 
 ---
 
 ## Open items / next up
-- **Decide P9 `topo_aug`: build annealed edge dropout, or formally defer** (§9). Blocks the primary 2×2.
+- ~~Decide P9 `topo_aug`~~ — **DONE: deferred out of Week-3 scope** (§9), moved to Week 6 / conditional on the direction review.
 - Decide the delta-target idea (yes/no) — §3.
 - Run `train.loop --all` (the deterministic re-run) so the single runs emit `*__perorigin.npz` and
   `*__gate.npz`; then `python analysis.py --ci --reads`. Backfill only stamps metadata, not per-origin.
@@ -299,3 +306,7 @@ Week-3 scope.** Not decided yet.
   cell-pooled CI is acceptable (and whether PCC needs origin-bootstrap support at all) — §8.
 - G6 baselines under the common pipeline — Day-15 → Week-4 by design; call it out, don't leave it
   silently open.
+
+
+Residual / persistence-anchor target — predict y[t+h] − y[t] (or add a y[t] skip into the head), instead of the absolute level. The model then starts from persistence and only learns the correction, which directly attacks the short-horizon dengue loss (that's the horizon where persistence beats us). No new input channel, y[t] is already in the window → doesn't break C1 or Ebola. This is the single highest-leverage change and it's already half-decided in decisions_day_13.md §3. Downside: can add noise / over-mean-revert at h10/h15 — must check it doesn't cost us where we currently win.
+Ensemble the 5 seeds — we already train 5 seeds per dataset; average their quantiles at inference instead of just reporting mean-of-metrics. Free variance reduction, and it helps most exactly where we're weakest (the noisy small datasets, Japan/US-regions). Ebola-safe (ensemble the few-shot adapters too). Downside: basically none; 5× inference cost, which is nothing.
