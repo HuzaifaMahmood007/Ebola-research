@@ -66,7 +66,8 @@ def _field(ds):
 # Step 1 -- train the shared trunk on the in-diseases (joint loop, returns the model).
 # --------------------------------------------------------------------------- #
 def _fit_trunk(seed, in_names, device, steps=91000, val_every=1000, patience=12, lr=1e-3, wd=1e-4,
-               sampler="uniform", gate_mode="learned", verbose=True, share_adapter=False):
+               sampler="uniform", gate_mode="learned", verbose=True, share_adapter=False,
+               adapter_groups=None):
     """Mirror train.joint.train_joint's training loop, but RETURN (enc, in_adapters) instead of
     testing. node weights uniform (dengue balance off) to match the primary uniform-uniform run.
 
@@ -77,22 +78,46 @@ def _fit_trunk(seed, in_names, device, steps=91000, val_every=1000, patience=12,
       never learn a flu-invariant representation. Forcing one head forces the invariance.
       Note this makes the trunk STRICTLY more constrained, so it may well transfer WORSE -- that is
       the empirical question, not a foregone conclusion.
+
+    adapter_groups -> the general form of the same idea, and what the THREE-disease fold needs:
+      a group id per in-dataset, one Adapter per distinct group. Neither boolean covers the case
+      where the trunk trains on dengue AND influenza at once, because dengue needs its own head
+      while the 3 flu sets must share one. `[0, 1, 1, 1]` says exactly that.
+      share_adapter is the special case all-zeros; the default is the special case all-distinct.
+      Passing both is an error rather than a silent precedence rule.
     """
     assert "ebola" not in in_names, "ebola must never enter trunk training (C8)"
+    assert not (share_adapter and adapter_groups is not None), \
+        "pass share_adapter OR adapter_groups, not both"
     torch.manual_seed(seed); np.random.seed(seed)
     ds, A_block = _prepare(in_names, device)
     enc = SharedEncoder(gate_mode=gate_mode).to(device)
-    if share_adapter:
-        shared = Adapter().to(device)
-        adapters = nn.ModuleList([shared])              # registered ONCE -> a single param set
-        ad_for = [shared] * len(in_names)               # same object stands in for every dataset
-    else:
-        adapters = nn.ModuleList([Adapter().to(device) for _ in in_names])
-        ad_for = list(adapters)
+    if adapter_groups is None:
+        adapter_groups = [0] * len(in_names) if share_adapter else list(range(len(in_names)))
+    assert len(adapter_groups) == len(in_names), \
+        f"adapter_groups has {len(adapter_groups)} entries for {len(in_names)} datasets"
+    uniq = sorted(set(adapter_groups))
+    by_group = {g: Adapter().to(device) for g in uniq}
+    adapters = nn.ModuleList([by_group[g] for g in uniq])   # each param set registered ONCE
+    ad_for = [by_group[g] for g in adapter_groups]          # identical objects within a group
     params = list(enc.parameters()) + list(adapters.parameters())
     opt = torch.optim.AdamW(params, lr=lr, weight_decay=wd)
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=steps)
     w_base = dataset_weights(ds, sampler)
+    if len(set(adapter_groups)) != len(adapter_groups):
+        # A disease-level fold must weight DISEASES, not bundles. dataset_weights is uniform over
+        # BUNDLES, so with groups [0,1,1,1] influenza would take 3/4 of the trunk objective and
+        # dengue 1/4 -- weighting a disease by how many bundles it happens to own, which is the
+        # exact defect _mean_adapter is deduped to avoid. Rebalance so each GROUP totals 1/n_groups
+        # and its members split that share in their original proportions.
+        gw = {}
+        for g, w in zip(adapter_groups, w_base):
+            gw[g] = gw.get(g, 0.0) + w
+        n_g = len(gw)
+        w_base = [w / gw[g] / n_g for g, w in zip(adapter_groups, w_base)]
+        if verbose:
+            print(f"    trunk loss rebalanced per DISEASE ({n_g} groups): "
+                  f"{[round(w, 3) for w in w_base]}")
     node_w = [_node_weight(d.name, d.b, "uniform", device) for d in ds]
     streams = [_origin_stream(d.tr, seed + i) for i, d in enumerate(ds)]
 
@@ -138,10 +163,20 @@ def _fit_trunk(seed, in_names, device, steps=91000, val_every=1000, patience=12,
 
 def _mean_adapter(in_adapters, device):
     """Zero-shot reference: the element-wise mean of the trained in-adapters (all live in per-node
-    z-score space, so the mean is a defensible generic adapter). No held-out data used."""
+    z-score space, so the mean is a defensible generic adapter). No held-out data used.
+
+    DEDUPED BY IDENTITY. `_fit_trunk` returns one entry per in-DATASET, so a shared head appears
+    repeatedly -- influenza contributes the same object 3 times. Averaging the list as given would
+    weight a disease by how many bundles it happens to own (influenza 3/4 against dengue 1/4) rather
+    than weighting each disease once, which is the whole point of a disease-level fold. Deduping
+    also keeps the single-source case an exact identity, as the callers document."""
+    uniq, seen = [], set()
+    for a in in_adapters:
+        if id(a) not in seen:
+            seen.add(id(a)); uniq.append(a)
     ad = Adapter().to(device)
     ref = ad.state_dict()
-    avg = {k: torch.stack([a.state_dict()[k].float() for a in in_adapters]).mean(0).to(ref[k].dtype)
+    avg = {k: torch.stack([a.state_dict()[k].float() for a in uniq]).mean(0).to(ref[k].dtype)
            for k in ref}
     ad.load_state_dict(avg)
     return ad
@@ -389,6 +424,136 @@ def run_fold(held_out, seed, device=DEVICE, trunk_steps=91000, verbose=True):
 # --------------------------------------------------------------------------- #
 LDO_DIRECTIONS = ("flu2dengue", "dengue2flu")
 
+# --------------------------------------------------------------------------- #
+# THREE-disease leave-one-disease-out (Week 4, once COVID joined the dev set).
+#
+# The two-direction fold above is a two-disease split and cannot express "hold out COVID": with
+# three diseases there are three folds, not two directions. Both live side by side -- the old
+# records stay valid for the two-disease structure the client asked to see reported separately
+# (D1), and nothing here overwrites them (distinct `encoder_ldo3__` prefix).
+#
+# A DISEASE is the unit, not a dataset. Influenza owns three bundles; they share ONE adapter
+# wherever they appear, in-trunk and held-out alike, because three FiLM surfaces would let the
+# trunk offload panel differences into the heads and never learn a flu-invariant representation.
+# Dengue and COVID own one bundle each, so for them "shared" is a no-op.
+#
+# Deliberately NOT pooled: a held-out influenza fold emits three per-dataset rows and they are
+# never averaged into one influenza number (D3). The three bundles differ 60x in cells and have
+# disjoint calendars; a mean over them would be arithmetic, not a measurement.
+# --------------------------------------------------------------------------- #
+DISEASES = {
+    "dengue":    ("dengue",),
+    "influenza": ("influenza_japan", "influenza_us-regions", "influenza_us-states"),
+    "covid":     ("covid_us-states",),
+}
+LDO3_DISEASES = tuple(DISEASES)
+
+
+# The GRAPH-CONTROLLED pair. covid_us-states and influenza_us-states are the only two bundles in the
+# study that share a bit-identical A_geo, a bit-identical C and the same 49 nodes (asserted at build
+# time, covid_load.py). Holding one out therefore varies the DISEASE and nothing else -- not the
+# graph, not the geography, not the node count, not the panel width. Every other cross-disease cell
+# in this project confounds all four, which is why a negative there has never been attributable.
+#
+# It is also cheap: both trunks are 49-node panels, so a 5-seed two-direction sweep costs less than
+# one dengue-containing LDO3 fold.
+#
+# What it CANNOT do: generalise to Ebola, which is 61 unseen West-African districts on a graph the
+# trunk has never met. A positive result here is a clean mechanism finding, not evidence for the
+# few-shot claim. Report it as such.
+PAIR_DISEASES = {
+    "covid": ("covid_us-states",),
+    "influenza_us-states": ("influenza_us-states",),
+}
+
+
+def _ldo3_plan(held_out, universe=None):
+    """(in_names, adapter_groups, held_names) for one leave-one-disease-out fold."""
+    universe = DISEASES if universe is None else universe
+    assert held_out in universe, f"held_out must be one of {tuple(universe)}, got {held_out!r}"
+    in_names, groups = [], []
+    for g, dis in enumerate(d for d in universe if d != held_out):
+        for n in universe[dis]:
+            in_names.append(n); groups.append(g)
+    return in_names, groups, list(universe[held_out])
+
+
+def run_ldo3_fold(held_out, seed, device=DEVICE, trunk_steps=91000, epochs=80, verbose=True,
+                  universe=None, prefix="encoder_ldo3", fold_tag="leave-one-disease-out-3way",
+                  trunk_patience=12):
+    """Hold out one DISEASE: trunk on the other two (one adapter each), then freeze and fit ONE
+    fresh adapter on the held-out disease's bundles. Emits an adapted arm and a zero-shot arm.
+
+    Every fold takes the same path -- `_fit_shared_adapter` even when the held-out disease owns a
+    single bundle -- so the three folds are comparable to each other. That is a deliberate departure
+    from run_ldo_fold, which uses _fit_adapter_and_score for its single-bundle side; mixing the two
+    here would make "hold out COVID" and "hold out influenza" differ by fitting protocol as well as
+    by data, and the fitting protocols are near-identical anyway.
+
+    `trunk_patience` was NOT threaded through before 2026-08-06, so every fold silently took
+    _fit_trunk's default of 12. At val_every=1000 that caps the trunk at 13k-27k of its 91k steps,
+    which means CosineAnnealingLR(T_max=91000) never anneals: across all 15 runs of 2026-08-04 the
+    lr at the selected checkpoint was 1.000e-3 to 9.3e-4, i.e. flat. Every run burned exactly 12,000
+    steps after its best checkpoint, so all 15 died on this branch and none can be called converged.
+    Pass trunk_patience >= trunk_steps/val_every to disable the stop and traverse the whole schedule
+    -- and pass a distinct `prefix` when you do, or the run overwrites the artifacts the LDO3
+    write-ups rest on."""
+    universe = DISEASES if universe is None else universe
+    in_names, groups, held_names = _ldo3_plan(held_out, universe)
+    in_diseases = [d for d in universe if d != held_out]
+    if verbose:
+        print(f"\n=== {prefix} fold: held-out DISEASE={held_out} ({held_names})")
+        print(f"    trunk on {in_diseases} = {in_names}  adapter_groups={groups}  seed={seed} ===")
+
+    # sampler is "uniform-per-disease" whenever a group holds >1 bundle, because _fit_trunk
+    # rebalances the loss per disease there. Recording "uniform-uniform" would misdescribe the run.
+    smp = "uniform-perdisease" if len(set(groups)) != len(groups) else "uniform-uniform"
+    meta = dict(training_regime="ldo3", sampler=smp, gate_mode="learned",
+                topo_aug="none", fold_structure=fold_tag,
+                held_out_disease=held_out, in_diseases=",".join(in_diseases))
+    zmeta = dict(meta, training_regime="ldo3_zeroshot")
+
+    enc, in_ads = _fit_trunk(seed, in_names, device, steps=trunk_steps, verbose=verbose,
+                             adapter_groups=groups, patience=trunk_patience)
+    ad, ds = _fit_shared_adapter(enc, held_names, seed, device, epochs=epochs, verbose=verbose)
+    # one distinct adapter per IN-DISEASE (deduped inside _mean_adapter), so the zero-shot head is
+    # a two-disease mean here, not the single-source identity the two-way fold produced.
+    borrowed = _mean_adapter(in_ads, device)
+
+    all_recs, all_zrecs = [], []
+    for d in ds:
+        quant = {}
+        recs, pn, po, gate = _test_dataset(enc, ad, d, seed, f"{prefix}:{held_out}", meta,
+                                           quant_out=quant)
+        write_records(recs, f"{prefix}__{d.name}__seed{seed}.json")
+        write_per_node(pn, f"{prefix}__{d.name}__seed{seed}__pernode.npz")
+        write_per_origin(po, f"{prefix}__{d.name}__seed{seed}__perorigin.npz")
+        write_gate(gate, f"{prefix}__{d.name}__seed{seed}__gate.npz")
+        write_quantiles(quant, d.te, f"{prefix}__{d.name}__seed{seed}__quantiles.npz")
+        all_recs += recs
+
+        # zero-shot gets pernode/perorigin too: it carries the largest reported effects (-311%,
+        # -559%) and without these arrays that arm has no bootstrap-CI material at all.
+        zrecs, zpn, zpo, _ = _test_dataset(enc, borrowed, d, seed,
+                                           f"{prefix}_zeroshot:{held_out}", zmeta)
+        write_records(zrecs, f"{prefix}_zeroshot__{d.name}__seed{seed}.json")
+        write_per_node(zpn, f"{prefix}_zeroshot__{d.name}__seed{seed}__pernode.npz")
+        write_per_origin(zpo, f"{prefix}_zeroshot__{d.name}__seed{seed}__perorigin.npz")
+        all_zrecs += zrecs
+
+    # ONE trunk and ONE held-out adapter per fold, so one checkpoint regardless of bundle count.
+    write_checkpoint(enc, ad, f"{prefix}__{held_out}__seed{seed}__ckpt.pt",
+                     extra=dict(fold=prefix, held_out_disease=held_out, seed=seed,
+                                trunk_steps=trunk_steps, in_names=in_names,
+                                adapter_groups=groups, adapter_scope=held_names))
+    return all_recs, all_zrecs
+
+
+def run_pair_fold(held_out, seed, **kw):
+    """Graph-controlled covid <-> influenza_us-states fold. Same machinery, restricted universe."""
+    return run_ldo3_fold(held_out, seed, universe=PAIR_DISEASES, prefix="encoder_pair",
+                         fold_tag="graph-controlled-pair", **kw)
+
 
 def run_ldo_fold(direction, seed, device=DEVICE, trunk_steps=91000, verbose=True):
     assert direction in LDO_DIRECTIONS, f"direction must be one of {LDO_DIRECTIONS}"
@@ -570,6 +735,63 @@ def _smoke():
     print(f"smoke ok: adapter-fit + zero-shot both produced {len(recs)} records (held-out us-regions)")
 
 
+def _smoke_ldo3():
+    """The THREE-disease fold: plan, adapter scoping, zero-shot weighting, and per-bundle output.
+
+    Dengue is excluded from the model half (7,165 nodes is not a smoke test); the plan half checks
+    all three real folds, which is where the fold-structure bugs would actually live."""
+    # (1) the plan, for every fold. Influenza's 3 bundles must share ONE group wherever they appear.
+    assert tuple(DISEASES["influenza"]) == FLU_NAMES, "DISEASES['influenza'] drifted from FLU_NAMES"
+    for dis, names in DISEASES.items():
+        for n in names:
+            assert n in DEV_BUNDLE_NAMES, f"{n} is not a dev bundle"
+    covered = [n for names in DISEASES.values() for n in names]
+    assert sorted(covered) == sorted(DEV_BUNDLE_NAMES), \
+        f"DISEASES must partition the dev bundles; got {sorted(covered)}"
+    assert len(covered) == len(set(covered)), "a bundle appears in two diseases"
+
+    expect = {"dengue":    (4, [0, 0, 0, 1], ["dengue"]),
+              "influenza": (2, [0, 1], list(FLU_NAMES)),
+              "covid":     (4, [0, 1, 1, 1], ["covid_us-states"])}
+    for held, (n_in, groups, held_names) in expect.items():
+        i, g, h = _ldo3_plan(held)
+        assert len(i) == n_in and g == groups and h == held_names, \
+            f"{held}: plan is ({i}, {g}, {h})"
+        assert not set(i) & set(h), f"{held}: a bundle is both in-trunk and held-out"
+        assert "ebola" not in i + h, "C8"
+    # the flu bundles must carry ONE group id whenever influenza is an in-disease
+    for held in ("dengue", "covid"):
+        i, g, _ = _ldo3_plan(held)
+        flu_groups = {g[k] for k, n in enumerate(i) if n in FLU_NAMES}
+        assert len(flu_groups) == 1, f"{held}: the 3 flu bundles got {len(flu_groups)} adapters"
+
+    # (2) adapter_groups really does produce one parameter set per group, shared within it.
+    dev = DEVICE
+    trio = ["influenza_japan", "influenza_us-states", "influenza_us-regions"]
+    enc, ad_for = _fit_trunk(42, trio, dev, steps=60, val_every=30, patience=99, verbose=False,
+                             adapter_groups=[0, 1, 1])
+    assert ad_for[1] is ad_for[2] and ad_for[0] is not ad_for[1], "adapter_groups scoping is wrong"
+
+    # (3) the zero-shot head must weight DISEASES, not bundles: with groups [0,1,1] the mean is over
+    # 2 distinct adapters, so it must differ from the mean over the 3-entry list taken naively.
+    z = _mean_adapter(ad_for, dev)
+    naive = torch.stack([a.state_dict()["head.weight"].float() for a in ad_for]).mean(0)
+    deduped = torch.stack([a.state_dict()["head.weight"].float()
+                           for a in (ad_for[0], ad_for[1])]).mean(0)
+    assert torch.allclose(z.state_dict()["head.weight"].float(), deduped), \
+        "_mean_adapter did not dedupe: a disease is being weighted by its bundle count"
+    assert not torch.allclose(naive, deduped), "control void: pick adapters that actually differ"
+
+    # (4) single-source stays an exact identity, as the two-way fold documents.
+    one = _mean_adapter([ad_for[0]], dev)
+    assert torch.allclose(one.state_dict()["head.weight"].float(),
+                          ad_for[0].state_dict()["head.weight"].float()), \
+        "single-source _mean_adapter must be an identity"
+    print(f"smoke-ldo3 ok: 3 folds plan correctly ({', '.join(LDO3_DISEASES)}); flu shares one "
+          f"adapter in every fold; zero-shot head averages DISEASES not bundles; "
+          f"single-source is identity")
+
+
 def _smoke_ldo():
     """Fast end-to-end for the leave-one-DISEASE-out machinery, no dengue (7,165 nodes is not a
     smoke test). Trunk on us-regions with a tiny budget, then ONE shared adapter over the other two
@@ -612,11 +834,31 @@ def main():
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--smoke", action="store_true")
     ap.add_argument("--ldo", choices=list(LDO_DIRECTIONS),
-                    help="leave-one-DISEASE-out fold (3 flu as one disease vs dengue)")
-    ap.add_argument("--all-ldo", action="store_true", help="both leave-one-disease-out directions")
+                    help="TWO-disease leave-one-disease-out fold (3 flu as one disease vs dengue)")
+    ap.add_argument("--all-ldo", action="store_true", help="both two-disease LDO directions")
     ap.add_argument("--smoke-ldo", action="store_true")
+    ap.add_argument("--smoke-ldo3", action="store_true",
+                    help="fold plan + adapter scoping checks for the three-disease fold")
+    ap.add_argument("--ldo3", choices=list(LDO3_DISEASES),
+                    help="THREE-disease leave-one-DISEASE-out: hold out dengue | influenza | covid")
+    ap.add_argument("--all-ldo3", action="store_true",
+                    help="all three leave-one-disease-out folds")
+    ap.add_argument("--pair", action="store_true",
+                    help="graph-controlled covid <-> influenza_us-states, BOTH directions "
+                         "(identical graph/covariates/nodes: varies the disease and nothing else)")
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--seeds", type=int, nargs="+",
+                    help="run --ldo3/--all-ldo3 over several seeds, e.g. --seeds 42 52 62 72 82")
+    ap.add_argument("--epochs", type=int, default=80, help="held-out adapter epochs (ldo3)")
     ap.add_argument("--trunk-steps", type=int, default=91000)
+    ap.add_argument("--trunk-patience", type=int, default=12,
+                    help="val checks (one per 1000 steps) without improvement before the trunk "
+                         "stops. >= trunk_steps/1000 disables the stop, so the cosine schedule is "
+                         "actually traversed instead of sitting flat at the initial lr")
+    ap.add_argument("--prefix", default="encoder_ldo3",
+                    help="output filename prefix (ldo3 only). Change it to land a variant run "
+                         "BESIDE the existing artifacts instead of overwriting them; the prefix "
+                         "needs a route in results_paths.py or it falls through to results/misc/")
     a = ap.parse_args()
 
     t0 = time.time()
@@ -624,6 +866,35 @@ def main():
         _smoke()
     elif a.smoke_ldo:
         _smoke_ldo()
+    elif a.smoke_ldo3:
+        _smoke_ldo3()
+    elif a.pair:
+        seeds = a.seeds or [a.seed]
+        held = list(PAIR_DISEASES)
+        print(f"PAIR (graph-controlled): {len(held)} directions x {len(seeds)} seeds = "
+              f"{len(held)*len(seeds)} runs | trunk_steps={a.trunk_steps} epochs={a.epochs}")
+        for s in seeds:
+            for h in held:
+                run_pair_fold(h, s, trunk_steps=a.trunk_steps, epochs=a.epochs)
+        print(f"PAIR done in {(time.time()-t0)/60:.1f} min")
+    elif a.all_ldo3 or a.ldo3:
+        held = list(LDO3_DISEASES) if a.all_ldo3 else [a.ldo3]
+        seeds = a.seeds or [a.seed]
+        # Raising patience makes this a DIFFERENT experiment from the one on disk, written to the
+        # same filenames. Refuse rather than silently overwrite the artifacts LDO3_Results.md, the
+        # stakeholder brief and verify_ldo3_doc.py all read.
+        if a.trunk_patience * 1000 >= a.trunk_steps and a.prefix == "encoder_ldo3":
+            ap.error("--trunk-patience disables the trunk early stop, so this is a variant run. "
+                     "Pass --prefix (e.g. --prefix encoder_ldo3full) so it does not overwrite the "
+                     "LDO3 artifacts the write-ups rest on.")
+        print(f"LDO3: {len(held)} fold(s) x {len(seeds)} seed(s) = {len(held)*len(seeds)} runs "
+              f"| trunk_steps={a.trunk_steps} epochs={a.epochs} "
+              f"trunk_patience={a.trunk_patience} prefix={a.prefix}")
+        for s in seeds:
+            for h in held:
+                run_ldo3_fold(h, s, trunk_steps=a.trunk_steps, epochs=a.epochs,
+                              trunk_patience=a.trunk_patience, prefix=a.prefix)
+        print(f"LDO3 done in {(time.time()-t0)/60:.1f} min")
     elif a.all_ldo:
         for d in LDO_DIRECTIONS:
             run_ldo_fold(d, a.seed, trunk_steps=a.trunk_steps)
@@ -639,7 +910,8 @@ def main():
         run_fold(a.held_out, a.seed, trunk_steps=a.trunk_steps)
         print(f"LODO fold {a.held_out} done in {(time.time()-t0)/60:.1f} min")
     else:
-        ap.error("give --held-out NAME, --all, --ldo DIRECTION, --all-ldo, --smoke or --smoke-ldo")
+        ap.error("give --held-out NAME, --all, --ldo DIRECTION, --all-ldo, --ldo3 DISEASE, "
+                 "--all-ldo3, --smoke or --smoke-ldo")
 
 
 if __name__ == "__main__":

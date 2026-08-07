@@ -31,6 +31,23 @@ RESULTS = Path("results")
 _ROUTES = (
     ("encoder_lodo_zeroshot__", "lodo"),
     ("encoder_lodo__", "lodo"),
+    # ldo3 = the THREE-disease leave-one-disease-out fold (dengue / influenza / covid), which lives
+    # beside the two-direction ldo records rather than replacing them. Note "encoder_ldo3__" is not
+    # a prefix of "encoder_ldo__" and vice versa (they differ at the '3'), so route order between
+    # the ldo and ldo3 families is not load-bearing.
+    ("encoder_ldo3_zeroshot__", "lodo"),
+    ("encoder_ldo3__", "lodo"),
+    # ldo3FULL = the same three-disease fold with the trunk early stop disabled, so the 91k-step
+    # cosine schedule is actually traversed. It is a SEPARATE family, not a replacement: the 2026-08-04
+    # runs stopped at 13k-27k steps with the lr still at ~1e-3, and the whole point is to read the two
+    # side by side at a matched seed. Neither "encoder_ldo3full__" nor "encoder_ldo3full_zeroshot__"
+    # is a prefix of the other or of "encoder_ldo3__" (they differ at the 'f'), so route order here is
+    # not load-bearing either.
+    ("encoder_ldo3full_zeroshot__", "lodo"),
+    ("encoder_ldo3full__", "lodo"),
+    # the graph-controlled covid <-> influenza_us-states pair (identical A_geo, C and node set)
+    ("encoder_pair_zeroshot__", "lodo"),
+    ("encoder_pair__", "lodo"),
     ("encoder_ldo_zeroshot__", "lodo"),
     ("encoder_ldo__", "lodo"),
     ("encoder_joint__", "joint"),
@@ -76,6 +93,20 @@ def _demo():
         # prefixes -- they must route by prefix like every other artifact, and in particular .pt must
         # not fall through to misc/ the way an unrouted extension would.
         "encoder_ldo__dengue__seed42__quantiles.npz": "lodo",
+        # ldo3 must land in lodo/ too, and must NOT be captured by the ldo routes (or a three-disease
+        # record would be read as a two-disease one by anything keying on the filename).
+        "encoder_ldo3__covid_us-states__seed42.json": "lodo",
+        "encoder_ldo3__influenza_japan__seed42__pernode.npz": "lodo",
+        "encoder_ldo3_zeroshot__dengue__seed42.json": "lodo",
+        "encoder_ldo3__covid__seed42__ckpt.pt": "lodo",
+        # the full-budget variant must route like its parent family, and must NOT be swallowed by
+        # the encoder_ldo3__ / encoder_ldo__ routes (or a full-budget record reads as a truncated one)
+        "encoder_ldo3full__influenza_japan__seed42.json": "lodo",
+        "encoder_ldo3full__influenza_us-regions__seed42__perorigin.npz": "lodo",
+        "encoder_ldo3full_zeroshot__influenza_us-states__seed42.json": "lodo",
+        "encoder_ldo3full__influenza__seed42__ckpt.pt": "lodo",
+        "encoder_pair__covid_us-states__seed42.json": "lodo",
+        "encoder_pair_zeroshot__influenza_us-states__seed42__pernode.npz": "lodo",
         "encoder_ldo__dengue2flu__seed42__ckpt.pt": "lodo",
         "encoder_lodo__influenza_japan__seed42__ckpt.pt": "lodo",
         "encoder__dengue__seed42__quantiles.npz": "single",

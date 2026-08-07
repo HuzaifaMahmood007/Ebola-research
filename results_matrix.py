@@ -62,7 +62,8 @@ POINTS_NOT_PERCENT = {"pcc"}                         # signed metric: report a d
 # are not "secondary" and must not be dropped from a table for readability.
 PRIMARY = ("rmse", "mae", "nrmse", "pcc")            # lead table
 EPI = ("peak_intensity", "peak_timing", "smape")     # peak_* are client-required; smape rides along
-DATASETS = ("influenza_japan", "influenza_us-regions", "influenza_us-states", "dengue")
+DATASETS = ("influenza_japan", "influenza_us-regions", "influenza_us-states", "dengue",
+            "covid_us-states")
 DELTA_METRICS = ("rmse", "mae", "nrmse")             # error metrics only; pcc goes in its own table
 # fixed reading order -- alphabetical would put "LDO" above "single" and bury the reference arm.
 REGIME_ORDER = ("single", "joint:uniform-uniform", "joint:sqrt-uniform",
@@ -110,7 +111,11 @@ def regime_of(fname: str, rec: dict) -> str:
     (results_paths.py), but ordering still matters for the zeroshot variants, so test longest first.
     Joint carries its sampler tag because uniform-uniform and sqrt-uniform are different experiments.
     """
-    for prefix, label in (("encoder_ldo_zeroshot__", "LDO zero-shot"),
+    for prefix, label in (("encoder_ldo3_zeroshot__", "LDO3 zero-shot"),
+                          ("encoder_ldo3__", "LDO3 adapted"),
+                          ("encoder_pair_zeroshot__", "PAIR zero-shot"),
+                          ("encoder_pair__", "PAIR adapted"),
+                          ("encoder_ldo_zeroshot__", "LDO zero-shot"),
                           ("encoder_lodo_zeroshot__", "LODO zero-shot"),
                           ("encoder_ldo__", "LDO adapted"),
                           ("encoder_lodo__", "LODO adapted"),
@@ -118,7 +123,13 @@ def regime_of(fname: str, rec: dict) -> str:
                           ("encoder__", "single")):
         if fname.startswith(prefix):
             if label == "joint":
-                return f"joint:{rec.get('sampler') or '?'}"
+                label = f"joint:{rec.get('sampler') or '?'}"
+            # The mean-corrected arm rides in the SAME file as the median arm under the same
+            # (dataset, horizon, metric, seed), so without this it would overwrite the median arm in
+            # load()'s dict and silently restate every ceiling number by ~24% with no label.
+            # The regime string is the only discriminator load() keys on, so the arm belongs here.
+            if str(rec.get("model", "")).startswith("encoder_mc"):
+                label += " [mean-corr]"
             return label
     return "unknown"
 

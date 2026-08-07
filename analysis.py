@@ -36,7 +36,8 @@ RESULTS = Path("results")
 SEEDS = (42, 52, 62, 72, 82)
 HORIZONS = (3, 5, 10, 15)
 NAIVES = ("persistence", "seasonal", "train_mean")
-DEV = ("dengue", "influenza_japan", "influenza_us-regions", "influenza_us-states")
+DEV = ("dengue", "influenza_japan", "influenza_us-regions", "influenza_us-states",
+       "covid_us-states")
 B_DEFAULT = 10_000
 
 
@@ -249,8 +250,14 @@ def transfer_ci(name, B=B_DEFAULT, metrics=("rmse", "mae"), lodo_seeds=(42,), si
     if verbose:
         print(f"  Verdict = origin CI excludes 0. '(fails CV screen)' means the delta is smaller than "
               f"{CV_SCREEN_MULT}x the\n  single-disease seed spread: stable across test periods, but "
-              f"not distinguishable from a different init.\n  LODO is 1 seed, so it contributes no "
-              f"seed dispersion of its own -- treat every row as provisional.")
+              f"not distinguishable from a different init.")
+        if len(tuple(lodo_seeds)) < 2:
+            print("  The transfer arm is 1 seed, so it contributes no seed dispersion of its own -- "
+                  "treat every row as provisional.")
+        else:
+            print(f"  The transfer arm is averaged over {len(tuple(lodo_seeds))} seeds. Ref B is the "
+                  f"same seed set as ref A here, so\n  the two reference columns coincide by "
+                  f"construction -- that is expected, not a bug.")
     return out
 
 
@@ -307,6 +314,12 @@ def main():
     ap.add_argument("--dataset", choices=DEV)
     ap.add_argument("--joint", metavar="TAG",
                     help="analyse a joint run: reads encoder_joint__TAG__* (e.g. --joint uniform-uniform)")
+    # --transfer used to hardcode prefix='encoder_lodo' and a single seed, so it could not read the
+    # ldo3/pair folds at all and every transfer CI was stuck at n=1 seed.
+    ap.add_argument("--transfer-prefix", default="encoder_lodo",
+                    help="transfer arm to analyse, e.g. encoder_ldo3 / encoder_ldo3_zeroshot")
+    ap.add_argument("--transfer-seeds", type=int, nargs="+", default=[42],
+                    help="seeds available for the transfer arm (5 seeds -> ref B collapses onto ref A)")
     ap.add_argument("-B", type=int, default=B_DEFAULT)
     a = ap.parse_args()
     prefix = f"encoder_joint__{a.joint}" if a.joint else "encoder"
@@ -319,7 +332,8 @@ def main():
             bootstrap_ci(name, B=a.B, prefix=prefix)
     if a.transfer:
         for name in ([a.dataset] if a.dataset else DEV):
-            transfer_ci(name, B=a.B)
+            transfer_ci(name, B=a.B, prefix=a.transfer_prefix,
+                        lodo_seeds=tuple(a.transfer_seeds))
 
 
 if __name__ == "__main__":
