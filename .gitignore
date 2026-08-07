@@ -18,3 +18,10 @@ __pycache__/
 .env
 
 results/
+
+#Generated run artifacts (regenerable from code + data, not source)
+ablation/*.json
+ablation/*.npz
+figs/
+*.log
+env_train_snapshot*.txt
