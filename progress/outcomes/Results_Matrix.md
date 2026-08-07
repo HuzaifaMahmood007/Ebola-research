@@ -38,8 +38,11 @@ carry a dispersion figure, so the client's standard is unmet there by data, not 
 | joint:sqrt-uniform | 1 seeds | 1 seeds | 1 seeds | 1 seeds |
 | LODO adapted | 1 seeds | 1 seeds | 1 seeds | 1 seeds |
 | LODO zero-shot | 1 seeds | 1 seeds | 1 seeds | 1 seeds |
-| LDO adapted | 4 seeds | 4 seeds | 4 seeds | 5 seeds |
-| LDO zero-shot | 4 seeds | 4 seeds | 4 seeds | 5 seeds |
+| LDO adapted | 5 seeds | 5 seeds | 5 seeds | 5 seeds |
+| LDO zero-shot | 5 seeds | 5 seeds | 5 seeds | 5 seeds |
+| PAIR adapted | — | — | 5 seeds | — |
+| PAIR zero-shot | — | — | 5 seeds | — |
+| single [mean-corr] | — | — | — | — |
 
 ---
 
@@ -65,8 +68,8 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:sqrt-uniform | 806.6 (1 seed) | 874.1 (1 seed) | 1,218 (1 seed) | 1,165 (1 seed) |
 | LODO adapted | 563.0 (1 seed) | 778.7 (1 seed) | 1,290 (1 seed) | 1,304 (1 seed) |
 | LODO zero-shot | 1,045 (1 seed) | 1,357 (1 seed) | 1,641 (1 seed) | 1,618 (1 seed) |
-| LDO adapted | 698.7 ± 107.4 (4) | 992.5 ± 90.43 (4) | 1,441 ± 47.21 (4) | 1,524 ± 74.93 (4) |
-| LDO zero-shot | 2,942 ± 1,431 (4) | 5,175 ± 3,104 (4) | 6,934 ± 3,795 (4) | 1,991 ± 190.5 (4) |
+| LDO adapted | 709.8 ± 96.29 (5) | 982.1 ± 81.73 (5) | 1,448 ± 43.46 (5) | 1,530 ± 66.48 (5) |
+| LDO zero-shot | 2,655 ± 1,396 (5) | 4,698 ± 2,892 (5) | 6,401 ± 3,496 (5) | 1,970 ± 171.2 (5) |
 
 **mae**
 
@@ -78,8 +81,8 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:sqrt-uniform | 288.9 (1 seed) | 333.4 (1 seed) | 507.2 (1 seed) | 486.4 (1 seed) |
 | LODO adapted | 210.4 (1 seed) | 303.9 (1 seed) | 522.8 (1 seed) | 541.5 (1 seed) |
 | LODO zero-shot | 385.0 (1 seed) | 535.4 (1 seed) | 704.3 (1 seed) | 696.6 (1 seed) |
-| LDO adapted | 239.6 ± 25.16 (4) | 366.0 ± 27.95 (4) | 589.1 ± 14.89 (4) | 643.3 ± 42.69 (4) |
-| LDO zero-shot | 924.4 ± 402.2 (4) | 1,750 ± 1,020 (4) | 2,822 ± 1,237 (4) | 1,070 ± 82.62 (4) |
+| LDO adapted | 244.7 ± 24.59 (5) | 363.5 ± 24.84 (5) | 592.2 ± 14.63 (5) | 644.4 ± 37.06 (5) |
+| LDO zero-shot | 850.7 ± 385.3 (5) | 1,609 ± 938.9 (5) | 2,660 ± 1,131 (5) | 1,080 ± 74.67 (5) |
 
 **nrmse**
 
@@ -90,8 +93,8 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:uniform-uniform | 1.352 ± 0.1695 (5) | 1.322 ± 0.1025 (5) | 1.381 ± 0.1230 (5) | 1.549 ± 0.1361 (5) |
 | joint:sqrt-uniform | 1.386 (1 seed) | 1.337 (1 seed) | 1.469 (1 seed) | 1.430 (1 seed) |
 | LODO adapted | 0.9683 (1 seed) | 1.150 (1 seed) | 1.623 (1 seed) | 1.623 (1 seed) |
-| LDO adapted | 1.237 ± 0.1866 (4) | 1.547 ± 0.1873 (4) | 1.832 ± 0.0419 (4) | 2.007 ± 0.1058 (4) |
-| LDO zero-shot | 5.824 ± 2.810 (4) | 8.735 ± 5.034 (4) | 10.18 ± 6.164 (4) | 2.769 ± 0.3849 (4) |
+| LDO adapted | 1.244 ± 0.1622 (5) | 1.521 ± 0.1720 (5) | 1.852 ± 0.0578 (5) | 2.010 ± 0.0920 (5) |
+| LDO zero-shot | 5.205 ± 2.799 (5) | 7.943 ± 4.706 (5) | 9.365 ± 5.642 (5) | 2.727 ± 0.3461 (5) |
 
 **pcc** (higher is better)
 
@@ -103,8 +106,8 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:sqrt-uniform | 0.8154 (1 seed) | 0.8373 (1 seed) | 0.7815 (1 seed) | 0.7813 (1 seed) |
 | LODO adapted | 0.9125 (1 seed) | 0.9267 (1 seed) | 0.7911 (1 seed) | 0.7539 (1 seed) |
 | LODO zero-shot | 0.8967 (1 seed) | 0.7805 (1 seed) | 0.5800 (1 seed) | 0.6075 (1 seed) |
-| LDO adapted | 0.8646 ± 0.0389 (4) | 0.8016 ± 0.0367 (4) | 0.5860 ± 0.0223 (4) | 0.3499 ± 0.1173 (4) |
-| LDO zero-shot | 0.7806 ± 0.0402 (4) | 0.5819 ± 0.0314 (4) | 0.0668 ± 0.0411 (4) | -0.1465 ± 0.0378 (4) |
+| LDO adapted | 0.8703 ± 0.0361 (5) | 0.8090 ± 0.0358 (5) | 0.5600 ± 0.0611 (5) | 0.3538 ± 0.1020 (5) |
+| LDO zero-shot | 0.7963 ± 0.0494 (5) | 0.6189 ± 0.0871 (5) | 0.0951 ± 0.0724 (5) | -0.1558 ± 0.0388 (5) |
 
 **peak_intensity** — client-required, Review Doc ¶7
 
@@ -116,8 +119,8 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:sqrt-uniform | 2,535 (1 seed) | 1,953 (1 seed) | 3,785 (1 seed) | 3,381 (1 seed) |
 | LODO adapted | 1,778 (1 seed) | 2,785 (1 seed) | 4,810 (1 seed) | 4,974 (1 seed) |
 | LODO zero-shot | 4,773 (1 seed) | 5,660 (1 seed) | 6,488 (1 seed) | 6,614 (1 seed) |
-| LDO adapted | 2,123 ± 656.3 (4) | 3,032 ± 488.3 (4) | 4,021 ± 180.2 (4) | 4,058 ± 753.9 (4) |
-| LDO zero-shot | 14,446 ± 8,722 (4) | 25,033 ± 17,950 (4) | 29,773 ± 21,224 (4) | 3,503 ± 461.7 (4) |
+| LDO adapted | 2,304 ± 698.0 (5) | 3,033 ± 422.9 (5) | 3,961 ± 205.2 (5) | 4,305 ± 854.8 (5) |
+| LDO zero-shot | 12,782 ± 8,420 (5) | 22,957 ± 16,223 (5) | 27,493 ± 19,074 (5) | 3,487 ± 401.4 (5) |
 
 **peak_timing** — client-required, Review Doc ¶7
 
@@ -129,8 +132,8 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:sqrt-uniform | 11.45 (1 seed) | 27.55 (1 seed) | 25.36 (1 seed) | 21.36 (1 seed) |
 | LODO adapted | 3.468 (1 seed) | 19.89 (1 seed) | 24.64 (1 seed) | 20.72 (1 seed) |
 | LODO zero-shot | 2.787 (1 seed) | 19.72 (1 seed) | 27.83 (1 seed) | 32.57 (1 seed) |
-| LDO adapted | 3.676 ± 1.756 (4) | 18.49 ± 2.842 (4) | 23.64 ± 1.912 (4) | 29.08 ± 1.289 (4) |
-| LDO zero-shot | 3.367 ± 0.1257 (4) | 19.79 ± 0.5436 (4) | 31.83 ± 3.980 (4) | 40.78 ± 6.261 (4) |
+| LDO adapted | 3.698 ± 1.522 (5) | 18.06 ± 2.643 (5) | 24.19 ± 2.054 (5) | 29.52 ± 1.493 (5) |
+| LDO zero-shot | 3.264 ± 0.2551 (5) | 19.67 ± 0.5409 (5) | 30.38 ± 4.727 (5) | 40.54 ± 5.447 (5) |
 
 **smape**
 
@@ -142,8 +145,8 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:sqrt-uniform | 89.58 (1 seed) | 97.88 (1 seed) | 107.1 (1 seed) | 106.1 (1 seed) |
 | LODO adapted | 82.88 (1 seed) | 92.26 (1 seed) | 102.1 (1 seed) | 104.2 (1 seed) |
 | LODO zero-shot | 97.98 (1 seed) | 107.3 (1 seed) | 117.3 (1 seed) | 124.5 (1 seed) |
-| LDO adapted | 82.40 ± 0.5058 (4) | 92.16 ± 1.389 (4) | 105.2 ± 1.789 (4) | 110.9 ± 3.096 (4) |
-| LDO zero-shot | 106.1 ± 5.680 (4) | 123.4 ± 8.987 (4) | 150.1 ± 3.801 (4) | 151.7 ± 3.326 (4) |
+| LDO adapted | 82.88 ± 1.168 (5) | 92.43 ± 1.348 (5) | 105.7 ± 1.893 (5) | 110.5 ± 2.796 (5) |
+| LDO zero-shot | 106.2 ± 4.921 (5) | 123.9 ± 7.864 (5) | 150.7 ± 3.495 (5) | 152.2 ± 3.073 (5) |
 
 ### influenza_us-regions
 
@@ -158,8 +161,8 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:sqrt-uniform | 648.3 (1 seed) | 853.7 (1 seed) | 1,144 (1 seed) | 1,113 (1 seed) |
 | LODO adapted | 552.6 (1 seed) | 598.6 (1 seed) | 756.0 (1 seed) | 835.6 (1 seed) |
 | LODO zero-shot | 679.2 (1 seed) | 850.1 (1 seed) | 1,130 (1 seed) | 1,267 (1 seed) |
-| LDO adapted | 615.2 ± 25.55 (4) | 771.9 ± 57.06 (4) | 1,049 ± 105.0 (4) | 1,215 ± 83.35 (4) |
-| LDO zero-shot | 695.3 ± 84.19 (4) | 1,054 ± 322.0 (4) | 1,591 ± 919.8 (4) | 1,240 ± 257.4 (4) |
+| LDO adapted | 626.5 ± 33.61 (5) | 758.7 ± 57.54 (5) | 1,024 ± 106.7 (5) | 1,223 ± 74.35 (5) |
+| LDO zero-shot | 713.0 ± 82.95 (5) | 1,054 ± 278.9 (5) | 1,535 ± 806.3 (5) | 1,237 ± 223.0 (5) |
 
 **mae**
 
@@ -171,8 +174,8 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:sqrt-uniform | 443.5 (1 seed) | 553.3 (1 seed) | 760.9 (1 seed) | 791.5 (1 seed) |
 | LODO adapted | 350.6 (1 seed) | 368.4 (1 seed) | 479.0 (1 seed) | 556.4 (1 seed) |
 | LODO zero-shot | 458.8 (1 seed) | 603.8 (1 seed) | 834.1 (1 seed) | 968.3 (1 seed) |
-| LDO adapted | 383.0 ± 17.77 (4) | 513.9 ± 43.64 (4) | 770.7 ± 97.66 (4) | 918.4 ± 75.32 (4) |
-| LDO zero-shot | 435.6 ± 60.55 (4) | 685.9 ± 230.2 (4) | 1,021 ± 475.0 (4) | 911.0 ± 142.3 (4) |
+| LDO adapted | 391.9 ± 25.21 (5) | 503.6 ± 44.31 (5) | 751.5 ± 94.83 (5) | 926.0 ± 67.37 (5) |
+| LDO zero-shot | 454.6 ± 67.61 (5) | 694.8 ± 200.4 (5) | 1,007 ± 412.5 (5) | 916.6 ± 123.8 (5) |
 
 **nrmse**
 
@@ -183,8 +186,8 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:uniform-uniform | 0.4664 ± 0.0190 (5) | 0.5761 ± 0.0253 (5) | 0.7006 ± 0.0812 (5) | 0.7607 ± 0.1329 (5) |
 | joint:sqrt-uniform | 0.5159 (1 seed) | 0.6614 (1 seed) | 0.9483 (1 seed) | 1.028 (1 seed) |
 | LODO adapted | 0.4470 (1 seed) | 0.5046 (1 seed) | 0.6841 (1 seed) | 0.7688 (1 seed) |
-| LDO adapted | 0.4748 ± 0.0115 (4) | 0.5914 ± 0.0187 (4) | 0.7807 ± 0.0579 (4) | 0.9155 ± 0.0541 (4) |
-| LDO zero-shot | 0.6059 ± 0.1103 (4) | 0.9552 ± 0.3294 (4) | 1.484 ± 0.7830 (4) | 1.084 ± 0.2440 (4) |
+| LDO adapted | 0.4816 ± 0.0181 (5) | 0.5855 ± 0.0209 (5) | 0.7682 ± 0.0575 (5) | 0.9218 ± 0.0489 (5) |
+| LDO zero-shot | 0.6343 ± 0.1148 (5) | 0.9684 ± 0.2868 (5) | 1.445 ± 0.6835 (5) | 1.090 ± 0.2118 (5) |
 
 **pcc** (higher is better)
 
@@ -196,8 +199,8 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:sqrt-uniform | 0.7804 (1 seed) | 0.5733 (1 seed) | 0.4103 (1 seed) | 0.4396 (1 seed) |
 | LODO adapted | 0.8691 (1 seed) | 0.8040 (1 seed) | 0.6591 (1 seed) | 0.6207 (1 seed) |
 | LODO zero-shot | 0.8445 (1 seed) | 0.8140 (1 seed) | 0.7060 (1 seed) | 0.7249 (1 seed) |
-| LDO adapted | 0.8543 ± 0.0099 (4) | 0.7914 ± 0.0215 (4) | 0.7275 ± 0.0407 (4) | 0.6228 ± 0.0431 (4) |
-| LDO zero-shot | 0.8240 ± 0.0124 (4) | 0.7449 ± 0.0217 (4) | 0.4770 ± 0.0646 (4) | 0.1613 ± 0.1107 (4) |
+| LDO adapted | 0.8510 ± 0.0112 (5) | 0.7912 ± 0.0186 (5) | 0.7282 ± 0.0353 (5) | 0.6274 ± 0.0387 (5) |
+| LDO zero-shot | 0.8257 ± 0.0113 (5) | 0.7393 ± 0.0226 (5) | 0.4620 ± 0.0652 (5) | 0.1166 ± 0.1386 (5) |
 
 **peak_intensity** — client-required, Review Doc ¶7
 
@@ -209,8 +212,8 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:sqrt-uniform | 1,622 (1 seed) | 1,607 (1 seed) | 1,497 (1 seed) | 1,278 (1 seed) |
 | LODO adapted | 1,075 (1 seed) | 2,111 (1 seed) | 2,590 (1 seed) | 3,010 (1 seed) |
 | LODO zero-shot | 2,397 (1 seed) | 3,215 (1 seed) | 4,186 (1 seed) | 4,444 (1 seed) |
-| LDO adapted | 2,104 ± 370.7 (4) | 2,663 ± 474.5 (4) | 3,422 ± 384.0 (4) | 3,871 ± 464.6 (4) |
-| LDO zero-shot | 1,713 ± 262.0 (4) | 2,585 ± 615.7 (4) | 2,852 ± 2,667 (4) | 2,430 ± 370.2 (4) |
+| LDO adapted | 2,216 ± 406.1 (5) | 2,675 ± 411.9 (5) | 3,341 ± 378.2 (5) | 3,915 ± 414.1 (5) |
+| LDO zero-shot | 1,589 ± 358.1 (5) | 2,374 ± 711.3 (5) | 2,673 ± 2,344 (5) | 2,400 ± 327.3 (5) |
 
 **peak_timing** — client-required, Review Doc ¶7
 
@@ -222,8 +225,8 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:sqrt-uniform | 57.00 (1 seed) | 44.50 (1 seed) | 63.00 (1 seed) | 74.40 (1 seed) |
 | LODO adapted | 34.10 (1 seed) | 29.20 (1 seed) | 81.70 (1 seed) | 88.90 (1 seed) |
 | LODO zero-shot | 41.70 (1 seed) | 49.80 (1 seed) | 77.10 (1 seed) | 53.60 (1 seed) |
-| LDO adapted | 43.30 ± 2.736 (4) | 61.25 ± 16.86 (4) | 69.50 ± 5.091 (4) | 82.20 ± 12.30 (4) |
-| LDO zero-shot | 41.27 ± 13.25 (4) | 45.75 ± 7.007 (4) | 62.57 ± 7.093 (4) | 64.72 ± 12.64 (4) |
+| LDO adapted | 39.46 ± 8.907 (5) | 54.70 ± 20.68 (5) | 71.86 ± 6.876 (5) | 85.04 ± 12.40 (5) |
+| LDO zero-shot | 39.00 ± 12.55 (5) | 49.02 ± 9.502 (5) | 59.42 ± 9.354 (5) | 69.20 ± 14.83 (5) |
 
 **smape**
 
@@ -235,8 +238,8 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:sqrt-uniform | 33.39 (1 seed) | 38.42 (1 seed) | 50.68 (1 seed) | 57.38 (1 seed) |
 | LODO adapted | 27.09 (1 seed) | 31.65 (1 seed) | 42.17 (1 seed) | 49.80 (1 seed) |
 | LODO zero-shot | 37.10 (1 seed) | 52.21 (1 seed) | 79.61 (1 seed) | 100.7 (1 seed) |
-| LDO adapted | 30.22 ± 0.9679 (4) | 41.41 ± 2.755 (4) | 72.66 ± 9.763 (4) | 94.75 ± 9.576 (4) |
-| LDO zero-shot | 32.56 ± 1.317 (4) | 45.62 ± 5.388 (4) | 61.02 ± 4.522 (4) | 74.08 ± 2.595 (4) |
+| LDO adapted | 31.12 ± 2.175 (5) | 41.29 ± 2.399 (5) | 71.59 ± 8.791 (5) | 95.60 ± 8.508 (5) |
+| LDO zero-shot | 33.65 ± 2.694 (5) | 46.52 ± 5.082 (5) | 62.04 ± 4.527 (5) | 74.30 ± 2.301 (5) |
 
 ### influenza_us-states
 
@@ -251,8 +254,10 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:sqrt-uniform | 114.4 (1 seed) | 135.1 (1 seed) | 151.6 (1 seed) | 158.0 (1 seed) |
 | LODO adapted | 111.8 (1 seed) | 134.8 (1 seed) | 152.6 (1 seed) | 156.2 (1 seed) |
 | LODO zero-shot | 115.7 (1 seed) | 139.4 (1 seed) | 162.5 (1 seed) | 176.6 (1 seed) |
-| LDO adapted | 117.0 ± 2.316 (4) | 143.4 ± 2.687 (4) | 168.2 ± 3.686 (4) | 175.4 ± 2.009 (4) |
-| LDO zero-shot | 129.3 ± 8.060 (4) | 174.9 ± 22.55 (4) | 232.0 ± 37.50 (4) | 217.7 ± 15.16 (4) |
+| LDO adapted | 117.3 ± 2.152 (5) | 143.0 ± 2.539 (5) | 166.6 ± 4.876 (5) | 176.5 ± 2.950 (5) |
+| LDO zero-shot | 129.4 ± 6.980 (5) | 172.8 ± 20.08 (5) | 231.7 ± 32.48 (5) | 219.6 ± 13.84 (5) |
+| PAIR adapted | 125.8 ± 4.317 (5) | 149.6 ± 3.825 (5) | 164.0 ± 5.121 (5) | 165.4 ± 2.392 (5) |
+| PAIR zero-shot | 144.9 ± 4.588 (5) | 173.6 ± 4.107 (5) | 205.6 ± 7.791 (5) | 209.6 ± 8.639 (5) |
 
 **mae**
 
@@ -264,8 +269,10 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:sqrt-uniform | 68.05 (1 seed) | 82.97 (1 seed) | 97.02 (1 seed) | 102.7 (1 seed) |
 | LODO adapted | 67.18 (1 seed) | 82.73 (1 seed) | 99.35 (1 seed) | 101.4 (1 seed) |
 | LODO zero-shot | 73.66 (1 seed) | 91.86 (1 seed) | 109.3 (1 seed) | 118.4 (1 seed) |
-| LDO adapted | 73.18 ± 0.6946 (4) | 91.95 ± 0.4105 (4) | 113.7 ± 1.805 (4) | 120.2 ± 1.765 (4) |
-| LDO zero-shot | 83.73 ± 4.801 (4) | 113.5 ± 13.90 (4) | 158.3 ± 17.07 (4) | 161.0 ± 11.51 (4) |
+| LDO adapted | 73.77 ± 1.468 (5) | 92.10 ± 0.4817 (5) | 113.1 ± 2.107 (5) | 120.7 ± 1.849 (5) |
+| LDO zero-shot | 83.90 ± 4.174 (5) | 113.0 ± 12.09 (5) | 158.7 ± 14.80 (5) | 163.1 ± 10.99 (5) |
+| PAIR adapted | 75.00 ± 2.432 (5) | 90.96 ± 2.705 (5) | 105.5 ± 3.191 (5) | 110.3 ± 2.569 (5) |
+| PAIR zero-shot | 93.15 ± 3.145 (5) | 119.6 ± 4.479 (5) | 154.3 ± 7.347 (5) | 161.8 ± 10.17 (5) |
 
 **nrmse**
 
@@ -276,8 +283,10 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:uniform-uniform | 0.6390 ± 0.0422 (5) | 0.7810 ± 0.0189 (5) | 0.9419 ± 0.0340 (5) | 1.044 ± 0.0745 (5) |
 | joint:sqrt-uniform | 0.6327 (1 seed) | 0.7721 (1 seed) | 0.9655 (1 seed) | 1.052 (1 seed) |
 | LODO adapted | 0.6335 (1 seed) | 0.7601 (1 seed) | 0.9677 (1 seed) | 1.027 (1 seed) |
-| LDO adapted | 0.7011 ± 0.0295 (4) | 0.9149 ± 0.0414 (4) | 1.231 ± 0.0413 (4) | 1.314 ± 0.0566 (4) |
-| LDO zero-shot | 0.7937 ± 0.0764 (4) | 1.147 ± 0.2439 (4) | 1.575 ± 0.3242 (4) | 1.359 ± 0.1259 (4) |
+| LDO adapted | 0.7063 ± 0.0281 (5) | 0.9218 ± 0.0391 (5) | 1.217 ± 0.0474 (5) | 1.308 ± 0.0504 (5) |
+| LDO zero-shot | 0.8062 ± 0.0718 (5) | 1.142 ± 0.2116 (5) | 1.587 ± 0.2820 (5) | 1.403 ± 0.1471 (5) |
+| PAIR adapted | 0.6816 ± 0.0115 (5) | 0.8184 ± 0.0078 (5) | 0.9833 ± 0.0343 (5) | 1.083 ± 0.0221 (5) |
+| PAIR zero-shot | 0.8215 ± 0.0297 (5) | 1.068 ± 0.0527 (5) | 1.516 ± 0.1189 (5) | 1.668 ± 0.1755 (5) |
 
 **pcc** (higher is better)
 
@@ -289,8 +298,10 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:sqrt-uniform | 0.7877 (1 seed) | 0.7066 (1 seed) | 0.6433 (1 seed) | 0.6609 (1 seed) |
 | LODO adapted | 0.7880 (1 seed) | 0.7292 (1 seed) | 0.6424 (1 seed) | 0.6672 (1 seed) |
 | LODO zero-shot | 0.8131 (1 seed) | 0.7552 (1 seed) | 0.7117 (1 seed) | 0.7226 (1 seed) |
-| LDO adapted | 0.7904 ± 0.0068 (4) | 0.6823 ± 0.0202 (4) | 0.5887 ± 0.0210 (4) | 0.5901 ± 0.0302 (4) |
-| LDO zero-shot | 0.7521 ± 0.0075 (4) | 0.6119 ± 0.0175 (4) | 0.2622 ± 0.0526 (4) | 0.0389 ± 0.1099 (4) |
+| LDO adapted | 0.7939 ± 0.0097 (5) | 0.6870 ± 0.0205 (5) | 0.5912 ± 0.0190 (5) | 0.5800 ± 0.0345 (5) |
+| LDO zero-shot | 0.7571 ± 0.0129 (5) | 0.6205 ± 0.0245 (5) | 0.2846 ± 0.0677 (5) | 0.0490 ± 0.0978 (5) |
+| PAIR adapted | 0.7647 ± 0.0183 (5) | 0.6595 ± 0.0149 (5) | 0.5894 ± 0.0392 (5) | 0.6392 ± 0.0208 (5) |
+| PAIR zero-shot | 0.7192 ± 0.0262 (5) | 0.5337 ± 0.0317 (5) | 0.4468 ± 0.0226 (5) | 0.4721 ± 0.0263 (5) |
 
 **peak_intensity** — client-required, Review Doc ¶7
 
@@ -302,8 +313,10 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:sqrt-uniform | 383.9 (1 seed) | 423.9 (1 seed) | 461.5 (1 seed) | 508.3 (1 seed) |
 | LODO adapted | 366.2 (1 seed) | 507.2 (1 seed) | 505.7 (1 seed) | 537.2 (1 seed) |
 | LODO zero-shot | 369.2 (1 seed) | 501.3 (1 seed) | 585.0 (1 seed) | 664.9 (1 seed) |
-| LDO adapted | 361.2 ± 39.19 (4) | 439.9 ± 14.32 (4) | 471.0 ± 11.38 (4) | 491.5 ± 33.57 (4) |
-| LDO zero-shot | 192.9 ± 31.49 (4) | 278.1 ± 32.97 (4) | 313.2 ± 91.37 (4) | 401.4 ± 59.93 (4) |
+| LDO adapted | 365.9 ± 35.58 (5) | 436.5 ± 14.59 (5) | 465.5 ± 15.69 (5) | 497.3 ± 31.80 (5) |
+| LDO zero-shot | 196.0 ± 28.17 (5) | 276.1 ± 28.91 (5) | 330.3 ± 87.83 (5) | 397.8 ± 52.49 (5) |
+| PAIR adapted | 449.4 ± 18.13 (5) | 528.2 ± 16.84 (5) | 537.9 ± 11.02 (5) | 539.9 ± 25.63 (5) |
+| PAIR zero-shot | 503.1 ± 32.24 (5) | 518.4 ± 23.64 (5) | 497.8 ± 26.05 (5) | 488.0 ± 32.49 (5) |
 
 **peak_timing** — client-required, Review Doc ¶7
 
@@ -315,8 +328,10 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:sqrt-uniform | 13.04 (1 seed) | 17.47 (1 seed) | 29.92 (1 seed) | 33.10 (1 seed) |
 | LODO adapted | 14.29 (1 seed) | 14.24 (1 seed) | 25.04 (1 seed) | 32.14 (1 seed) |
 | LODO zero-shot | 5.510 (1 seed) | 12.39 (1 seed) | 27.63 (1 seed) | 38.33 (1 seed) |
-| LDO adapted | 9.781 ± 1.718 (4) | 17.93 ± 4.799 (4) | 31.38 ± 3.587 (4) | 27.69 ± 4.077 (4) |
-| LDO zero-shot | 7.888 ± 1.533 (4) | 10.06 ± 2.010 (4) | 16.80 ± 0.7319 (4) | 21.50 ± 1.244 (4) |
+| LDO adapted | 9.559 ± 1.568 (5) | 17.64 ± 4.205 (5) | 30.56 ± 3.605 (5) | 29.10 ± 4.739 (5) |
+| LDO zero-shot | 7.882 ± 1.328 (5) | 10.84 ± 2.457 (5) | 17.53 ± 1.759 (5) | 21.61 ± 1.104 (5) |
+| PAIR adapted | 11.76 ± 1.255 (5) | 22.49 ± 3.369 (5) | 32.38 ± 4.300 (5) | 30.36 ± 1.835 (5) |
+| PAIR zero-shot | 12.59 ± 2.972 (5) | 26.24 ± 2.398 (5) | 30.11 ± 3.651 (5) | 36.33 ± 2.759 (5) |
 
 **smape**
 
@@ -328,8 +343,10 @@ One block per dataset — never pooled. `country_macro`, count space.
 | joint:sqrt-uniform | 43.60 (1 seed) | 50.94 (1 seed) | 60.29 (1 seed) | 64.83 (1 seed) |
 | LODO adapted | 43.61 (1 seed) | 50.40 (1 seed) | 60.78 (1 seed) | 64.43 (1 seed) |
 | LODO zero-shot | 46.86 (1 seed) | 55.93 (1 seed) | 66.44 (1 seed) | 72.36 (1 seed) |
-| LDO adapted | 46.80 ± 0.4868 (4) | 56.09 ± 0.8181 (4) | 69.59 ± 0.9853 (4) | 75.33 ± 0.7427 (4) |
-| LDO zero-shot | 51.21 ± 0.4946 (4) | 62.74 ± 1.896 (4) | 81.59 ± 2.080 (4) | 90.92 ± 2.342 (4) |
+| LDO adapted | 47.09 ± 0.7782 (5) | 56.33 ± 0.8908 (5) | 69.58 ± 0.8543 (5) | 75.66 ± 0.9723 (5) |
+| LDO zero-shot | 51.32 ± 0.4908 (5) | 62.71 ± 1.642 (5) | 81.37 ± 1.868 (5) | 90.76 ± 2.060 (5) |
+| PAIR adapted | 46.66 ± 0.2954 (5) | 54.05 ± 0.7083 (5) | 65.22 ± 1.645 (5) | 70.87 ± 1.709 (5) |
+| PAIR zero-shot | 57.79 ± 1.561 (5) | 69.65 ± 1.485 (5) | 83.52 ± 1.544 (5) | 87.08 ± 2.173 (5) |
 
 ### dengue
 
@@ -447,8 +464,8 @@ t interval over the per-seed paired deltas.
 | joint:sqrt-uniform | -8.9% (1 seed, untestable) | -7.2% (1 seed, untestable) | -18.4% (1 seed, untestable) | -9.5% (1 seed, untestable) |
 | LODO adapted | +24.0% (1 seed, untestable) | +4.5% (1 seed, untestable) | -25.4% (1 seed, untestable) | -22.6% (1 seed, untestable) |
 | LODO zero-shot | -41.1% (1 seed, untestable) | -66.5% (1 seed, untestable) | -59.5% (1 seed, untestable) | -52.2% (1 seed, untestable) |
-| LDO adapted | within noise (+3.4 ± 35.6%, n=4) | **-16.9%** ± 9.3 (n=4) | **-35.2%** ± 19.3 (n=4) | **-51.3%** ± 39.4 (n=4) |
-| LDO zero-shot | within noise (-311.2 ± 349.2%, n=4) | within noise (-503.1 ± 558.6%, n=4) | within noise (-558.8 ± 626.3%, n=4) | **-97.9%** ± 58.7 (n=4) |
+| LDO adapted | within noise (+2.4 ± 24.2%, n=5) | **-16.6%** ± 6.3 (n=5) | **-36.8%** ± 13.8 (n=5) | **-50.3%** ± 26.8 (n=5) |
+| LDO zero-shot | **-269.6%** ± 262.7 (n=5) | **-451.0%** ± 404.2 (n=5) | **-510.0%** ± 444.4 (n=5) | **-93.8%** ± 41.2 (n=5) |
 
 **mae** — improvement %
 
@@ -459,8 +476,8 @@ t interval over the per-seed paired deltas.
 | joint:sqrt-uniform | -12.6% (1 seed, untestable) | -6.8% (1 seed, untestable) | -17.0% (1 seed, untestable) | -6.9% (1 seed, untestable) |
 | LODO adapted | +18.0% (1 seed, untestable) | +2.7% (1 seed, untestable) | -20.6% (1 seed, untestable) | -19.0% (1 seed, untestable) |
 | LODO zero-shot | -50.0% (1 seed, untestable) | -71.5% (1 seed, untestable) | -62.4% (1 seed, untestable) | -53.2% (1 seed, untestable) |
-| LDO adapted | within noise (+7.5 ± 29.7%, n=4) | **-12.1%** ± 9.2 (n=4) | **-32.1%** ± 17.6 (n=4) | **-47.6%** ± 35.5 (n=4) |
-| LDO zero-shot | within noise (-264.3 ± 292.3%, n=4) | within noise (-432.8 ± 484.5%, n=4) | **-538.7%** ± 489.5 (n=4) | **-145.2%** ± 55.6 (n=4) |
+| LDO adapted | within noise (+5.3 ± 21.0%, n=5) | **-12.3%** ± 6.2 (n=5) | **-33.6%** ± 12.6 (n=5) | **-46.6%** ± 24.1 (n=5) |
+| LDO zero-shot | **-234.7%** ± 213.9 (n=5) | **-392.9%** ± 345.5 (n=5) | **-503.8%** ± 344.7 (n=5) | **-145.3%** ± 37.6 (n=5) |
 
 **nrmse** — improvement %
 
@@ -470,8 +487,8 @@ t interval over the per-seed paired deltas.
 | joint:uniform-uniform | within noise (-7.1 ± 21.5%, n=5) | within noise (-5.1 ± 12.5%, n=5) | within noise (-4.1 ± 15.2%, n=5) | within noise (-20.6 ± 24.5%, n=5) |
 | joint:sqrt-uniform | -8.5% (1 seed, untestable) | -9.3% (1 seed, untestable) | -13.6% (1 seed, untestable) | -5.9% (1 seed, untestable) |
 | LODO adapted | +24.2% (1 seed, untestable) | +5.9% (1 seed, untestable) | -25.6% (1 seed, untestable) | -20.2% (1 seed, untestable) |
-| LDO adapted | within noise (+1.2 ± 35.5%, n=4) | **-21.5%** ± 16.7 (n=4) | **-36.9%** ± 15.3 (n=4) | **-57.9%** ± 42.5 (n=4) |
-| LDO zero-shot | within noise (-370.5 ± 394.4%, n=4) | within noise (-585.5 ± 624.6%, n=4) | within noise (-671.4 ± 797.3%, n=4) | **-118.4%** ± 76.9 (n=4) |
+| LDO adapted | within noise (+1.1 ± 24.0%, n=5) | **-20.4%** ± 11.7 (n=5) | **-39.4%** ± 12.5 (n=5) | **-56.3%** ± 29.1 (n=5) |
+| LDO zero-shot | **-319.2%** ± 302.2 (n=5) | **-526.5%** ± 452.7 (n=5) | **-611.4%** ± 563.9 (n=5) | **-112.6%** ± 54.3 (n=5) |
 
 **pcc** — correlation points, positive = better
 
@@ -482,8 +499,8 @@ t interval over the per-seed paired deltas.
 | joint:sqrt-uniform | -0.1 pts (1 seed, untestable) | -0.1 pts (1 seed, untestable) | -0.1 pts (1 seed, untestable) | -0.0 pts (1 seed, untestable) |
 | LODO adapted | +0.0 pts (1 seed, untestable) | +0.0 pts (1 seed, untestable) | -0.1 pts (1 seed, untestable) | -0.1 pts (1 seed, untestable) |
 | LODO zero-shot | +0.0 pts (1 seed, untestable) | -0.1 pts (1 seed, untestable) | -0.3 pts (1 seed, untestable) | -0.2 pts (1 seed, untestable) |
-| LDO adapted | within noise (-0.0 ± 0.1 pts, n=4) | **-0.1 pts** ± 0.1 (n=4) | **-0.3 pts** ± 0.0 (n=4) | **-0.5 pts** ± 0.2 (n=4) |
-| LDO zero-shot | within noise (-0.1 ± 0.1 pts, n=4) | **-0.3 pts** ± 0.1 (n=4) | **-0.8 pts** ± 0.1 (n=4) | **-1.0 pts** ± 0.0 (n=4) |
+| LDO adapted | within noise (-0.0 ± 0.1 pts, n=5) | **-0.1 pts** ± 0.1 (n=5) | **-0.3 pts** ± 0.1 (n=5) | **-0.5 pts** ± 0.1 (n=5) |
+| LDO zero-shot | within noise (-0.1 ± 0.1 pts, n=5) | **-0.3 pts** ± 0.1 (n=5) | **-0.7 pts** ± 0.1 (n=5) | **-1.0 pts** ± 0.0 (n=5) |
 
 **peak_intensity** — improvement %
 
@@ -494,8 +511,8 @@ t interval over the per-seed paired deltas.
 | joint:sqrt-uniform | +14.1% (1 seed, untestable) | +30.0% (1 seed, untestable) | -14.1% (1 seed, untestable) | +7.2% (1 seed, untestable) |
 | LODO adapted | +39.7% (1 seed, untestable) | +0.2% (1 seed, untestable) | -45.0% (1 seed, untestable) | -36.5% (1 seed, untestable) |
 | LODO zero-shot | -61.8% (1 seed, untestable) | -102.7% (1 seed, untestable) | -95.6% (1 seed, untestable) | -81.5% (1 seed, untestable) |
-| LDO adapted | within noise (+20.1 ± 28.7%, n=4) | within noise (-4.5 ± 5.9%, n=4) | within noise (-18.6 ± 31.8%, n=4) | within noise (-20.9 ± 35.8%, n=4) |
-| LDO zero-shot | within noise (-414.4 ± 459.6%, n=4) | within noise (-707.2 ± 847.7%, n=4) | within noise (-798.0 ± 1189.1%, n=4) | within noise (-6.3 ± 39.6%, n=4) |
+| LDO adapted | within noise (+15.6 ± 23.2%, n=5) | **-5.4%** ± 4.6 (n=5) | within noise (-17.3 ± 21.8%, n=5) | within noise (-25.8 ± 27.7%, n=5) |
+| LDO zero-shot | within noise (-353.1 ± 354.2%, n=5) | **-650.7%** ± 593.9 (n=5) | within noise (-729.2 ± 825.9%, n=5) | within noise (-3.8 ± 27.6%, n=5) |
 
 **peak_timing** — improvement % — NOTE: a zero-error reference cell has no scale to divide by and is dropped
 
@@ -506,8 +523,8 @@ t interval over the per-seed paired deltas.
 | joint:sqrt-uniform | -95.6% (1 seed, untestable) | -12.4% (1 seed, untestable) | +7.3% (1 seed, untestable) | +23.2% (1 seed, untestable) |
 | LODO adapted | +40.7% (1 seed, untestable) | +18.8% (1 seed, untestable) | +10.0% (1 seed, untestable) | +25.5% (1 seed, untestable) |
 | LODO zero-shot | +52.4% (1 seed, untestable) | +19.5% (1 seed, untestable) | -1.7% (1 seed, untestable) | -17.0% (1 seed, untestable) |
-| LDO adapted | within noise (+10.7 ± 93.6%, n=4) | **+24.7%** ± 19.5 (n=4) | within noise (+8.9 ± 16.3%, n=4) | within noise (-10.3 ± 14.5%, n=4) |
-| LDO zero-shot | within noise (+22.1 ± 37.6%, n=4) | **+18.9%** ± 18.8 (n=4) | **-22.2%** ± 19.8 (n=4) | **-53.4%** ± 21.7 (n=4) |
+| LDO adapted | within noise (+15.6 ± 64.7%, n=5) | **+26.4%** ± 14.0 (n=5) | within noise (+7.8 ± 11.4%, n=5) | **-10.8%** ± 9.9 (n=5) |
+| LDO zero-shot | within noise (+27.9 ± 30.1%, n=5) | **+19.4%** ± 12.8 (n=5) | within noise (-15.7 ± 22.4%, n=5) | **-51.2%** ± 15.9 (n=5) |
 
 **smape** — improvement %
 
@@ -518,8 +535,8 @@ t interval over the per-seed paired deltas.
 | joint:sqrt-uniform | -0.1% (1 seed, untestable) | -2.4% (1 seed, untestable) | +1.4% (1 seed, untestable) | +0.0% (1 seed, untestable) |
 | LODO adapted | +7.4% (1 seed, untestable) | +3.5% (1 seed, untestable) | +5.9% (1 seed, untestable) | +1.8% (1 seed, untestable) |
 | LODO zero-shot | -9.5% (1 seed, untestable) | -12.2% (1 seed, untestable) | -8.0% (1 seed, untestable) | -17.3% (1 seed, untestable) |
-| LDO adapted | **+11.0%** ± 3.2 (n=4) | **+5.5%** ± 4.3 (n=4) | within noise (+0.7 ± 5.2%, n=4) | **-7.8%** ± 7.4 (n=4) |
-| LDO zero-shot | **-14.6%** ± 9.0 (n=4) | **-26.6%** ± 17.5 (n=4) | **-41.6%** ± 1.5 (n=4) | **-47.4%** ± 3.1 (n=4) |
+| LDO adapted | **+9.8%** ± 3.9 (n=5) | **+4.8%** ± 3.4 (n=5) | within noise (+0.7 ± 3.5%, n=5) | **-6.8%** ± 5.7 (n=5) |
+| LDO zero-shot | **-15.4%** ± 6.5 (n=5) | **-27.7%** ± 12.1 (n=5) | **-41.4%** ± 1.1 (n=5) | **-46.9%** ± 2.4 (n=5) |
 
 ### influenza_us-regions — vs single (paired by seed)
 
@@ -533,8 +550,8 @@ t interval over the per-seed paired deltas.
 | joint:sqrt-uniform | +6.0% (1 seed, untestable) | -2.7% (1 seed, untestable) | -47.7% (1 seed, untestable) | -33.9% (1 seed, untestable) |
 | LODO adapted | +19.9% (1 seed, untestable) | +28.0% (1 seed, untestable) | +2.4% (1 seed, untestable) | -0.5% (1 seed, untestable) |
 | LODO zero-shot | +1.6% (1 seed, untestable) | -2.2% (1 seed, untestable) | -46.0% (1 seed, untestable) | -52.4% (1 seed, untestable) |
-| LDO adapted | within noise (-4.7 ± 17.2%, n=4) | **-10.0%** ± 8.5 (n=4) | **-32.6%** ± 16.8 (n=4) | **-51.2%** ± 25.0 (n=4) |
-| LDO zero-shot | within noise (-18.4 ± 30.9%, n=4) | within noise (-49.8 ± 66.7%, n=4) | within noise (-106.3 ± 212.8%, n=4) | within noise (-55.6 ± 68.3%, n=4) |
+| LDO adapted | within noise (-3.2 ± 12.3%, n=5) | within noise (-5.0 ± 15.1%, n=5) | **-30.0%** ± 13.5 (n=5) | **-51.2%** ± 16.9 (n=5) |
+| LDO zero-shot | within noise (-17.4 ± 21.0%, n=5) | within noise (-45.2 ± 46.8%, n=5) | within noise (-98.9 ± 145.2%, n=5) | **-53.9%** ± 46.4 (n=5) |
 
 **mae** — improvement %
 
@@ -545,8 +562,8 @@ t interval over the per-seed paired deltas.
 | joint:sqrt-uniform | -1.3% (1 seed, untestable) | -1.3% (1 seed, untestable) | -48.6% (1 seed, untestable) | -41.7% (1 seed, untestable) |
 | LODO adapted | +19.9% (1 seed, untestable) | +32.5% (1 seed, untestable) | +6.4% (1 seed, untestable) | +0.4% (1 seed, untestable) |
 | LODO zero-shot | -4.8% (1 seed, untestable) | -10.6% (1 seed, untestable) | -62.9% (1 seed, untestable) | -73.4% (1 seed, untestable) |
-| LDO adapted | within noise (-8.1 ± 18.6%, n=4) | **-20.6%** ± 10.1 (n=4) | **-50.5%** ± 23.9 (n=4) | **-72.1%** ± 33.7 (n=4) |
-| LDO zero-shot | within noise (-23.5 ± 40.3%, n=4) | within noise (-61.3 ± 82.7%, n=4) | within noise (-107.5 ± 193.5%, n=4) | **-72.3%** ± 68.9 (n=4) |
+| LDO adapted | within noise (-6.1 ± 13.9%, n=5) | within noise (-13.4 ± 21.1%, n=5) | **-46.8%** ± 19.2 (n=5) | **-71.9%** ± 22.8 (n=5) |
+| LDO zero-shot | within noise (-23.1 ± 27.3%, n=5) | within noise (-55.8 ± 58.0%, n=5) | within noise (-103.1 ± 131.3%, n=5) | **-71.5%** ± 46.6 (n=5) |
 
 **nrmse** — improvement %
 
@@ -556,8 +573,8 @@ t interval over the per-seed paired deltas.
 | joint:uniform-uniform | within noise (+1.1 ± 7.5%, n=5) | within noise (-3.1 ± 9.8%, n=5) | within noise (-11.0 ± 12.5%, n=5) | within noise (-15.1 ± 25.4%, n=5) |
 | joint:sqrt-uniform | -2.9% (1 seed, untestable) | -7.8% (1 seed, untestable) | -55.7% (1 seed, untestable) | -44.5% (1 seed, untestable) |
 | LODO adapted | +10.9% (1 seed, untestable) | +17.8% (1 seed, untestable) | -12.3% (1 seed, untestable) | -8.1% (1 seed, untestable) |
-| LDO adapted | within noise (-2.5 ± 16.1%, n=4) | within noise (-8.2 ± 9.4%, n=4) | **-22.8%** ± 13.2 (n=4) | **-41.3%** ± 18.3 (n=4) |
-| LDO zero-shot | within noise (-30.3 ± 37.8%, n=4) | within noise (-73.8 ± 90.2%, n=4) | within noise (-138.1 ± 221.4%, n=4) | within noise (-69.0 ± 79.6%, n=4) |
+| LDO adapted | within noise (-2.3 ± 10.9%, n=5) | within noise (-4.9 ± 11.2%, n=5) | **-21.9%** ± 9.3 (n=5) | **-39.6%** ± 13.2 (n=5) |
+| LDO zero-shot | **-34.1%** ± 27.6 (n=5) | **-72.3%** ± 61.1 (n=5) | within noise (-132.9 ± 150.3%, n=5) | **-66.6%** ± 54.2 (n=5) |
 
 **pcc** — correlation points, positive = better
 
@@ -568,8 +585,8 @@ t interval over the per-seed paired deltas.
 | joint:sqrt-uniform | -0.0 pts (1 seed, untestable) | -0.1 pts (1 seed, untestable) | -0.3 pts (1 seed, untestable) | -0.2 pts (1 seed, untestable) |
 | LODO adapted | +0.1 pts (1 seed, untestable) | +0.1 pts (1 seed, untestable) | -0.0 pts (1 seed, untestable) | -0.0 pts (1 seed, untestable) |
 | LODO zero-shot | +0.0 pts (1 seed, untestable) | +0.1 pts (1 seed, untestable) | +0.0 pts (1 seed, untestable) | +0.1 pts (1 seed, untestable) |
-| LDO adapted | within noise (+0.0 ± 0.1 pts, n=4) | within noise (+0.0 ± 0.1 pts, n=4) | within noise (+0.0 ± 0.1 pts, n=4) | within noise (-0.0 ± 0.2 pts, n=4) |
-| LDO zero-shot | within noise (-0.0 ± 0.1 pts, n=4) | within noise (-0.0 ± 0.1 pts, n=4) | **-0.2 pts** ± 0.1 (n=4) | **-0.5 pts** ± 0.3 (n=4) |
+| LDO adapted | within noise (+0.0 ± 0.0 pts, n=5) | **+0.0 pts** ± 0.0 (n=5) | within noise (+0.0 ± 0.1 pts, n=5) | within noise (-0.0 ± 0.1 pts, n=5) |
+| LDO zero-shot | within noise (+0.0 ± 0.1 pts, n=5) | within noise (-0.0 ± 0.0 pts, n=5) | **-0.2 pts** ± 0.1 (n=5) | **-0.5 pts** ± 0.2 (n=5) |
 
 **peak_intensity** — improvement %
 
@@ -580,8 +597,8 @@ t interval over the per-seed paired deltas.
 | joint:sqrt-uniform | +34.3% (1 seed, untestable) | +43.0% (1 seed, untestable) | +41.1% (1 seed, untestable) | +42.5% (1 seed, untestable) |
 | LODO adapted | +56.5% (1 seed, untestable) | +25.1% (1 seed, untestable) | -1.9% (1 seed, untestable) | -35.4% (1 seed, untestable) |
 | LODO zero-shot | +2.9% (1 seed, untestable) | -14.1% (1 seed, untestable) | -64.6% (1 seed, untestable) | -99.9% (1 seed, untestable) |
-| LDO adapted | within noise (-4.7 ± 29.5%, n=4) | within noise (-10.4 ± 43.3%, n=4) | within noise (-31.1 ± 60.9%, n=4) | within noise (-39.0 ± 59.7%, n=4) |
-| LDO zero-shot | within noise (+14.5 ± 23.9%, n=4) | within noise (-4.9 ± 28.0%, n=4) | within noise (-0.7 ± 129.5%, n=4) | within noise (+11.5 ± 51.6%, n=4) |
+| LDO adapted | within noise (-5.3 ± 20.0%, n=5) | within noise (-7.7 ± 30.3%, n=5) | within noise (-28.6 ± 41.7%, n=5) | **-48.0%** ± 47.4 (n=5) |
+| LDO zero-shot | within noise (+22.7 ± 28.0%, n=5) | within noise (+5.2 ± 33.9%, n=5) | within noise (+4.1 ± 88.5%, n=5) | within noise (+8.7 ± 35.7%, n=5) |
 
 **peak_timing** — improvement % — NOTE: a zero-error reference cell has no scale to divide by and is dropped
 
@@ -592,8 +609,8 @@ t interval over the per-seed paired deltas.
 | joint:sqrt-uniform | -0.7% (1 seed, untestable) | +37.1% (1 seed, untestable) | +19.3% (1 seed, untestable) | -1.9% (1 seed, untestable) |
 | LODO adapted | +39.8% (1 seed, untestable) | +58.8% (1 seed, untestable) | -4.6% (1 seed, untestable) | -21.8% (1 seed, untestable) |
 | LODO zero-shot | +26.3% (1 seed, untestable) | +29.7% (1 seed, untestable) | +1.3% (1 seed, untestable) | +26.6% (1 seed, untestable) |
-| LDO adapted | within noise (-19.7 ± 76.7%, n=4) | within noise (-49.3 ± 171.4%, n=4) | within noise (-9.9 ± 37.4%, n=4) | within noise (-26.2 ± 47.5%, n=4) |
-| LDO zero-shot | within noise (-12.5 ± 86.7%, n=4) | within noise (-3.8 ± 85.6%, n=4) | within noise (+1.3 ± 33.2%, n=4) | within noise (+2.1 ± 26.6%, n=4) |
+| LDO adapted | within noise (-4.3 ± 67.2%, n=5) | within noise (-27.5 ± 130.7%, n=5) | within noise (-8.7 ± 25.5%, n=5) | within noise (-27.4 ± 32.2%, n=5) |
+| LDO zero-shot | within noise (-0.6 ± 67.3%, n=5) | within noise (-0.6 ± 58.5%, n=5) | within noise (+9.1 ± 31.1%, n=5) | within noise (-2.2 ± 21.6%, n=5) |
 
 **smape** — improvement %
 
@@ -604,8 +621,8 @@ t interval over the per-seed paired deltas.
 | joint:sqrt-uniform | -6.9% (1 seed, untestable) | +5.3% (1 seed, untestable) | -28.1% (1 seed, untestable) | -31.2% (1 seed, untestable) |
 | LODO adapted | +13.2% (1 seed, untestable) | +22.0% (1 seed, untestable) | -6.6% (1 seed, untestable) | -13.9% (1 seed, untestable) |
 | LODO zero-shot | -18.8% (1 seed, untestable) | -28.6% (1 seed, untestable) | -101.2% (1 seed, untestable) | -130.3% (1 seed, untestable) |
-| LDO adapted | within noise (-11.9 ± 13.3%, n=4) | **-31.5%** ± 15.3 (n=4) | **-79.9%** ± 32.8 (n=4) | **-111.3%** ± 37.2 (n=4) |
-| LDO zero-shot | **-20.8%** ± 19.8 (n=4) | **-44.9%** ± 27.0 (n=4) | **-52.1%** ± 34.9 (n=4) | **-65.7%** ± 28.1 (n=4) |
+| LDO adapted | **-11.8%** ± 9.0 (n=5) | **-25.3%** ± 20.0 (n=5) | **-77.9%** ± 22.8 (n=5) | **-114.3%** ± 26.5 (n=5) |
+| LDO zero-shot | **-21.0%** ± 13.4 (n=5) | **-40.6%** ± 21.8 (n=5) | **-55.1%** ± 25.0 (n=5) | **-67.0%** ± 19.3 (n=5) |
 
 ### influenza_us-states — vs single (paired by seed)
 
@@ -619,8 +636,10 @@ t interval over the per-seed paired deltas.
 | joint:sqrt-uniform | +3.6% (1 seed, untestable) | +4.2% (1 seed, untestable) | +0.4% (1 seed, untestable) | -5.3% (1 seed, untestable) |
 | LODO adapted | +5.8% (1 seed, untestable) | +4.4% (1 seed, untestable) | -0.2% (1 seed, untestable) | -4.1% (1 seed, untestable) |
 | LODO zero-shot | +2.5% (1 seed, untestable) | +1.1% (1 seed, untestable) | -6.8% (1 seed, untestable) | -17.8% (1 seed, untestable) |
-| LDO adapted | **-4.4%** ± 3.7 (n=4) | **-5.7%** ± 4.4 (n=4) | **-11.2%** ± 5.2 (n=4) | **-13.1%** ± 5.3 (n=4) |
-| LDO zero-shot | **-15.5%** ± 15.2 (n=4) | **-28.9%** ± 26.7 (n=4) | **-53.5%** ± 41.5 (n=4) | **-40.4%** ± 17.4 (n=4) |
+| LDO adapted | **-3.5%** ± 3.5 (n=5) | **-4.6%** ± 4.3 (n=5) | **-10.0%** ± 4.9 (n=5) | **-14.6%** ± 5.4 (n=5) |
+| LDO zero-shot | **-14.2%** ± 10.9 (n=5) | **-26.5%** ± 19.3 (n=5) | **-53.1%** ± 28.1 (n=5) | **-42.6%** ± 13.3 (n=5) |
+| PAIR adapted | **-11.0%** ± 7.8 (n=5) | **-9.4%** ± 4.4 (n=5) | **-8.3%** ± 4.3 (n=5) | **-7.4%** ± 3.7 (n=5) |
+| PAIR zero-shot | **-27.8%** ± 5.4 (n=5) | **-27.0%** ± 7.0 (n=5) | **-35.7%** ± 5.3 (n=5) | **-35.9%** ± 4.0 (n=5) |
 
 **mae** — improvement %
 
@@ -631,8 +650,10 @@ t interval over the per-seed paired deltas.
 | joint:sqrt-uniform | +3.3% (1 seed, untestable) | +4.2% (1 seed, untestable) | +1.5% (1 seed, untestable) | -4.4% (1 seed, untestable) |
 | LODO adapted | +4.5% (1 seed, untestable) | +4.5% (1 seed, untestable) | -0.8% (1 seed, untestable) | -3.1% (1 seed, untestable) |
 | LODO zero-shot | -4.7% (1 seed, untestable) | -6.1% (1 seed, untestable) | -10.9% (1 seed, untestable) | -20.3% (1 seed, untestable) |
-| LDO adapted | **-8.0%** ± 3.2 (n=4) | **-10.3%** ± 3.2 (n=4) | **-17.9%** ± 4.2 (n=4) | **-19.3%** ± 3.8 (n=4) |
-| LDO zero-shot | **-23.7%** ± 14.2 (n=4) | **-36.2%** ± 26.2 (n=4) | **-64.1%** ± 27.7 (n=4) | **-59.8%** ± 18.1 (n=4) |
+| LDO adapted | **-8.1%** ± 2.2 (n=5) | **-9.7%** ± 2.8 (n=5) | **-16.8%** ± 4.3 (n=5) | **-20.4%** ± 3.9 (n=5) |
+| LDO zero-shot | **-23.0%** ± 9.8 (n=5) | **-34.6%** ± 18.3 (n=5) | **-63.8%** ± 18.8 (n=5) | **-62.7%** ± 14.6 (n=5) |
+| PAIR adapted | **-9.9%** ± 6.3 (n=5) | **-8.3%** ± 3.3 (n=5) | **-8.9%** ± 3.0 (n=5) | **-10.0%** ± 3.9 (n=5) |
+| PAIR zero-shot | **-36.5%** ± 8.5 (n=5) | **-42.5%** ± 10.1 (n=5) | **-59.3%** ± 9.3 (n=5) | **-61.2%** ± 9.6 (n=5) |
 
 **nrmse** — improvement %
 
@@ -642,8 +663,10 @@ t interval over the per-seed paired deltas.
 | joint:uniform-uniform | within noise (-2.5 ± 7.7%, n=5) | within noise (-1.6 ± 3.4%, n=5) | within noise (+0.7 ± 4.9%, n=5) | within noise (-1.4 ± 6.4%, n=5) |
 | joint:sqrt-uniform | -0.1% (1 seed, untestable) | +0.9% (1 seed, untestable) | +1.4% (1 seed, untestable) | -4.7% (1 seed, untestable) |
 | LODO adapted | -0.2% (1 seed, untestable) | +2.5% (1 seed, untestable) | +1.2% (1 seed, untestable) | -2.2% (1 seed, untestable) |
-| LDO adapted | **-12.9%** ± 6.9 (n=4) | **-19.4%** ± 7.8 (n=4) | **-30.9%** ± 14.4 (n=4) | **-27.0%** ± 10.2 (n=4) |
-| LDO zero-shot | **-28.0%** ± 24.0 (n=4) | within noise (-50.0 ± 53.3%, n=4) | **-67.5%** ± 55.4 (n=4) | **-31.5%** ± 20.3 (n=4) |
+| LDO adapted | **-13.3%** ± 4.8 (n=5) | **-19.9%** ± 5.5 (n=5) | **-28.4%** ± 11.9 (n=5) | **-27.3%** ± 6.9 (n=5) |
+| LDO zero-shot | **-29.5%** ± 16.7 (n=5) | **-48.8%** ± 36.2 (n=5) | **-67.4%** ± 37.4 (n=5) | **-36.6%** ± 19.8 (n=5) |
+| PAIR adapted | **-9.4%** ± 5.2 (n=5) | **-6.5%** ± 2.3 (n=5) | within noise (-3.7 ± 6.2%, n=5) | **-5.3%** ± 4.3 (n=5) |
+| PAIR zero-shot | **-31.9%** ± 8.3 (n=5) | **-39.0%** ± 10.4 (n=5) | **-60.2%** ± 22.6 (n=5) | **-62.0%** ± 17.8 (n=5) |
 
 **pcc** — correlation points, positive = better
 
@@ -654,8 +677,10 @@ t interval over the per-seed paired deltas.
 | joint:sqrt-uniform | -0.0 pts (1 seed, untestable) | +0.0 pts (1 seed, untestable) | -0.0 pts (1 seed, untestable) | -0.0 pts (1 seed, untestable) |
 | LODO adapted | -0.0 pts (1 seed, untestable) | +0.0 pts (1 seed, untestable) | -0.0 pts (1 seed, untestable) | -0.0 pts (1 seed, untestable) |
 | LODO zero-shot | -0.0 pts (1 seed, untestable) | +0.1 pts (1 seed, untestable) | +0.1 pts (1 seed, untestable) | +0.1 pts (1 seed, untestable) |
-| LDO adapted | within noise (-0.0 ± 0.0 pts, n=4) | within noise (-0.0 ± 0.0 pts, n=4) | **-0.1 pts** ± 0.0 (n=4) | within noise (-0.0 ± 0.1 pts, n=4) |
-| LDO zero-shot | **-0.1 pts** ± 0.0 (n=4) | **-0.1 pts** ± 0.0 (n=4) | **-0.4 pts** ± 0.1 (n=4) | **-0.6 pts** ± 0.2 (n=4) |
+| LDO adapted | within noise (-0.0 ± 0.0 pts, n=5) | within noise (-0.0 ± 0.0 pts, n=5) | **-0.1 pts** ± 0.0 (n=5) | within noise (-0.1 ± 0.1 pts, n=5) |
+| LDO zero-shot | **-0.1 pts** ± 0.0 (n=5) | **-0.1 pts** ± 0.0 (n=5) | **-0.4 pts** ± 0.1 (n=5) | **-0.6 pts** ± 0.1 (n=5) |
+| PAIR adapted | **-0.0 pts** ± 0.0 (n=5) | **-0.0 pts** ± 0.0 (n=5) | within noise (-0.1 ± 0.1 pts, n=5) | within noise (-0.0 ± 0.1 pts, n=5) |
+| PAIR zero-shot | **-0.1 pts** ± 0.0 (n=5) | **-0.2 pts** ± 0.1 (n=5) | **-0.2 pts** ± 0.0 (n=5) | **-0.2 pts** ± 0.0 (n=5) |
 
 **peak_intensity** — improvement %
 
@@ -666,8 +691,10 @@ t interval over the per-seed paired deltas.
 | joint:sqrt-uniform | +14.9% (1 seed, untestable) | +4.4% (1 seed, untestable) | -2.4% (1 seed, untestable) | -6.8% (1 seed, untestable) |
 | LODO adapted | +18.8% (1 seed, untestable) | -14.4% (1 seed, untestable) | -12.2% (1 seed, untestable) | -12.8% (1 seed, untestable) |
 | LODO zero-shot | +18.2% (1 seed, untestable) | -13.0% (1 seed, untestable) | -29.8% (1 seed, untestable) | -39.6% (1 seed, untestable) |
-| LDO adapted | within noise (+9.4 ± 12.4%, n=4) | within noise (+4.2 ± 6.3%, n=4) | within noise (+3.6 ± 10.1%, n=4) | within noise (-1.0 ± 14.1%, n=4) |
-| LDO zero-shot | **+51.7%** ± 9.5 (n=4) | **+39.5%** ± 9.3 (n=4) | **+35.5%** ± 33.7 (n=4) | within noise (+17.6 ± 20.5%, n=4) |
+| LDO adapted | **+10.4%** ± 8.9 (n=5) | within noise (+4.3 ± 4.3%, n=5) | within noise (+3.2 ± 6.9%, n=5) | within noise (-2.6 ± 10.6%, n=5) |
+| LDO zero-shot | **+52.1%** ± 6.5 (n=5) | **+39.6%** ± 6.3 (n=5) | **+30.7%** ± 26.3 (n=5) | **+18.0%** ± 13.9 (n=5) |
+| PAIR adapted | within noise (-10.5 ± 12.9%, n=5) | **-15.9%** ± 6.7 (n=5) | **-12.0%** ± 9.4 (n=5) | **-11.3%** ± 6.8 (n=5) |
+| PAIR zero-shot | **-23.3%** ± 9.3 (n=5) | **-13.7%** ± 6.8 (n=5) | within noise (-3.8 ± 13.6%, n=5) | within noise (-0.8 ± 11.9%, n=5) |
 
 **peak_timing** — improvement % — NOTE: a zero-error reference cell has no scale to divide by and is dropped
 
@@ -678,8 +705,10 @@ t interval over the per-seed paired deltas.
 | joint:sqrt-uniform | -23.8% (1 seed, untestable) | +33.3% (1 seed, untestable) | -5.5% (1 seed, untestable) | -24.7% (1 seed, untestable) |
 | LODO adapted | -35.7% (1 seed, untestable) | +45.6% (1 seed, untestable) | +11.7% (1 seed, untestable) | -21.1% (1 seed, untestable) |
 | LODO zero-shot | +47.7% (1 seed, untestable) | +52.7% (1 seed, untestable) | +2.6% (1 seed, untestable) | -44.4% (1 seed, untestable) |
-| LDO adapted | within noise (+7.0 ± 24.0%, n=4) | within noise (+14.4 ± 36.6%, n=4) | within noise (-0.9 ± 17.7%, n=4) | within noise (-0.5 ± 34.6%, n=4) |
-| LDO zero-shot | **+25.0%** ± 21.2 (n=4) | **+52.6%** ± 10.4 (n=4) | **+45.9%** ± 6.9 (n=4) | **+22.4%** ± 16.9 (n=4) |
+| LDO adapted | within noise (+9.1 ± 17.3%, n=5) | within noise (+18.9 ± 27.7%, n=5) | within noise (+0.0 ± 12.2%, n=5) | within noise (-6.6 ± 28.8%, n=5) |
+| LDO zero-shot | **+25.1%** ± 14.3 (n=5) | **+51.5%** ± 7.8 (n=5) | **+42.3%** ± 11.0 (n=5) | **+21.3%** ± 11.8 (n=5) |
+| PAIR adapted | within noise (-13.1 ± 28.6%, n=5) | within noise (-2.5 ± 21.7%, n=5) | within noise (-6.7 ± 23.6%, n=5) | **-9.9%** ± 7.1 (n=5) |
+| PAIR zero-shot | within noise (-22.0 ± 50.9%, n=5) | within noise (-22.0 ± 39.7%, n=5) | within noise (+0.8 ± 21.3%, n=5) | **-32.5%** ± 23.6 (n=5) |
 
 **smape** — improvement %
 
@@ -690,8 +719,10 @@ t interval over the per-seed paired deltas.
 | joint:sqrt-uniform | -0.2% (1 seed, untestable) | +1.2% (1 seed, untestable) | -0.7% (1 seed, untestable) | -3.2% (1 seed, untestable) |
 | LODO adapted | -0.2% (1 seed, untestable) | +2.2% (1 seed, untestable) | -1.5% (1 seed, untestable) | -2.6% (1 seed, untestable) |
 | LODO zero-shot | -7.7% (1 seed, untestable) | -8.5% (1 seed, untestable) | -11.0% (1 seed, untestable) | -15.2% (1 seed, untestable) |
-| LDO adapted | **-7.8%** ± 2.6 (n=4) | **-11.3%** ± 2.7 (n=4) | **-16.8%** ± 4.2 (n=4) | **-17.5%** ± 2.3 (n=4) |
-| LDO zero-shot | **-18.0%** ± 3.9 (n=4) | **-24.5%** ± 6.4 (n=4) | **-36.9%** ± 4.0 (n=4) | **-41.8%** ± 5.0 (n=4) |
+| LDO adapted | **-8.4%** ± 2.5 (n=5) | **-11.3%** ± 1.8 (n=5) | **-16.7%** ± 2.9 (n=5) | **-18.5%** ± 3.2 (n=5) |
+| LDO zero-shot | **-18.2%** ± 2.7 (n=5) | **-23.9%** ± 4.6 (n=5) | **-36.4%** ± 3.1 (n=5) | **-42.1%** ± 3.5 (n=5) |
+| PAIR adapted | **-7.5%** ± 2.4 (n=5) | **-6.8%** ± 1.5 (n=5) | **-9.4%** ± 3.2 (n=5) | **-11.0%** ± 4.3 (n=5) |
+| PAIR zero-shot | **-33.1%** ± 6.3 (n=5) | **-37.6%** ± 5.2 (n=5) | **-40.0%** ± 3.0 (n=5) | **-36.3%** ± 2.9 (n=5) |
 
 ### dengue — vs single (paired by seed)
 
@@ -804,20 +835,22 @@ A large A-vs-B gap means the headline was reporting the reference, not the trans
 | influenza_japan | joint:sqrt-uniform | -8.9 | -9.8 | -7.2 | -3.9 | -18.4 | -14.6 | -9.5 | -12.9 |
 | influenza_japan | LODO adapted | +24.0 | +23.4 | +4.5 | +7.4 | -25.4 | -21.4 | -22.6 | -26.4 |
 | influenza_japan | LODO zero-shot | -41.1 | -42.2 | -66.5 | -61.4 | -59.5 | -54.4 | -52.2 | -56.9 |
-| influenza_japan | LDO adapted | +3.4 | +4.9 | -16.9 | -18.0 | -35.2 | -35.6 | -51.3 | -47.7 |
-| influenza_japan | LDO zero-shot | -311.2 | -300.4 | -503.1 | -515.2 | -558.8 | -552.2 | -97.9 | -93.0 |
+| influenza_japan | LDO adapted | +2.4 | +3.4 | -16.6 | -16.8 | -36.8 | -36.2 | -50.3 | -48.4 |
+| influenza_japan | LDO zero-shot | -269.6 | -261.3 | -451.0 | -458.6 | -510.0 | -502.1 | -93.8 | -91.0 |
 | influenza_us-regions | joint:uniform-uniform | -0.2 | +1.1 | -2.2 | -1.3 | -8.2 | -8.0 | -11.2 | -11.3 |
 | influenza_us-regions | joint:sqrt-uniform | +6.0 | -5.7 | -2.7 | -17.2 | -47.7 | -45.2 | -33.9 | -36.9 |
 | influenza_us-regions | LODO adapted | +19.9 | +9.9 | +28.0 | +17.8 | +2.4 | +4.0 | -0.5 | -2.8 |
 | influenza_us-regions | LODO zero-shot | +1.6 | -10.8 | -2.2 | -16.7 | -46.0 | -43.5 | -52.4 | -55.9 |
-| influenza_us-regions | LDO adapted | -4.7 | -0.3 | -10.0 | -6.0 | -32.6 | -33.2 | -51.2 | -49.5 |
-| influenza_us-regions | LDO zero-shot | -18.4 | -13.4 | -49.8 | -44.8 | -106.3 | -102.0 | -55.6 | -52.5 |
+| influenza_us-regions | LDO adapted | -3.2 | -2.2 | -5.0 | -4.2 | -30.0 | -30.0 | -51.2 | -50.4 |
+| influenza_us-regions | LDO zero-shot | -17.4 | -16.3 | -45.2 | -44.7 | -98.9 | -94.9 | -53.9 | -52.1 |
 | influenza_us-states | joint:uniform-uniform | +0.4 | +0.6 | +0.7 | +0.8 | +0.0 | +0.0 | -0.9 | -0.8 |
 | influenza_us-states | joint:sqrt-uniform | +3.6 | -0.8 | +4.2 | +1.3 | +0.4 | -0.1 | -5.3 | -2.5 |
 | influenza_us-states | LODO adapted | +5.8 | +1.4 | +4.4 | +1.5 | -0.2 | -0.7 | -4.1 | -1.3 |
 | influenza_us-states | LODO zero-shot | +2.5 | -2.0 | +1.1 | -1.9 | -6.8 | -7.3 | -17.8 | -14.6 |
-| influenza_us-states | LDO adapted | -4.4 | -3.1 | -5.7 | -4.8 | -11.2 | -11.1 | -13.1 | -13.8 |
-| influenza_us-states | LDO zero-shot | -15.5 | -14.0 | -28.9 | -27.9 | -53.5 | -53.2 | -40.4 | -41.2 |
+| influenza_us-states | LDO adapted | -3.5 | -3.5 | -4.6 | -4.5 | -10.0 | -10.0 | -14.6 | -14.5 |
+| influenza_us-states | LDO zero-shot | -14.2 | -14.0 | -26.5 | -26.3 | -53.1 | -52.9 | -42.6 | -42.5 |
+| influenza_us-states | PAIR adapted | -11.0 | -10.9 | -9.4 | -9.4 | -8.3 | -8.3 | -7.4 | -7.3 |
+| influenza_us-states | PAIR zero-shot | -27.8 | -27.8 | -27.0 | -26.9 | -35.7 | -35.7 | -35.9 | -36.0 |
 | dengue | joint:uniform-uniform | -2.7 | -1.4 | -0.9 | +0.3 | +0.2 | +0.2 | -0.9 | -0.9 |
 | dengue | joint:sqrt-uniform | -61.0 | -91.3 | -62.2 | -82.8 | -0.2 | -1.1 | +0.6 | +0.8 |
 | dengue | LODO adapted | +2.9 | -15.4 | +5.7 | -6.2 | -0.8 | -1.7 | -1.7 | -1.5 |
@@ -837,20 +870,22 @@ A = seed-matched reference, B = 5-seed-mean reference. Both in improvement %, po
 | influenza_japan | joint:sqrt-uniform | -12.6 | -10.5 | -6.8 | -3.1 | -17.0 | -14.0 | -6.9 | -9.6 |
 | influenza_japan | LODO adapted | +18.0 | +19.6 | +2.7 | +6.0 | -20.6 | -17.5 | -19.0 | -22.0 |
 | influenza_japan | LODO zero-shot | -50.0 | -47.2 | -71.5 | -65.5 | -62.4 | -58.3 | -53.2 | -57.0 |
-| influenza_japan | LDO adapted | +7.5 | +8.4 | -12.1 | -13.2 | -32.1 | -32.4 | -47.6 | -45.0 |
-| influenza_japan | LDO zero-shot | -264.3 | -253.5 | -432.8 | -441.2 | -538.7 | -534.2 | -145.2 | -141.2 |
+| influenza_japan | LDO adapted | +5.3 | +6.4 | -12.3 | -12.4 | -33.6 | -33.1 | -46.6 | -45.2 |
+| influenza_japan | LDO zero-shot | -234.7 | -225.3 | -392.9 | -397.3 | -503.8 | -497.8 | -145.3 | -143.3 |
 | influenza_us-regions | joint:uniform-uniform | -2.3 | -0.5 | -4.4 | -2.3 | -11.7 | -11.3 | -15.0 | -15.0 |
 | influenza_us-regions | joint:sqrt-uniform | -1.3 | -18.6 | -1.3 | -22.6 | -48.6 | -48.5 | -41.7 | -45.9 |
 | influenza_us-regions | LODO adapted | +19.9 | +6.3 | +32.5 | +18.4 | +6.4 | +6.5 | +0.4 | -2.6 |
 | influenza_us-regions | LODO zero-shot | -4.8 | -22.6 | -10.6 | -33.8 | -62.9 | -62.8 | -73.4 | -78.6 |
-| influenza_us-regions | LDO adapted | -8.1 | -2.4 | -20.6 | -13.9 | -50.5 | -50.4 | -72.1 | -69.4 |
-| influenza_us-regions | LDO zero-shot | -23.5 | -16.4 | -61.3 | -52.0 | -107.5 | -99.2 | -72.3 | -68.0 |
+| influenza_us-regions | LDO adapted | -6.1 | -4.8 | -13.4 | -11.6 | -46.8 | -46.7 | -71.9 | -70.7 |
+| influenza_us-regions | LDO zero-shot | -23.1 | -21.5 | -55.8 | -54.0 | -103.1 | -96.5 | -71.5 | -69.0 |
 | influenza_us-states | joint:uniform-uniform | +0.2 | +0.3 | +0.3 | +0.3 | -1.3 | -1.3 | -1.5 | -1.5 |
 | influenza_us-states | joint:sqrt-uniform | +3.3 | +0.3 | +4.2 | +1.2 | +1.5 | -0.2 | -4.4 | -2.4 |
 | influenza_us-states | LODO adapted | +4.5 | +1.6 | +4.5 | +1.5 | -0.8 | -2.6 | -3.1 | -1.1 |
 | influenza_us-states | LODO zero-shot | -4.7 | -7.9 | -6.1 | -9.4 | -10.9 | -12.9 | -20.3 | -18.1 |
-| influenza_us-states | LDO adapted | -8.0 | -7.2 | -10.3 | -9.5 | -17.9 | -17.4 | -19.3 | -19.9 |
-| influenza_us-states | LDO zero-shot | -23.7 | -22.6 | -36.2 | -35.1 | -64.1 | -63.4 | -59.8 | -60.5 |
+| influenza_us-states | LDO adapted | -8.1 | -8.1 | -9.7 | -9.6 | -16.8 | -16.7 | -20.4 | -20.3 |
+| influenza_us-states | LDO zero-shot | -23.0 | -22.9 | -34.6 | -34.5 | -63.8 | -63.8 | -62.7 | -62.6 |
+| influenza_us-states | PAIR adapted | -9.9 | -9.9 | -8.3 | -8.3 | -8.9 | -8.9 | -10.0 | -9.9 |
+| influenza_us-states | PAIR zero-shot | -36.5 | -36.4 | -42.5 | -42.3 | -59.3 | -59.2 | -61.2 | -61.3 |
 | dengue | joint:uniform-uniform | -2.7 | -2.4 | +0.6 | +1.0 | +2.4 | +2.4 | +0.1 | +0.1 |
 | dengue | joint:sqrt-uniform | -35.7 | -45.5 | -30.3 | -36.5 | +1.0 | -0.6 | +1.7 | +2.0 |
 | dengue | LODO adapted | -8.7 | -16.6 | -2.6 | -7.5 | +0.9 | -0.7 | -1.8 | -1.5 |
@@ -882,18 +917,18 @@ The expected pattern, stated in advance by the client, is that the honest cross-
 
 | dataset | h | LODO adapted (1 seed) | LDO adapted (4-5 seeds) | LODO zero-shot (1 seed) | LDO zero-shot (4-5 seeds) |
 |---|---|---|---|---|---|
-| influenza_japan | h3 | +24.0% (1 seed, untestable) | within noise (+3.4 ± 35.6%, n=4) | -41.1% (1 seed, untestable) | within noise (-311.2 ± 349.2%, n=4) |
-| influenza_japan | h5 | +4.5% (1 seed, untestable) | **-16.9%** ± 9.3 (n=4) | -66.5% (1 seed, untestable) | within noise (-503.1 ± 558.6%, n=4) |
-| influenza_japan | h10 | -25.4% (1 seed, untestable) | **-35.2%** ± 19.3 (n=4) | -59.5% (1 seed, untestable) | within noise (-558.8 ± 626.3%, n=4) |
-| influenza_japan | h15 | -22.6% (1 seed, untestable) | **-51.3%** ± 39.4 (n=4) | -52.2% (1 seed, untestable) | **-97.9%** ± 58.7 (n=4) |
-| influenza_us-regions | h3 | +19.9% (1 seed, untestable) | within noise (-4.7 ± 17.2%, n=4) | +1.6% (1 seed, untestable) | within noise (-18.4 ± 30.9%, n=4) |
-| influenza_us-regions | h5 | +28.0% (1 seed, untestable) | **-10.0%** ± 8.5 (n=4) | -2.2% (1 seed, untestable) | within noise (-49.8 ± 66.7%, n=4) |
-| influenza_us-regions | h10 | +2.4% (1 seed, untestable) | **-32.6%** ± 16.8 (n=4) | -46.0% (1 seed, untestable) | within noise (-106.3 ± 212.8%, n=4) |
-| influenza_us-regions | h15 | -0.5% (1 seed, untestable) | **-51.2%** ± 25.0 (n=4) | -52.4% (1 seed, untestable) | within noise (-55.6 ± 68.3%, n=4) |
-| influenza_us-states | h3 | +5.8% (1 seed, untestable) | **-4.4%** ± 3.7 (n=4) | +2.5% (1 seed, untestable) | **-15.5%** ± 15.2 (n=4) |
-| influenza_us-states | h5 | +4.4% (1 seed, untestable) | **-5.7%** ± 4.4 (n=4) | +1.1% (1 seed, untestable) | **-28.9%** ± 26.7 (n=4) |
-| influenza_us-states | h10 | -0.2% (1 seed, untestable) | **-11.2%** ± 5.2 (n=4) | -6.8% (1 seed, untestable) | **-53.5%** ± 41.5 (n=4) |
-| influenza_us-states | h15 | -4.1% (1 seed, untestable) | **-13.1%** ± 5.3 (n=4) | -17.8% (1 seed, untestable) | **-40.4%** ± 17.4 (n=4) |
+| influenza_japan | h3 | +24.0% (1 seed, untestable) | within noise (+2.4 ± 24.2%, n=5) | -41.1% (1 seed, untestable) | **-269.6%** ± 262.7 (n=5) |
+| influenza_japan | h5 | +4.5% (1 seed, untestable) | **-16.6%** ± 6.3 (n=5) | -66.5% (1 seed, untestable) | **-451.0%** ± 404.2 (n=5) |
+| influenza_japan | h10 | -25.4% (1 seed, untestable) | **-36.8%** ± 13.8 (n=5) | -59.5% (1 seed, untestable) | **-510.0%** ± 444.4 (n=5) |
+| influenza_japan | h15 | -22.6% (1 seed, untestable) | **-50.3%** ± 26.8 (n=5) | -52.2% (1 seed, untestable) | **-93.8%** ± 41.2 (n=5) |
+| influenza_us-regions | h3 | +19.9% (1 seed, untestable) | within noise (-3.2 ± 12.3%, n=5) | +1.6% (1 seed, untestable) | within noise (-17.4 ± 21.0%, n=5) |
+| influenza_us-regions | h5 | +28.0% (1 seed, untestable) | within noise (-5.0 ± 15.1%, n=5) | -2.2% (1 seed, untestable) | within noise (-45.2 ± 46.8%, n=5) |
+| influenza_us-regions | h10 | +2.4% (1 seed, untestable) | **-30.0%** ± 13.5 (n=5) | -46.0% (1 seed, untestable) | within noise (-98.9 ± 145.2%, n=5) |
+| influenza_us-regions | h15 | -0.5% (1 seed, untestable) | **-51.2%** ± 16.9 (n=5) | -52.4% (1 seed, untestable) | **-53.9%** ± 46.4 (n=5) |
+| influenza_us-states | h3 | +5.8% (1 seed, untestable) | **-3.5%** ± 3.5 (n=5) | +2.5% (1 seed, untestable) | **-14.2%** ± 10.9 (n=5) |
+| influenza_us-states | h5 | +4.4% (1 seed, untestable) | **-4.6%** ± 4.3 (n=5) | +1.1% (1 seed, untestable) | **-26.5%** ± 19.3 (n=5) |
+| influenza_us-states | h10 | -0.2% (1 seed, untestable) | **-10.0%** ± 4.9 (n=5) | -6.8% (1 seed, untestable) | **-53.1%** ± 28.1 (n=5) |
+| influenza_us-states | h15 | -4.1% (1 seed, untestable) | **-14.6%** ± 5.4 (n=5) | -17.8% (1 seed, untestable) | **-42.6%** ± 13.3 (n=5) |
 | dengue | h3 | +2.9% (1 seed, untestable) | within noise (-9.8 ± 16.6%, n=5) | +0.4% (1 seed, untestable) | within noise (-17.3 ± 21.1%, n=5) |
 | dengue | h5 | +5.7% (1 seed, untestable) | within noise (-5.3 ± 13.9%, n=5) | +4.2% (1 seed, untestable) | within noise (-6.1 ± 14.9%, n=5) |
 | dengue | h10 | -0.8% (1 seed, untestable) | **-1.6%** ± 1.4 (n=5) | -1.6% (1 seed, untestable) | within noise (-10.2 ± 12.2%, n=5) |
@@ -904,18 +939,18 @@ The expected pattern, stated in advance by the client, is that the honest cross-
 
 | dataset | h | LODO adapted (1 seed) | LDO adapted (4-5 seeds) | LODO zero-shot (1 seed) | LDO zero-shot (4-5 seeds) |
 |---|---|---|---|---|---|
-| influenza_japan | h3 | +18.0% (1 seed, untestable) | within noise (+7.5 ± 29.7%, n=4) | -50.0% (1 seed, untestable) | within noise (-264.3 ± 292.3%, n=4) |
-| influenza_japan | h5 | +2.7% (1 seed, untestable) | **-12.1%** ± 9.2 (n=4) | -71.5% (1 seed, untestable) | within noise (-432.8 ± 484.5%, n=4) |
-| influenza_japan | h10 | -20.6% (1 seed, untestable) | **-32.1%** ± 17.6 (n=4) | -62.4% (1 seed, untestable) | **-538.7%** ± 489.5 (n=4) |
-| influenza_japan | h15 | -19.0% (1 seed, untestable) | **-47.6%** ± 35.5 (n=4) | -53.2% (1 seed, untestable) | **-145.2%** ± 55.6 (n=4) |
-| influenza_us-regions | h3 | +19.9% (1 seed, untestable) | within noise (-8.1 ± 18.6%, n=4) | -4.8% (1 seed, untestable) | within noise (-23.5 ± 40.3%, n=4) |
-| influenza_us-regions | h5 | +32.5% (1 seed, untestable) | **-20.6%** ± 10.1 (n=4) | -10.6% (1 seed, untestable) | within noise (-61.3 ± 82.7%, n=4) |
-| influenza_us-regions | h10 | +6.4% (1 seed, untestable) | **-50.5%** ± 23.9 (n=4) | -62.9% (1 seed, untestable) | within noise (-107.5 ± 193.5%, n=4) |
-| influenza_us-regions | h15 | +0.4% (1 seed, untestable) | **-72.1%** ± 33.7 (n=4) | -73.4% (1 seed, untestable) | **-72.3%** ± 68.9 (n=4) |
-| influenza_us-states | h3 | +4.5% (1 seed, untestable) | **-8.0%** ± 3.2 (n=4) | -4.7% (1 seed, untestable) | **-23.7%** ± 14.2 (n=4) |
-| influenza_us-states | h5 | +4.5% (1 seed, untestable) | **-10.3%** ± 3.2 (n=4) | -6.1% (1 seed, untestable) | **-36.2%** ± 26.2 (n=4) |
-| influenza_us-states | h10 | -0.8% (1 seed, untestable) | **-17.9%** ± 4.2 (n=4) | -10.9% (1 seed, untestable) | **-64.1%** ± 27.7 (n=4) |
-| influenza_us-states | h15 | -3.1% (1 seed, untestable) | **-19.3%** ± 3.8 (n=4) | -20.3% (1 seed, untestable) | **-59.8%** ± 18.1 (n=4) |
+| influenza_japan | h3 | +18.0% (1 seed, untestable) | within noise (+5.3 ± 21.0%, n=5) | -50.0% (1 seed, untestable) | **-234.7%** ± 213.9 (n=5) |
+| influenza_japan | h5 | +2.7% (1 seed, untestable) | **-12.3%** ± 6.2 (n=5) | -71.5% (1 seed, untestable) | **-392.9%** ± 345.5 (n=5) |
+| influenza_japan | h10 | -20.6% (1 seed, untestable) | **-33.6%** ± 12.6 (n=5) | -62.4% (1 seed, untestable) | **-503.8%** ± 344.7 (n=5) |
+| influenza_japan | h15 | -19.0% (1 seed, untestable) | **-46.6%** ± 24.1 (n=5) | -53.2% (1 seed, untestable) | **-145.3%** ± 37.6 (n=5) |
+| influenza_us-regions | h3 | +19.9% (1 seed, untestable) | within noise (-6.1 ± 13.9%, n=5) | -4.8% (1 seed, untestable) | within noise (-23.1 ± 27.3%, n=5) |
+| influenza_us-regions | h5 | +32.5% (1 seed, untestable) | within noise (-13.4 ± 21.1%, n=5) | -10.6% (1 seed, untestable) | within noise (-55.8 ± 58.0%, n=5) |
+| influenza_us-regions | h10 | +6.4% (1 seed, untestable) | **-46.8%** ± 19.2 (n=5) | -62.9% (1 seed, untestable) | within noise (-103.1 ± 131.3%, n=5) |
+| influenza_us-regions | h15 | +0.4% (1 seed, untestable) | **-71.9%** ± 22.8 (n=5) | -73.4% (1 seed, untestable) | **-71.5%** ± 46.6 (n=5) |
+| influenza_us-states | h3 | +4.5% (1 seed, untestable) | **-8.1%** ± 2.2 (n=5) | -4.7% (1 seed, untestable) | **-23.0%** ± 9.8 (n=5) |
+| influenza_us-states | h5 | +4.5% (1 seed, untestable) | **-9.7%** ± 2.8 (n=5) | -6.1% (1 seed, untestable) | **-34.6%** ± 18.3 (n=5) |
+| influenza_us-states | h10 | -0.8% (1 seed, untestable) | **-16.8%** ± 4.3 (n=5) | -10.9% (1 seed, untestable) | **-63.8%** ± 18.8 (n=5) |
+| influenza_us-states | h15 | -3.1% (1 seed, untestable) | **-20.4%** ± 3.9 (n=5) | -20.3% (1 seed, untestable) | **-62.7%** ± 14.6 (n=5) |
 | dengue | h3 | -8.7% (1 seed, untestable) | **-12.9%** ± 7.6 (n=5) | -15.3% (1 seed, untestable) | **-18.8%** ± 12.1 (n=5) |
 | dengue | h5 | -2.6% (1 seed, untestable) | within noise (-6.1 ± 7.6%, n=5) | -8.5% (1 seed, untestable) | **-10.3%** ± 8.3 (n=5) |
 | dengue | h10 | +0.9% (1 seed, untestable) | within noise (-0.7 ± 1.1%, n=5) | -6.2% (1 seed, untestable) | **-15.8%** ± 11.8 (n=5) |

@@ -52,12 +52,18 @@ train/loop.py               single-disease training + naive floors -> results/*.
 tests/test_encoder_invariants.py   the §8 gates, each with a negative control that must fire
 configs/encoder_base.yaml   the frozen hyperparameters (human record)
 day11_diagnostics.py        Day-11 close-out readings (§0.8 origin counts, §0.9 scaler variance)
+loaders/                    the four per-disease entry points -> data/processed/*.npz (python -m loaders.<name>)
+progress/                   dated progress notes, decisions, results write-ups, planning docs (not code)
 ```
 
 Phase-2 data-build code (frozen — do not edit): `to_schema.py`, `build_datasets.py`,
-`fetch_gadm.py`, `dengue_*.py`, `influenza_load.py`, `ebola_*.py`, `japan_*.py`, and the
-Phase-2 tests `test_leakage.py` (86 gates + 6 negative controls), `test_schema.py`,
+`fetch_gadm.py`, `dengue_aliases.py`, `dengue_coverage.py`, `ebola_audit.py`, `japan_*.py`,
+and the Phase-2 tests `test_leakage.py` (86 gates + 6 negative controls), `test_schema.py`,
 `test_dengue_7_1.py`, `test_influenza_covariates.py`.
+
+The four per-disease entry points that build `data/processed/*.npz` live in `loaders/`
+(covid, dengue, ebola, influenza) and run as modules from the repo root, e.g.
+`python -m loaders.covid_load`.
 
 ---
 
@@ -131,8 +137,9 @@ gated in `tests/test_encoder_invariants.py`:
 ## Key documents
 
 - [PROJECT.md](PROJECT.md) — the current source of truth (thesis, status, plan).
-- [encoder_architecture_plan.md](encoder_architecture_plan.md) — the frozen encoder design.
-- [Phase3_Week3_Developer_Execution_Guide.md](Phase3_Week3_Developer_Execution_Guide.md) — the day-by-day Week-3 schedule.
-- [data_audit.md](data_audit.md) — the authoritative data-methods record (86 gates, every alteration declared).
-- [schema_spec.md](schema_spec.md) — the `DiseaseTensors` contract.
+- [progress/planning/encoder_architecture_plan.md](progress/planning/encoder_architecture_plan.md) — the frozen encoder design.
+- [progress/planning/Phase3_Week3_Developer_Execution_Guide.md](progress/planning/Phase3_Week3_Developer_Execution_Guide.md) — the day-by-day Week-3 schedule.
+- [progress/planning/data_audit.md](progress/planning/data_audit.md) — the authoritative data-methods record (86 gates, every alteration declared).
+- [progress/planning/schema_spec.md](progress/planning/schema_spec.md) — the `DiseaseTensors` contract.
+- `progress/` — dated summaries, decisions, results write-ups (see `progress/summaries|decisions|outcomes|planning`).
 - `Reports/` — Phase-1 and Phase-2 reports and the manuscript.

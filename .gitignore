@@ -2,11 +2,11 @@
 .claude/
 
 #Docs
-docs/
-Reports/
+/docs/
+/Reports/
 
 #Baseline Models
-baselines/*
+/baselines/*
 
 #Virtual Environment
 .venv/
@@ -17,11 +17,11 @@ __pycache__/
 #Environment Variables
 .env
 
-results/
+/results/
 
 #Generated run artifacts (regenerable from code + data, not source)
-ablation/*.json
-ablation/*.npz
-figs/
+/ablation/*.json
+/ablation/*.npz
+/figs/
 *.log
 env_train_snapshot*.txt
