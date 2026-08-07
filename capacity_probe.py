@@ -52,13 +52,26 @@ from models.adapters import Adapter
 from models.config import D_HIDDEN, QUANTILES
 from results_paths import RESULTS, rpath
 from train.joint import _test_dataset
-from train.lodo import FLU_NAMES, _fit_shared_adapter, run_ldo_fold
-from train.loop import DEVICE, write_checkpoint
+from train.lodo import FLU_NAMES, _fit_shared_adapter, _fit_trunk
+from train.loop import DEVICE, write_checkpoint, write_per_origin
 
-SEED = 42
-CKPT = f"encoder_ldo__dengue2flu__seed{SEED}__ckpt.pt"
+SEEDS = (42, 52, 62, 72, 82)
+SEED = SEEDS[0]                       # single-seed default; `--seeds 42` reproduces the 2026-07-31 run
 OUT_MD = Path("Reports/Capacity_Probe_Result.md")
+OUT_MD5 = Path("Reports/Capacity_Probe_5Seed.md")
 OUT_JSON = RESULTS / "misc" / "capacity_probe.json"
+OUT_JSON5 = RESULTS / "misc" / "capacity_probe_5seed.json"
+# Two-sided 95% t critical values. n=5 -> 2.776, which is the figure the meta-learning note quotes
+# when it argues against dropping to three seeds. scipy is not a dependency of this repo.
+T_CRIT = {2: 12.706, 3: 4.303, 4: 3.182, 5: 2.776, 6: 2.571, 7: 2.447, 8: 2.365}
+
+
+def trunk_ckpt(seed):
+    """Deliberately NOT `encoder_ldo__dengue2flu__seed42__ckpt.pt`. That file was written by
+    run_ldo_fold on 2026-07-31 under older code; this family is refitted under today's code so all
+    five seeds form one valid paired sample and the probe is reproducible from the repo as it stands.
+    Starts with `encoder_ldo__`, so it routes to lodo/ with no change to results_paths.py."""
+    return f"encoder_ldo__dengue2flu-cap__seed{seed}__ckpt.pt"
 
 
 # --------------------------------------------------------------------------- #
@@ -141,19 +154,29 @@ def improvement(new, ref):
 
 
 # --------------------------------------------------------------------------- #
-def stage1_fold(skip=False, verbose=True):
-    """Run the dengue->flu LDO fold at seed 42: closes the missing-seed gap AND leaves a checkpoint."""
-    ck = rpath(CKPT)
-    if skip or ck.exists():
-        if not ck.exists():
-            sys.exit(f"--skip-fold given but no checkpoint at {ck}; run without --skip-fold first")
-        print(f"[stage1] reusing existing checkpoint {ck}")
+def stage1_fold(seed, skip=False, verbose=True):
+    """The one frozen dengue trunk this seed's two arms share. TRUNK ONLY.
+
+    That restriction is a correctness fix, not an optimisation. The previous version called
+    `run_ldo_fold("dengue2flu", seed)`, which also fits a shared flu adapter and then WRITES
+    `encoder_ldo__influenza_{japan,us-regions,us-states}__seed{S}.json`. Those files exist on disk
+    for seeds 52-82 (dated 2026-07-30) and are the two-disease LDO table the client asked to have
+    reported separately (D1). Sweeping five seeds through the old path would have silently
+    overwritten four fifths of that table with numbers produced by different code. It was also
+    duplicated work: the affine row of arm 1 refits exactly the adapter run_ldo_fold had just fit.
+    """
+    ck = rpath(trunk_ckpt(seed))
+    if ck.exists():
+        print(f"[stage1] seed {seed}: reusing trunk {ck}")
         return ck
-    print(f"[stage1] running LDO fold dengue2flu seed {SEED} "
-          f"(closes the 4->5 seed gap; writes ckpt + quantiles). Expect ~1 h on the 3060.")
+    if skip:
+        sys.exit(f"--skip-fold given but no trunk at {ck}; run without --skip-fold first")
+    print(f"[stage1] seed {seed}: fitting the dengue trunk (~70 min on the 3060)")
     t0 = time.time()
-    run_ldo_fold("dengue2flu", SEED, device=DEVICE, verbose=verbose)
-    print(f"[stage1] done in {(time.time() - t0) / 60:.1f} min -> {ck}")
+    enc, _ = _fit_trunk(seed, ["dengue"], DEVICE, verbose=verbose)
+    write_checkpoint(enc, None, trunk_ckpt(seed),
+                     extra=dict(fold="ldo", direction="dengue2flu", seed=seed, trunk_only=True))
+    print(f"[stage1] seed {seed}: done in {(time.time() - t0) / 60:.1f} min -> {ck}")
     return ck
 
 
@@ -170,25 +193,96 @@ def load_trunk(ck_path):
     return enc
 
 
-def sweep(enc, names, tag, verbose=True):
+def sweep(enc, names, tag, seed, verbose=True, archive=True):
     """Fit every surface in the ladder on the SAME frozen trunk over `names`, score, return rows."""
     out = []
     for label, factory in SURFACES:
         t0 = time.time()
-        print(f"\n[{tag}] surface '{label}' ({n_params(factory):,} params) -- fitting on {list(names)}")
-        ad, ds = _fit_shared_adapter(enc, list(names), SEED, DEVICE, verbose=verbose,
+        print(f"\n[{tag}] seed {seed} surface '{label}' ({n_params(factory):,} params) "
+              f"-- fitting on {list(names)}")
+        ad, ds = _fit_shared_adapter(enc, list(names), seed, DEVICE, verbose=verbose,
                                      adapter_factory=factory)
         per = {}
         for d in ds:
-            recs, _, _, _ = _test_dataset(enc, ad, d, SEED, f"capacity:{tag}:{label}",
-                                          dict(training_regime="capacity_probe", surface=label,
-                                               arm=tag))
+            recs, _, po, _ = _test_dataset(enc, ad, d, seed, f"capacity:{tag}:{label}",
+                                           dict(training_regime="capacity_probe", surface=label,
+                                                arm=tag, seed=seed))
             per.update(rmse_of(recs))
+            if archive:
+                # Per-(origin, country) sufficient stats: seconds to write, a 15 h rerun to
+                # reconstruct. Same lesson the quantile archives taught in Week 4 -- the only
+                # bootstrap material that cannot be recovered after the fact.
+                slug = "".join(c for c in label if c.isalnum() or c == "-")
+                write_per_origin(po, f"encoder_ldo__cap-{tag}-{slug}__{d.name}"
+                                     f"__seed{seed}__perorigin.npz")
         mins = (time.time() - t0) / 60
-        out.append(dict(label=label, params=n_params(factory), minutes=round(mins, 1),
+        out.append(dict(label=label, params=n_params(factory), minutes=round(mins, 1), seed=seed,
                         rmse={f"{k[0]}|h{k[1]}": v for k, v in per.items()}))
-        print(f"[{tag}] '{label}' done in {mins:.1f} min")
+        print(f"[{tag}] seed {seed} '{label}' done in {mins:.1f} min")
     return out
+
+
+# --------------------------------------------------------------------------- #
+# Five-seed aggregation. The comparison is PAIRED WITHIN A SEED by construction: every surface in a
+# seed reads against the affine control fitted on that seed's own trunk. Trunk-to-trunk variation is
+# large (the single-disease seed CV runs 8-14%) and cancels inside a seed, so an unpaired five-seed
+# comparison would drown a 2-20% surface effect in trunk noise.
+# --------------------------------------------------------------------------- #
+def paired_deltas(rows_by_seed):
+    """{surface: {cell: [one delta per seed]}}, delta = improvement % over the affine control."""
+    base_label = SURFACES[0][0]
+    acc = {}
+    for rows in rows_by_seed:
+        base = next((r for r in rows if r["label"] == base_label), None)
+        if not base:
+            continue
+        for r in rows:
+            if r["label"] == base_label:
+                continue
+            for cell, v in r["rmse"].items():
+                d = improvement(v, base["rmse"].get(cell))
+                if d is not None:
+                    acc.setdefault(r["label"], {}).setdefault(cell, []).append(d)
+    return acc
+
+
+def interval(xs):
+    """(n, mean, sd, lo, hi) for a two-sided 95% paired t-interval. lo/hi are None when n < 2.
+
+    t rather than a bootstrap: at n=5 a bootstrap over seeds resamples five points and its tails are
+    an artefact of that, not evidence. The project already reasons in t critical values here."""
+    n = len(xs)
+    if n == 0:
+        return 0, None, None, None, None
+    m = sum(xs) / n
+    if n < 2:
+        return n, m, None, None, None
+    sd = (sum((x - m) ** 2 for x in xs) / (n - 1)) ** 0.5
+    t = T_CRIT.get(n)
+    if t is None:
+        return n, m, sd, None, None
+    h = t * sd / (n ** 0.5)
+    return n, m, sd, m - h, m + h
+
+
+def tally(acc):
+    """(cells, significantly positive, significantly negative, best significant mean).
+
+    "Significant" = the seed-paired 95% interval excludes zero. A point estimate that does not clear
+    its own seed noise is precisely what the client rejected when this was a one-seed result, so the
+    headline may only quote cells that clear it."""
+    cells = pos = neg = 0
+    best = None
+    for per_cell in acc.values():
+        for xs in per_cell.values():
+            n, m, sd, lo, hi = interval(xs)
+            cells += 1
+            if lo is not None and lo > 0:
+                pos += 1
+                best = m if best is None else max(best, m)
+            elif hi is not None and hi < 0:
+                neg += 1
+    return cells, pos, neg, (best if best is not None else 0.0)
 
 
 def gains_vs_control(rows):
@@ -267,13 +361,13 @@ def read_verdict(cross, control):
             f"capacity effect, well short of the deficit. Neither reading is clean.")
 
 
-def report(cross, control):
+def report(cross, control, seed=SEED):
     ref = single_reference()
     verdict, detail = read_verdict(cross, control)
     L = []
     A = L.append
     A("# Capacity Probe: is the deficit adapter-bound or representation-bound?\n")
-    A(f"\nGenerated by `capacity_probe.py`, seed {SEED}. **ONE frozen trunk (dengue-trained) is shared "
+    A(f"\nGenerated by `capacity_probe.py`, seed {seed}. **ONE frozen trunk (dengue-trained) is shared "
       "by every row in both arms.** Only the adaptation surface varies; the fitting protocol "
       "(80 epochs, patience 15, lr 1e-3, wd 1e-4, uniform sampler, pooled pinball validation) is held "
       "fixed by reusing `train.lodo._fit_shared_adapter`.\n")
@@ -321,6 +415,89 @@ def report(cross, control):
     return verdict
 
 
+def _interval_table(A, acc, title):
+    """Per-cell seed-paired mean, sd and 95% interval. Never pooled across datasets (client rule)."""
+    A(f"\n### {title}\n")
+    if not acc:
+        A("\nNo paired deltas available.\n")
+        return
+    A("\n| surface | dataset | h | mean Δ% | sd | 95% CI | clears zero |")
+    A("|---|---|---|---|---|---|---|")
+    for label, per_cell in acc.items():
+        for cell in sorted(per_cell):
+            ds, h = cell.split("|h")
+            n, m, sd, lo, hi = interval(per_cell[cell])
+            ci = f"[{lo:+.1f}, {hi:+.1f}]" if lo is not None else "—"
+            mark = "yes" if lo is not None and (lo > 0 or hi < 0) else "within noise"
+            sdt = f"{sd:.1f}" if sd is not None else "—"
+            A(f"| {label} | {ds} | {h} | {m:+.1f}% | {sdt} | {ci} | {mark} |")
+
+
+def report_multiseed(cross_by_seed, control_by_seed, seeds):
+    """The five-seed promotion of the probe: same ladder, same two arms, intervals over seeds."""
+    xacc, cacc = paired_deltas(cross_by_seed), paired_deltas(control_by_seed)
+    xc, xp, xn, xbest = tally(xacc)
+    cc, cp, cn, cbest = tally(cacc)
+
+    L = []
+    A = L.append
+    A("# Adapter capacity: is the cross-disease deficit adapter-bound? (five seeds)\n")
+    A(f"\nGenerated by `capacity_probe.py --seeds {' '.join(map(str, seeds))}`. "
+      f"**Within each seed, one frozen dengue trunk is shared by every surface in both arms**, so "
+      "the only thing that varies inside a seed is the adaptation surface. Across seeds the trunk "
+      "varies too, which is what the intervals below are over.\n")
+    A("\nEvery figure is a **seed-paired** delta: each surface is read against the affine control "
+      "fitted on *that seed's own trunk*, and the five per-seed deltas give the interval. Pairing "
+      "matters — the single-disease seed CV runs 8-14%, which would swamp a 2-20% surface effect if "
+      "the comparison were unpaired.\n")
+    A(f"\n**Intervals are two-sided 95% t at n={len(seeds)} (t={T_CRIT.get(len(seeds), float('nan')):.3f}).** "
+      "A cell counts as a result only if its interval excludes zero.\n")
+
+    A("\n## Headline\n")
+    A(f"\n| arm | cells | significantly better than affine | significantly worse | best significant mean |")
+    A("|---|---|---|---|---|")
+    A(f"| cross-disease (arm 1) | {xc} | **{xp}** | {xn} | {xbest:+.1f}% |")
+    A(f"| in-domain control (arm 2) | {cc} | {cp} | {cn} | {cbest:+.1f}% |")
+    A("\nThe control is what makes arm 1 interpretable. A capacity gain that appears on both arms "
+      "means the adapter was undersized everywhere and says nothing about transfer; a gain that "
+      "appears only cross-disease is transfer-specific, and that is the mechanism claim.\n")
+
+    _interval_table(A, xacc, "Arm 1 — cross-disease (dengue trunk, adapters fitted on influenza)")
+    _interval_table(A, cacc, "Arm 2 — in-domain control (same trunk, adapters fitted on dengue)")
+
+    A("\n## Per-seed absolute RMSE\n")
+    for tag, by_seed in (("arm 1 cross-disease", cross_by_seed), ("arm 2 in-domain", control_by_seed)):
+        if not by_seed:
+            continue
+        keys = sorted({k for rows in by_seed for r in rows for k in r["rmse"]})
+        A(f"\n**{tag}**\n")
+        A("\n| seed | surface | params | " + " | ".join(keys) + " |")
+        A("|---|---|---|" + "---|" * len(keys))
+        for rows in by_seed:
+            for r in rows:
+                A(f"| {r['seed']} | {r['label']} | {r['params']:,} | " + " | ".join(
+                    f"{r['rmse'][k]:,.1f}" if k in r["rmse"] else "—" for k in keys) + " |")
+
+    A("\n---\n\n## What this does and does not establish\n")
+    A("\nIt bounds what a larger **read-out** can recover from a frozen representation. It does not "
+      "show that no trunk transfers: the FiLM here sits at the head, and a mid-trunk injection would "
+      "need a change to the encoder forward pass that this probe deliberately does not make. That is "
+      "the right bound for the ANIL question, because ANIL keeps the read-out small by construction.\n")
+    A("\nStill one direction (dengue → influenza) and one fold structure. The trunks use the shipped "
+      "early-stopping settings, unchanged, so these five seeds remain comparable to the "
+      "2026-07-31 single-seed run rather than differing in two things at once.\n")
+
+    OUT_MD5.parent.mkdir(parents=True, exist_ok=True)
+    OUT_MD5.write_text("\n".join(L) + "\n", encoding="utf-8")
+    OUT_JSON5.parent.mkdir(parents=True, exist_ok=True)
+    OUT_JSON5.write_text(json.dumps(dict(seeds=list(seeds), cross_disease=cross_by_seed,
+                                         in_domain_control=control_by_seed), indent=2))
+    print(f"\n{'=' * 78}")
+    print(f"cross-disease: {xp} of {xc} cells significantly better than affine "
+          f"(best {xbest:+.1f}%); in-domain control: {cp} of {cc} (best {cbest:+.1f}%)")
+    print(f"{'=' * 78}\nwrote {OUT_MD5} and {OUT_JSON5}")
+
+
 def _selfcheck():
     """Wiring only, no training: shapes, the capacity ladder, and the read logic."""
     for label, factory in SURFACES:
@@ -360,8 +537,32 @@ def _selfcheck():
     assert v.startswith("PARTIAL"), v
     assert read_verdict([], [])[0] == "INCONCLUSIVE"
 
+    # ---- five-seed machinery -------------------------------------------------
+    n, m, sd, lo, hi = interval([10.0] * 5)
+    assert (n, m, sd) == (5, 10.0, 0.0) and lo == hi == 10.0, "zero-variance interval must collapse"
+    n, m, sd, lo, hi = interval([0.0, 5.0, 10.0, 15.0, 20.0])
+    assert n == 5 and abs(m - 10.0) < 1e-9 and abs(sd - 7.90569) < 1e-4, (n, m, sd)
+    assert lo > 0, "mean 10, sd 7.9, n=5 (t=2.776) should still clear zero"
+    assert interval([-10.0, 0.0, 10.0, 20.0, 30.0])[3] < 0, "twice that spread must stop clearing"
+    assert interval([1.0])[3] is None, "n=1 has no interval -- which is the whole reason for this task"
+
+    # pairing must happen WITHIN a seed: three wildly different trunks, same 10% surface effect.
+    # An unpaired reading of these would see a spread of 45-200 and find nothing.
+    def _r(base, other, sd_):
+        return [dict(label=SURFACES[0][0], params=1, minutes=0, seed=sd_, rmse={"d|h3": base}),
+                dict(label="mlp-64", params=2, minutes=0, seed=sd_, rmse={"d|h3": other})]
+    acc = paired_deltas([_r(100.0, 90.0, 1), _r(200.0, 180.0, 2), _r(50.0, 45.0, 3)])
+    assert acc["mlp-64"]["d|h3"] == [10.0, 10.0, 10.0], f"pairing did not cancel trunk scale: {acc}"
+
+    assert tally({"s": {"c": [10.0, 10.1, 9.9, 10.0, 10.0]}})[:3] == (1, 1, 0), "consistent gain"
+    assert tally({"s": {"c": [-10.0] * 5}})[:3] == (1, 0, 1), "consistent loss must register as worse"
+    assert tally({"s": {"c": [30.0, -20.0, 10.0, -25.0, 5.0]}})[:3] == (1, 0, 0), \
+        "a noisy cell must clear neither direction -- this is the guard against the old 1-seed read"
+
     print("ok  4 surfaces emit [N,H,Q]; ladder strictly exceeds the 1,428-param control; "
           "MLP is genuinely non-affine; improvement sign correct; all 5 verdict branches fire")
+    print("ok  seed-paired machinery: t-interval correct at n=5, pairing cancels trunk scale, "
+          "tally counts only cells whose interval excludes zero")
     print(f"    ladder: {[f'{l}={s:,}' for (l, _), s in zip(SURFACES, sizes)]}")
 
 
@@ -393,6 +594,11 @@ if __name__ == "__main__":
                     help="reuse an existing trunk checkpoint instead of running stage 1")
     ap.add_argument("--no-control", action="store_true",
                     help="skip arm 2; the cross-disease result is then ambiguous, see the report")
+    ap.add_argument("--seeds", type=int, nargs="+", default=[SEED],
+                    help="one sweep per seed, each on its own trunk. Five seeds is ~15 h on the "
+                         "3060 (trunk 71 min + arm1 16 min + arm2 96 min per seed). RESUMABLE: a "
+                         "finished seed is cached and skipped.")
+    ap.add_argument("--force", action="store_true", help="redo seeds already cached")
     ap.add_argument("--allow-cpu", action="store_true")
     ap.add_argument("--quiet", action="store_true")
     a = ap.parse_args()
@@ -401,12 +607,31 @@ if __name__ == "__main__":
     else:
         banner(allow_cpu=a.allow_cpu)
         t0 = time.time()
-        ck = stage1_fold(skip=a.skip_fold, verbose=not a.quiet)
-        enc = load_trunk(ck)
-        cross = sweep(enc, FLU_NAMES, "arm1-cross-disease", verbose=not a.quiet)
-        control = [] if a.no_control else sweep(enc, ["dengue"], "arm2-in-domain",
-                                                verbose=not a.quiet)
-        report(cross, control)
+        cross_by_seed, control_by_seed = [], []
+        for i, s in enumerate(a.seeds, 1):
+            print(f"\n{'#' * 78}\n# seed {s}   ({i}/{len(a.seeds)})\n{'#' * 78}")
+            cache = RESULTS / "misc" / f"capacity_probe__seed{s}.json"
+            if cache.exists() and not a.force:
+                print(f"[seed {s}] reusing cached sweep {cache}")
+                d = json.loads(cache.read_text())
+            else:
+                enc = load_trunk(stage1_fold(s, skip=a.skip_fold, verbose=not a.quiet))
+                d = dict(seed=s,
+                         cross=sweep(enc, FLU_NAMES, "arm1-cross-disease", s, verbose=not a.quiet),
+                         control=([] if a.no_control else
+                                  sweep(enc, ["dengue"], "arm2-in-domain", s, verbose=not a.quiet)))
+                # Written per seed, not at the end: a 15 h job that dies on seed 4 should cost one
+                # seed, not the night. The overnight LDO3 run needed several restarts.
+                cache.parent.mkdir(parents=True, exist_ok=True)
+                cache.write_text(json.dumps(d, indent=2))
+                print(f"[seed {s}] cached -> {cache}")
+            cross_by_seed.append(d["cross"])
+            if d["control"]:
+                control_by_seed.append(d["control"])
+        if len(a.seeds) == 1:
+            report(cross_by_seed[0], control_by_seed[0] if control_by_seed else [], seed=a.seeds[0])
+        else:
+            report_multiseed(cross_by_seed, control_by_seed, a.seeds)
         if torch.cuda.is_available():
             print(f"peak GPU memory {torch.cuda.max_memory_allocated() / 1e9:.2f} GB")
         print(f"total {(time.time() - t0) / 60:.1f} min")
