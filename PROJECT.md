@@ -243,6 +243,9 @@ window as an ablation for comparability.
 - **Diagnostics/audits:** `diagnostics/` (`ebola_audit.py`, `capacity_probe.py`,
   `data_quality.py`, `ldo3_report.py`, and 14 more) — run as `python -m diagnostics.<name>`.
 - **Metrics / provenance (this session):** `score.py` (country-macro), `japan_calendar_pin.py`.
+- **Ebola pre-registration:** `freeze_ebola_arms.py` (builds + hashes the two frozen support arms;
+  `--verify` rehashes), `configs/ebola_arms.json` (manifest), `progress/decisions/Ebola_Prereg.md`
+  (the stated expectations, frozen before scoring).
 - **Datasets:** `data/processed/*.npz` (+ `config.json`, `env.txt`), raws under `data/Final datasets/`.
 - **Docs:** `data_audit.md` (authoritative), `schema_spec.md`, `data_pipeline.md`,
   `client_decisions.md`, `remediation_plan.md`, `Progress.md`, `manuscript_reconciliation.md`,

@@ -20,7 +20,7 @@ from to_schema import apply_scaler, fit_scalers_masked
 DATA_DIR = Path(__file__).resolve().parent / "data" / "processed"
 BUNDLE_NAMES = ["dengue", "influenza_japan", "influenza_us-regions", "influenza_us-states",
                 "covid_us-states", "ebola"]
-DEV_BUNDLE_NAMES = tuple(n for n in BUNDLE_NAMES if n != "ebola")
+DEV_BUNDLE_NAMES = tuple(n for n in BUNDLE_NAMES if not n.startswith("ebola"))
 
 W = 20                          # lookback, frozen protocol
 HORIZONS = (3, 5, 10, 15)       # frozen protocol, direct multi-horizon

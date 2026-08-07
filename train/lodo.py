@@ -86,7 +86,8 @@ def _fit_trunk(seed, in_names, device, steps=91000, val_every=1000, patience=12,
       share_adapter is the special case all-zeros; the default is the special case all-distinct.
       Passing both is an error rather than a silent precedence rule.
     """
-    assert "ebola" not in in_names, "ebola must never enter trunk training (C8)"
+    assert not any(n.startswith("ebola") for n in in_names), \
+        "ebola must never enter trunk training (C8)"
     assert not (share_adapter and adapter_groups is not None), \
         "pass share_adapter OR adapter_groups, not both"
     torch.manual_seed(seed); np.random.seed(seed)
@@ -277,7 +278,8 @@ def _fit_shared_adapter(enc, names, seed, device, epochs=80, lr=1e-3, wd=1e-4, b
         _origin_stream. Every bundle therefore contributes to every step, and importance is carried
         by the weights rather than by how many origins a bundle happens to have.
     """
-    assert "ebola" not in names, "ebola must never enter dev-fold adapter fitting (C8)"
+    assert not any(n.startswith("ebola") for n in names), \
+        "ebola must never enter dev-fold adapter fitting (C8)"
     ds, A_block = _prepare(names, device)
     for p in enc.parameters():
         p.requires_grad_(False)
@@ -758,7 +760,7 @@ def _smoke_ldo3():
         assert len(i) == n_in and g == groups and h == held_names, \
             f"{held}: plan is ({i}, {g}, {h})"
         assert not set(i) & set(h), f"{held}: a bundle is both in-trunk and held-out"
-        assert "ebola" not in i + h, "C8"
+        assert not any(n.startswith("ebola") for n in i + h), "C8"
     # the flu bundles must carry ONE group id whenever influenza is an in-disease
     for held in ("dengue", "covid"):
         i, g, _ = _ldo3_plan(held)

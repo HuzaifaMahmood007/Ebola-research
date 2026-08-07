@@ -1,0 +1,127 @@
+{
+  "frozen": "2026-08-07",
+  "decision": "client 2026-08-07: 12wk primary, 20wk pre-registered secondary, 19wk dropped",
+  "prereg": "progress/decisions/Ebola_Prereg.md",
+  "source": {
+    "file": "data/Final datasets/data-ebola-public.xlsx",
+    "sha256": "2d679a31a66f912da93fe0bd73da82a3c36b0d1143b1fcc298bc921d5f28f9f2"
+  },
+  "lookback_w": 20,
+  "horizons": [
+    3,
+    5,
+    10,
+    15
+  ],
+  "label_basis": "L = 0-based column index of the last support week in data/processed/ebola.npz (the decision-document sweep convention); cutoff_date is operative",
+  "scored_forecasts_identical_across_arms": {
+    "pairs": {
+      "3": 1151,
+      "5": 1075,
+      "10": 866,
+      "15": 642
+    },
+    "districts": {
+      "3": 61,
+      "5": 61,
+      "10": 59,
+      "15": 58
+    }
+  },
+  "arms": {
+    "ebola_L12": {
+      "role": "primary",
+      "label_L": 12,
+      "cutoff_date": "2014-06-28",
+      "support_columns": 13,
+      "npz": "data/processed/ebola_L12.npz",
+      "sha256_file": "f73de047b14c96dc03c3b59ac3122329d08902c293c30943950235b78c79bf75",
+      "sha256_content": "08d657dcc3856fbd3319e509d828a9697eefb91d9a7b1f2b6abbdd38454178fd",
+      "scaler": {
+        "mean": 1.4402015209197998,
+        "std": 1.2144932746887207,
+        "scope": "pooled_log1p_z_on_support"
+      },
+      "counts": {
+        "support_cells": 59,
+        "support_districts": 18,
+        "query_cells": 1240,
+        "adapt_pairs": {
+          "3": 48,
+          "5": 38,
+          "10": 18,
+          "15": 0
+        },
+        "adapt_districts": {
+          "3": 17,
+          "5": 14,
+          "10": 9,
+          "15": 0
+        },
+        "query_pairs": {
+          "3": 1151,
+          "5": 1075,
+          "10": 866,
+          "15": 642
+        },
+        "query_districts": {
+          "3": 61,
+          "5": 61,
+          "10": 59,
+          "15": 58
+        }
+      }
+    },
+    "ebola_L20": {
+      "role": "secondary_preregistered",
+      "label_L": 20,
+      "cutoff_date": "2014-08-23",
+      "support_columns": 21,
+      "npz": "data/processed/ebola_L20.npz",
+      "sha256_file": "6d3dc7d5b13b9c3643f377687ca7eb7276687c02e0d570c005ba193141e57f80",
+      "sha256_content": "e9b9ac0b44c2e3f71ba78a922a9125d1e0bc1b10e4e6547b3e8ce59855d28cc0",
+      "scaler": {
+        "mean": 1.791273593902588,
+        "std": 1.5285968780517578,
+        "scope": "pooled_log1p_z_on_support"
+      },
+      "counts": {
+        "support_cells": 113,
+        "support_districts": 36,
+        "query_cells": 1186,
+        "adapt_pairs": {
+          "3": 102,
+          "5": 92,
+          "10": 72,
+          "15": 54
+        },
+        "adapt_districts": {
+          "3": 36,
+          "5": 36,
+          "10": 35,
+          "15": 34
+        },
+        "query_pairs": {
+          "3": 1151,
+          "5": 1075,
+          "10": 866,
+          "15": 642
+        },
+        "query_districts": {
+          "3": 61,
+          "5": 61,
+          "10": 59,
+          "15": 58
+        }
+      }
+    }
+  },
+  "dropped": {
+    "ebola_L19": {
+      "label_L": 19,
+      "cutoff_date": "2014-08-16",
+      "reason": "client decision 2026-08-07: 12 and 20 only"
+    }
+  },
+  "git_head": "e9197dabdfe5500614344b2096d5216499ae7c7c"
+}

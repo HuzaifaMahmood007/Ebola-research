@@ -196,7 +196,7 @@ def train_joint(seed, steps=91000, val_every=1000, patience=12, lr=1e-3, wd=1e-4
     """Joint-train the shared encoder + per-dataset adapters over the block-diagonal supergraph,
     select on the pooled weighted val, test per dataset. Returns
     {dataset_name: (records, pernode, perorigin, gate)}."""
-    assert "ebola" not in names, \
+    assert not any(n.startswith("ebola") for n in names), \
         "ebola must never enter joint trunk training/selection (§0.5, C8); Week-5 few-shot is separate"
     torch.manual_seed(seed); np.random.seed(seed)
     ds, A_block = _prepare(names, device)

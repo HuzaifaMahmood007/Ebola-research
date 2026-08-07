@@ -122,7 +122,7 @@ def train_one(name, seed, epochs=80, lr=1e-3, wd=1e-4, batch_origins=8, patience
               device=DEVICE, verbose=True, zero_channels=None,
               training_regime="single", sampler=None, gate_mode="learned", topo_aug="none",
               gate_read=True, quant_out=None, run_out=None):
-    assert name != "ebola", \
+    assert not name.startswith("ebola"), \
         "ebola must never enter trunk training/selection (§0.5, C8); Week-5 few-shot is a separate path"
     torch.manual_seed(seed)
     np.random.seed(seed)
