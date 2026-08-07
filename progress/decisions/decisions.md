@@ -337,6 +337,50 @@ torch 2.6.0+cu124, RTX 3060.
 
 ---
 
+## D16 · Ebola support length: 12 weeks primary, 20 weeks pre-registered secondary — **CLIENT**
+2026-08-07, closes the open question in `Reports/Ebola_Support_Set_Decision.md` (which stated the
+trade-off and deliberately did not recommend). Full pre-registration: `Ebola_Prereg.md`.
+
+**Two arms, both frozen and hashed before either is scored.** L=19 is dropped, and recorded in the
+manifest as considered-and-rejected rather than silently absent.
+
+| | **primary L12** | **secondary L20** | dropped |
+|---|---|---|---|
+| cutoff (support = every observed cell on or before) | **2014-06-28** | **2014-08-23** | 2014-08-16 |
+| support cells / districts | 59 / 18 | 113 / 36 | 79 / 22 |
+| adaptation pairs h3 / h5 / h10 / h15 | 48 / 38 / 18 / **0** | 102 / 92 / 72 / 54 | |
+| scaler (pooled log1p+z on support) | mu 1.4402, sd 1.2145 | mu 1.7913, sd 1.5286 | |
+| npz content sha256 | `08d657dc…` | `e9b9ac0b…` | |
+
+**Scored forecasts are identical under both arms** — 1,151 / 1,075 / 866 / 642 pairs at h3/h5/h10/h15
+over 61/61/59/58 districts, asserted by the freeze script. A full-window query target sits at column
+22 and support reaches at most column 20, so neither arm costs a scored forecast. The arms differ
+only in labelled adaptation data, never in what is evaluated, which is what makes them comparable.
+
+**The primary arm has zero adaptation data at h15.** That is arithmetic: support reaches column 12,
+h15 needs a target at column 15. h15 is therefore labelled zero-shot in every table, and few-shot
+h15 must come out bit-identical to zero-shot h15 — any difference is a bug in the adaptation path,
+not a result. h10 has 18 pairs on 9 districts and is not a fitted adapter either.
+
+**Why the labels are off by one against the column counts.** The sweep table indexes outbreak weeks
+from the raw first week 2014-03-24, whose incidence cell is masked (week 0 of a cumulative series
+carries no increment). "L" is the 0-based index of the last support column, not a count: L12 is 13
+columns, L20 is 21. **The cutoff date is the operative definition**; the label exists only to match
+the document the client decided from.
+
+**`data/processed/ebola.npz` (cutoff 2014-05-24, L7, 27 cells / 9 districts) is superseded for
+scoring.** It stays as the Phase-2 build artifact and is what `build_datasets.py` still produces;
+nothing may be scored against it. Scoring targets are read from `configs/ebola_arms.json`.
+
+**C8 guards hardened as part of this.** They matched on the exact string `"ebola"`, so `ebola_L12`
+would have walked straight past `assert name != "ebola"` in `train/loop.py` and the equivalents in
+`train/lodo.py`, `train/joint.py`, `bundles.py`. All four now match on the `ebola` name prefix.
+
+Rebuild and re-verify: `python freeze_ebola_arms.py` / `--verify`. The build re-derives every count
+above from the raw xlsx and refuses to write if any has moved.
+
+---
+
 ## Reversed or superseded
 
 | was | now | why |
@@ -349,3 +393,4 @@ torch 2.6.0+cu124, RTX 3060.
 | "What we built is not a linear probe" (first MAML draft) | it **is** an exact affine read-out on frozen features (D13) | measured, `max deviation = 0.0`; the client was right |
 | Adapter is ~388 params (4 code/doc sites) | **1,428** (D13) | 388 predates the five-quantile head |
 | Reptile excluded "structurally" (first MAML draft) | excluded for having no support/query meta-objective (D13) | the structural argument described a variant nobody proposes |
+| Ebola support = calendar prefix ≤2014-05-24, 27 cells / 9 districts (D4) | **≤2014-06-28 primary, ≤2014-08-23 secondary** (D16) | client decision; 27 cells gave 0 adaptation pairs past h5 |

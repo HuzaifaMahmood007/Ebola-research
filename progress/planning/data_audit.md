@@ -1147,12 +1147,20 @@ evaluation data and is the honest count.
 
 ### 3.6 Few-shot protocol
 
-The **support set is the first two *observed* weeks per district**; every later observed week belongs to
-the **query set**. Because week zero is masked, the support set now comprises the first two *genuine
-increments* and can never contain the fabricated backlog.
+> **Superseded for scoring, 2026-08-07 (decision D16).** The cutoff of 2014-05-24 described below is
+> the Phase-2 build and remains what `build_datasets.py` produces as `data/processed/ebola.npz`. The
+> Ebola case study is scored against **two frozen arms** instead, cut at **2014-06-28** (primary) and
+> **2014-08-23** (secondary). See §3.6a. Everything in this section about *why* the support set is a
+> calendar prefix, how the scaler is fitted, and what the gates check applies unchanged to both arms;
+> only the cutoff date moves.
 
-The support set is a **calendar prefix**: every observed cell dated on or before a fixed cutoff of
-**2014-05-24** is support, and every later observed cell is query.
+The support set is a **calendar prefix**: every observed cell dated on or before a fixed cutoff is
+support, and every later observed cell is query. The **first two *observed* weeks per district** was
+the earlier scheme, retained only for comparison; see "Why a calendar prefix" below. Because week
+zero is masked, the support set comprises *genuine increments* and can never contain the fabricated
+backlog.
+
+Under the Phase-2 cutoff of **2014-05-24**:
 
 | | |
 |---|---|
@@ -1194,6 +1202,66 @@ cells, and inflating a *query* week a thousandfold does not move it.
 The series is *cumulative*, so altering the initial value also alters the week-one increment — the
 perturbation is not local, and the test fails for the wrong reason. The perturbation must be applied to
 a query week, which moves one increment and nothing else.
+
+### 3.6a Support length: the two frozen arms (2026-08-07)
+
+The Phase-2 cutoff of 2014-05-24 gives 27 support cells across 9 districts, which yields **0
+adaptation pairs at h10 and h15** and only 6 at h5 across 2 districts. A support-length sweep
+(`Reports/Ebola_Support_Set_Decision.md`) put the trade-off to the client without a recommendation:
+keep the strongest few-shot framing and accept that the far horizons are permanently zero-shot, or
+lengthen the support set and accept that the headline becomes moderate-data transfer.
+
+**The client's decision (D16) was to run both, as two pre-registered arms**, frozen and hashed before
+either is scored.
+
+| | **primary** | **secondary** | dropped |
+|---|---|---|---|
+| label (see the note below) | L12 | L20 | L19 |
+| cutoff, support = observed cells on or before | **2014-06-28** | **2014-08-23** | 2014-08-16 |
+| support columns | 13 | 21 | 20 |
+| support cells | 59 | 113 | 79 |
+| districts with support | 18 of 61 | 36 of 61 | 22 of 61 |
+| districts with no support (pure zero-shot) | 43 of 61 | 25 of 61 | |
+| query cells | 1,240 | 1,186 | |
+| adaptation pairs, h3 | 48 / 17d | 102 / 36d | |
+| adaptation pairs, h5 | 38 / 14d | 92 / 36d | |
+| adaptation pairs, h10 | 18 / 9d | 72 / 35d | |
+| adaptation pairs, h15 | **0 / 0d** | 54 / 34d | |
+| scaler, pooled log1p+z on support | mu 1.4402, sd 1.2145 | mu 1.7913, sd 1.5286 | |
+| implied "typical week" | 3.2 cases | 5.0 cases | |
+| query cells beyond 1 sd of that scaler | 333 / 1,240 (27%) | 192 / 1,186 (16%) | |
+| artifact | `data/processed/ebola_L12.npz` | `data/processed/ebola_L20.npz` | not built |
+| content sha256 | `08d657dc…` | `e9b9ac0b…` | |
+
+An adaptation pair at horizon h needs a *support* target at column t+h, so it exists only where a
+support cell sits at a column index of at least h. Input windows are left-padded, so the origin
+itself never limits the count. The primary arm's h15 count is 0 by arithmetic, not by data quality:
+support reaches column 12 and h15 needs a target at column 15.
+
+**The scored forecasts are identical under both arms:** 1,151 / 1,075 / 866 / 642 pairs at
+h3/h5/h10/h15 over 61/61/59/58 districts. A full-window query target sits at column 22 and support
+reaches at most column 20, so no option below L=20 costs a single scored forecast. Query *cells* fall
+(1,272 → 1,240 → 1,186) but those cells were never scoreable targets. The arms therefore differ only
+in how much labelled adaptation data they carry, never in what is evaluated. This is asserted by the
+freeze script, not assumed.
+
+**Scale calibration improves with support length and is still not good.** The mean scored cell is
+about 19 cases under either arm, against an implied typical week of 3.2 (primary) and 5.0
+(secondary); the Phase-2 build implied 2.1. The FiLM adapter is the component meant to correct this,
+and under the primary arm it has 18 examples at h10 and none at h15. Any primary-arm h10/h15 number
+is a zero-shot number and is labelled as such.
+
+**The labels are off by one against the column counts.** The sweep table indexes outbreak weeks from
+the raw first week 2014-03-24, whose incidence cell is masked. "L" is the 0-based index of the last
+support column, not a count: L12 is 13 columns, L20 is 21. **The cutoff date is the operative
+definition**, and the label is carried only so the arms match the document the decision was made
+from.
+
+Both arms are built from the raw xlsx in one pass by `freeze_ebola_arms.py`, which re-derives every
+count in the table above and refuses to write if any has moved. It also re-checks the §3.6 properties
+per arm: the masks partition the observed cells, no query cell precedes the last support cell, and
+the scaler is exactly the pooled log1p mean and sd over the support cells. Manifest and hashes:
+`configs/ebola_arms.json`. Re-verify at any time with `python freeze_ebola_arms.py --verify`.
 
 ### 3.7 Geographic graph
 
