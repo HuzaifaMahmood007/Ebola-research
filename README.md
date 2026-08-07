@@ -51,15 +51,17 @@ models/                     the shared spatio-temporal encoder (encoder_architec
 train/loop.py               single-disease training + naive floors -> results/*.json
 tests/test_encoder_invariants.py   the §8 gates, each with a negative control that must fire
 configs/encoder_base.yaml   the frozen hyperparameters (human record)
-day11_diagnostics.py        Day-11 close-out readings (§0.8 origin counts, §0.9 scaler variance)
 loaders/                    the four per-disease entry points -> data/processed/*.npz (python -m loaders.<name>)
+diagnostics/                one-off probes, audits, reports -- day11_diagnostics.py, capacity_probe.py,
+                             ldo3_report.py, data_quality.py, and 14 more (python -m diagnostics.<name>)
 progress/                   dated progress notes, decisions, results write-ups, planning docs (not code)
 ```
 
 Phase-2 data-build code (frozen — do not edit): `to_schema.py`, `build_datasets.py`,
-`fetch_gadm.py`, `dengue_aliases.py`, `dengue_coverage.py`, `ebola_audit.py`, `japan_*.py`,
-and the Phase-2 tests `test_leakage.py` (86 gates + 6 negative controls), `test_schema.py`,
-`test_dengue_7_1.py`, `test_influenza_covariates.py`.
+`fetch_gadm.py`, `dengue_aliases.py`, `japan_*.py`, and the Phase-2 tests `test_leakage.py`
+(86 gates + 6 negative controls), `test_schema.py`, `test_dengue_7_1.py`,
+`test_influenza_covariates.py`. `dengue_coverage.py` and `ebola_audit.py` are diagnostics
+now (`diagnostics/`), not part of the frozen build path.
 
 The four per-disease entry points that build `data/processed/*.npz` live in `loaders/`
 (covid, dengue, ebola, influenza) and run as modules from the repo root, e.g.
@@ -93,7 +95,8 @@ Windows note: `pandas`' MKL and `torch` both link OpenMP; `train/loop.py` sets
 
 ## Reproduce
 
-Run scripts as modules from the repo root (the `models`/`train`/`tests` packages need it):
+Run scripts as modules from the repo root (the `models`/`train`/`tests`/`loaders`/`diagnostics`
+packages need it):
 
 ```bash
 # rebuild the five datasets (ebola env) — deterministic, gated by 86 checks
@@ -101,7 +104,7 @@ conda run -n ebola python build_datasets.py
 
 # data-layer checks (ebola-train env)
 conda run -n ebola-train python bundles.py                     # five-bundle self-check
-conda run -n ebola-train python day11_diagnostics.py           # §0.8/§0.9 close-out readings
+conda run -n ebola-train python -m diagnostics.day11_diagnostics  # §0.8/§0.9 close-out readings
 conda run -n ebola-train python score.py                       # metric self-check
 
 # encoder invariants (all gates + negative controls)

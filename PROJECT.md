@@ -235,8 +235,12 @@ window as an ablation for comparability.
 
 - **Data build:** `build_datasets.py` (one-command, gated), `to_schema.py` (loaders + schema),
   `fetch_gadm.py` (shapefile manifest), `dengue_aliases.py`, `japan_nodes.py`.
-- **Validity:** `test_leakage.py` (86 gates + 6 controls), `test_schema.py`, `ebola_audit.py`,
+- **Per-disease loaders:** `loaders/` (`covid_load.py`, `dengue_load.py`, `ebola_load.py`,
+  `influenza_load.py`) — run as `python -m loaders.<name>`.
+- **Validity:** `test_leakage.py` (86 gates + 6 controls), `test_schema.py`,
   `test_dengue_7_1.py`, `test_influenza_covariates.py`.
+- **Diagnostics/audits:** `diagnostics/` (`ebola_audit.py`, `capacity_probe.py`,
+  `data_quality.py`, `ldo3_report.py`, and 14 more) — run as `python -m diagnostics.<name>`.
 - **Metrics / provenance (this session):** `score.py` (country-macro), `japan_calendar_pin.py`.
 - **Datasets:** `data/processed/*.npz` (+ `config.json`, `env.txt`), raws under `data/Final datasets/`.
 - **Docs:** `data_audit.md` (authoritative), `schema_spec.md`, `data_pipeline.md`,

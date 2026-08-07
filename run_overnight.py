@@ -172,7 +172,7 @@ def main():
     print("\n" + "=" * 78)
     print(f"ALL DONE  baselines {_hr(d1)} | {mode} {_hr(d2)} | total {_hr(time.time()-t0)}")
     print(f"finished {_dt.datetime.now():%Y-%m-%d %H:%M:%S}")
-    print("next: python results_matrix.py -o Results_Matrix.md")
+    print("next: python results_matrix.py -o progress/outcomes/Results_Matrix.md")
     print("=" * 78)
 
 

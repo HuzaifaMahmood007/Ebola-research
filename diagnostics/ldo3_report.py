@@ -964,7 +964,7 @@ def _selfcheck():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("-o", "--out", default="LDO3_Results.md")
+    ap.add_argument("-o", "--out", default="progress/outcomes/LDO3_Results.md")
     ap.add_argument("--skip-uq", action="store_true", help="point metrics only (dengue UQ is slow)")
     ap.add_argument("--no-origin-ci", action="store_true", help="skip the paired origin bootstrap")
     ap.add_argument("-B", type=int, default=10_000, help="bootstrap resamples")

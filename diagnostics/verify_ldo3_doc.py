@@ -287,7 +287,7 @@ def mutate(text):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("-d", "--doc", default="LDO3_Results.md")
+    ap.add_argument("-d", "--doc", default="progress/outcomes/LDO3_Results.md")
     ap.add_argument("--mutate", action="store_true", help="mutation-test the verifier itself")
     a = ap.parse_args()
 

@@ -42,7 +42,7 @@ between every arm and its reference, and any mismatch is surfaced in the documen
 quietly divided through. This is the same "not like-with-like" failure that already bit the dengue
 baseline row, so it gets a machine check instead of a memo.
 
-    conda run -n ebola-train python results_matrix.py [-o Results_Matrix.md]
+    conda run -n ebola-train python results_matrix.py [-o progress/outcomes/Results_Matrix.md]
 """
 from __future__ import annotations
 
@@ -542,7 +542,7 @@ def _demo():
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("-o", "--out", default="Results_Matrix.md")
+    ap.add_argument("-o", "--out", default="progress/outcomes/Results_Matrix.md")
     ap.add_argument("--selfcheck", action="store_true")
     a = ap.parse_args()
     if a.selfcheck:

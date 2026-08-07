@@ -338,8 +338,8 @@ def main():
         print("wrote", panel(m))
     p, D = compare(ms)
     print("wrote", p)
-    Path("data_quality.md").write_text(report(ms, D), encoding="utf-8")
-    print("wrote data_quality.md")
+    Path("progress/planning/data_quality.md").write_text(report(ms, D), encoding="utf-8")
+    print("wrote progress/planning/data_quality.md")
     print(json.dumps({m["name"]: {k: round(float(m[k]), 4) for k in
                                   ("completeness", "zero_share", "input_zero_share")}
                       for m in ms}, indent=1))
