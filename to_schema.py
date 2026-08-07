@@ -1329,12 +1329,20 @@ def build_influenza_covariates(dataset: str, gadm_dir: str,
 # --------------------------------------------------------------------------- #
 def load_influenza(matrix_path: str, adj_path: str, dataset: str = "japan",
                    start_date: Optional[str] = None, ratios=(0.5, 0.2, 0.3),
-                   header=None, gadm_dir: Optional[str] = None) -> DiseaseTensors:
+                   header=None, gadm_dir: Optional[str] = None,
+                   disease: Optional[str] = None,
+                   covariates_as: Optional[str] = None) -> DiseaseTensors:
     """ColaGNN influenza: `matrix_path` is [T,N] ILI counts, `adj_path` its shipped adjacency.
 
     The shipped edges are reused verbatim, so results stay comparable to the published
     baselines; only the diagonal is normalised away (see below). The matrices ship undated, so
     `start_date` is resolved per dataset from INFLUENZA_START unless overridden.
+
+    `disease` / `covariates_as` exist so a NON-influenza panel can reuse this loader when it sits
+    on the same node set and the same shipped graph -- COVID at US states does (covid_load.py).
+    `dataset` still names the nodes, so `covid_us-states_*` stays disjoint from `us-states_*`;
+    `covariates_as` points the GADM join at the geography those nodes actually are; `disease`
+    stops the bundle claiming to be influenza. Defaults reproduce the old behaviour exactly.
     """
     if start_date is None:
         start_date = INFLUENZA_START.get(_canon(dataset), "2012-01-01")
@@ -1364,7 +1372,7 @@ def load_influenza(matrix_path: str, adj_path: str, dataset: str = "japan",
     mask = np.ones((N, T), dtype=np.uint8)
 
     dt = _finalise(raw, mask, node_ids, dates, ratios,
-                   disease=f"influenza:{dataset}", adm_level="Admin1",
+                   disease=disease or f"influenza:{dataset}", adm_level="Admin1",
                    t_res="weekly", A_geo=A_geo, A_geo_kind="shipped(diag_zeroed)",
                    source="ColaGNN (CIKM 2020) shipped influenza benchmark")
     dt.meta["isolated_nodes"] = [node_ids[i] for i in isolated]
@@ -1375,7 +1383,7 @@ def load_influenza(matrix_path: str, adj_path: str, dataset: str = "japan",
     # Same C contract as dengue and Ebola: raw, static, and not transfer-safe. Without
     # gadm_dir, C stays the all-zero placeholder _finalise built.
     if gadm_dir:
-        dt.C = build_influenza_covariates(dataset, gadm_dir)
+        dt.C = build_influenza_covariates(covariates_as or dataset, gadm_dir)
         assert dt.C.shape == (N, 3), f"C {dt.C.shape} != ({N}, 3)"
         dt.meta["covariates"] = ["centroid_lat", "centroid_lon", "area_km2"]
         dt.meta["covariates_status"] = "populated from GADM 4.1"
