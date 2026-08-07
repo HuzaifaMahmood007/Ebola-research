@@ -192,7 +192,7 @@ def main() -> int:
         print(f"  {k:22s} N={N:5d} T={T:5d} F={F}  {dt.meta['split_scheme']}")
 
     print("\n=== 3. leakage suite — gates the write ===")
-    from test_leakage import run_leakage_suite, self_test
+    from tests.test_leakage import run_leakage_suite, self_test
     # self_test plants real leaks and confirms the gates catch them. Running it on every build
     # is the difference between "the suite passed" and "the suite could have failed".
     if not (run_leakage_suite(bundles) and self_test(bundles)):

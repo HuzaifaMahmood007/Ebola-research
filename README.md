@@ -49,7 +49,8 @@ models/                     the shared spatio-temporal encoder (encoder_architec
   adapters.py               per-disease FiLM + quantile head; pinball loss; shared/adaptation split
   windows.py                origin -> input window + per-horizon targets/masks
 train/loop.py               single-disease training + naive floors -> results/*.json
-tests/test_encoder_invariants.py   the §8 gates, each with a negative control that must fire
+tests/                      test_encoder_invariants.py (the §8 gates) + the four frozen
+                             Phase-2 suites (python -m tests.<name>)
 configs/encoder_base.yaml   the frozen hyperparameters (human record)
 loaders/                    the four per-disease entry points -> data/processed/*.npz (python -m loaders.<name>)
 diagnostics/                one-off probes, audits, reports -- day11_diagnostics.py, capacity_probe.py,
@@ -58,8 +59,8 @@ progress/                   dated progress notes, decisions, results write-ups, 
 ```
 
 Phase-2 data-build code (frozen — do not edit): `to_schema.py`, `build_datasets.py`,
-`fetch_gadm.py`, `dengue_aliases.py`, `japan_*.py`, and the Phase-2 tests `test_leakage.py`
-(86 gates + 6 negative controls), `test_schema.py`, `test_dengue_7_1.py`,
+`fetch_gadm.py`, `dengue_aliases.py`, `japan_*.py`, and the Phase-2 tests in `tests/`:
+`test_leakage.py` (86 gates + 6 negative controls), `test_schema.py`, `test_dengue_7_1.py`,
 `test_influenza_covariates.py`. `dengue_coverage.py` and `ebola_audit.py` are diagnostics
 now (`diagnostics/`), not part of the frozen build path.
 

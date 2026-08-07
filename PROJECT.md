@@ -86,7 +86,7 @@ command ([build_datasets.py](build_datasets.py)), gated by 86 correctness checks
 
 - **Leakage suite gates the build.** 86 pass/fail gates + **6 negative controls** that plant a
   real defect and require the matching gate to fail; nothing is written if any gate fails
-  ([test_leakage.py](test_leakage.py)). A gate that cannot fail proves nothing.
+  ([test_leakage.py](tests/test_leakage.py)). A gate that cannot fail proves nothing.
 - **Adversarial review caught two invalidating defects that passed 83 green gates** — the Ebola
   cumulative→weekly clip fabricated **35.8% of the target** (fixed: running-maximum envelope,
   mass-conserving, verified 24,552 = reference), and a dengue split fallback put **31% of observed
@@ -237,8 +237,9 @@ window as an ablation for comparability.
   `fetch_gadm.py` (shapefile manifest), `dengue_aliases.py`, `japan_nodes.py`.
 - **Per-disease loaders:** `loaders/` (`covid_load.py`, `dengue_load.py`, `ebola_load.py`,
   `influenza_load.py`) — run as `python -m loaders.<name>`.
-- **Validity:** `test_leakage.py` (86 gates + 6 controls), `test_schema.py`,
-  `test_dengue_7_1.py`, `test_influenza_covariates.py`.
+- **Validity:** `tests/` — `test_leakage.py` (86 gates + 6 controls), `test_schema.py`,
+  `test_dengue_7_1.py`, `test_influenza_covariates.py`, `test_encoder_invariants.py`
+  (the §8 encoder gates) — run as `python -m tests.<name>`.
 - **Diagnostics/audits:** `diagnostics/` (`ebola_audit.py`, `capacity_probe.py`,
   `data_quality.py`, `ldo3_report.py`, and 14 more) — run as `python -m diagnostics.<name>`.
 - **Metrics / provenance (this session):** `score.py` (country-macro), `japan_calendar_pin.py`.
