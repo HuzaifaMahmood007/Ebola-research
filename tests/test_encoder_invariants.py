@@ -129,6 +129,31 @@ def main():
     assert torch.allclose(out_p, out[perm], atol=1e-4), "encoder is not permutation-equivariant (index bug)"
     print("ok  permutation-equivariance gate: relabelling nodes relabels the output (atol 1e-4)")
 
+    # Gate 10 -- short-window left-pad (P7). The Ebola few-shot arms adapt at origins t < W-1, and
+    # the failure this guards is silent: a negative start index slices from the TAIL, so the window
+    # would be filled with the END of the series. That is future data presented as history.
+    from bundles import W as _W
+    from models import window_slice
+    seq = torch.arange(1, 41, dtype=torch.float32).view(1, 40, 1).repeat(3, 1, 1)
+    for t in (0, 1, 7, _W - 2):
+        win = window_slice(seq, t)
+        assert win.shape == (3, _W, 1), f"short window at t={t} has shape {tuple(win.shape)}"
+        assert torch.equal(win[:, _W - 1 - t:, :], seq[:, :t + 1, :]), \
+            f"t={t}: the real history is not right-aligned in the padded window"
+        assert float(win[:, :_W - 1 - t, :].abs().max()) == 0.0, f"t={t}: left pad is not zero"
+        # causality: nothing at or after the origin's own column may appear in the window, and
+        # perturbing the FUTURE must not move a single element of it.
+        fut = seq.clone(); fut[:, t + 1:, :] = -999.0
+        assert torch.equal(window_slice(fut, t), win), f"t={t}: window reads FUTURE data"
+    assert torch.equal(window_slice(seq, _W - 1), seq[:, :_W, :]), "t=W-1 is no longer the plain slice"
+    assert torch.equal(window_slice(seq, 25), seq[:, 6:26, :]), "the long-window path moved"
+    # negative control: the arithmetic the pad replaced (a bare negative-index slice) must be caught
+    bad = seq[:, (3 - (_W - 1)):3 + 1, :]
+    assert not torch.equal(bad, window_slice(seq, 3)), \
+        "left-pad control did not fire: bare negative-index slicing matches the padded window"
+    print("ok  short-window left-pad gate: right-aligned, zero-padded, future-blind; "
+          "negative-index control fired")
+
     print("\nA_hat self-loop-inclusive degree (min/median/max/mean) per dataset (Task 12.6.2):")
     for name, (lo, med, hi, mean) in deg_dist.items():
         print(f"    {name:22s} {lo:5.1f} / {med:5.1f} / {hi:6.1f} / {mean:5.2f}")

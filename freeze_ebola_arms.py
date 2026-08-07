@@ -36,8 +36,7 @@ from to_schema import load_ebola
 
 MANIFEST = pathlib.Path("configs/ebola_arms.json")
 
-W = 20          # lookback, frozen (encoder_base.yaml)
-HORIZONS = (3, 5, 10, 15)
+from bundles import HORIZONS, W       # never re-declare these; a drift here is a silent wrong gate
 
 # The frozen arms, with every count the decision document quotes stated up front. These are
 # assertions, not printouts: if the loader or the raw file drifts, the arm is not the arm the
@@ -68,11 +67,28 @@ ARMS = {
 DROPPED = {"ebola_L19": dict(label_L=19, cutoff_date="2014-08-16",
                              reason="client decision 2026-08-07: 12 and 20 only")}
 
-# Scored forecasts are IDENTICAL under both arms (decision document, corrected claim): a
-# full-window query target sits at t>=22 and support reaches at most t<=20, so no option below
-# L=20 costs a scored forecast. Asserted, because the arms are only comparable if it holds.
-EXPECT_QUERY_PAIRS = {3: 1151, 5: 1075, 10: 866, 15: 642}
-EXPECT_QUERY_DISTRICTS = {3: 61, 5: 61, 10: 59, 15: 58}
+# Query counts, IDENTICAL under both arms (decision document, corrected claim): a full-window query
+# target sits at t>=22 and support reaches at most t<=20, so no option below L=20 costs a forecast.
+# Asserted, because the arms are only comparable if it holds.
+#
+# TWO different counts, and they are not interchangeable:
+#
+#   REACHABLE -- per-horizon origins. Every t with a full window whose target t+h lands in the
+#     panel, so h3 reaches t=48 and h15 only t=36. This is what the audit note and the support-set
+#     decision document quote. It counts query cells a horizon COULD reach.
+#
+#   SCORED -- one COMMON origin set for all horizons, t in [W-1, T-1-max(H)] = [19, 36], which is
+#     what bundles.origins() returns and therefore what score_predictions actually scores. Every
+#     other dataset in the project was scored this way, and it is the right protocol here: horizons
+#     are only comparable to each other if they are read at the same origins.
+#
+# The two agree only at h15, whose reach is the binding constraint. Recording both, because quoting
+# the reachable numbers as the evaluation size overstates h3/h5/h10 by 34-52%.
+EXPECT_REACHABLE_PAIRS = {3: 1151, 5: 1075, 10: 866, 15: 642}
+EXPECT_REACHABLE_DISTRICTS = {3: 61, 5: 61, 10: 59, 15: 58}
+EXPECT_SCORED_PAIRS = {3: 757, 5: 766, 10: 765, 15: 642}
+EXPECT_SCORED_DISTRICTS = {3: 57, 5: 57, 10: 59, 15: 58}
+MAX_H = max(HORIZONS)
 
 
 def content_sha256(path: pathlib.Path) -> str:
@@ -94,15 +110,20 @@ def _counts(M: np.ndarray, support: np.ndarray, query: np.ndarray) -> dict:
     # support cell sits at column >= h. Windows are left-padded, so the origin itself is free.
     adapt = {h: int(support[:, h:].sum()) for h in HORIZONS}
     adapt_d = {h: int((support[:, h:].sum(1) > 0).sum()) for h in HORIZONS}
-    # A scored query pair needs a FULL window (t >= W-1) and a target inside the panel.
-    tgt = {h: [t + h for t in range(W - 1, T) if t + h <= T - 1] for h in HORIZONS}
-    q_pairs = {h: int(query[:, tgt[h]].sum()) for h in HORIZONS}
-    q_dist = {h: int((query[:, tgt[h]].sum(1) > 0).sum()) for h in HORIZONS}
+    # Reachable: per-horizon origins, full window, target inside the panel.
+    reach = {h: [t + h for t in range(W - 1, T) if t + h <= T - 1] for h in HORIZONS}
+    # Scored: ONE common origin set for every horizon, exactly bundles.origins().
+    origins = [t for t in range(W - 1, T) if t + MAX_H <= T - 1]
+    scored = {h: [t + h for t in origins] for h in HORIZONS}
     return dict(support_cells=int(support.sum()),
                 support_districts=int((support.sum(1) > 0).sum()),
                 query_cells=int(query.sum()),
                 adapt_pairs=adapt, adapt_districts=adapt_d,
-                query_pairs=q_pairs, query_districts=q_dist)
+                n_scored_origins=len(origins), scored_origins=[origins[0], origins[-1]],
+                reachable_pairs={h: int(query[:, reach[h]].sum()) for h in HORIZONS},
+                reachable_districts={h: int((query[:, reach[h]].sum(1) > 0).sum()) for h in HORIZONS},
+                scored_pairs={h: int(query[:, scored[h]].sum()) for h in HORIZONS},
+                scored_districts={h: int((query[:, scored[h]].sum(1) > 0).sum()) for h in HORIZONS})
 
 
 def _check(name: str, dt, spec: dict) -> dict:
@@ -133,10 +154,11 @@ def _check(name: str, dt, spec: dict) -> dict:
     for k, want in spec["expect"].items():
         want = {int(a): b for a, b in want.items()} if isinstance(want, dict) else want
         assert got[k] == want, f"{name}: {k} = {got[k]}, pre-registered {want}"
-    assert got["query_pairs"] == EXPECT_QUERY_PAIRS, \
-        f"{name}: scored query pairs {got['query_pairs']} != {EXPECT_QUERY_PAIRS}"
-    assert got["query_districts"] == EXPECT_QUERY_DISTRICTS, \
-        f"{name}: scored query districts {got['query_districts']} != {EXPECT_QUERY_DISTRICTS}"
+    for k, want in (("reachable_pairs", EXPECT_REACHABLE_PAIRS),
+                    ("reachable_districts", EXPECT_REACHABLE_DISTRICTS),
+                    ("scored_pairs", EXPECT_SCORED_PAIRS),
+                    ("scored_districts", EXPECT_SCORED_DISTRICTS)):
+        assert got[k] == want, f"{name}: {k} = {got[k]}, pre-registered {want}"
     return got
 
 
@@ -177,8 +199,11 @@ def build() -> int:
         lookback_w=W, horizons=list(HORIZONS),
         label_basis="L = 0-based column index of the last support week in data/processed/ebola.npz "
                     "(the decision-document sweep convention); cutoff_date is operative",
-        scored_forecasts_identical_across_arms=dict(pairs=EXPECT_QUERY_PAIRS,
-                                                    districts=EXPECT_QUERY_DISTRICTS),
+        identical_across_arms=dict(
+            scored=dict(pairs=EXPECT_SCORED_PAIRS, districts=EXPECT_SCORED_DISTRICTS,
+                        note="one common origin set t in [19, 36]; what score_predictions scores"),
+            reachable=dict(pairs=EXPECT_REACHABLE_PAIRS, districts=EXPECT_REACHABLE_DISTRICTS,
+                           note="per-horizon origins; what the audit note quotes, NOT the eval size")),
         arms=arms, dropped=DROPPED, git_head=_git_head(),
     ), indent=2) + "\n")
     print(f"\nwrote {MANIFEST}")

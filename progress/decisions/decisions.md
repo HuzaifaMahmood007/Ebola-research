@@ -352,10 +352,20 @@ manifest as considered-and-rejected rather than silently absent.
 | scaler (pooled log1p+z on support) | mu 1.4402, sd 1.2145 | mu 1.7913, sd 1.5286 | |
 | npz content sha256 | `08d657dc…` | `e9b9ac0b…` | |
 
-**Scored forecasts are identical under both arms** — 1,151 / 1,075 / 866 / 642 pairs at h3/h5/h10/h15
-over 61/61/59/58 districts, asserted by the freeze script. A full-window query target sits at column
-22 and support reaches at most column 20, so neither arm costs a scored forecast. The arms differ
-only in labelled adaptation data, never in what is evaluated, which is what makes them comparable.
+**Query counts are identical under both arms**, asserted by the freeze script. A full-window query
+target sits at column 22 and support reaches at most column 20, so neither arm costs a forecast. The
+arms differ only in labelled adaptation data, never in what is evaluated, which is what makes them
+comparable.
+
+**Two counts, and only one is the evaluation size.** *Scored* = **757 / 766 / 765 / 642** pairs at
+h3/h5/h10/h15 over 57/57/59/58 districts: one common origin set t in [19, 36] for every horizon,
+which is what `bundles.origins()` returns and what `score_predictions` actually scores. *Reachable*
+= 1,151 / 1,075 / 866 / 642 over 61/61/59/58: per-horizon origins, which is what the audit note and
+`Ebola_Support_Set_Decision.md` quote. **The audit note's figures are not the evaluation size** and
+overstate h3/h5/h10 by 34 to 52 per cent; they agree at h15, whose reach is the binding constraint.
+Found by reading the scoring path before running it (pre-registration amendment A1). Every other
+dataset in the project was scored on a common origin set, and that is the right protocol: horizons
+are comparable only if read at the same origins.
 
 **The primary arm has zero adaptation data at h15.** That is arithmetic: support reaches column 12,
 h15 needs a target at column 15. h15 is therefore labelled zero-shot in every table, and few-shot

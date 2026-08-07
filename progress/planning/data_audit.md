@@ -1238,12 +1238,28 @@ support cell sits at a column index of at least h. Input windows are left-padded
 itself never limits the count. The primary arm's h15 count is 0 by arithmetic, not by data quality:
 support reaches column 12 and h15 needs a target at column 15.
 
-**The scored forecasts are identical under both arms:** 1,151 / 1,075 / 866 / 642 pairs at
-h3/h5/h10/h15 over 61/61/59/58 districts. A full-window query target sits at column 22 and support
-reaches at most column 20, so no option below L=20 costs a single scored forecast. Query *cells* fall
-(1,272 → 1,240 → 1,186) but those cells were never scoreable targets. The arms therefore differ only
-in how much labelled adaptation data they carry, never in what is evaluated. This is asserted by the
+**The query counts are identical under both arms.** A full-window query target sits at column 22 and
+support reaches at most column 20, so no option below L=20 costs a single forecast. Query *cells*
+fall (1,272 → 1,240 → 1,186) but those cells were never scoreable targets. The arms therefore differ
+only in how much labelled adaptation data they carry, never in what is evaluated. Asserted by the
 freeze script, not assumed.
+
+**Two different counts, and only one is the evaluation size.**
+
+| | h3 | h5 | h10 | h15 |
+|---|---|---|---|---|
+| **scored** pairs / districts | **757** / 57 | **766** / 57 | **765** / 59 | **642** / 58 |
+| *reachable* pairs / districts | *1,151* / 61 | *1,075* / 61 | *866* / 59 | *642* / 58 |
+
+*Reachable* counts per-horizon origins: every origin with a full window whose target lands inside the
+panel, so h3 reaches origin 48 and h15 only 36. It is what §3.5 above and
+`Reports/Ebola_Support_Set_Decision.md` quote. *Scored* uses **one common origin set for every
+horizon**, t in [19, 36], 18 origins, which is what `bundles.origins()` returns and therefore what
+`score_predictions` evaluates. Every other dataset in this project was scored that way, and it is
+the right protocol: horizons are comparable to each other only if read at the same origins. The two
+agree at h15, whose reach is the binding constraint; **quoting the reachable figures as the
+evaluation size overstates h3/h5/h10 by 34 to 52 per cent.** Recorded as pre-registration amendment
+A1, found by reading the scoring path before the run rather than after it.
 
 **Scale calibration improves with support length and is still not good.** The mean scored cell is
 about 19 cases under either arm, against an implied typical week of 3.2 (primary) and 5.0

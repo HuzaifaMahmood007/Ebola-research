@@ -8,12 +8,29 @@ from bundles import HORIZONS, W
 
 
 def window_slice(Z, t):
-    """Input window for origin t: Z[:, t-w+1 : t+1, :] -> [N, w, F]."""
-    # t < W-1 makes the start index negative, which slices from the tail instead of erroring --
-    # a silent wrong window. Ebola's short-window few-shot path (t<19) needs zero left-padding
-    # (P7 split protocol); that's Week-4 work. Until then, refuse the short window loudly.
-    assert t >= W - 1, f"origin {t} < W-1={W - 1}: short-window left-pad path is Week-4 work (P7)"
-    return Z[:, t - (W - 1):t + 1, :]
+    """Input window for origin t: Z[:, t-w+1 : t+1, :] -> [N, w, F].
+
+    For t < W-1 the window is ZERO LEFT-PADDED to length W (P7 short-window path, needed by the
+    Ebola few-shot arms: their support sets sit at columns 0..12 and 0..20, so most adaptation
+    origins have no full history). A negative start index would slice from the TAIL, which is a
+    silently wrong window, so the short case is handled explicitly rather than by arithmetic.
+
+    Zero is the right pad value for the incidence channel: the bundles normalise to per-node
+    z-scores and encode an unobserved cell as 0, i.e. the per-node mean, so a padded step reads
+    as "nothing known" on exactly the convention the encoder was trained with.
+
+    ponytail: sin_doy/cos_doy are padded with zeros too, which is (0,0) -- not a point on the unit
+    circle, so a padded step carries an impossible calendar date. That is what the Day-13 protocol
+    recorded ("left-pad short windows with zeros") and obs_mask flags the step either way. The
+    ceiling: at h10 on the 12-week arm a window is ~89% pad, so the encoder is reading mostly
+    impossible dates. Upgrade path if that turns out to matter: back-rotate sin/cos by the weekly
+    angle instead of zeroing them, which keeps the pad in-distribution and needs no extra inputs.
+    """
+    assert t >= 0, f"origin {t} < 0"
+    if t >= W - 1:
+        return Z[:, t - (W - 1):t + 1, :]
+    pad = Z.new_zeros((Z.shape[0], W - 1 - t, Z.shape[2]))
+    return torch.cat([pad, Z[:, :t + 1, :]], dim=1)
 
 
 def targets_and_mask(ymod, Mt, phase_mask, t, device=None):

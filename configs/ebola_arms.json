@@ -14,18 +14,36 @@
     15
   ],
   "label_basis": "L = 0-based column index of the last support week in data/processed/ebola.npz (the decision-document sweep convention); cutoff_date is operative",
-  "scored_forecasts_identical_across_arms": {
-    "pairs": {
-      "3": 1151,
-      "5": 1075,
-      "10": 866,
-      "15": 642
+  "identical_across_arms": {
+    "scored": {
+      "pairs": {
+        "3": 757,
+        "5": 766,
+        "10": 765,
+        "15": 642
+      },
+      "districts": {
+        "3": 57,
+        "5": 57,
+        "10": 59,
+        "15": 58
+      },
+      "note": "one common origin set t in [19, 36]; what score_predictions scores"
     },
-    "districts": {
-      "3": 61,
-      "5": 61,
-      "10": 59,
-      "15": 58
+    "reachable": {
+      "pairs": {
+        "3": 1151,
+        "5": 1075,
+        "10": 866,
+        "15": 642
+      },
+      "districts": {
+        "3": 61,
+        "5": 61,
+        "10": 59,
+        "15": 58
+      },
+      "note": "per-horizon origins; what the audit note quotes, NOT the eval size"
     }
   },
   "arms": {
@@ -58,15 +76,32 @@
           "10": 9,
           "15": 0
         },
-        "query_pairs": {
+        "n_scored_origins": 18,
+        "scored_origins": [
+          19,
+          36
+        ],
+        "reachable_pairs": {
           "3": 1151,
           "5": 1075,
           "10": 866,
           "15": 642
         },
-        "query_districts": {
+        "reachable_districts": {
           "3": 61,
           "5": 61,
+          "10": 59,
+          "15": 58
+        },
+        "scored_pairs": {
+          "3": 757,
+          "5": 766,
+          "10": 765,
+          "15": 642
+        },
+        "scored_districts": {
+          "3": 57,
+          "5": 57,
           "10": 59,
           "15": 58
         }
@@ -101,15 +136,32 @@
           "10": 35,
           "15": 34
         },
-        "query_pairs": {
+        "n_scored_origins": 18,
+        "scored_origins": [
+          19,
+          36
+        ],
+        "reachable_pairs": {
           "3": 1151,
           "5": 1075,
           "10": 866,
           "15": 642
         },
-        "query_districts": {
+        "reachable_districts": {
           "3": 61,
           "5": 61,
+          "10": 59,
+          "15": 58
+        },
+        "scored_pairs": {
+          "3": 757,
+          "5": 766,
+          "10": 765,
+          "15": 642
+        },
+        "scored_districts": {
+          "3": 57,
+          "5": 57,
           "10": 59,
           "15": 58
         }
@@ -123,5 +175,5 @@
       "reason": "client decision 2026-08-07: 12 and 20 only"
     }
   },
-  "git_head": "e9197dabdfe5500614344b2096d5216499ae7c7c"
+  "git_head": "e0c6226bea5227b2a8f9bf0f47072324ff5b85a9"
 }

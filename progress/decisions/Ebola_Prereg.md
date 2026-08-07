@@ -71,13 +71,25 @@ support reaches column 12 and h15 needs a target at column 15 or later.
 
 | | h3 | h5 | h10 | h15 |
 |---|---|---|---|---|
-| scored query pairs | 1,151 | 1,075 | 866 | 642 |
-| scored districts | 61 | 61 | 59 | 58 |
+| **scored** query pairs (what the run evaluates) | **757** | **766** | **765** | **642** |
+| scored districts | 57 | 57 | 59 | 58 |
+| *reachable* query pairs (what the audit note quotes) | *1,151* | *1,075* | *866* | *642* |
+| *reachable* districts | *61* | *61* | *59* | *58* |
 
-Identical under both arms, and asserted by the freeze script. A full-window query target sits at
-column 22 or later and support reaches at most column 20, so neither arm costs a single scored
-forecast. The two arms are therefore directly comparable: same forecasts, different amount of
-labelled adaptation data. The cost of the longer support set is to the claim, not to the evaluation.
+Both rows are identical under both arms, and both are asserted by the freeze script. A full-window
+query target sits at column 22 or later and support reaches at most column 20, so neither arm costs
+a single forecast. The two arms are therefore directly comparable: same forecasts, different amount
+of labelled adaptation data. The cost of the longer support set is to the claim, not to the
+evaluation.
+
+**The two rows are different quantities and only the first is the evaluation size** (amendment A1).
+*Reachable* counts per-horizon origins: every origin with a full window whose target lands inside
+the panel, so h3 reaches origin 48 and h15 only 36. *Scored* uses ONE common origin set for every
+horizon, t in [19, 36], 18 origins, which is what `bundles.origins()` returns and therefore what
+`score_predictions` actually scores. Every other dataset in this project was scored that way, and it
+is the right protocol here too: horizons are comparable to each other only if read at the same
+origins. The two agree at h15, whose reach is the binding constraint. Quoting the reachable numbers
+as the evaluation size would overstate h3/h5/h10 by 34 to 52 per cent.
 
 ### Scaler consequence
 
@@ -98,11 +110,41 @@ examples at h10 and none at h15.
 
 ## 4. Stated expectations, before anything is scored
 
-Definitions used below. **Zero-shot** means the trunk trained on the development diseases with the
-adapter left at initialisation, no Ebola label touched at any point. **Few-shot** means the same
-trunk with the FiLM-plus-head adapter fit on that arm's support cells only. Reference is
-`persistence` on the same scored cells, per `analysis.py` NAIVES; `seasonal` is undefined on Ebola,
-which has no prior year.
+Definitions used below, all fixed before the run (see the amendment log for what was added on
+2026-08-07 after the code was read).
+
+**The trunk.** One shared encoder trained jointly on all five development bundles: dengue,
+influenza japan / us-regions / us-states, and covid us-states, with `adapter_groups=[0,1,1,1,2]` so
+each *disease* gets one adaptation surface and the loss is rebalanced per disease rather than per
+bundle. Nothing is held out, because Ebola is the held-out disease. 5 seeds (42, 52, 62, 72, 82),
+91,000 steps, `trunk_patience=30`. No Ebola cell enters it.
+
+**Zero-shot** means that trunk with the element-wise mean of the three trained in-disease adapters
+applied to Ebola with no fitting, exactly the `_mean_adapter` reference used on every dev fold. No
+Ebola label is touched at any point.
+
+**Few-shot** means the same frozen trunk with one fresh Adapter (FiLM plus quantile head, 1,428
+params) fit on that arm's support cells only.
+
+**Adapter stopping rule** (amendment A2). Ebola has no validation split by construction, so the
+epoch count is chosen by **leave-one-district-out cross-validation inside the support set**: hold
+out one support district at a time, fit on the rest, record the held-district pinball per epoch,
+take the epoch minimising the mean held-out curve, then refit on all support cells for that many
+epochs. No query cell is read at any point. This is fixed here because with 1,428 parameters and 48
+adaptation pairs at h3, "how long did you train the adapter" is otherwise a free parameter chosen
+after seeing the answer.
+
+**Short windows** (amendment A3). Adaptation origins sit at t < 19, so the input window is zero
+left-padded to length 20 (`models/windows.py`, gate 10 in `tests/test_encoder_invariants.py`). Zero
+is the per-node mean in normalised space, matching how every bundle encodes an unobserved cell. The
+known weakness: sin_doy/cos_doy are zeroed too, which is not a point on the unit circle, so a padded
+step carries an impossible calendar date, and at h10 on the primary arm a window is about 89 per
+cent pad. That is the Day-13 protocol as recorded, and it is stated here rather than discovered
+later.
+
+**Reference floors.** `persistence` and `support_mean` on the same scored cells. `seasonal` is
+dropped, not reported as a third floor: Ebola has T=52, so the t-52 lag is out of panel at every
+scored origin and seasonal-naive would collapse to a duplicate of persistence.
 
 These are predictions, and I expect to be reporting some of them as wrong.
 
@@ -117,11 +159,20 @@ weakest thing the adapter has to do, and h3/h5 are where it has the most example
 **E3. Few-shot still does not beat persistence at any horizon on the primary arm.** Confidence:
 moderate. If this is wrong it is the best outcome available here and I will say so plainly.
 
-**E4. Primary arm, h15: few-shot and zero-shot must be bit-identical.** This is not a prediction, it
-is a consequence of 0 adaptation pairs. Any difference between the two numbers is a bug in the
-adaptation path, not a result, and will be treated that way. h10 on the primary arm has 18 pairs
-across 9 districts, which I do not consider a fitted adapter; I expect no separation from zero-shot
-beyond the noise floor.
+**E4. Primary arm, h15: the h15 block of the head weight must be unchanged by fitting** (corrected,
+amendment A4). This is not a prediction, it is a consequence of 0 adaptation pairs: with no h15
+target in the support set the mask zeroes the h15 term of the pinball loss, so rows 15-19 of
+`head.weight` and `head.bias` receive no gradient and must come out bit-identical to their
+initialisation. Any difference there is a bug in the adaptation path, not a result.
+
+**What I originally wrote here was wrong and is corrected before scoring.** The first version of
+this document said few-shot and zero-shot h15 must be bit-identical *as forecasts*. They will not
+be. `gamma` and `beta` are shared across all four horizons, so gradient from the h3/h5/h10 support
+pairs moves the FiLM surface and therefore moves the h15 predictions, even though no h15 label
+exists. Primary-arm h15 is therefore "no h15 supervision, FiLM fit on nearer horizons", which is
+weaker than strict zero-shot and is labelled as such rather than as few-shot. h10 on the primary arm
+has 18 pairs across 9 districts, which I do not consider a fitted adapter either; I expect no
+separation from zero-shot beyond the noise floor.
 
 **E5. The secondary arm beats the primary arm at h10 and h15.** Confidence: moderate. It has 72 and
 54 adaptation pairs where the primary has 18 and 0. **If it does not, the failure is not
@@ -150,6 +201,19 @@ written up as the method working.
 4. Both arms are reported, whatever they say. The secondary is labelled secondary everywhere.
 5. If the run has to be repeated for a defect (a crash, a wrong checkpoint, a bug of the E4 kind),
    the repeat and its reason are recorded here before the re-scored numbers are used.
+
+## 5a. Amendment log
+
+Every change made to this document after it was first committed, with its reason. All of them
+predate the first Ebola score. Nothing here may be added once scoring has run.
+
+| # | date | change | why |
+|---|---|---|---|
+| A1 | 2026-08-07 | Evaluation size corrected from 1,151 / 1,075 / 866 / 642 to **757 / 766 / 765 / 642**; the old figures are kept as a separate *reachable* row | The audit note counts per-horizon origins. `bundles.origins()` uses one common origin set for all horizons, t in [19, 36], and that is what `score_predictions` scores. Found by reading the scoring path before running it, not after. h15 is unaffected. |
+| A2 | 2026-08-07 | Adapter stopping rule fixed as leave-one-district-out CV inside the support set | Ebola has no validation split, so the epoch count was an unfixed free parameter. Chosen over a fixed epoch budget because 1,428 params on 48 pairs overfits fast and a fixed budget taken from the dev folds does not transfer: an Ebola epoch is ~13 origins against thousands. |
+| A3 | 2026-08-07 | Short-window zero left-pad stated, with its known weakness | `window_slice` refused t < 19 outright, so no adaptation origin could be built at all. Implementing it was unavoidable; stating what the pad does to sin_doy/cos_doy is the part that belongs in a pre-registration. |
+| A4 | 2026-08-07 | E4 corrected: it is the h15 head block that is bit-identical, not the h15 forecasts | `gamma`/`beta` are shared across horizons, so h3/h5/h10 gradient moves h15 predictions. The original claim was simply false and would have been reported as a bug on first contact with the data. |
+| A5 | 2026-08-07 | Trunk defined as all-five-dev-bundle joint, `trunk_patience=30`; floors fixed as persistence and support_mean | No all-dev trunk existed: every LDO3 checkpoint holds a disease out and the joint runs predate COVID and saved no checkpoints. Patience 30 against LDO3's 12 because the cosine schedule is scaled to a budget early stopping never reaches, and this run is scored once. Seasonal-naive is dropped because T=52 puts the t-52 lag out of panel at every scored origin. |
 
 ## 6. Reproducing this
 
