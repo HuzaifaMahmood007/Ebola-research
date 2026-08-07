@@ -53,10 +53,75 @@ def _round_trip_ok(b):
     return np.allclose(rt[obs], b.raw[obs], atol=1e-4)
 
 
+# TWO-SIDED. A [0, 3] grid can only raise a forecast, so a model that OVER-predicts has its optimum
+# clamped to the 0.0 boundary -- and a clamped 0.0 is indistinguishable from a genuine "no correction
+# needed", including to _bias_selfcheck, which asserts exactly c==0.0 for the no-gap case. The
+# median<mean argument says the correction is usually positive; it does not license forbidding the
+# other sign. _best_offset warns when the winner sits on either boundary.
+BIAS_GRID = np.linspace(-1.5, 3.0, 91)         # log-space offsets searched on the val fold
+
+
+def _best_offset(med, tru, obs, scaler, grid=None):
+    """The scalar search behind the bias correction, kept model-free so it is self-checkable.
+
+    med/tru/obs are [N,K] over the K fitting origins (model space, counts, observed-flag). Returns
+    the grid value of c minimising count-space RMSE. c=0 is in the grid, so the fitted correction
+    can never be WORSE than uncorrected on the fold it was fitted on.
+
+    `grid` resolves at CALL time, not def time: a `grid=BIAS_GRID` default would freeze the constant
+    at import and silently ignore anyone who reassigns it -- including the mutation test that is
+    supposed to prove _bias_selfcheck can fail."""
+    grid = BIAS_GRID if grid is None else grid
+    y = tru[obs]
+    best_c, best = float(grid[0]), float("inf")
+    for c in grid:
+        e = float(np.sqrt(np.mean((invert_scaler(med + c, scaler)[obs] - y) ** 2)))
+        if e < best:
+            best, best_c = e, float(c)
+    if len(grid) > 1 and best_c in (float(grid[0]), float(grid[-1])):
+        print(f"    WARNING bias correction hit a grid boundary (c={best_c:+.2f}); the true optimum "
+              f"is outside [{grid[0]:+.2f}, {grid[-1]:+.2f}] and the value is clamped, not fitted")
+    return best_c
+
+
+def _fit_bias_correction(enc, ad, Z, A, Mt, b, origins, val_mask, grid=None):
+    """Doubt.md §3.1: the pinball head predicts the LOG-space median, which inverts to the COUNT-space
+    median, but RMSE is minimised by the count-space MEAN. Per node, mean/expm1(mean(log1p)) runs to
+    19.2x on influenza_japan and 4.2x on dengue, so the point forecast is systematically low for the
+    metric it is scored by -- visible as an RMSE/MAE ratio above every naive floor's on every panel.
+
+    Fit ONE scalar offset c per horizon, in model space, on the VAL fold only (already used for early
+    stopping, so no test information enters). Applied as invert_scaler(median + c): the per-node
+    scaler is affine in log space, so c is a per-node MULTIPLICATIVE correction exp(c*sigma_i) on the
+    counts, not a global additive fudge -- a node with a wide training spread gets a proportionally
+    larger correction, which is the right shape for a lognormal gap.
+
+    Grid search rather than a solver: one bounded scalar per horizon, cheap objective, cannot diverge.
+    Returns {h: c}. Ebola never reaches here (C8) and has no val fold; its c must be inherited from
+    the dev diseases and pre-registered before scoring."""
+    enc.eval(); ad.eval()
+    N, K = b.X.shape[0], len(origins)
+    raw = b.raw.astype(np.float64)
+    vm = val_mask.cpu().numpy() if torch.is_tensor(val_mask) else val_mask
+    vm = vm.astype(bool)                                   # b.masks() already folds in observedness
+    med = {h: np.zeros((N, K)) for h in bundles.HORIZONS}
+    tru = {h: np.zeros((N, K)) for h in bundles.HORIZONS}
+    obs = {h: np.zeros((N, K), dtype=bool) for h in bundles.HORIZONS}
+    with torch.no_grad():
+        for k, t in enumerate(origins):
+            m = ad(enc(window_slice(Z, t), A, Mt[:, t]))[:, :, MEDIAN_IDX].cpu().numpy()   # [N,H]
+            for j, h in enumerate(bundles.HORIZONS):
+                med[h][:, k] = m[:, j]
+                tru[h][:, k] = raw[:, t + h]
+                obs[h][:, k] = vm[:, t + h]
+    return {h: (_best_offset(med[h], tru[h], obs[h], b.scaler, grid) if obs[h].any() else 0.0)
+            for h in bundles.HORIZONS}
+
+
 def train_one(name, seed, epochs=80, lr=1e-3, wd=1e-4, batch_origins=8, patience=15,
               device=DEVICE, verbose=True, zero_channels=None,
               training_regime="single", sampler=None, gate_mode="learned", topo_aug="none",
-              gate_read=True):
+              gate_read=True, quant_out=None, run_out=None):
     assert name != "ebola", \
         "ebola must never enter trunk training/selection (§0.5, C8); Week-5 few-shot is a separate path"
     torch.manual_seed(seed)
@@ -129,20 +194,42 @@ def train_one(name, seed, epochs=80, lr=1e-3, wd=1e-4, batch_origins=8, patience
         enc.load_state_dict(best_state[0]); ad.load_state_dict(best_state[1])
 
     # test predictions -> count space, per horizon, assembled to [N,T] aligned by target time.
+    # `quant_out` / `run_out` are out-parameters (the idiom lodo._score already uses) purely so the
+    # existing 4-tuple call sites keep working; a caller that passes neither pays nothing.
     enc.eval(); ad.eval()
-    T = b.X.shape[1]
-    pred_by_h = {h: np.zeros((b.X.shape[0], T), dtype=np.float64) for h in bundles.HORIZONS}
+    cbias = _fit_bias_correction(enc, ad, Z, A, Mt, b, va, masks["val"])
+    T, N, nQ = b.X.shape[1], b.X.shape[0], len(score.QUANTILE_LEVELS)
+    pred_by_h = {h: np.zeros((N, T), dtype=np.float64) for h in bundles.HORIZONS}
+    predmc_by_h = {h: np.zeros((N, T), dtype=np.float64) for h in bundles.HORIZONS}
+    if quant_out is not None:
+        for h in bundles.HORIZONS:
+            quant_out[h] = np.zeros((N, len(te), nQ), dtype=np.float32)
     with torch.no_grad():
-        for t in te:
-            med = ad(enc(window_slice(Z, t), A, Mt[:, t]))[:, :, MEDIAN_IDX].cpu().numpy()   # [N,H]
+        for k, t in enumerate(te):
+            out = ad(enc(window_slice(Z, t), A, Mt[:, t])).cpu().numpy()          # [N,H,Q]
+            med = out[:, :, MEDIAN_IDX]
             for j, h in enumerate(bundles.HORIZONS):
                 pred_by_h[h][:, t + h] = invert_scaler(med[:, j:j + 1], b.scaler)[:, 0]
+                predmc_by_h[h][:, t + h] = invert_scaler(med[:, j:j + 1] + cbias[h], b.scaler)[:, 0]
+                if quant_out is not None:
+                    # per-node scaler is monotone, so inverting each level independently is exact
+                    for qi in range(nQ):
+                        quant_out[h][:, k, qi] = invert_scaler(out[:, j, qi:qi + 1], b.scaler)[:, 0]
     run_meta = dict(training_regime=training_regime, sampler=sampler,
                     gate_mode=gate_mode, topo_aug=topo_aug)
     gate = gate_spatial_readout(enc, ad, Z, A, Mt, va, device) if gate_read else None
     recs, pernode, perorigin = score_predictions("encoder", name, seed, pred_by_h, b, te,
                                                  run_meta=run_meta)
-    return recs, pernode, perorigin, gate
+    # The mean-corrected arm ships ALONGSIDE the median arm under a distinct model name, never in
+    # place of it: the median is the calibrated forecast (and the right point for MAE), the corrected
+    # one is the RMSE/peak-intensity point. Two rows lets the paper show both; overwriting would
+    # silently restate every number already reported.
+    mcrecs, _, _ = score_predictions("encoder_mc", name, seed, predmc_by_h, b, te, run_meta=run_meta)
+    for r in mcrecs:
+        r["bias_c"] = round(cbias[r["horizon"]], 4)
+    if run_out is not None:
+        run_out.update(enc=enc, ad=ad, te=te, bias_c=cbias)
+    return recs + mcrecs, pernode, perorigin, gate
 
 
 # --------------------------------------------------------------------------- #
@@ -343,13 +430,17 @@ def run_dataset(name, seeds=SEEDS, **kw):
     write_records(naive_recs, f"naive__{name}.json")
     print(f"  naive floors scored ({name}); seasonal fallback rate {fb_rate:.1%}")
     for s in seeds:
-        recs, pernode, perorigin, gate = train_one(name, s, **kw)
+        quant, ro = {}, {}
+        recs, pernode, perorigin, gate = train_one(name, s, quant_out=quant, run_out=ro, **kw)
         write_records(recs, f"encoder__{name}__seed{s}.json")
         write_per_node(pernode, f"encoder__{name}__seed{s}__pernode.npz")
         write_per_origin(perorigin, f"encoder__{name}__seed{s}__perorigin.npz")
         if gate is not None:
             write_gate(gate, f"encoder__{name}__seed{s}__gate.npz")
-        print(f"  encoder scored ({name} seed{s})")
+        write_quantiles(quant, ro["te"], f"encoder__{name}__seed{s}__quantiles.npz")
+        write_checkpoint(ro["enc"], ro["ad"], f"encoder__{name}__seed{s}__ckpt.pt",
+                         extra=dict(dataset=name, seed=s, bias_c=ro["bias_c"]))
+        print(f"  encoder scored ({name} seed{s}); bias_c={ {h: round(c, 2) for h, c in ro['bias_c'].items()} }")
 
 
 def _selfcheck():
@@ -388,6 +479,30 @@ def _perorigin_selfcheck():
     print("ok  per-origin x country sufficient stats reconstruct pooled MAE/RMSE; mask gates cells")
 
 
+def _bias_selfcheck():
+    """The median->mean correction actually corrects, and stays put when there is nothing to correct.
+
+    Model-free: a perfect log-space MEDIAN forecast (z=0) of a right-skewed target must need a
+    POSITIVE offset, and applying it must lower count-space RMSE. With sigma=1.2 the RMSE-optimal
+    constant is the mean, E[exp(1.2z)]-1 = exp(0.72)-1, i.e. c = 0.72/1.2 = 0.60 -- so this pins the
+    fitted value, not just its sign. The degenerate arm is the guard that matters: on a target with
+    no skew the fit must return exactly 0, or the correction is a free parameter inflating forecasts
+    whether or not a gap exists."""
+    rng = np.random.default_rng(0)
+    N, K, sigma = 8, 400, 1.2
+    scaler = {"mean": np.zeros(N), "std": np.full(N, sigma)}
+    tru = np.expm1(rng.normal(0.0, 1.0, size=(N, K)) * sigma)     # counts; log-median is 0
+    med, obs = np.zeros((N, K)), np.ones((N, K), dtype=bool)
+    c = _best_offset(med, tru, obs, scaler)
+    assert 0.4 < c < 0.9, f"expected c near 0.60 for sigma=1.2, got {c}"
+    r0 = float(np.sqrt(np.mean((invert_scaler(med, scaler)[obs] - tru[obs]) ** 2)))
+    r1 = float(np.sqrt(np.mean((invert_scaler(med + c, scaler)[obs] - tru[obs]) ** 2)))
+    assert r1 < r0, f"correction did not reduce RMSE ({r1:.3f} vs {r0:.3f})"
+    assert _best_offset(med, np.zeros((N, K)), obs, scaler) == 0.0, \
+        "no mean/median gap must fit c=0 -- c=0 is in the grid, so the fit can never be worse"
+    print(f"ok  median->mean bias correction: c={c:.2f} (expected 0.60), val RMSE {r0:.2f} -> {r1:.2f}")
+
+
 def _ebola_isolation_check():
     """C8 (§0.5): ebola must never enter a trunk training/selection loop. Two-part guarantee -- the
     data-layer exclusion (ebola exists but is not in the dev set) AND a runtime guard in train_one
@@ -412,27 +527,43 @@ def main():
     a = ap.parse_args()
 
     if a.selfcheck:
-        _selfcheck(); _perorigin_selfcheck(); _ebola_isolation_check(); return
+        _selfcheck(); _perorigin_selfcheck(); _bias_selfcheck(); _ebola_isolation_check(); return
     t0 = time.time()
     if a.smoke:
-        _selfcheck(); _perorigin_selfcheck()
-        recs, pernode, perorigin, gate = train_one("influenza_japan", 42, epochs=5)
+        _selfcheck(); _perorigin_selfcheck(); _bias_selfcheck()
+        quant, ro = {}, {}
+        recs, pernode, perorigin, gate = train_one("influenza_japan", 42, epochs=5,
+                                                   quant_out=quant, run_out=ro)
         write_records(recs, "encoder__influenza_japan__seed42__smoke.json")
         write_per_node(pernode, "encoder__influenza_japan__seed42__smoke__pernode.npz")
         write_per_origin(perorigin, "encoder__influenza_japan__seed42__smoke__perorigin.npz")
         write_gate(gate, "encoder__influenza_japan__seed42__smoke__gate.npz")
-        print(f"smoke done in {time.time()-t0:.0f}s; wrote {len(recs)} records")
+        write_quantiles(quant, ro["te"], "encoder__influenza_japan__seed42__smoke__quantiles.npz")
+        write_checkpoint(ro["enc"], ro["ad"], "encoder__influenza_japan__seed42__smoke__ckpt.pt",
+                         extra=dict(dataset="influenza_japan", seed=42, bias_c=ro["bias_c"]))
+        print(f"smoke done in {time.time()-t0:.0f}s; wrote {len(recs)} records; bias_c={ro['bias_c']}")
     elif a.all:
         for name in bundles.DEV_BUNDLE_NAMES:
             run_dataset(name, epochs=a.epochs)
         print(f"all datasets done in {(time.time()-t0)/60:.1f} min")
+    elif a.dataset and not a.seed:
+        # one dataset, all 5 seeds + its naive floors. Needed because --all would rerun (and
+        # overwrite) every other dataset just to add a new one's ceiling and floor.
+        run_dataset(a.dataset, epochs=a.epochs)
+        print(f"{a.dataset}: ceiling ({len(SEEDS)} seeds) + naive floors done in "
+              f"{(time.time()-t0)/60:.1f} min")
     elif a.dataset and a.seed:
-        recs, pernode, perorigin, gate = train_one(a.dataset, a.seed, epochs=a.epochs)
+        quant, ro = {}, {}
+        recs, pernode, perorigin, gate = train_one(a.dataset, a.seed, epochs=a.epochs,
+                                                   quant_out=quant, run_out=ro)
         write_records(recs, f"encoder__{a.dataset}__seed{a.seed}.json")
         write_per_node(pernode, f"encoder__{a.dataset}__seed{a.seed}__pernode.npz")
         write_per_origin(perorigin, f"encoder__{a.dataset}__seed{a.seed}__perorigin.npz")
         write_gate(gate, f"encoder__{a.dataset}__seed{a.seed}__gate.npz")
-        print(f"done in {time.time()-t0:.0f}s")
+        write_quantiles(quant, ro["te"], f"encoder__{a.dataset}__seed{a.seed}__quantiles.npz")
+        write_checkpoint(ro["enc"], ro["ad"], f"encoder__{a.dataset}__seed{a.seed}__ckpt.pt",
+                         extra=dict(dataset=a.dataset, seed=a.seed, bias_c=ro["bias_c"]))
+        print(f"done in {time.time()-t0:.0f}s; bias_c={ro['bias_c']}")
     else:
         ap.error("give --dataset+--seed, or --all, or --smoke, or --selfcheck")
 
