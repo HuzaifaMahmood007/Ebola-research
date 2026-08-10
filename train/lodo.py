@@ -536,18 +536,30 @@ def run_ldo3_fold(held_out, seed, device=DEVICE, trunk_steps=91000, epochs=80, v
 
         # zero-shot gets pernode/perorigin too: it carries the largest reported effects (-311%,
         # -559%) and without these arrays that arm has no bootstrap-CI material at all.
+        # It gets QUANTILES for the same reason the adapted arm does (G4): every UQ metric -- WIS,
+        # CRPS, coverage, PIT -- is unusable without them, and they cannot be reconstructed after
+        # the fact. Omitting them here is what left LDO3_Results.md §5 with no UQ block on this arm.
+        zquant = {}
         zrecs, zpn, zpo, _ = _test_dataset(enc, borrowed, d, seed,
-                                           f"{prefix}_zeroshot:{held_out}", zmeta)
+                                           f"{prefix}_zeroshot:{held_out}", zmeta,
+                                           quant_out=zquant)
         write_records(zrecs, f"{prefix}_zeroshot__{d.name}__seed{seed}.json")
         write_per_node(zpn, f"{prefix}_zeroshot__{d.name}__seed{seed}__pernode.npz")
         write_per_origin(zpo, f"{prefix}_zeroshot__{d.name}__seed{seed}__perorigin.npz")
+        write_quantiles(zquant, d.te, f"{prefix}_zeroshot__{d.name}__seed{seed}__quantiles.npz")
         all_zrecs += zrecs
 
     # ONE trunk and ONE held-out adapter per fold, so one checkpoint regardless of bundle count.
+    # `zeroshot_adapter` is the mean-of-in-disease head the zero-shot arm actually uses. Without it
+    # a checkpoint reproduces the ADAPTED arm only: `borrowed` is built from `in_ads`, which live in
+    # _fit_trunk's return and are never written, so the 15 runs of 2026-08-04 cannot have their
+    # zero-shot arm re-scored at any price short of retraining the trunk. Saving one extra state
+    # dict costs a few KB and removes that whole class of dead end.
     write_checkpoint(enc, ad, f"{prefix}__{held_out}__seed{seed}__ckpt.pt",
                      extra=dict(fold=prefix, held_out_disease=held_out, seed=seed,
                                 trunk_steps=trunk_steps, in_names=in_names,
-                                adapter_groups=groups, adapter_scope=held_names))
+                                adapter_groups=groups, adapter_scope=held_names,
+                                zeroshot_adapter=borrowed.state_dict()))
     return all_recs, all_zrecs
 
 
