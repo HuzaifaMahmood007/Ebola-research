@@ -159,11 +159,16 @@ weakest thing the adapter has to do, and h3/h5 are where it has the most example
 **E3. Few-shot still does not beat persistence at any horizon on the primary arm.** Confidence:
 moderate. If this is wrong it is the best outcome available here and I will say so plainly.
 
-**E4. Primary arm, h15: the h15 block of the head weight must be unchanged by fitting** (corrected,
-amendment A4). This is not a prediction, it is a consequence of 0 adaptation pairs: with no h15
-target in the support set the mask zeroes the h15 term of the pinball loss, so rows 15-19 of
-`head.weight` and `head.bias` receive no gradient and must come out bit-identical to their
-initialisation. Any difference there is a bug in the adaptation path, not a result.
+**E4. Primary arm, h15: the h15 block of the head must come out a uniform shrink of its
+initialisation** (corrected twice, amendments A4 and A6). This is not a prediction, it is a
+consequence of 0 adaptation pairs: with no h15 target in the support set the mask zeroes the h15
+term of the pinball loss, so rows 15-19 of `head.weight` and `head.bias` receive a gradient that is
+exactly zero. Adam's update with a zero gradient is exactly zero, so the only thing that moves the
+block is AdamW's decoupled weight decay, which multiplies every element by the same
+`(1 - lr_k * wd)` each step. The block must therefore satisfy `p_final = c * p_init` for a single
+scalar `c` slightly below 1, to within float32 accumulation. Any departure from proportionality
+means a label-driven gradient reached a horizon that has no labels, which is a bug in the adaptation
+path, not a result.
 
 **What I originally wrote here was wrong and is corrected before scoring.** The first version of
 this document said few-shot and zero-shot h15 must be bit-identical *as forecasts*. They will not
@@ -213,6 +218,7 @@ predate the first Ebola score. Nothing here may be added once scoring has run.
 | A2 | 2026-08-07 | Adapter stopping rule fixed as leave-one-district-out CV inside the support set | Ebola has no validation split, so the epoch count was an unfixed free parameter. Chosen over a fixed epoch budget because 1,428 params on 48 pairs overfits fast and a fixed budget taken from the dev folds does not transfer: an Ebola epoch is ~13 origins against thousands. |
 | A3 | 2026-08-07 | Short-window zero left-pad stated, with its known weakness | `window_slice` refused t < 19 outright, so no adaptation origin could be built at all. Implementing it was unavoidable; stating what the pad does to sin_doy/cos_doy is the part that belongs in a pre-registration. |
 | A4 | 2026-08-07 | E4 corrected: it is the h15 head block that is bit-identical, not the h15 forecasts | `gamma`/`beta` are shared across horizons, so h3/h5/h10 gradient moves h15 predictions. The original claim was simply false and would have been reported as a bug on first contact with the data. |
+| A6 | 2026-08-07 | E4 corrected a second time: the h15 head block is a **uniform shrink** of its initialisation, not bit-identical | The gate fired on the dry run at a drift of 1.0e-06. Cause is AdamW's *decoupled* weight decay, which shrinks a parameter whose gradient is exactly zero; Adam's own term is exactly zero there, so the block rescales and does not rotate. Proportionality across the 100 elements is a strictly sharper test than equality: it survives the optimiser detail, which carries no Ebola information, and is destroyed by any label-driven gradient. Tolerance is relative and sized for float32 accumulation over ~160 decay steps (predicted ~1e-6, measured 1.4e-6, gate at 1e-5). |
 | A5 | 2026-08-07 | Trunk defined as all-five-dev-bundle joint, `trunk_patience=30`; floors fixed as persistence and support_mean | No all-dev trunk existed: every LDO3 checkpoint holds a disease out and the joint runs predate COVID and saved no checkpoints. Patience 30 against LDO3's 12 because the cosine schedule is scaled to a budget early stopping never reaches, and this run is scored once. Seasonal-naive is dropped because T=52 puts the t-52 lag out of panel at every scored origin. |
 
 ## 6. Reproducing this

@@ -8,6 +8,7 @@ downstream ever branches on which disease it is holding.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from dataclasses import dataclass
@@ -16,6 +17,25 @@ from pathlib import Path
 import numpy as np
 
 from to_schema import apply_scaler, fit_scalers_masked
+
+
+def content_sha256(path) -> str:
+    """Canonical digest over the ARRAYS in a .npz, independent of zip framing and file mtimes.
+
+    A .npz is a zip and zip entries carry a wall-clock timestamp, so hashing the file bytes gives a
+    digest that changes on every rebuild even when the data is identical. This one does not, which
+    is what makes "the frozen split has not moved" a checkable claim. Lives here rather than in
+    freeze_ebola_arms.py so the trainer can verify a frozen bundle without importing the build
+    stack (openpyxl, geopandas) it does not otherwise need.
+    """
+    z = np.load(path, allow_pickle=True)
+    h = hashlib.sha256()
+    for k in sorted(z.files):
+        a = np.asarray(z[k])
+        h.update(k.encode())
+        h.update(f"{a.dtype.str}{a.shape}".encode())
+        h.update(np.ascontiguousarray(a).tobytes())
+    return h.hexdigest()
 
 DATA_DIR = Path(__file__).resolve().parent / "data" / "processed"
 BUNDLE_NAMES = ["dengue", "influenza_japan", "influenza_us-regions", "influenza_us-states",

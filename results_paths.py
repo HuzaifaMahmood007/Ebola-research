@@ -14,6 +14,8 @@ it without dragging in the torch/model stack.
   `fold_structure` field -- the filename is the fast path, the field is the one a reader can trust.
   Note `encoder_ldo__` and `encoder_lodo__` are distinct strings, neither a prefix of the other, so
   route order between them is not load-bearing; zeroshot goes first only to match the existing style.
+    ebola/    encoder_ebola[_zeroshot]__<arm>__seed<S>...     (the case study, scored once)
+              encoder_ebola__alldev__seed<S>__ckpt.pt         (the all-dev trunk)
     naive/    naive__<ds>.json + naive__<ds>__<floor>__{pernode,perorigin}.npz
     reports/  *.txt / *.log  human-readable summaries and run logs
     misc/     anything unrouted, and *smoke* throwaways
@@ -50,6 +52,13 @@ _ROUTES = (
     ("encoder_pair__", "lodo"),
     ("encoder_ldo_zeroshot__", "lodo"),
     ("encoder_ldo__", "lodo"),
+    # The Ebola case study gets its OWN subdir, not lodo/. It is not a fold: nothing is held out of
+    # the trunk, the eval set is a few-shot support/query split rather than a train/val/test one, and
+    # it is scored exactly once against a pre-registered config. Keeping it separate means no reader
+    # can sweep results/lodo/ and silently average the headline case study into a dev-fold table.
+    # Must precede "encoder__" or it would route to single/.
+    ("encoder_ebola_zeroshot__", "ebola"),
+    ("encoder_ebola__", "ebola"),
     ("encoder_joint__", "joint"),
     ("encoder__", "single"),
     ("naive__", "naive"),
@@ -111,8 +120,16 @@ def _demo():
         "encoder_lodo__influenza_japan__seed42__ckpt.pt": "lodo",
         "encoder__dengue__seed42__quantiles.npz": "single",
         "encoder_joint__uniform-uniform__dengue__seed42__ckpt.pt": "joint",
+        # the Ebola case study: own subdir, and must NOT be swallowed by the encoder__ route
+        "encoder_ebola__ebola_L12__seed42.json": "ebola",
+        "encoder_ebola__ebola_L20__seed42__perorigin.npz": "ebola",
+        "encoder_ebola__ebola_L12__seed42__quantiles.npz": "ebola",
+        "encoder_ebola_zeroshot__ebola_L12__seed42.json": "ebola",
+        "encoder_ebola__alldev__seed42__ckpt.pt": "ebola",
+        "encoder_ebola_smoke__ebola_L12__seed42.json": "misc",     # dry runs stay out of the record
         "naive__dengue.json": "naive",
         "naive__dengue__persistence__perorigin.npz": "naive",
+        "naive__ebola_L12__support_mean__pernode.npz": "naive",
         "gated+spatial_Contribution.txt": "reports",
         "lodo_run.log": "reports",
         "encoder__influenza_japan__smoke.json": "misc",

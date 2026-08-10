@@ -346,7 +346,7 @@ def _fit_shared_adapter(enc, names, seed, device, epochs=80, lr=1e-3, wd=1e-4, b
 
 
 def _score(enc, ad, b, Z, Mt, A, te, name, seed, model_name, run_meta, va=None, gate_read=False,
-           device=DEVICE, quant_out=None):
+           device=DEVICE, quant_out=None, phase="test"):
     """Forecast test fold (median = point), invert to counts, score through score.py.
 
     `quant_out`: optional dict, FILLED IN PLACE with {h: [N, K, Q]} count-space quantiles over the K
@@ -372,7 +372,7 @@ def _score(enc, ad, b, Z, Mt, A, te, name, seed, model_name, run_meta, va=None, 
                     for qi in range(nQ):
                         quant_out[h][:, k, qi] = invert_scaler(out[:, j, qi:qi + 1], b.scaler)[:, 0]
     recs, pernode, perorigin = score_predictions(model_name, name, seed, pred_by_h, b, te,
-                                                 run_meta=run_meta)
+                                                 phase=phase, run_meta=run_meta)
     gate = gate_spatial_readout(enc, ad, Z, A, Mt, va, device) if (gate_read and va is not None) else None
     return recs, pernode, perorigin, gate
 

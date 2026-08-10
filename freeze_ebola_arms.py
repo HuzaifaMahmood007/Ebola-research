@@ -36,7 +36,9 @@ from to_schema import load_ebola
 
 MANIFEST = pathlib.Path("configs/ebola_arms.json")
 
-from bundles import HORIZONS, W       # never re-declare these; a drift here is a silent wrong gate
+# never re-declare W/HORIZONS here; a drift would be a silent wrong gate. content_sha256 lives in
+# bundles so train/ebola.py can verify a frozen arm without importing this build stack.
+from bundles import HORIZONS, W, content_sha256
 
 # The frozen arms, with every count the decision document quotes stated up front. These are
 # assertions, not printouts: if the loader or the raw file drifts, the arm is not the arm the
@@ -89,18 +91,6 @@ EXPECT_REACHABLE_DISTRICTS = {3: 61, 5: 61, 10: 59, 15: 58}
 EXPECT_SCORED_PAIRS = {3: 757, 5: 766, 10: 765, 15: 642}
 EXPECT_SCORED_DISTRICTS = {3: 57, 5: 57, 10: 59, 15: 58}
 MAX_H = max(HORIZONS)
-
-
-def content_sha256(path: pathlib.Path) -> str:
-    """Canonical digest over the arrays in a .npz, independent of zip framing and mtimes."""
-    z = np.load(path, allow_pickle=True)
-    h = hashlib.sha256()
-    for k in sorted(z.files):
-        a = np.asarray(z[k])
-        h.update(k.encode())
-        h.update(f"{a.dtype.str}{a.shape}".encode())
-        h.update(np.ascontiguousarray(a).tobytes())
-    return h.hexdigest()
 
 
 def _counts(M: np.ndarray, support: np.ndarray, query: np.ndarray) -> dict:
