@@ -391,6 +391,108 @@ above from the raw xlsx and refuses to write if any has moved.
 
 ---
 
+## D17 · The trunk early stop was real, and it cost nothing — measured, not argued
+2026-08-06, `train/lodo.py`, `results/reports/ldo3full_influenza_seed42.log`
+
+**The defect is real.** All 15 LDO3 trunks died on the same branch: each burned *exactly* 12,000
+steps after its best checkpoint, which is `patience=12` x `val_every=1000`. None exhausted its
+budget. `CosineAnnealingLR(T_max=91000)` was therefore scaled to a length early stopping guarantees
+is never reached, so the lr at every selected checkpoint sat between 1.000e-3 and 9.3e-4 — the
+schedule was a no-op and no trunk in that run could be called converged.
+
+**The measurement.** Held-out influenza, seed 42, `--trunk-patience 999 --prefix encoder_ldo3full`,
+91/91 val checks, ~2.8 h. `best=` reached **0.1768 at step 7,000 and never improved through step
+91,000**. The scored records are **bit-identical** to the truncated run on all three flu datasets
+(sha256 over the sorted record values) — necessarily so, since the same seed gives the same
+trajectory, so both runs selected the same checkpoint. The extra 72,000 steps contain nothing better.
+
+Japan h15 stays -43.3%, us-regions h15 stays -34.5%. **The verdict does not move.** D12 now stands
+on a 91-point curve rather than an assumption.
+
+Fix shipped anyway, because the mismatch will bite a longer-training configuration: `trunk_patience`
+threaded through `run_ldo3_fold` (it was silently taking `_fit_trunk`'s default), `--trunk-patience`
+and `--prefix` on the CLI, an argparse guard that **refuses** to run with the stop disabled under the
+default prefix (it would overwrite the artifacts `LDO3_Results.md` and `verify_ldo3_doc.py` read),
+and an `encoder_ldo3full__` route so both runs sit side by side.
+
+**Scope of the claim: one fold, one seed.** The other 14 runs are inferred. Two more folds is ~7 h.
+
+---
+
+## D18 · The single-disease ceiling early-stops too — 25 of 25
+2026-08-08, `diagnostics/epoch_budget_audit.py`, `diagnostics/recover_single_epochs.py`
+
+Every transfer number is a ratio against the single-disease ceiling, so D17 made the ceiling an open
+question: if only the transfer arm stopped early we benchmarked a half-trained model against a
+fully-trained one, and the deficit is partly our own bug.
+
+Training logs survived for only 5 of the 25 runs (covid, inside `overnight.log`); the other 20 were
+trained on Day 13 and that stdout is gone. File mtimes are useless — all 20 JSONs are stamped within
+two seconds of each other on 30 July, from a batch rescore, not from training. So the 20 were re-run
+to recover the counts, through a library call that writes nothing and fingerprints all 954 artifacts
+under `results/` before and after to prove it.
+
+**Result: 25 of 25 early-stopped, 18 to 77 epochs of 80.** Not one used its budget.
+
+Two things follow, and only the first is a clean win:
+
+- **The attack is removed.** Nobody can say we crippled only the transfer side. Same rule, both arms.
+- **The bias direction runs against transfer, not for it.** D17 shows the trunk is at its own
+  optimum. If the ceiling sits *below* its optimum, `ceiling_error` is inflated and the reported
+  deficit **understates** the true gap. The "both handicapped, so the deficits cancel" reading points
+  the wrong way.
+
+**Not "equally handicapped", and not uniform.** The arms stop on different clocks (80 epochs /
+patience 15 epochs vs 91,000 steps / patience 12 checks of 1,000). And the behaviour varies by
+dataset — dengue ran 57-77 of 80, us-regions 18-27 — so the bias is not constant across cells. Both
+belong in the methods section as stated, not as a blanket claim.
+
+**Still open: reproducibility.** The recovery straddled the 7 August restructure — 24 runs measured
+the pre-restructure trainer, and only `us-regions seed 52` measured the current one. That one came
+out **exact** across all 28 cells; the other 24 show worst-cell deltas of 0.7-65.8% concentrated in
+`peak_timing`/`peak_intensity`, discrete indices where a one-week shift reads as a large relative
+change. The script reports only the worst cell across all seven metrics and persists nothing, so
+rmse/mae cannot be separated after the fact. **Re-run under current code with per-metric reporting
+before anyone quotes the ceiling as reproducible.** ~2.5 h.
+
+---
+
+## D19 · Adapter capacity at five seeds: the gain is real, transfer-specific, and lands at h15
+2026-08-08, `diagnostics/capacity_probe.py`, `Reports/Capacity_Probe_5Seed.md`
+
+D15's ladder, promoted from one seed to five. One frozen dengue trunk **per seed**, shared by every
+surface in both arms, so only the adaptation surface varies inside a seed and the trunk varies across
+them. Every figure is a **seed-paired** delta against that seed's own affine control; intervals are
+two-sided 95% t at n=5 (t=2.776), and a cell counts only if its interval excludes zero. 774 min.
+
+| arm | cells | significantly better | significantly worse | best significant |
+|---|---|---|---|---|
+| cross-disease | 36 | **7** | 3 | **+19.8%** |
+| in-domain control | 12 | **0** | 1 | — |
+
+**The shape is the finding, not the headline number.** All 7 gains are at **h15** (us-regions +19.8,
++14.3, +12.2; japan +6.6, +6.4, +6.3; us-states +4.5). All 3 losses are at **japan h3** (-16.6 to
+-22.5). The control gains nothing anywhere. So a richer adaptation surface buys accuracy at long
+horizon and *costs* it at short horizon, and the effect is genuinely transfer-specific — D15's
+alternative (b), general under-sizing, is ruled out by 0 of 12.
+
+**The caveat that must travel with it.** h15 is exactly where the frozen Ebola primary arm has
+**zero adaptation pairs** (D16: 48/38/18/0 at h3/h5/h10/h15). The one horizon this fix helps is the
+one horizon Ebola cannot fit an adapter for. Stated in the same breath or the result oversells.
+
+**It cannot change the Ebola arm on its own.** The support arms were frozen and hashed on 2026-08-07
+and `Ebola_Prereg.md` defines few-shot as the FiLM-plus-head adapter — the affine control here.
+Scoring Ebola against a surface chosen after that freeze would void the pre-registration, which is
+itself a stated contribution. This is a development-fold mechanism result and a case to put to the
+client for re-registration, not a config change.
+
+One defect found and fixed en route: `stage1_fold` called `run_ldo_fold`, which also **writes**
+`encoder_ldo__influenza_*__seed{S}.json`. Sweeping five seeds through it would have silently
+overwritten four fifths of the two-disease LDO table (D1) with numbers from different code. It is now
+trunk-only, under a distinct `dengue2flu-cap` checkpoint family.
+
+---
+
 ## Reversed or superseded
 
 | was | now | why |
@@ -404,3 +506,5 @@ above from the raw xlsx and refuses to write if any has moved.
 | Adapter is ~388 params (4 code/doc sites) | **1,428** (D13) | 388 predates the five-quantile head |
 | Reptile excluded "structurally" (first MAML draft) | excluded for having no support/query meta-objective (D13) | the structural argument described a variant nobody proposes |
 | Ebola support = calendar prefix ≤2014-05-24, 27 cells / 9 districts (D4) | **≤2014-06-28 primary, ≤2014-08-23 secondary** (D16) | client decision; 27 cells gave 0 adaptation pairs past h5 |
+| "Training halted after 1-16% of its budget" (Week-4 stakeholder brief) | halted at **14.3-29.7%**; 1.1-16.5% is where the *kept checkpoint* was selected (D17) | measured from `overnight.log`; substance right, wording wrong, and it went to the client that way |
+| Capacity gain "up to +23.2%, median +2.5%" (1 seed, D15) | **7 of 36 cells clear zero, best +19.8%**, all at h15; control 0 of 12 (D19) | five seeds with seed-paired intervals |

@@ -17,8 +17,11 @@ early-stop branch rather than exhausting its budget.
 Runs with no surviving log are printed as MISSING rather than omitted. A silently short table would
 read as "we checked and they were fine".
 
-  python epoch_budget_audit.py                  # all logs under results/reports
-  python epoch_budget_audit.py --log path.log   # one log
+Run as a MODULE from the repo root; the paths below are relative to it.
+
+  python -m diagnostics.epoch_budget_audit                  # all logs under results/reports
+  python -m diagnostics.epoch_budget_audit --log path.log   # one log
+  python -m diagnostics.epoch_budget_audit --selfcheck      # parser attribution, no logs needed
 """
 from __future__ import annotations
 

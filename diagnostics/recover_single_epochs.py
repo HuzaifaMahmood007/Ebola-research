@@ -26,9 +26,11 @@ single byte of drift aborts the run.
 Epoch lines go to results/reports/single_recovery.log in train_one's own print format, so
 `python epoch_budget_audit.py` picks them up with no changes.
 
-  python recover_single_epochs.py                       # all 20, cheap datasets first, resumable
-  python recover_single_epochs.py --dataset dengue      # one dataset
-  python recover_single_epochs.py --selfcheck           # no GPU needed
+Run as a MODULE from the repo root, or `import bundles` fails and every path below is wrong.
+
+  python -m diagnostics.recover_single_epochs                    # all 20, cheapest first, resumable
+  python -m diagnostics.recover_single_epochs --dataset dengue   # one dataset
+  python -m diagnostics.recover_single_epochs --selfcheck        # no GPU needed
 """
 from __future__ import annotations
 
@@ -80,12 +82,23 @@ def fingerprint(root=RESULTS):
             for p in Path(root).rglob("*") if p.is_file()}
 
 
+DONE_MARK = "[run-complete]"
+
+
 def already_done(ds, seed, log=LOG):
-    """Resume: a (dataset, seed) that already has epoch lines in the log is skipped. A 2 h dengue
-    leg should not restart from zero because the machine hiccuped on seed 4."""
+    """Resume: skip a (dataset, seed) that COMPLETED, proven by an explicit end-of-run marker.
+
+    It used to test for `f"{ds} seed{seed} ep"` -- the presence of any epoch line at all. That is
+    wrong in the dangerous direction and it cost a real data point: session 2 of 4 died two epochs
+    into influenza_us-regions seed 52, and every later session read those two lines as "done" and
+    skipped it, so the run silently finished 24 of 25 while reporting success. A partial run must
+    look unfinished. Being wrong the other way only costs time.
+
+    Log entries written before 2026-08-07 carry no marker and will therefore be re-run. That is the
+    safe direction: without a marker we cannot tell a finished run from a truncated one."""
     if not log.exists():
         return False
-    return f"{ds} seed{seed} ep" in log.read_text(encoding="utf-8", errors="replace")
+    return f"{DONE_MARK} {ds} seed{seed}" in log.read_text(encoding="utf-8", errors="replace")
 
 
 def compare_to_published(ds, seed, recs):
@@ -154,6 +167,8 @@ def main():
         t0 = time.time()
         recs, _, _, _ = train_one(ds, seed, epochs=a.epochs, verbose=True)
         rows.append((ds, seed, compare_to_published(ds, seed, recs), time.time() - t0))
+        # Written only after train_one RETURNS, so a killed run leaves no marker and is retried.
+        print(f"{DONE_MARK} {ds} seed{seed}")
 
     print("\n" + "=" * 96)
     print(f"{'dataset':<24} {'seed':>5} | {'worst repro delta':>18} | {'at':>14} | {'cells':>5} | mins")

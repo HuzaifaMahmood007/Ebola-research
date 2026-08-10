@@ -2,9 +2,10 @@
 or by the representation?
 
 WHY THIS IS THE HIGHEST-VALUE RUN AVAILABLE. The whole meta-learning proposal rests on an untested
-premise. Under the corrected leave-one-disease-out fold, cross-disease transfer is negative in 12 of
-16 RMSE cells. The ANIL argument is that shaping the trunk to be "repairable by a small support-set
-update" fixes this. But ANIL does not add capacity to the adaptation surface -- it changes what the
+premise. Under the three-disease leave-one-disease-out fold at five seeds, cross-disease transfer is
+significantly negative in 25 of 36 cells and zero-shot fails in all 36 (the "12 of 16" this note
+originally quoted was the earlier two-disease fold). The ANIL argument is that shaping the trunk to
+be "repairable by a small support-set update" fixes this. But ANIL does not add capacity to the adaptation surface -- it changes what the
 trunk is optimised for. So there are two very different worlds:
 
   * ADAPTER-BOUND. A richer adaptation surface recovers some of the deficit. Then the surface was the
@@ -19,16 +20,28 @@ The comparison that carries the argument is `affine` vs the larger surfaces ON T
 Everything else -- fitting protocol, data, folds, scoring -- is held fixed by construction, because
 we reuse `train.lodo._fit_shared_adapter` and pass only a different `adapter_factory`.
 
-IT ALSO CLOSES A KNOWN GAP FOR FREE. The dengue->flu direction is missing seed 42 (4 seeds on disk,
-5 everywhere else). Stage 1 below runs exactly that fold, so the same night produces the fifth seed,
-the first trunk checkpoint the project has ever saved, and the first archived quantile predictions
-(G4 has been blocked on those). None of it is wasted under any scope decision.
+WHAT THIS RUN CAN AND CANNOT DECIDE, AFTER THE 2026-08-07 EBOLA FREEZE. `freeze_ebola_arms.py` has
+built and hashed both support arms, and `progress/decisions/Ebola_Prereg.md` defines few-shot as "the
+same trunk with the FiLM-plus-head adapter fit on that arm's support cells only". That names the
+1,428-param affine surface -- the `affine (current)` control below. So a win for a larger surface here
+is a DEVELOPMENT-FOLD MECHANISM RESULT and may not be swapped into the Ebola path without the client
+re-registering; scoring Ebola against a surface chosen after the freeze would void the pre-registration
+that is itself a stated contribution. This is the arrangement the meta-learning note asked for:
+capacity selected on development folds only, never with sight of Ebola.
 
-    conda run -n ebola-train python capacity_probe.py                  # full run
-    conda run -n ebola-train python capacity_probe.py --selfcheck      # wiring only, seconds
-    conda run -n ebola-train python capacity_probe.py --skip-fold      # reuse an existing checkpoint
+It is also, separately, MORE worth measuring than when it was written. The adapter was sized against
+"27 labelled examples". The frozen primary arm (L12) gives 59 support cells over 18 districts, with
+48/38/18/0 adaptation pairs at h3/h5/h10/h15. There is materially more support data to fit a surface
+against than the 1,428-param figure was chosen for.
 
-Reads in the morning: `Reports/Capacity_Probe_Result.md`.
+    conda run -n ebola-train python -m diagnostics.capacity_probe --selfcheck            # seconds
+    conda run -n ebola-train python -m diagnostics.capacity_probe --seeds 42 52 62 72 82 # ~15 h
+    conda run -n ebola-train python -m diagnostics.capacity_probe --skip-fold            # reuse trunks
+
+Run as a MODULE from the repo root. `python diagnostics/capacity_probe.py` puts diagnostics/ on
+sys.path instead of the root and dies on `import bundles`.
+
+Reads afterwards: `Reports/Capacity_Probe_5Seed.md` (multi-seed) or `Capacity_Probe_Result.md` (one).
 """
 from __future__ import annotations
 
@@ -486,6 +499,12 @@ def report_multiseed(cross_by_seed, control_by_seed, seeds):
     A("\nStill one direction (dengue → influenza) and one fold structure. The trunks use the shipped "
       "early-stopping settings, unchanged, so these five seeds remain comparable to the "
       "2026-07-31 single-seed run rather than differing in two things at once.\n")
+    A("\n**This cannot change the Ebola arm on its own.** The support arms were frozen and hashed on "
+      "2026-08-07, and `progress/decisions/Ebola_Prereg.md` defines few-shot as the FiLM-plus-head "
+      "adapter — the affine control above. Scoring Ebola against a surface chosen after that freeze "
+      "would void the pre-registration, which is itself a stated methodological contribution. A win "
+      "here is a development-fold mechanism result and a case to put to the client for "
+      "re-registration, not a config change.\n")
 
     OUT_MD5.parent.mkdir(parents=True, exist_ok=True)
     OUT_MD5.write_text("\n".join(L) + "\n", encoding="utf-8")
