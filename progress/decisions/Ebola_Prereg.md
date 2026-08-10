@@ -189,7 +189,9 @@ even though it weakens the headline from few-shot to moderate-data transfer.
 62, 72, 82) and a bootstrap confidence interval over districts and time origins. Any cell inside the
 noise floor is written "within noise" and is given no direction. No averaging across diseases. The
 comparison reference is stated on every delta table. h10 and h15 under the primary arm are labelled
-zero-shot in every table, never few-shot.
+zero-shot in every table, never few-shot. Interval metrics (WIS, CRPS, coverage, PIT) are reported
+for **both** arms from their archived quantiles, and if a calibration layer is applied it appears
+beside the raw intervals rather than in place of them (amendment A7, §5b).
 
 **What would count as a positive result.** Few-shot beating persistence at h3 or h5 on the primary
 arm, with the confidence interval clearing zero, at the frozen 5 seeds. Nothing weaker than that gets
@@ -220,6 +222,33 @@ predate the first Ebola score. Nothing here may be added once scoring has run.
 | A4 | 2026-08-07 | E4 corrected: it is the h15 head block that is bit-identical, not the h15 forecasts | `gamma`/`beta` are shared across horizons, so h3/h5/h10 gradient moves h15 predictions. The original claim was simply false and would have been reported as a bug on first contact with the data. |
 | A6 | 2026-08-07 | E4 corrected a second time: the h15 head block is a **uniform shrink** of its initialisation, not bit-identical | The gate fired on the dry run at a drift of 1.0e-06. Cause is AdamW's *decoupled* weight decay, which shrinks a parameter whose gradient is exactly zero; Adam's own term is exactly zero there, so the block rescales and does not rotate. Proportionality across the 100 elements is a strictly sharper test than equality: it survives the optimiser detail, which carries no Ebola information, and is destroyed by any label-driven gradient. Tolerance is relative and sized for float32 accumulation over ~160 decay steps (predicted ~1e-6, measured 1.4e-6, gate at 1e-5). |
 | A5 | 2026-08-07 | Trunk defined as all-five-dev-bundle joint, `trunk_patience=30`; floors fixed as persistence and support_mean | No all-dev trunk existed: every LDO3 checkpoint holds a disease out and the joint runs predate COVID and saved no checkpoints. Patience 30 against LDO3's 12 because the cosine schedule is scaled to a budget early stopping never reaches, and this run is scored once. Seasonal-naive is dropped because T=52 puts the t-52 lag out of panel at every scored origin. |
+| A7 | 2026-08-10 | **Both arms archive count-space quantiles**, and a conformal calibration layer is permitted POST HOC on those archives under the four constraints in §5b | The zero-shot arm wrote records, per-node and per-origin but **not** quantiles (`train/ebola.py`), exactly the omission `LDO3_Results.md` §5 records costing the development-fold zero-shot arm its whole UQ block. Under §5.1 each arm is scored once, so a quantile array not written here can never be written and WIS, CRPS, coverage, PIT and any calibration layer would be permanently unavailable for zero-shot. Registered now because §5a forbids additions once scoring has run, and G4 (calibrated uncertainty) is a REQUIRED deliverable whose method is not yet finalised. |
+
+## 5b. Uncertainty calibration (amendment A7)
+
+G4 requires calibrated uncertainty and the method is not settled at the time of writing. Rather than
+either freeze a variant we have not finished evaluating or leave the case study permanently unable to
+carry one, the *mechanism* is registered here and the *variant* is left open under four constraints.
+All four are binding, and the variant must be written into the amendment log **before** it is run
+against these archives.
+
+1. **Post hoc only.** Any calibration layer operates on the archived count-space quantiles
+   (`*__quantiles.npz`, both arms, all seeds). It does not alter a point forecast, the adapter fit,
+   the epoch chosen by A2, or any of E1–E5. Every number those expectations concern is fixed by the
+   single scored run and is not revisited.
+2. **Reported alongside, never instead.** Raw quantile-head intervals and their empirical coverage
+   are reported for every cell whether or not a calibrated version exists. A calibrated interval is
+   an additional column, not a replacement, so the uncalibrated result stays visible.
+3. **Never selected on Ebola.** The variant and any hyper-parameter (for adaptive conformal
+   inference, the step size) are chosen on development folds only and frozen before touching these
+   archives. The intended variant is online ACI, because Ebola carries no calibration split by
+   design (`PROJECT.md`), but that is a statement of intent here, not a registration.
+4. **Truth consumption is declared.** An online method observes each origin's outcome after that
+   origin has been forecast, in natural time order, and never before. If the method used consumes
+   query truth in any other way, that is stated explicitly in the amendment log and in the paper.
+
+This registration is what makes A7's archiving decision meaningful: without it the quantiles would be
+written and then unusable, because §5a forbids adding a protocol after scoring has run.
 
 ## 6. Reproducing this
 

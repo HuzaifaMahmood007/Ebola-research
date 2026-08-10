@@ -125,8 +125,13 @@ def _demo():
         "encoder_ebola__ebola_L20__seed42__perorigin.npz": "ebola",
         "encoder_ebola__ebola_L12__seed42__quantiles.npz": "ebola",
         "encoder_ebola_zeroshot__ebola_L12__seed42.json": "ebola",
+        # the zero-shot arm archives quantiles too (prereg A7). It routes on the zeroshot prefix, and
+        # this case is here because the arm is scored ONCE: a quantile archive that silently landed in
+        # misc/ could not be moved by re-running anything.
+        "encoder_ebola_zeroshot__ebola_L12__seed42__quantiles.npz": "ebola",
         "encoder_ebola__alldev__seed42__ckpt.pt": "ebola",
         "encoder_ebola_smoke__ebola_L12__seed42.json": "misc",     # dry runs stay out of the record
+        "encoder_ebola_smoke_zeroshot__ebola_L12__seed42__quantiles.npz": "misc",
         "naive__dengue.json": "naive",
         "naive__dengue__persistence__perorigin.npz": "naive",
         "naive__ebola_L12__support_mean__pernode.npz": "naive",

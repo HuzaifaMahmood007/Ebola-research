@@ -322,11 +322,20 @@ def run_arm(arm_name, arm, enc, zero_ad, seed, device, prefix, verbose=True):
     zmeta = dict(meta, training_regime="ebola_zeroshot")
 
     # --- zero-shot: the borrowed mean adapter, no Ebola label read -------------------------------
+    # zquant is NOT optional. The protocol scores each arm exactly once (section 5.1), so a quantile
+    # array not written here can never be written: WIS, CRPS, coverage, PIT and any conformal wrapper
+    # would be permanently unavailable for the zero-shot arm, and the only remedy would be a re-score
+    # the pre-registration forbids. LDO3_Results.md section 5 records this exact omission costing the
+    # zero-shot arm its entire UQ block on the development folds; it is not repeated on the run that
+    # cannot be redone. Writing it costs a few hundred KB.
+    zquant = {}
     zrecs, zpn, zpo, _ = _score(enc, zero_ad, b, Z, Mt, A, te, arm_name, seed,
-                                f"{prefix}_zeroshot", zmeta, phase="query", device=device)
+                                f"{prefix}_zeroshot", zmeta, phase="query", device=device,
+                                quant_out=zquant)
     write_records(zrecs, f"{prefix}_zeroshot__{arm_name}__seed{seed}.json")
     write_per_node(zpn, f"{prefix}_zeroshot__{arm_name}__seed{seed}__pernode.npz")
     write_per_origin(zpo, f"{prefix}_zeroshot__{arm_name}__seed{seed}__perorigin.npz")
+    write_quantiles(zquant, te, f"{prefix}_zeroshot__{arm_name}__seed{seed}__quantiles.npz")
 
     # --- few-shot: LODO-CV picks the epoch, then refit on all support ----------------------------
     feats = _precompute_features(enc, Z, A, Mt, so, device)
