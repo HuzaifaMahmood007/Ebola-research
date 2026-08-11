@@ -8,7 +8,12 @@ had to close before the Ebola run started (§6) — now closed and proven end to
 `run_tonight.py` ran `train.ebola --all` from 20:09:53 on 2026-08-10 through the three influenza
 ceilings and dengue, ending 12:59:27 on 2026-08-11 with zero failures. Both Ebola arms are scored,
 all 25 ceiling quantile archives exist, and the conformal wrapper is fitted, frozen and validated
-(§5.1). **No result from that run has been read yet**, and nothing in this document reports one.
+(§5.1). **The results are now read and are in §10** - point forecast, Ebola calibration, and the
+ceiling reference. They are first reads with no significance testing attached; §10.4 states plainly
+what is still missing before any of it is reportable.
+
+**The headline is an inversion nobody scoped for: zero-shot beats few-shot on 7 of 8 cells**, and
+the same ordering shows up independently in the interval calibration (§10.1, §10.2).
 
 Companion artifacts: `train/anil.py` (rebuilt after review, unrun), `conformal.py` (built,
 self-checked, fitted and frozen, `--apply` landed), `run_tonight.py` (the overnight queue),
@@ -642,10 +647,133 @@ last cell, took 143.0 min, in line with the 135.9-169.6 min per-seed figures §4
 archives, so our calibration can finally be compared against the single-disease ceiling on all five
 rather than on covid alone. The dengue 12.7 h block was the price and it has been paid.
 
-**What is still not in this document: any number the run produced.** §1-§8 are method, verification
-and code state, written before the outputs existed. Nothing here reports a scored Ebola RMSE, a
-calibrated Ebola interval, or a ceiling-referenced coverage comparison. Those are the next write-up
-and they need, in order: `python -m conformal --apply` on `encoder_ebola`, the ceiling-referenced
-comparison the 25 archives now permit, and a read of the two Ebola arms against their pre-registered
-expectations. **None of it has been looked at yet** - the queue finishing is not the same as the
-results being read, and this document should not be taken to imply otherwise.
+The numbers those artifacts contain are now read and are in **§10**.
+
+---
+
+## 10. First read of the results
+
+**These are first reads, not a write-up.** Every number below came off disk through a reader built
+today, aggregated over the 5 seeds, and none of it has been interrogated. Nothing here has a
+significance test attached, and §10.4 lists what is still missing before any of it can be reported.
+
+Both arms carry their pre-registered identity in every record: L12 is 59 support cells to
+2014-06-28 under prereg `08d657dc...`, L20 is 113 cells to 2014-08-23 under `e9b9ac0b...`. The
+reader refuses to print if the 20 files disagree on that, and they do not. Scored once, as registered.
+
+### 10.1 Point forecast, G3 (RMSE, `country_macro`, mean +- sd over 5 seeds)
+
+Read with `ebola_report.py`. Skill columns are against the deterministic floors in
+`results/naive/naive__ebola_L{12,20}.json`, and a cell whose seed spread straddles the floor is
+printed as "within noise" rather than as a number.
+
+| arm | regime | h3 | h5 | h10 | h15 |
+|---|---|---|---|---|---|
+| L12 | few-shot | 38.20 +- 0.49 | 37.98 +- 0.59 | 41.19 +- 4.33 | 28.52 +- 0.48 |
+| L12 | **zero-shot** | **36.55 +- 0.46** | **37.59 +- 0.18** | **38.87 +- 0.14** | **28.28 +- 0.11** |
+| L20 | few-shot | 47.03 +- 15.24 | 38.92 +- 0.74 | 51.58 +- 13.25 | 40.85 +- 10.70 |
+| L20 | **zero-shot** | **35.24 +- 0.51** | **36.69 +- 0.22** | **39.37 +- 0.39** | **29.54 +- 0.31** |
+
+Skill over persistence, zero-shot arms: L12 +15.8 / +15.2 / +15.5 / +44.2%, L20 +18.8 / +17.3 /
++14.4 / +41.7%. Over `support_mean` the margins are much thinner, +4.5 to +15.3%. The few-shot arms
+beat persistence at h3 and h5 on L12 (+12.0, +14.3%) and read **within noise** on three of four L20
+cells and on L12 h10.
+
+**The headline finding is an inversion: zero-shot beats few-shot on 7 of 8 cells.** Fitting the
+adapter on the support set makes the forecast worse, and the effect is largest where there is most
+support data. L20 has 113 support cells against L12's 59, and its few-shot arm is the worst and by
+far the least stable thing in the table: sd 15.24, 13.25 and 10.70 against zero-shot's 0.22 to 0.51.
+Three of its four cells only read "within noise" because that variance is so large, which is a
+statement about instability, not about being close to the floor.
+
+This is consistent with the transfer result already settled on the development folds, where
+cross-disease transfer is negative and adapter fitting does not repair it. It is now the result of
+the pre-registered case study rather than a development-fold observation, and it is the paper's
+headline whether or not it is the one that was wanted.
+
+### 10.2 Calibration on Ebola, G4 (`conformal --apply`, empirical 90% coverage)
+
+| arm | regime | h | raw cov | +ACI cov | raw w | ACI w |
+|---|---|---|---|---|---|---|
+| L12 | few-shot | 3 | 0.491 +- 0.062 | 0.862 +- 0.028 | 24.8 | 45.0 |
+| L12 | few-shot | 5 | 0.437 +- 0.045 | 0.849 +- 0.020 | 22.2 | 48.0 |
+| L12 | few-shot | 10 | 0.584 +- 0.105 | 0.941 +- 0.025 | 44.5 | 73.5 |
+| L12 | few-shot | 15 | **0.275 +- 0.103** | **0.811 +- 0.016** | 6.5 | 32.7 |
+| L12 | zero-shot | 3 | 0.460 +- 0.025 | 0.864 +- 0.008 | 20.5 | 36.5 |
+| L12 | zero-shot | 5 | 0.421 +- 0.020 | 0.870 +- 0.008 | 20.0 | 35.9 |
+| L12 | zero-shot | 10 | 0.396 +- 0.028 | 0.904 +- 0.009 | 22.1 | 44.1 |
+| L12 | zero-shot | 15 | 0.363 +- 0.021 | 0.920 +- 0.007 | 23.1 | 43.1 |
+| L20 | few-shot | 3 | 0.701 +- 0.112 | 0.943 +- 0.040 | 107.9 | 132.3 |
+| L20 | few-shot | 5 | 0.677 +- 0.141 | 0.903 +- 0.029 | 98.1 | 138.5 |
+| L20 | few-shot | 10 | 0.692 +- 0.161 | 0.977 +- 0.015 | 139.4 | 203.3 |
+| L20 | few-shot | 15 | 0.670 +- 0.211 | 0.976 +- 0.012 | 108.2 | 171.9 |
+| L20 | zero-shot | 3 | 0.541 +- 0.042 | 0.925 +- 0.011 | 36.9 | 48.4 |
+| L20 | zero-shot | 5 | 0.480 +- 0.019 | 0.918 +- 0.006 | 38.9 | 52.6 |
+| L20 | zero-shot | 10 | 0.413 +- 0.024 | 0.959 +- 0.005 | 50.5 | 77.6 |
+| L20 | zero-shot | 15 | 0.375 +- 0.019 | 0.963 +- 0.005 | 55.9 | 91.3 |
+
+Mean absolute deviation from 0.90: **L12 0.039, L20 0.045, few-shot 0.052, zero-shot 0.032.**
+
+- **Raw Ebola coverage is far worse than any development panel**, 0.275 to 0.701 against the dev
+  panels' 0.492 to 0.918. Domain shift onto a genuinely unseen disease costs more than any dev fold
+  showed. That is the justification for the wrapper, measured on the target rather than argued.
+- **The wrapper closes most of it but not all, and misses in opposite directions per arm.** L12
+  under-covers, L20 over-covers. Neither reaches the 0.012 the dev panels did. **This was pre-stated
+  in §5.1**: the dev panels have 47-630 origins and Ebola has 18, so the dev ACI rows were labelled
+  optimistic before these numbers existed. The prediction held.
+- **Every deviation sits inside the published T = 18 bound of 0.167.** The worst cell, L12 few-shot
+  h15 at 0.811, is 0.089 off nominal. The bound is binding rather than decorative, and it was not
+  breached.
+- **L12 few-shot h15 is the worst cell and it is exactly the one D19 flagged.** Raw 0.275, calibrated
+  0.811, the only cell still clearly under nominal. That is the horizon where the primary arm has
+  **zero adaptation pairs** (D16: 48/38/18/0), which the E4 guard confirmed at runtime in §6.1. The
+  adapter is fitted on nothing there and calibration cannot fully rescue it.
+- **Zero-shot is better calibrated and far more stable**, 0.032 against 0.052, with seed sd of
+  0.005-0.011 against few-shot's 0.012-0.040. Point accuracy (§10.1) and interval calibration now say
+  the same thing about few-shot adaptation, by two independent routes.
+- **`inf%` is 0.0 on all 80 rows.** The infinite-interval mode that hit dengue under LOPO does not
+  occur here.
+
+### 10.3 The single-disease ceiling is itself badly calibrated (`conformal --reference`)
+
+The comparison the 12.7 h dengue block was paid for. The ceiling is a model trained on the panel's
+own disease, so it carries no domain shift at all. It is **not** wrapped: calibrating the reference
+would make it a different reference. Both arms are asserted to share the same origins per
+(panel, seed), and none mismatched.
+
+| | coverage range | mean abs dev from 0.90 |
+|---|---|---|
+| single-disease ceiling, raw | 0.531 .. 0.934 | **0.158** |
+| calibrated transfer | 0.887 .. 0.927 | **0.012** |
+
+Dengue degrades 0.756 to 0.624 across horizons, covid reaches 0.531 at h15, and only
+influenza_us-regions sits near nominal (0.904-0.934). **A model with zero domain shift is
+mis-calibrated by 0.158 on average.**
+
+**This reframes the calibration story, and the reframing is the finding.** G4 was scoped as fixing
+the transfer arm's under-coverage. It is actually that the five-quantile head is uncalibrated in
+general and domain shift was never its main cause. Read the direction carefully: calibrated transfer
+landing closer to nominal than the ceiling does **not** mean transfer forecasts better. It means the
+ceiling's intervals are also wrong, and the ceiling is a weaker reference than the word implies.
+
+Width is the cost and it is large: covid h10 is 25,394 for the ceiling against 78,288 calibrated
+(~3x). The dengue h3 figure (52.0 against 944.7) is inflated by the infinite-interval origins
+recorded in §5.1 and **should not be quoted as a clean comparison**.
+
+### 10.4 What is still missing before any of this is reportable
+
+- **No significance testing.** The zero-shot versus few-shot inversion in §10.1 is a comparison of
+  means with no seed-paired interval attached. The arms share a trunk per seed, so a paired test is
+  both available and the correct one. Until it is run, "zero-shot beats few-shot" is an observation.
+- **No bootstrap CIs.** `__pernode.npz` and `__perorigin.npz` were written for all 20 records and
+  neither has been touched. Those are the material for the per-node and over-origin intervals the
+  standing rules ask for.
+- **WIS, CRPS and PIT are not computed for Ebola.** They are implemented and self-checked in
+  `score.py`, and the quantile archives now exist, but `--apply` reports coverage and width only. G4
+  names the full metric set, so this is a genuine remaining gap rather than a nicety.
+- **The L20 few-shot instability is unexplained.** sd of 15.24 on a mean of 47.03 is not a result, it
+  is a symptom. More support data producing a worse and wildly less stable fit wants a cause before
+  anyone writes a sentence about what few-shot adaptation does.
+- **`--apply` prints per-seed rows and no aggregate.** The §10.2 table was produced with a throwaway
+  script. Copied straight from the tool, the output would breach the project's own dispersion rule,
+  so the aggregation belongs in the tool.
