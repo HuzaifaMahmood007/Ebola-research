@@ -86,7 +86,8 @@ GAMMA = 0.05                    # ACI step size, FROZEN (senior dev: 0.02-0.05; 
                                 # published worst-case bound was quoted at)
 EPS = 1e-6                      # guards a zero-width interval; a zero-width MISS then scores huge,
                                 # which is the correct reading, not a clipped one
-QUANT_LDO3 = "results/lodo/encoder_ldo3__{ds}__seed{s}__quantiles.npz"
+QUANT_LDO3 = "results/lodo/encoder_ldo3__{ds}__seed{s}__quantiles.npz"      # transfer arm
+QUANT_SINGLE = "results/single/encoder__{ds}__seed{s}__quantiles.npz"      # single-disease ceiling
 OUT_CONFIG = "results/misc/conformal_config.json"
 
 
@@ -179,9 +180,9 @@ def aci_worst_case(T, alpha=ALPHA, gamma=GAMMA):
 # --------------------------------------------------------------------------- #
 # Reading the archived quantiles.
 # --------------------------------------------------------------------------- #
-def load_panel(ds, seed, bundle):
+def load_panel(ds, seed, bundle, family=QUANT_LDO3):
     """{h: [(y, lo, hi), ...]} in origin order, observed test cells only, count space."""
-    path = QUANT_LDO3.format(ds=ds, s=seed)
+    path = family.format(ds=ds, s=seed)
     if not os.path.exists(path):
         return None
     z = np.load(path)
@@ -201,16 +202,16 @@ def load_panel(ds, seed, bundle):
     return out
 
 
-def load_all(verbose=True):
-    """{(panel, seed): {h: stream}} for every archived LDO3 panel."""
+def load_all(verbose=True, family=QUANT_LDO3):
+    """{(panel, seed): {h: stream}} for every archived panel of one family."""
     from bundles import load
     data = {}
     for ds in PANELS:
         b = load(ds)
         for s in SEEDS:
-            p = load_panel(ds, s, b)
+            p = load_panel(ds, s, b, family)
             if p is None:
-                print(f"  MISSING {QUANT_LDO3.format(ds=ds, s=s)}")
+                print(f"  MISSING {family.format(ds=ds, s=s)}")
                 continue
             data[(ds, s)] = p
         if verbose:
@@ -218,6 +219,17 @@ def load_all(verbose=True):
             print(f"  loaded {ds:24s} {n} origin-steps over "
                   f"{sum(1 for d, _ in data if d == ds)} seeds")
     return data
+
+
+def raw_coverage(stream):
+    """(coverage, mean width, n) for an uncalibrated interval stream. The ceiling needs no wrapper:
+    it is the reference, not a thing we are correcting."""
+    cov = tot = 0
+    w = 0.0
+    for y, lo, hi in stream:
+        cov += int(((y >= lo) & (y <= hi)).sum()); tot += int(y.size)
+        w += float(np.sum(hi - lo))
+    return (cov / tot if tot else float("nan")), (w / tot if tot else float("nan")), tot
 
 
 def pooled_scores(data, panels, seeds=SEEDS):
@@ -483,6 +495,80 @@ def _selfcheck():
     print("ok  panel balance: unweighted follows the 100x panel, weighted reaches the small one")
 
 
+def _reference(a):
+    """Our calibrated TRANSFER intervals against the single-disease CEILING's own intervals.
+
+    This is the comparison the ceiling re-train was paid for. The ceiling is a model trained on the
+    panel's own disease, so its raw coverage is the best calibration a frozen quantile head reaches
+    when there is no domain shift at all. The question is how close cross-disease transfer plus the
+    conformal wrapper gets to it, and what that costs in width.
+
+    The ceiling is NOT wrapped. Calibrating the reference would make it a different reference.
+
+    Both families are scored on the same bundle's test origins, so the cells are identical -- which
+    is asserted per (panel, seed) rather than assumed, because a mismatch would silently compare two
+    different populations and still print a plausible table.
+    """
+    from bundles import load
+
+    print("loading TRANSFER arm (LDO3 adapted)")
+    tdata = load_all(family=QUANT_LDO3)
+    if not tdata:
+        sys.exit("no LDO3 quantile archives found")
+    _, trows = evaluate(tdata, PANELS, PANELS, ALPHA, a.gamma)
+
+    print("\nloading CEILING arm (single-disease)")
+    rows, missing, mismatched = [], [], []
+    for ds in PANELS:
+        b = load(ds)
+        for h in HORIZONS:
+            covs, widths, ns = [], [], []
+            for s in SEEDS:
+                p = load_panel(ds, s, b, QUANT_SINGLE)
+                if p is None:
+                    missing.append(QUANT_SINGLE.format(ds=ds, s=s)); continue
+                # same origins as the transfer arm, or the two columns are not comparable
+                a_o = np.load(QUANT_SINGLE.format(ds=ds, s=s))["origins"]
+                b_o = np.load(QUANT_LDO3.format(ds=ds, s=s))["origins"]
+                if not np.array_equal(a_o, b_o):
+                    mismatched.append(f"{ds} seed{s}"); continue
+                c, w, n = raw_coverage(p[h])
+                covs.append(c); widths.append(w); ns.append(n)
+            if covs:
+                rows.append(dict(ds=ds, h=h, cov=float(np.mean(covs)), sd=float(np.std(covs, ddof=1)),
+                                 w=float(np.mean(widths)), n=ns[0], seeds=len(covs)))
+        print(f"  {ds:24s} {sum(1 for r in rows if r['ds'] == ds)}/{len(HORIZONS)} horizons")
+
+    if missing:
+        print(f"\n{len(missing)} ceiling archive(s) missing: {missing[:3]}")
+    if mismatched:
+        print(f"\nORIGIN MISMATCH, excluded: {mismatched}\n  the two arms scored different cells; "
+              f"the comparison would be meaningless on these.")
+    if not rows:
+        sys.exit("no ceiling archives to compare against")
+
+    print(f"\n=== CEILING vs CALIBRATED TRANSFER, 90% intervals, {len(SEEDS)} seeds ===")
+    print(f"{'panel':22s} {'h':>3s} | {'ceiling':>14s} {'ceil w':>10s} | "
+          f"{'transf raw':>10s} {'+lam+ACI':>9s} {'cal w':>10s} | {'gap to ceil':>11s}")
+    for r in rows:
+        t = trows.get((r["ds"], r["h"]))
+        if t is None:
+            continue
+        gap = t["aci_cov"] - r["cov"]
+        print(f"{r['ds']:22s} {r['h']:3d} | {r['cov']:8.3f}±{r['sd']:5.3f} {r['w']:10.1f} | "
+              f"{t['raw_cov']:10.3f} {t['aci_cov']:9.3f} {t['aci_w']:10.1f} | {gap:+11.3f}")
+
+    ceil = [r["cov"] for r in rows]
+    cal = [trows[(r["ds"], r["h"])]["aci_cov"] for r in rows if (r["ds"], r["h"]) in trows]
+    print(f"\n  ceiling  coverage range {min(ceil):.3f} .. {max(ceil):.3f}   "
+          f"mean abs dev from 0.90 {np.mean([abs(x - 0.90) for x in ceil]):.3f}")
+    print(f"  calibrated transfer      {min(cal):.3f} .. {max(cal):.3f}   "
+          f"mean abs dev from 0.90 {np.mean([abs(x - 0.90) for x in cal]):.3f}")
+    print("\n  READ THIS AS: the ceiling is the reference, NOT a target to beat. Calibrated transfer\n"
+          "  landing closer to 0.90 than the ceiling does means the ceiling is itself miscalibrated,\n"
+          "  which is a finding about the quantile head, not evidence that transfer forecasts better.")
+
+
 def _apply(a):
     """Apply the frozen wrapper to the Ebola archives. Post-hoc, read-only, writes nothing.
 
@@ -539,6 +625,8 @@ def main():
     ap.add_argument("--gamma", type=float, default=GAMMA)
     ap.add_argument("--apply", action="store_true",
                     help="apply the FROZEN wrapper to the Ebola archives (post-hoc, read-only)")
+    ap.add_argument("--reference", action="store_true",
+                    help="calibrated transfer vs the single-disease ceiling's own intervals")
     ap.add_argument("--prefix", default="encoder_ebola",
                     help="archive family to apply to; encoder_ebola_smoke for a dry run")
     ap.add_argument("--arms", nargs="+", default=["ebola_L12", "ebola_L20"])
@@ -549,8 +637,10 @@ def main():
         _selfcheck(); return
     if a.apply:
         _apply(a); return
+    if a.reference:
+        _reference(a); return
     if not a.fit:
-        ap.error("nothing to do: pass --selfcheck, --fit or --apply")
+        ap.error("nothing to do: pass --selfcheck, --fit, --apply or --reference")
 
     print("loading archived LDO3 quantiles (adapted arm, 5 panels x 5 seeds)")
     data = load_all()
