@@ -547,44 +547,89 @@ that does not need it should run **beside** the Ebola job, not behind it.
 - ~~Launch the overnight queue~~ — **running.** `run_tonight.py` started `train.ebola --all` at
   20:09:53, then 15 influenza ceiling cells, then 5 dengue.
 
-**Running now, in order:**
+- ~~Commit the working tree~~ — **done**, 7 commits on `local`, tree clean, nothing pushed (§9).
+
+**Running now, unattended, in this order (§9):**
 
 1. `train.ebola --all`, both arms, all 5 seeds. `get_trunk` caches per seed and both arms share it,
    so a kill costs one trunk rather than five.
-
-**CPU lane, no contention:**
-
-3. Gate figure (work order 8e) - the `*__gate.npz` files are already on disk and the client has
-   already asked for it twice.
-4. G5 explainability scoping note - a document, not code.
-
-**GPU, after Ebola:**
-
-5. Three influenza ceilings with quantile archiving and checkpoint saving, ~35 min - four of five
-   reference panels for the price of one coffee.
-6. Dengue ceiling, 12.7 h, scheduled separately. It is 96% of that job's cost.
+2. Three influenza ceilings with quantile archiving and checkpoint saving, ~35 min, 15 cells.
+3. Dengue ceiling, 12.7 h, 5 cells. Last because it is 96% of that job's cost and therefore the
+   thing worth losing if the night runs out.
 
 **After the Ebola run exists:**
 
-7. `python -m conformal --apply` on `encoder_ebola`, once step 2 has regenerated the config. This is
-   the Ebola half of G4 and it is now a single command.
+4. `python -m conformal --apply` on `encoder_ebola`. The Ebola half of G4, now a single command, and
+   the config it reads is already fitted and frozen.
+
+**CPU lane, no contention with any of the above:**
+
+5. Gate figure (work order 8e) - the `*__gate.npz` files are already on disk and the client has
+   already asked for it twice.
+6. G5 explainability scoping note - a document, not code.
 
 **GPU, last:**
 
-8. ANIL, both arms, once items 4-7 of §1.3 are settled - item 4 is a client reply, not a code change.
+7. ANIL, both arms, once items 4-7 of §1.3 are settled - item 4 is a client reply, not a code change.
 
 **Backlog, priced, not scheduled:**
 
-9. LDO3 zero-shot quantiles: 15 trunk retrains at ~2.8 h each (§4.1). Code is already in place so the
+8. LDO3 zero-shot quantiles: 15 trunk retrains at ~2.8 h each (§4.1). Code is already in place so the
    next run of that family archives them inline; this item is only about the existing 15.
-10. HeatGNN rescore (§7), parked on instruction.
+9. HeatGNN rescore (§7), parked on instruction.
 
 **Record-keeping, any time:**
 
-11. Correct the dengue coverage label and D18's ~2.5 h estimate in `decisions.md`.
-12. Send the client the meta-learning scope answer. `MAML_Decision.md` §5 put options A-D to them on
+10. Correct the dengue coverage label and D18's ~2.5 h estimate in `decisions.md`. Both corrections
+    are stated in §3 and §4 of this document but have not yet been carried into the decision log.
+11. Send the client the meta-learning scope answer. `MAML_Decision.md` §5 put options A-D to them on
     2026-07-31 and no reply is recorded. Proceeding quietly with the reduced version is the specific
-    thing `Review Doc.md` asked us not to do, and that holds whether ANIL runs or not.
-13. Commit the working tree: `conformal.py`, `train/anil.py` (parked), `train/ebola.py`,
-    `train/lodo.py`, `results_paths.py`, `Ebola_Prereg.md`, `run_queue.py`, the three diagnostics
-    files and D17-D19.
+    thing `Review Doc.md` asked us not to do, and that holds whether ANIL runs or not. Tell them
+    option D got cheaper (§1.3).
+
+---
+
+## 9. What shipped, and the queue that is running it
+
+### 9.1 `run_tonight.py`
+
+One GPU, so the GPU work is strictly serial and the order encodes what is worth losing. Ebola first
+because it is the REQUIRED case study and the only irreversible step; the three influenza ceilings
+next at ~35 min for four of five reference panels; dengue last because it alone is 12.7 h. The
+conformal fit needs no GPU, so the script launches it detached rather than queued behind Ebola - the
+only genuine parallelism available tonight, and it was already running separately when the queue was
+started, hence `--skip-conformal`.
+
+Two pieces of logic in it can silently do the wrong thing, so both are guarded and both are pinned by
+a self-check with a control that must fail the other way.
+
+- **The one-way door.** It refuses to start the Ebola step if any `encoder_ebola__*__seed*.json`
+  already sits in `results/ebola/`. `Ebola_Prereg.md` §5.1 allows exactly one scored run, and a second
+  would overwrite the first with nobody seeing it happen. `--force-ebola` is the only way past. The
+  control case asserts the `encoder_ebola_smoke` dry-run prefix does **not** trip it.
+- **Resume keys on the artifact, not a flag.** A ceiling cell counts as done only when its
+  `__quantiles.npz` exists, because that archive is the entire point of the re-train. The control
+  asserts that a `.json` and a `__pernode.npz` do **not** mark a cell finished: those already exist
+  for all four panels, so keying on them would report the whole job complete and archive nothing.
+
+### 9.2 The seven commits
+
+Branch `local`, tree clean, **nothing pushed**.
+
+| commit | what |
+|---|---|
+| `e9464ed` | Ebola zero-shot quantile archiving, prereg A7 + §5b |
+| `38dc480` | LDO3 zero-shot quantiles, checkpoint keeps the borrowed adapter |
+| `8d60649` | conformal wrapper: cross-disease lambda_h + online ACI, fitted and frozen |
+| `8b1461f` | the overnight queue |
+| `2faa75e` | ANIL built, self-checked, parked |
+| `550fd05` | D17-D19 and the three diagnostics they rest on |
+| `e956b71` | this document |
+
+### 9.3 What is NOT in this document yet
+
+**The result of the run.** The queue started at 20:09:53 and nothing in §1-§8 reports a scored Ebola
+number, a ceiling quantile archive, or a calibrated Ebola interval, because none of them exist yet.
+Everything recorded here is method, verification and code state. When the queue finishes, the outputs
+to write up are: the scored Ebola records for both arms, `conformal --apply` on `encoder_ebola`, and
+the four ceiling panels finally having quantiles so the G4 reference comparison can be made at all.
