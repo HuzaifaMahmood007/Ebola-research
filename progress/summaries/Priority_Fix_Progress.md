@@ -4,11 +4,11 @@
 against the artifacts on disk, the state of `conformal.py`, and the pre-registration hardening that
 had to close before the Ebola run started (§6) — now closed and proven end to end (§6.1).
 
-**State at time of writing:** every code gate is cleared and the overnight queue is running.
-`run_tonight.py` started `train.ebola --all` at **20:09:53 on 2026-08-10** and will follow it with
-the three influenza ceilings and then dengue. The conformal wrapper is fitted, frozen and validated
-(§5.1). Nothing in the queue is waiting on a line of code. What remains is compute, one client reply,
-and the record-keeping in §8.
+**State:** every code gate is cleared and **the overnight queue has finished clean** (§9.3).
+`run_tonight.py` ran `train.ebola --all` from 20:09:53 on 2026-08-10 through the three influenza
+ceilings and dengue, ending 12:59:27 on 2026-08-11 with zero failures. Both Ebola arms are scored,
+all 25 ceiling quantile archives exist, and the conformal wrapper is fitted, frozen and validated
+(§5.1). **No result from that run has been read yet**, and nothing in this document reports one.
 
 Companion artifacts: `train/anil.py` (rebuilt after review, unrun), `conformal.py` (built,
 self-checked, fitted and frozen, `--apply` landed), `run_tonight.py` (the overnight queue),
@@ -626,10 +626,26 @@ Branch `local`, tree clean, **nothing pushed**.
 | `550fd05` | D17-D19 and the three diagnostics they rest on |
 | `e956b71` | this document |
 
-### 9.3 What is NOT in this document yet
+### 9.3 The queue finished clean, and what is still NOT in this document
 
-**The result of the run.** The queue started at 20:09:53 and nothing in §1-§8 reports a scored Ebola
-number, a ceiling quantile archive, or a calibrated Ebola interval, because none of them exist yet.
-Everything recorded here is method, verification and code state. When the queue finishes, the outputs
-to write up are: the scored Ebola records for both arms, `conformal --apply` on `encoder_ebola`, and
-the four ceiling panels finally having quantiles so the G4 reference comparison can be made at all.
+**Finished 2026-08-11 12:59:27, zero non-zero exit codes across every step.** Dengue seed 82, the
+last cell, took 143.0 min, in line with the 135.9-169.6 min per-seed figures §4 priced it from.
+
+| artifact | state |
+|---|---|
+| Ebola scored records | **20 JSON** (2 arms x 5 seeds x few-shot/zero-shot) |
+| Ebola quantile archives | **20**, so the zero-shot arm has its UQ material. §6 held. |
+| single-disease ceiling quantiles | **25 of 25** (5 panels x 5 seeds). Was 5, covid only. |
+| ceiling cells still missing quantiles | **0** |
+
+**The G4 reference comparison is unblocked.** The four panels §4 was written about now have quantile
+archives, so our calibration can finally be compared against the single-disease ceiling on all five
+rather than on covid alone. The dengue 12.7 h block was the price and it has been paid.
+
+**What is still not in this document: any number the run produced.** §1-§8 are method, verification
+and code state, written before the outputs existed. Nothing here reports a scored Ebola RMSE, a
+calibrated Ebola interval, or a ceiling-referenced coverage comparison. Those are the next write-up
+and they need, in order: `python -m conformal --apply` on `encoder_ebola`, the ceiling-referenced
+comparison the 25 archives now permit, and a read of the two Ebola arms against their pre-registered
+expectations. **None of it has been looked at yet** - the queue finishing is not the same as the
+results being read, and this document should not be taken to imply otherwise.
