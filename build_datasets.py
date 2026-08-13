@@ -3,7 +3,7 @@
     conda run -n ebola python build_datasets.py [--check-deterministic]
 
     1. verify every raw input by checksum, including the 16 GADM shapefiles;
-    2. build the 5 bundles: dengue, influenza (japan / us-regions / us-states), ebola;
+    2. build the 6 bundles: dengue, influenza (japan / us-regions / us-states), ebola, covid;
     3. run the leakage suite and its negative controls;
     4. write one .npz per disease to data/processed/, plus the config and a pip freeze.
 
@@ -33,12 +33,18 @@ OUT = pathlib.Path("data/processed")
 DENGUE_CSV = RAW / "OpenDengue_Best_Spacial.csv"
 EBOLA_XLSX = RAW / "data-ebola-public.xlsx"
 FLU = RAW / "influenza"
+COVID_CSV = RAW / "covid" / "us-states.csv"
+COVID_MATRIX = RAW / "covid" / "covid_state_weekly.txt"   # derived from COVID_CSV, not a source
 
-# The influenza six are pinned by FLU/SHA256SUMS.txt; these two have no manifest of their own.
-# Both hashes are of the file AS PUBLISHED, so a reader can hash their own download and compare.
+# The influenza six are pinned by FLU/SHA256SUMS.txt; these three have no manifest of their own.
+# Every hash is of the file AS PUBLISHED, so a reader can hash their own download and compare.
+# COVID_CSV is fetched rather than placed by hand -- `python loaders/covid_load.py --refresh`
+# downloads it -- but it is verified here on exactly the same terms as the rest. A source that is
+# downloaded is more exposed to drift, not less, so exempting it would have been backwards.
 RAW_SHA256 = {
     DENGUE_CSV: "0f59280ed6795d8a0f7e87f900397db46cab6f2740106718c25c05699b9ababc",
     EBOLA_XLSX: "2d679a31a66f912da93fe0bd73da82a3c36b0d1143b1fcc298bc921d5f28f9f2",
+    COVID_CSV:  "0b202f6ac8bad66b70b9e344c07155e3f1ce9338f86192af072b56ce448dfc43",
 }
 
 INFLUENZA = {
@@ -52,6 +58,8 @@ CONFIG = dict(
     dengue=dict(level="auto", t_res_filter="Week", min_weeks=52,
                 min_nodes_per_country=3, ratios=[0.5, 0.2, 0.3]),
     influenza=dict(ratios=[0.5, 0.2, 0.3], adjacency="shipped(diag_zeroed)"),
+    covid=dict(ratios=[0.5, 0.2, 0.3], adjacency="shared with influenza_us-states (identical graph)",
+               excluded_nodes=["Florida", "District of Columbia"], npi_confounded=True),
     ebola=dict(few_shot_support_cutoff="2014-05-24", countries="EBOLA_CORE_COUNTRIES"),
     shapefiles="GADM 4.1",
     rolling_origins=dict(n_origins=5, horizon=1),
@@ -119,6 +127,17 @@ def build_all() -> dict[str, ts.DiseaseTensors]:
     b["ebola"] = load_ebola(
         str(EBOLA_XLSX), countries=ts.EBOLA_CORE_COUNTRIES,
         few_shot_support_cutoff=CONFIG["ebola"]["few_shot_support_cutoff"], gadm_dir=GADM)
+
+    # COVID reuses influenza_us-states' SHIPPED graph and 49-node ordering bit for bit, so the two
+    # bundles sit on an IDENTICAL A_geo with IDENTICAL covariates. Holding one out therefore varies
+    # the DISEASE and nothing else; every other cross-disease cell in this study confounds disease
+    # with graph, geography and node count. The equality is asserted, not assumed -- see the gate
+    # below and loaders/covid_load.py.
+    b["covid:us-states"] = ts.load_covid(
+        str(COVID_CSV), str(FLU / INFLUENZA["us-states"]["adj"]), str(COVID_MATRIX),
+        ratios=tuple(CONFIG["covid"]["ratios"]), gadm_dir=GADM)
+    assert np.array_equal(b["covid:us-states"].A_geo, b["influenza:us-states"].A_geo), \
+        "COVID and influenza_us-states must share a bit-identical graph -- the point of the bundle"
 
     return b
 

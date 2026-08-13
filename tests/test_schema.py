@@ -32,13 +32,24 @@ def test_cumulative_to_incidence_clips_and_masks():
 
     inc, msk = ts.cumulative_to_weekly_incidence(df, "_cd", "date", "value")
     series = inc.iloc[0]
-    assert series.min() >= 0, "negative 'new cases' must be clipped"
+    assert series.min() >= 0, "incidence must never be negative"
     # The first reported week yields NO incidence: with no C_-1 the increment is not
     # identifiable, and assigning C_0 (=100) would fabricate the whole back-log.
-    assert series.sum() == 22 + 0 + 12, "week-0 back-log must NOT enter incidence"
-    assert msk.iloc[0].sum() == 3, "3 usable increments from 4 reports (week 0 masked)"
+    #
+    # The downward step 122 -> 118 is a data-entry dropout, not a fall in a cumulative count, so the
+    # transform differences the RUNNING MAXIMUM: the 118 is lifted back to 122 and the next report
+    # scores 130 - 122 = 8. This assertion previously expected 22 + 0 + 12 = 34, which is what
+    # CLIPPING gives -- it zeroes the fall and then counts the recovery to 122 a second time. That is
+    # the C1 defect that fabricated 8,786 cases across 34 districts, 35.8% of the Ebola target, and
+    # the test went on asserting it after the transform was fixed.
+    assert list(series[series > 0]) == [22.0, 8.0], f"expected 22 then 8, got {list(series)}"
+    # THE property, and the one that would have caught C1 on its own: increments cannot invent mass.
+    # Their sum is exactly C_last - C_first, whatever the reporting artefacts in between.
+    assert series.sum() == 130 - 100, \
+        f"mass not conserved: {series.sum()} != C_last - C_first = 30"
+    assert msk.iloc[0].sum() == 2, "2 usable increments from 4 reports (week 0 and the dropout)"
     assert msk.iloc[0].sum() < len(series), "gap weeks must be masked (M=0)"
-    print("ok  cumulative->incidence: clip + mask + no fabricated week-0 onset")
+    print("ok  cumulative->incidence: running max, mass conserved, no fabricated week-0 onset")
 
 
 def test_scaler_is_leakage_safe():
@@ -246,10 +257,12 @@ def test_ebola_reads_the_real_column_layout_and_targets_only_headline_Cases():
     with tempfile.TemporaryDirectory() as d:
         dt = ts.load_ebola(_ebola_csv(d), countries=ts.EBOLA_CORE_COUNTRIES)
     i = dt.meta["node_ids"].index("guinea|gueckedou")
-    # gueckedou cumulative 100,110,130,125,160,175 -> increments 10,20,0(clip),35,15
-    # week 0 is masked (back-log), so observed incidence sums to 80.
+    # gueckedou cumulative 100,110,130,125,160,175. Week 0 is masked (unidentifiable back-log) and
+    # the 125 dropout is masked, so observed incidence is 10+20+30+15 = 75 = C_last - C_first.
+    # Summing New/Confirmed/Suspected into the target would push this above 75; so would the old
+    # clipping transform, which reported 80.
     raw = ts.invert_scaler(dt.y, dt.meta["scaler"])[i]
-    assert round(float((raw * dt.M[i]).sum())) == 80, \
+    assert round(float((raw * dt.M[i]).sum())) == 175 - 100, \
         "target must be diff(Cases) only — New/Confirmed/Suspected must not leak in"
     assert "deaths_norm" in dt.meta["feature_names"], "Deaths is the extended channel"
     print("ok  ebola: real Category/Value/Date layout; only headline Cases is the target")
@@ -299,12 +312,18 @@ def test_ebola_first_observed_week_is_masked_not_a_backlog():
         dt = ts.load_ebola(_ebola_csv(d), countries=ts.EBOLA_CORE_COUNTRIES)
     assert dt.meta["ebola_first_week_masked"] is True, "must be recorded in meta"
     i = dt.meta["node_ids"].index("guinea|gueckedou")
-    # cumulative 100,110,130,125,160,175 -> real increments 10,20,0(clip),35,15
+    # cumulative 100,110,130,125,160,175. The 125 is a data-entry dropout, not a fall in a
+    # cumulative count, so the running-maximum transform (C1) lifts it back to 130 and MASKS that
+    # week rather than scoring it as an observed zero. Increments: 10, 20, [masked], 30, 15.
+    # These figures were 5 / 80 / 35 while the transform still CLIPPED, which zeroed the fall and
+    # then counted the recovery to 130 again -- 5 cases out of 80 fabricated, in miniature exactly
+    # the defect C1 removed from the production file.
     obs = ts.invert_scaler(dt.y, dt.meta["scaler"])[i][dt.M[i] == 1]
-    assert int(dt.M[i].sum()) == 5, "6 reports yield 5 usable increments"
-    assert round(float(obs.sum())) == 80, "week-0 back-log (100) must not enter incidence"
-    assert round(float(obs.max())) == 35, "and must not appear as an observed value"
-    print("ok  ebola: first observed week masked — no fabricated onset back-log")
+    assert int(dt.M[i].sum()) == 4, "6 reports, minus the unidentifiable week 0 and the dropout"
+    assert round(float(obs.sum())) == 175 - 100, \
+        f"mass not conserved: {round(float(obs.sum()))} != C_last - C_first = 75"
+    assert round(float(obs.max())) == 30, "the recovery week is 160-130, not 160-125"
+    print("ok  ebola: first observed week masked, dropout masked, mass conserved")
 
 
 def test_ebola_support_is_real_increments_not_the_backlog():
@@ -521,7 +540,7 @@ def test_per_country_split_gives_every_country_train_and_is_chronological():
     obs = np.zeros((5, T), np.uint8)
     obs[0, 0:10] = 1    # a|n1 early
     obs[1, 0:10] = 1    # a|n2 early
-    obs[2, 8:10] = 1    # a|n3 late-within-A (exercises per-node fallback)
+    obs[2, 8:10] = 1    # a|n3 late-within-A: its cells fall in country A's TEST window
     obs[3, 40:60] = 1   # b|n1 late (would starve under a single global split)
     obs[4, 40:60] = 1   # b|n2 late
     sp = ts.per_country_chronological_split(node_ids, obs, ratios=(0.5, 0.2, 0.3))
@@ -533,19 +552,37 @@ def test_per_country_split_gives_every_country_train_and_is_chronological():
     assert tr[[0, 1, 2]].sum() > 0 and tr[[3, 4]].sum() > 0, "country b must have train"
     g_train_end, _ = ts.chronological_split(T)          # global cut ~ week 30
     assert obs[3, :g_train_end].sum() == 0, "b would have ZERO train under a global split"
-    # per-node fallback: a|n3's obs all lie in country A's test window, yet it trains
-    assert tr[2].sum() >= 1, "per-node fallback: late node still gets a train cell"
+    # C3: the per-node fallback was REMOVED. a|n3's cells all lie inside country A's test window,
+    # so it gets NO train cell -- it takes A's boundary like every other A node. This assertion used
+    # to require the opposite (tr[2].sum() >= 1). Re-cutting a late node on its own timeline placed
+    # its training cells inside its neighbours' test period, and because a graph network aggregates
+    # over neighbours that pulled test-period data into the training pass: 475 dengue nodes, 31% of
+    # observed cells, in columns that mixed training and test.
+    assert tr[2].sum() == 0, "C3: a node whose cells sit in its country's test window must not train"
+    # and the invariant that replaced the fallback: within a country, a week belongs to ONE phase.
+    for c in ("a", "b"):
+        rows = [k for k, n in enumerate(node_ids) if n.startswith(f"{c}|")]
+        for t in range(T):
+            phases = sum(int(m[rows, t].any()) for m in (tr, va, te))
+            assert phases <= 1, f"country {c} week {t} is in {phases} phases -- C3 violated"
     for i in range(5):
         w_tr, w_va, w_te = np.where(tr[i])[0], np.where(va[i])[0], np.where(te[i])[0]
         if len(w_tr) and len(w_va): assert w_tr.max() < w_va.min()
         if len(w_va) and len(w_te): assert w_va.max() < w_te.min()
         if len(w_tr) and len(w_te): assert w_tr.max() < w_te.min()
-    print("ok  per-country split: every country trains, chronological, per-node fallback")
+    print("ok  per-country split: every country trains, chronological, one phase per country-week")
 
 
-def test_per_country_split_single_obs_node_still_trains():
-    # A node with a single observed week (near-empty, kept under country-level prune)
-    # must still get >=1 train cell, else its per-node scaler is undefined (mean0/std1).
+def test_per_country_split_single_obs_node_takes_its_country_boundary():
+    # A node with a single observed week, late in its country's span. Under C3 it does NOT get a
+    # train cell of its own: it takes country c's boundary like every other c node, and its one
+    # observation lands in whichever phase that boundary puts it.
+    #
+    # This test previously required the opposite, on the grounds that a node with no train cell has
+    # an undefined per-node scaler (mean 0 / std 1). That reasoning is obsolete: D1 replaced the
+    # blanket guard with a COUNTRY-POOLED fallback computed from training cells only, so such a node
+    # is normalised on its country's statistics rather than handed a fabricated train cell. Buying a
+    # defined scaler by re-cutting the node on its own timeline is exactly the leak C3 removed.
     T = 20
     ids = ["c|n1", "c|n2", "c|solo"]
     obs = np.zeros((3, T), np.uint8)
@@ -553,9 +590,11 @@ def test_per_country_split_single_obs_node_still_trains():
     obs[1, 0:10] = 1
     obs[2, 18] = 1                     # one observation, late in the country's span
     sp = ts.per_country_chronological_split(ids, obs)
-    assert sp["train_mask"][2].sum() >= 1, "single-obs node must still get a train cell"
-    assert sp["train_mask"][2, 18] == 1, "its only observed week becomes its train cell"
-    print("ok  per-country split: single-observation node still gets a train cell")
+    tr, va, te = sp["train_mask"], sp["val_mask"], sp["test_mask"]
+    assert tr[2].sum() == 0, "C3: a late solo node must not be re-cut on its own timeline"
+    assert (tr | va | te)[2, 18] == 1, "its observation is still assigned to exactly one phase"
+    assert tr[[0, 1]].sum() > 0, "the country itself must still have training data"
+    print("ok  per-country split: single-observation node takes its country's boundary")
 
 
 def test_per_country_split_scaler_is_leakage_safe():

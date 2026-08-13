@@ -1596,7 +1596,7 @@ Recorded so that a figure quoted from an earlier draft can be identified as supe
 | Dengue case definitions: Peru ×220, DR ×48, Mexico ×13, Bolivia ×11, Panama ×7 | **Raw-file artefacts.** Measured per node on the extracted data: Peru and DR are single-definition (no change); the real steps are Mexico 2.8× and Bolivia 1.6× on 41 nodes (§1.10) |
 | The Ebola support set is not calendar-causal (85% of query precedes last support) | **Resolved.** Calendar-prefix support, cutoff 2014-05-24; now gated (§3.6) |
 | The 76 mis-firing zero-variance nodes ship un-normalised | **Resolved.** Country-pooled fallback; 0 nodes now un-normalised (§1.7) |
-| The suite has 83 gates / five negative controls | 86 gates, six negative controls (§4.3) |
+| The suite has 83 gates / five negative controls | 86 gates, six negative controls (§4.3); **101 gates** since COVID-19 joined the build and came under the same per-dataset gates (§6.1) |
 
 ### 5.4 Decisions on the properties that affect interpretation
 
@@ -1661,18 +1661,22 @@ development disease. §5.5 records the original exclusion; this section records 
 |---|---|
 | Source | New York Times `covid-19-data`, `us-states.csv` |
 | Obtained | Fetched at build time by `loaders/covid_load.py` from the repository's `master` branch |
-| Version identifier | The recorded sha256 of the downloaded file, stored as `raw_sha256` in the bundle metadata |
-| Verified? | **Recorded, not enforced** |
+| Version identifier | sha256, pinned in `build_datasets.RAW_SHA256` and stamped into the bundle as `raw_sha256` |
+| Verified? | **Yes — a mismatch halts the build**, on the same terms as every other source |
 
-This is the **only source in the study whose checksum is not a build gate.** The other five halt the
-build on a mismatch; this one hashes what it received and records the digest, so a released bundle
-can always be traced to exact bytes after the fact, but a changed upstream file would build without
-complaint. The practical risk is low — the NYT repository was archived in March 2023 and accepts no
-further commits — but the asymmetry is real and pinning it is a one-line change.
+The source is fetched rather than placed by hand, which is *why* it is pinned: `NYT_URL` reads the
+repository's `master` branch, a reference that can move by construction. The NYT repository was
+archived in March 2023 and accepts no further commits, so in practice the file is frozen, but
+"archived upstream" is a reason to expect stability rather than a substitute for checking it.
 
-The bundle is also built **outside `build_datasets.py`**, so it does not pass through the leakage
-suite or `--check-deterministic`. `covid_load.py` asserts everything it prints, which is a weaker
-guarantee than the 83 gates and their negative controls.
+**This was not always so.** Until 2026-08-13 the loader hashed what it downloaded and recorded the
+digest without comparing it to anything, and the bundle was built outside `build_datasets.py`, so it
+passed through neither the leakage suite nor `--check-deterministic`. Both gaps are closed: the
+checksum is enforced, and folding the build into `build_datasets.py` brought COVID-19 under the same
+fifteen per-dataset gates the other panels pass, taking the suite from 86 gates to **101, all
+passing**. The refactor was verified by rebuilding the bundle and comparing it to the released one:
+`X`, `y`, `M`, `A_geo`, `C`, `raw`, the node identifiers and the metadata are **bit-identical**, so no
+COVID number in the study moves.
 
 ### 6.2 What was built
 

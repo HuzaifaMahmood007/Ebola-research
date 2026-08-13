@@ -1565,3 +1565,83 @@ def _finalise(raw, mask, node_ids, dates, ratios, disease, adm_level, t_res,
     return DiseaseTensors(X=X, A_geo=A_geo, C=np.zeros((N, 3), np.float32),
                           M=mask, y=y, meta=meta,
                           raw=raw.astype(np.float32)).check()
+
+
+# --------------------------------------------------------------------------- #
+# COVID-19 (New York Times, US states)
+# --------------------------------------------------------------------------- #
+# Same shape as the three loaders above: this builds the tensors, build_datasets.py writes them,
+# and loaders/covid_load.py is the driver that fetches the source and asserts what it prints.
+#
+# The graph is NOT built here. COVID reuses ColaGNN's shipped `state-adj.txt` and the same 49-state
+# ordering as influenza_us-states, bit for bit, so the two bundles sit on an IDENTICAL graph with
+# IDENTICAL covariates. That is the whole reason the bundle exists: holding one out varies the
+# DISEASE and nothing else, where every other cross-disease comparison in this study confounds
+# disease with graph, geography and node count. It is also why the tensor build is load_influenza
+# with different arguments rather than a parallel implementation -- a second code path would let the
+# two panels drift apart, which would destroy the property.
+NYT_LAST_COMPLETE_WEEK = "2023-03-18"    # NYT froze on 2023-03-23, a Thursday: the final W-SAT bucket
+                                         # is partial and is dropped rather than scored short.
+COVID_EXCLUDED_NODES = ["Florida", "District of Columbia"]
+
+
+def covid_weekly_matrix(csv_path: str, last_complete_week: str = NYT_LAST_COMPLETE_WEEK):
+    """NYT daily cumulative -> [T, 49] weekly incidence in ColaGNN's exact column order."""
+    df = pd.read_csv(csv_path, parse_dates=["date"], usecols=["date", "state", "cases"])
+    missing = [s for s in US_STATES_49 if s not in set(df["state"].unique())]
+    assert not missing, f"NYT is missing states from the 49-node set: {missing}"
+
+    piv = (df[df["state"].isin(US_STATES_49)]
+           .pivot_table(index="date", columns="state", values="cases", aggfunc="last")
+           .reindex(columns=US_STATES_49))                     # exact node order, not alphabetical luck
+    assert list(piv.columns) == US_STATES_49, "column order drifted from US_STATES_49"
+
+    # Daily grid: forward-fill the cumulative (a missing day is "no new report", not zero cases),
+    # then fill the LEADING gap with 0 -- before a state's first case its cumulative genuinely is 0.
+    piv = piv.reindex(pd.date_range(piv.index.min(), piv.index.max(), freq="D")).ffill().fillna(0.0)
+
+    wk = piv.resample("W-SAT").last()                          # last cumulative in each MMWR week
+    wk = wk[wk.index <= pd.Timestamp(last_complete_week)]
+    env = wk.cummax()                                          # monotone envelope, as for Ebola
+    inc = env.diff().iloc[1:]                                  # first week's increment not identifiable
+    inc = inc[inc.sum(axis=1) > 0]                             # drop the all-zero pre-outbreak head
+
+    # Mass conservation, checked against the SOURCE column rather than against the transform:
+    # increments must sum to env[last] - env[first_kept_week - 1], exactly.
+    ref = env.loc[inc.index[0]:].iloc[-1] - env.loc[:inc.index[0]].iloc[-2]
+    got = inc.sum(axis=0)
+    assert np.allclose(got.to_numpy(), ref.to_numpy(), rtol=0, atol=1e-6), \
+        f"mass not preserved; worst state {(got - ref).abs().idxmax()}"
+    assert (inc.to_numpy() >= 0).all(), "negative incidence survived the cummax envelope"
+    return inc
+
+
+def load_covid(csv_path: str, adj_path: str, matrix_out: str, dataset: str = "covid_us-states",
+               ratios=(0.5, 0.2, 0.3), gadm_dir: Optional[str] = None,
+               last_complete_week: str = NYT_LAST_COMPLETE_WEEK) -> "DiseaseTensors":
+    """Build the COVID-19 US-states bundle from the NYT cumulative series.
+
+    Differencing the running MAXIMUM is not a stylistic choice: NYT revises cumulative counts
+    downward on occasion, and differencing the raw series would release those corrections back as
+    fresh incidence -- the exact defect that fabricated 35.8% of the Ebola target (see the audit
+    note). Unlike Ebola nothing is masked, because the absence of a row before a state's first case
+    is a true zero rather than a missing observation.
+
+    `dataset` names the NODES (`covid_us-states_0` ...), so it takes the underscore form even though
+    build_datasets keys the bundle as `covid:us-states` for its filename map. Changing it silently
+    renames every node id and breaks the disjointness gate against influenza."""
+    inc = covid_weekly_matrix(csv_path, last_complete_week)
+    start = inc.index[0]
+    assert start.dayofweek == 5, f"calendar anchor {start.date()} is not a Saturday (W-SAT)"
+    Path(matrix_out).parent.mkdir(parents=True, exist_ok=True)
+    np.savetxt(matrix_out, inc.to_numpy(), fmt="%.0f", delimiter=",")
+
+    dt = load_influenza(str(matrix_out), str(adj_path), dataset=dataset,
+                        start_date=str(start.date()), ratios=tuple(ratios), gadm_dir=gadm_dir,
+                        disease="covid:us-states", covariates_as="us-states")
+    dt.meta["source"] = ("New York Times covid-19-data (us-states.csv, archived 2023-03-23); "
+                         "graph reused from ColaGNN (CIKM 2020) state-adj.txt")
+    dt.meta["raw_sha256"] = _sha256(csv_path)
+    dt.meta["excluded_nodes"] = list(COVID_EXCLUDED_NODES)
+    dt.meta["npi_confounded"] = True
+    return dt
