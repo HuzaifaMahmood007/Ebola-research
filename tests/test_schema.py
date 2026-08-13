@@ -4,7 +4,7 @@ test_schema.py — correctness + shape tests for to_schema.py.
 Uses tiny synthetic fixtures that mirror the *real* raw layouts
 (OpenDengue 16-col, HDX Ebola long/cumulative, ColaGNN [T,N] matrix),
 so the invariants that would silently ruin the paper are pinned:
-  - Ebola cumulative -> weekly incidence (diff + negative-correction clip + mask)
+  - Ebola cumulative -> weekly incidence (running-maximum envelope + mask; mass-conserving)
   - leakage-safe scaler (val/test never touch the fit)
   - seasonality phase, inverse-transform round-trip, and all shape contracts.
 

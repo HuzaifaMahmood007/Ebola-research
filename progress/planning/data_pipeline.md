@@ -317,11 +317,11 @@ exclusion lists. Every removal is a decision that somebody wrote down.
 |---|---|
 | `to_schema.py` | The schema, the three loaders, the graph builders, the splits, and the rolling-origin scaffold. |
 | `build_datasets.py` | The build: verify, construct, gate on leakage, write. |
-| `tests/test_leakage.py` | The 83 leakage and invariant gates, with negative controls. |
+| `tests/test_leakage.py` | The 101 leakage and invariant gates, with negative controls. |
 | `tests/test_schema.py` | Unit tests for the schema. No geospatial dependencies. |
 | `fetch_gadm.py` | Retrieves and verifies the sixteen shapefiles against a checksum manifest. |
 | `dengue_aliases.py` | The dengue alias maps and declared exclusions. |
 | `loaders/dengue_load.py`, `loaders/influenza_load.py`, `loaders/ebola_load.py` | Per-disease drivers. Everything they report, they assert. |
-| `loaders/covid_load.py` | The COVID-19 driver, and the only one that both **fetches** its source and **writes** its bundle, so it is a build step in its own right rather than a driver `build_datasets.py` calls. |
+| `loaders/covid_load.py` | The COVID-19 driver. Like the others it asserts everything it reports and writes nothing; unlike the others it also **fetches** its source (`--refresh`), because that source arrives by download rather than by hand. |
 | `ebola_audit.py` | The Ebola signal-confirmation audit. Read-only; escalates on any drift from the recorded figures. |
 | `japan_nodes.py` | Recovers the Japanese prefecture ordering, writing `japan_node_map.csv`. |

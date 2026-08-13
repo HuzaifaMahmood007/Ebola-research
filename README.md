@@ -141,6 +141,8 @@ gated in `tests/test_encoder_invariants.py`:
 ## Key documents
 
 - [PROJECT.md](PROJECT.md) — the current source of truth (thesis, status, plan).
+- [REPRODUCIBILITY.md](REPRODUCIBILITY.md) — how to reproduce every number from a clean machine, and
+  what cannot be reproduced from this repository alone. Current where this README is stale.
 - [progress/planning/encoder_architecture_plan.md](progress/planning/encoder_architecture_plan.md) — the frozen encoder design.
 - [progress/planning/Phase3_Week3_Developer_Execution_Guide.md](progress/planning/Phase3_Week3_Developer_Execution_Guide.md) — the day-by-day Week-3 schedule.
 - [progress/planning/data_audit.md](progress/planning/data_audit.md) — the authoritative data-methods record (86 gates, every alteration declared).
