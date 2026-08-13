@@ -20,6 +20,7 @@ what it is.
 3. Ebola (OCHA ROWCA compilation)
 4. Harmonisation and leakage
 5. Summary of decisions
+6. COVID-19 (New York Times) — added after Phase 2 closed
 
 ---
 
@@ -819,8 +820,10 @@ to the calendar attached to them — and the values are meaningless without it. 
 Section 2.3.
 
 *Not done, although it could have been:* no node was dropped, no series smoothed, and no gap imputed
-(there are none). No dataset was concatenated with another, no COVID-19 series was admitted, and no
-mobility graph was attached.
+(there are none). No dataset was concatenated with another, no COVID-19 series was admitted **into the
+influenza bundles**, and no mobility graph was attached. The separate COVID-19 bundle added later
+reuses this section's node set and adjacency but is its own dataset, never merged into these three
+(§6).
 
 ### 2.8 Static covariates and mobility
 
@@ -1636,6 +1639,86 @@ coded guarantees, not open decisions.
 The monthly dengue history was **not** interpolated to a weekly cadence. The three influenza benchmarks
 were **not** concatenated. The shipped influenza edges were **not** supplemented, so isolated nodes
 remain isolated. For influenza, no node was dropped, no series smoothed and no gap imputed. No COVID-19
-series was admitted. For Ebola, the *new cases* series was not used as the target — it is instead
+series was admitted **in Phase 2** — that decision was later reversed at the client's request when COVID-19 rejoined the development set as a third disease, and the bundle is audited in **§6**. For Ebola, the *new cases* series was not used as the target — it is instead
 **adopted as a cross-check** (§3.3) — the case sub-series were not summed into it, and the four
 zero-incidence districts were not dropped.
+
+
+---
+
+## 6. COVID-19 — New York Times, US states
+
+**Numbered §6 rather than inserted in disease order on purpose:** `PROJECT.md` and the Phase-2
+progress record cite `data_audit.md §4.6`, `§3.1`, `§2.8` and `§1.6` by number, and renumbering to
+put COVID-19 third would silently break every one of them.
+
+This bundle was added after Phase 2 closed, when the client asked for COVID-19 back as a third
+development disease. §5.5 records the original exclusion; this section records what was built.
+
+### 6.1 Source and provenance
+
+| | |
+|---|---|
+| Source | New York Times `covid-19-data`, `us-states.csv` |
+| Obtained | Fetched at build time by `loaders/covid_load.py` from the repository's `master` branch |
+| Version identifier | The recorded sha256 of the downloaded file, stored as `raw_sha256` in the bundle metadata |
+| Verified? | **Recorded, not enforced** |
+
+This is the **only source in the study whose checksum is not a build gate.** The other five halt the
+build on a mismatch; this one hashes what it received and records the digest, so a released bundle
+can always be traced to exact bytes after the fact, but a changed upstream file would build without
+complaint. The practical risk is low — the NYT repository was archived in March 2023 and accepts no
+further commits — but the asymmetry is real and pinning it is a one-line change.
+
+The bundle is also built **outside `build_datasets.py`**, so it does not pass through the leakage
+suite or `--check-deterministic`. `covid_load.py` asserts everything it prints, which is a weaker
+guarantee than the 83 gates and their negative controls.
+
+### 6.2 What was built
+
+49 nodes x 164 weeks = 8,036 cells, **100% observed**. The node set, ordering and adjacency are
+ColaGNN's `state-adj.txt` reused verbatim, so COVID-19 and `influenza_us-states` sit on a
+bit-identical graph with bit-identical covariates. That is the entire reason for the bundle: it
+varies the disease and nothing else, where every other cross-disease comparison in this study
+confounds disease with graph, geography and node count.
+
+Three costs travel with that choice and must travel with any number derived from it:
+
+- **Florida and DC are excluded.** ILINet does not report Florida, so ColaGNN dropped it; Florida is
+  roughly 6.5% of the US population and had a large, distinctively-timed burden. A 50th node would
+  fork the adjacency and forfeit the identical-graph property that is the point.
+- **The adjacency is land contiguity built for influenza.** It is no better or worse suited to
+  COVID-19, but it is not a COVID-specific graph and must not be described as one.
+- **2020-2023 is NPI-dominated.** Transfer to or from COVID may reflect policy response rather than
+  pathogen dynamics. This belongs in the limitations, not a footnote.
+
+### 6.3 Cumulative to weekly incidence
+
+The same mass-preserving transform as Ebola (§3.1): difference the **running maximum**, never the raw
+series. NYT ships cumulative counts and revises them downward on occasion, and differencing raw would
+release those corrections back as fresh incidence — the exact defect that fabricated 35.8% of the
+Ebola target. The invariant is checked against the source column independently of the transform under
+test.
+
+Unlike Ebola, **nothing is masked.** NYT reports every state every day once that state's first case
+lands, and the absence of a row before that is a true zero, not a missing observation. `M` is
+therefore all ones, which also makes the LOCF input fill a no-op here, so COVID-19 contributes no
+zero-fill covariate shift.
+
+### 6.4 The split, and the defect in it
+
+Chronological 0.5 / 0.2 / 0.3, giving 4,018 / 1,617 / 2,401 observed cells. **The Omicron peak lands
+inside the validation fold** — the national maximum, 2022-01-15 at 5.14M cases, 13.8x the median
+week, sits at val week 21 of 33. Three consequences, all of which bite:
+
+1. **The val fold is not representative of anything else.** Its mean week is 2.8x train and 2.8x
+   test, and its peak is 6.3x the largest week in test. Early stopping selects on this fold, so model
+   selection for COVID is dominated by a once-in-the-panel event that never recurs in the scored
+   period.
+2. **The bias correction is fitted on val** (§3.1), so it is fitted against Omicron magnitudes and
+   applied to a test fold roughly a sixth of that scale. Expect it to over-correct on COVID
+   specifically. This is the first bundle where the val-only fitting rule is actively harmful rather
+   than merely conservative.
+3. Any COVID number should be read with both of the above stated. The full exploratory analysis,
+   including the wave structure and the head-to-head against influenza on the identical 49 nodes, is
+   in `covid_eda.md`.

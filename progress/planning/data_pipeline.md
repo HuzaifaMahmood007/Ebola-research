@@ -22,11 +22,12 @@ refers to the audit note for the evidence.
 
 ## 1. Regeneration
 
-The entire pipeline is reproduced by a single command:
+The pipeline is reproduced by two commands, one per group of datasets:
 
 ```bash
-conda run -n ebola python build_datasets.py
+conda run -n ebola python build_datasets.py                         # dengue, influenza x3, Ebola
 conda run -n ebola python build_datasets.py --check-deterministic   # rebuild and compare
+conda run -n ebola python loaders/covid_load.py                     # COVID-19, US states
 ```
 
 From a fresh checkout of the repository:
@@ -38,14 +39,25 @@ conda env create -f environment.yml
 # acquire the raw sources — see Section 5 for the URLs and checksums
 python fetch_gadm.py         # the sixteen shapefiles, fetched and verified
 #   ... place the dengue extract, the Ebola compilation and the six influenza
-#       matrices under data/Final datasets/  (all four are publicly downloadable)
+#       matrices under data/Final datasets/  (all publicly downloadable)
 
-conda run -n ebola python build_datasets.py
+conda run -n ebola python build_datasets.py        # dengue, the three influenza panels, Ebola
+conda run -n ebola python loaders/covid_load.py    # the COVID-19 panel (see below)
 ```
 
 **Every raw input is publicly downloadable**, and the build verifies each against a recorded
 checksum before use, so the datasets can be reproduced end to end from the published sources
 alone. Section 5 gives the source and the checksum for each.
+
+**COVID-19 is built by a second command, and the reason is that it is fetched rather than placed.**
+The other four sources are files a reader downloads once and drops under `data/Final datasets/`;
+the COVID series is pulled from its published URL at build time by `loaders/covid_load.py`, which
+also writes the bundle. It was added after `build_datasets.py` was written, when COVID-19 rejoined
+the development set as a third disease, and it has not been folded into the single command. Two
+consequences follow and neither is hidden: `build_datasets.py --check-deterministic` does not cover
+the COVID bundle, and the COVID source is the one input **not** halted on a checksum mismatch — the
+loader records the sha256 of what it downloaded in the bundle's metadata, but has no expected value
+to compare it against. See Section 5.
 
 The build performs four steps, and the order is deliberate.
 
@@ -53,11 +65,12 @@ The build performs four steps, and the order is deliberate.
    Ebola compilation, the six influenza matrices, and all sixteen shapefiles. A drifted input would
    change every figure reported in the audit note, and the datasets would nonetheless pass their own
    schema checks. Verification therefore *halts* the build rather than emitting a warning.
-2. **Construction.** The five datasets are built.
+2. **Construction.** The five datasets this command covers are built. The COVID-19 bundle is built
+   by its own command and does not pass through these steps.
 3. **Leakage gates.** The full leakage suite is run, together with its negative controls. On any
    failure the build **writes nothing**. A dataset containing a leak, once written to disk, is a
    dataset that somebody will train on.
-4. **Packaging.** The five datasets are written, alongside a record of the configuration used and a
+4. **Packaging.** Those five datasets are written, alongside a record of the configuration used and a
    snapshot of the environment.
 
 ### Environments
@@ -121,7 +134,8 @@ core = X[:, :, meta["core_feature_idx"]]   # the only block the shared encoder m
 
 Every disease is represented on a weekly epidemiological calendar. The shared, cross-disease encoder
 may see **only the transfer view**: the four core channels — normalised incidence, two seasonality
-channels, and the observation mask — identical in name, order and index across all five datasets.
+channels, and the observation mask — identical in name, order and index across all six datasets,
+COVID-19 included.
 Everything else is *extended*: available to a single-disease model, and withheld from the shared one.
 
 **This is a correctness property, not a matter of tidiness.** If a channel exists for one disease and
@@ -131,10 +145,14 @@ disease-specificity that the framework exists to remove. Three consequences foll
 enforced at the data layer:
 
 - The Ebola deaths channel is extended, never core.
-- The static covariates are excluded from the transfer view. The three diseases occupy disjoint
-  geography, so a raw centroid identifies the disease outright; populating the covariates for all
-  three diseases, which has been done, does **not** make them transfer-safe. A single-disease model
-  may use them freely.
+- The static covariates are excluded from the transfer view. Dengue, influenza and Ebola occupy
+  disjoint geography, so a raw centroid identifies the disease outright; populating the covariates
+  for every disease, which has been done, does **not** make them transfer-safe. A single-disease
+  model may use them freely. COVID-19 is the one pair where this argument does not apply — it sits
+  on the same 49 US states as `influenza_us-states`, so a centroid separates those two from
+  everything else but not from each other. The exclusion stands regardless, since it only takes one
+  identifiable disease to break the property, and the shared coordinates are precisely what makes
+  that pair the graph-controlled comparison.
 - The shipped influenza adjacency has its diagonal zeroed to match the built graphs, since one
   convention carrying self-loops and another not would give influenza twice the self-weight of dengue
   under the standard renormalisation.
@@ -157,8 +175,11 @@ Three requirements are properties of the datasets and cannot be enforced from wi
 
 ## 4. Leakage controls
 
-The leakage and invariant suite ([test_leakage.py](test_leakage.py)) comprises 83 pass/fail gates
-across the five datasets, and it blocks the build: nothing is written if any gate fails.
+The leakage and invariant suite ([test_leakage.py](tests/test_leakage.py)) comprises 83 pass/fail
+gates across the five datasets `build_datasets.py` writes, and it blocks that build: nothing is
+written if any gate fails. The COVID-19 bundle is built outside this command and is therefore not
+covered by the suite; `loaders/covid_load.py` asserts everything it prints, but that is a weaker
+guarantee than the gates and negative controls the other five pass.
 
 **Where each scaler is fitted.** This is the leakage-safety property, stated concretely:
 
@@ -193,8 +214,10 @@ support set is precisely the leakage that the few-shot design forbids.
 
 ## 5. Provenance and versioning
 
-**All four sources are publicly available.** Each is pinned by checksum and verified at the start of
-every build, so a reader can confirm they hold the same bytes these results were computed from.
+**All five sources are publicly available.** Four are pinned by checksum and verified at the start of
+every build, so a reader can confirm they hold the same bytes these results were computed from. The
+fifth, COVID-19, is fingerprinted but not pinned; that exception is stated below rather than left to
+be discovered.
 
 | Source | Where to obtain it | Pinned by |
 |---|---|---|
@@ -202,8 +225,9 @@ every build, so a reader can confirm they hold the same bytes these results were
 | Influenza benchmarks (6 files) | The ColaGNN repository; verified byte-identical to the EpiGNN mirror | Checksum manifest |
 | Ebola compilation | [HDX](https://data.humdata.org/dataset/rowca-ebola-cases), resource `9b68ab69-e0b3-4ff5-b2d8-90bf446acd52` | Checksum |
 | GADM 4.1 (16 shapefiles) | Fetched automatically by [fetch_gadm.py](fetch_gadm.py) | Checksum manifest |
+| COVID-19, US states | [New York Times `covid-19-data`](https://github.com/nytimes/covid-19-data), `us-states.csv`; fetched automatically by [loaders/covid_load.py](../../loaders/covid_load.py) | **Recorded, not enforced** — see below |
 
-**Versioning differs across the four, and the differences are worth understanding.**
+**Versioning differs across the five, and the differences are worth understanding.**
 
 OpenDengue is a frozen, citable release, so its DOI identifies the exact data. The influenza matrices
 are a vendored benchmark, stable and verified against an independent mirror. GADM 4.1 is likewise a
@@ -226,6 +250,29 @@ release, so a checksum manifest affords the same reproducibility guarantee at ne
 and its licence forbids redistribution for commercial purposes in any case. Verification runs without
 network access and exits non-zero on any mismatch, so it gates the build: a re-cut release would
 otherwise change every graph reported in the audit note with no visible signal.
+
+**COVID-19 is the one source whose checksum is recorded but not enforced, and it is fetched from a
+mutable path.** `loaders/covid_load.py` downloads `us-states.csv` from the repository's `master`
+branch, hashes what it received, and stores that digest in the bundle's metadata as `raw_sha256` —
+so every released COVID bundle carries a fingerprint of the exact bytes it was built from, and two
+builds can be compared after the fact. What it does not do is compare that digest against an expected
+value and halt, which is what the other four sources get. A changed upstream file would therefore be
+recorded faithfully and still build. In practice the risk is small: the NYT repository was archived
+in March 2023 and no longer accepts commits, so the file has been frozen since. The distinction that
+matters for a reader is that the other four sources *cannot* drift without failing the build, and
+this one can. Pinning it is a one-line change and is the recommended follow-up.
+
+**What the COVID panel is, and is not.** It reuses ColaGNN's 49-state node ordering and shipped
+adjacency verbatim, so it shares an identical graph and identical covariates with
+`influenza_us-states`; that is the entire point of including it, because it isolates disease transfer
+from graph transfer, which every other cross-disease comparison in this study confounds. Three costs
+travel with that choice and must travel with any number derived from it: the 49-state set excludes
+Florida (ILINet does not report it, so ColaGNN dropped it) and DC, and Florida is roughly 6.5% of the
+US population; the adjacency is land contiguity built for influenza and is not a COVID-specific
+graph; and the 2020–2023 period is NPI-dominated, so transfer to or from COVID may reflect policy
+response rather than pathogen dynamics. Unlike Ebola nothing is masked — the absence of a row before
+a state's first case is a true zero, not a missing observation — so the COVID panel contributes no
+zero-fill covariate shift.
 
 ---
 
@@ -273,10 +320,11 @@ exclusion lists. Every removal is a decision that somebody wrote down.
 |---|---|
 | `to_schema.py` | The schema, the three loaders, the graph builders, the splits, and the rolling-origin scaffold. |
 | `build_datasets.py` | The build: verify, construct, gate on leakage, write. |
-| `test_leakage.py` | The 83 leakage and invariant gates, with negative controls. |
-| `test_schema.py` | Unit tests for the schema. No geospatial dependencies. |
+| `tests/test_leakage.py` | The 83 leakage and invariant gates, with negative controls. |
+| `tests/test_schema.py` | Unit tests for the schema. No geospatial dependencies. |
 | `fetch_gadm.py` | Retrieves and verifies the sixteen shapefiles against a checksum manifest. |
 | `dengue_aliases.py` | The dengue alias maps and declared exclusions. |
-| `dengue_load.py`, `influenza_load.py`, `ebola_load.py` | Per-disease drivers. Everything they report, they assert. |
+| `loaders/dengue_load.py`, `loaders/influenza_load.py`, `loaders/ebola_load.py` | Per-disease drivers. Everything they report, they assert. |
+| `loaders/covid_load.py` | The COVID-19 driver, and the only one that both **fetches** its source and **writes** its bundle, so it is a build step in its own right rather than a driver `build_datasets.py` calls. |
 | `ebola_audit.py` | The Ebola signal-confirmation audit. Read-only; escalates on any drift from the recorded figures. |
 | `japan_nodes.py` | Recovers the Japanese prefecture ordering, writing `japan_node_map.csv`. |
