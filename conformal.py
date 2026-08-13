@@ -548,15 +548,21 @@ def _reference(a):
         sys.exit("no ceiling archives to compare against")
 
     print(f"\n=== CEILING vs CALIBRATED TRANSFER, 90% intervals, {len(SEEDS)} seeds ===")
-    print(f"{'panel':22s} {'h':>3s} | {'ceiling':>14s} {'ceil w':>10s} | "
-          f"{'transf raw':>10s} {'+lam+ACI':>9s} {'cal w':>10s} | {'gap to ceil':>11s}")
+    print(f"{'panel':22s} {'h':>3s} | {'ceiling':>13s} {'ceil w':>9s} | "
+          f"{'transf raw':>10s} {'+lam+ACI':>9s} {'raw w':>9s} {'cal w':>9s} | "
+          f"{'gap':>7s} {'w/ceil':>7s}")
+    ratios = []
     for r in rows:
         t = trows.get((r["ds"], r["h"]))
         if t is None:
             continue
         gap = t["aci_cov"] - r["cov"]
-        print(f"{r['ds']:22s} {r['h']:3d} | {r['cov']:8.3f}±{r['sd']:5.3f} {r['w']:10.1f} | "
-              f"{t['raw_cov']:10.3f} {t['aci_cov']:9.3f} {t['aci_w']:10.1f} | {gap:+11.3f}")
+        # width relative to the ceiling: coverage bought at 17x the width is not the same result
+        ratio = t["aci_w"] / r["w"] if r["w"] > 0 else float("nan")
+        ratios.append(ratio)
+        print(f"{r['ds']:22s} {r['h']:3d} | {r['cov']:7.3f}+-{r['sd']:4.3f} {r['w']:9.1f} | "
+              f"{t['raw_cov']:10.3f} {t['aci_cov']:9.3f} {t['raw_w']:9.1f} {t['aci_w']:9.1f} | "
+              f"{gap:+7.3f} {ratio:6.1f}x")
 
     ceil = [r["cov"] for r in rows]
     cal = [trows[(r["ds"], r["h"])]["aci_cov"] for r in rows if (r["ds"], r["h"]) in trows]
@@ -564,9 +570,16 @@ def _reference(a):
           f"mean abs dev from 0.90 {np.mean([abs(x - 0.90) for x in ceil]):.3f}")
     print(f"  calibrated transfer      {min(cal):.3f} .. {max(cal):.3f}   "
           f"mean abs dev from 0.90 {np.mean([abs(x - 0.90) for x in cal]):.3f}")
+    print(f"  calibrated width vs ceiling width: median {np.median(ratios):.1f}x, "
+          f"range {min(ratios):.1f}x .. {max(ratios):.1f}x")
     print("\n  READ THIS AS: the ceiling is the reference, NOT a target to beat. Calibrated transfer\n"
           "  landing closer to 0.90 than the ceiling does means the ceiling is itself miscalibrated,\n"
           "  which is a finding about the quantile head, not evidence that transfer forecasts better.")
+    print("  TWO THINGS THIS TABLE DOES NOT SAY. (1) lambda_h here is fitted on these same five\n"
+          "  panels, so the calibrated column's closeness to 0.90 is an IN-SAMPLE residual; the\n"
+          "  out-of-sample number is the one --fit --lopo prints. (2) Coverage is bought with width:\n"
+          "  read `w/ceil` before quoting any coverage figure, because an interval that covers 0.89\n"
+          "  at 17x the ceiling's width is the weaker forecast, not the stronger one.")
 
 
 def _apply(a):
