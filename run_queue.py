@@ -41,7 +41,11 @@ QUEUE_LOG = LOGDIR / "run_queue.log"
 PROBE_LOG = LOGDIR / "capacity_probe_5seed.log"
 CAPACITY_SEEDS = ("42", "52", "62", "72", "82")
 POLL_SECONDS = 60
-FREE_MB = 1000                 # a training job on this box peaks at ~1.4 GB; idle desktop sits well under
+# Measured 2026-08-12, not estimated: this box IDLES at 1.28-1.29 GB with nothing training (display
+# + driver), and the LDO3 covid fold held 3.06-3.12 GB. The old 1000 sat BELOW the idle floor, so
+# every waiter would have hung until its deadline with a free card. 2000 separates the two with
+# margin at both ends. Re-measure if the display setup changes; --free-mb overrides per run.
+FREE_MB = 2000
 STABLE_POLLS = 3
 
 
@@ -168,7 +172,7 @@ def run(args, log, label):
                              encoding="utf-8", errors="replace", bufsize=1)
         for line in p.stdout:
             sys.stdout.write(line); sys.stdout.flush()
-            f.write(line)
+            f.write(line); f.flush()      # unattended: an unflushed log is lost if the box dies
         rc = p.wait()
     say(f"END   {label}: exit {rc} after {(time.time()-t0)/60:.1f} min")
     return rc
