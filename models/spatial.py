@@ -1,6 +1,5 @@
-"""Spatial channel (plan §3.3): graph normalisation (identity-first, C3), mask-aware adjacency,
-inductive GraphSAGE-style message passing, and the LTR degree feature (guide Task 12.1a). Sparse
-throughout -- dengue's 7,165^2 adjacency is never densified (§0.7)."""
+"""Spatial channel: identity-first normalisation (C3), mask-aware adjacency, GraphSAGE-style
+message passing, LTR degree feature. Sparse throughout, so dengue's 7,165^2 is never densified."""
 from __future__ import annotations
 
 import numpy as np
@@ -19,9 +18,9 @@ def sparse_from_dense_np(A_np: np.ndarray) -> torch.Tensor:
 
 
 def normalise_adj(A: torch.Tensor, add_self_loops: bool = True):
-    """A_hat = D~^{-1/2}(A + I)D~^{-1/2}, identity FIRST (C3). Returns (A_hat sparse, deg[N]); deg is
-    the self-loop-inclusive D~ that LTR reuses. add_self_loops=False is the negative control:
-    a degree-0 node then has D~=0 (dense: inf*0 = NaN)."""
+    """A_hat = D~^{-1/2}(A + I)D~^{-1/2}, identity FIRST (C3). Returns (A_hat sparse, deg[N]).
+
+    add_self_loops=False is the negative control: a degree-0 node then has D~=0, i.e. NaN."""
     N = A.shape[0]
     A = A.coalesce() if A.is_sparse else A.to_sparse().coalesce()
     idx, val = A.indices(), A.values().float()
@@ -36,9 +35,9 @@ def normalise_adj(A: torch.Tensor, add_self_loops: bool = True):
 
 
 def mask_aware_adj(A: torch.Tensor, M_t: torch.Tensor):
-    """Adjacency for one origin, smoothing over OBSERVED neighbours only (plan §3.3): a real edge
-    (i,j) is weighted by M_t[j]; the self-loop is always kept so a node with no observed neighbour
-    falls back to itself. Then D~^{-1/2}-renormalised."""
+    """Adjacency for one origin, smoothing over OBSERVED neighbours only: edge (i,j) is weighted by
+    M_t[j], and the self-loop is always kept so a node with no observed neighbour falls back to
+    itself."""
     N = A.shape[0]
     A = A.coalesce() if A.is_sparse else A.to_sparse().coalesce()
     idx = A.indices()
@@ -52,8 +51,8 @@ def mask_aware_adj(A: torch.Tensor, M_t: torch.Tensor):
 
 
 class LTR(nn.Module):
-    """Node degree as a learned feature (guide Task 12.1a). forward takes the D~ from normalise_adj
-    and never sees A -- so it structurally cannot recompute the degree (the 'reuse' guarantee)."""
+    """Node degree as a learned feature. Takes D~ from normalise_adj and never sees A, so it
+    structurally cannot recompute the degree."""
     def __init__(self, d=D_HIDDEN):
         super().__init__()
         self.lin = nn.Linear(1, d)

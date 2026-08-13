@@ -1,69 +1,29 @@
-"""Country-macro scoring for the multi-country bundles (dengue is the one that needs it).
+"""Country-macro scoring. Score per node over its observed eval cells, average within each country,
+then average countries with EQUAL weight, which stops Brazil's 77% node share from being the score.
+The equal-node ("micro") average is reported alongside. Call once per horizon.
 
-Headline metric (data_audit.md 1.7 / Task 6.3 decision 6): score per node over its
-observed eval cells, average within each country, then average the countries with EQUAL
-weight. That is what stops Brazil's 77% node share from being the score. The equal-node
-average is reported alongside as the secondary ("micro") figure.
+Two rules a caller cannot get wrong from here:
+  * COUNT SPACE. Invert the per-node scaler on predictions before calling (to_schema.invert_scaler).
+    Truth is the bundle's `raw`, already counts.
+  * CONSTANT NODES are excluded by default (trivially predictable, PCC undefined) and kept in the
+    graph as neighbours. score_constant=True only for the with-constants sensitivity row.
 
-Two rules the metric depends on, both settled here so a caller cannot get them wrong:
+Metric edge cases, all deliberate:
+  * sMAPE: cells with y==yh==0 are UNDEFINED and excluded, never counted as zero error. A "0/0 ==
+    perfect" convention would hand free credit on exactly the sparsest data (dengue ~78% imputed).
+  * nrmse = RMSE/mean(y): NaN when mean(y) <= 0, never 0 and never clipped. Added alongside raw
+    rmse, not replacing it.
+  * peak_timing is in observed-eval-cell steps (== weeks only where the mask is dense).
 
-  * REAL COUNTS. Metrics are computed in count space, per manuscript 5.1. The model works
-    in normalised space, so invert the per-node scaler on the predictions BEFORE calling
-    this (invert_scaler in to_schema). Truth is the bundle's `raw`, which is already counts.
+UQ metrics (wis, crps, coverage, interval_width, pit) sit below METRICS, not in it: they consume the
+full quantile prediction, so they cannot flow through per_node_scores. All call sort_quantiles first,
+because the Adapter's plain Linear head can emit crossing quantiles and every interval metric is
+garbage if it does.
 
-  * CONSTANT NODES. A node whose truth is constant over the cells being scored (Japan's 29
-    always-zero dengue prefectures, chiefly) is trivially predictable -- emit its constant
-    and you are exactly right -- and its Pearson correlation is undefined. Such nodes are
-    excluded from scoring by default and kept in the graph as message-passing neighbours.
-    Score them too (score_constant=True) only for the with-constants sensitivity row.
-
-Horizon-resolved reporting is the caller's job: call this once per horizon h with that
-horizon's predictions. The aggregation is identical each time.
-
-METRICS added in Week 3 (Task 13.1), all per-node scalars over a node's observed eval cells
-(in time order), count space:
-  * sMAPE = mean(2*|yh-y| / (|y|+|yh|)) * 100, range 0-200. Cells with y==yh==0 are UNDEFINED and
-    EXCLUDED from the mean -- never counted as zero error. dengue is ~78% imputed and Ebola has
-    districts that never record a case, so a "0/0 == perfect" convention would hand a large free
-    credit on exactly the sparsest data. A node whose every scored cell is 0/0 scores NaN.
-  * peak_intensity = |max(yh) - max(y)| over the eval cells, in counts.
-  * peak_timing = |argmax(yh) - argmax(y)| in observed-eval-cell steps (== weeks for the dense
-    influenza panels; approximate where the mask is sparse). Undefined on a constant node, which
-    is already excluded by default -- the self-check proves that exclusion.
-
-METRICS added in Week 4 (Review Doc para. 7 -- "a scale normalised error alongside raw counts,
-because across 7,165 dengue regions raw RMSE is dominated by the biggest ones"):
-  * nrmse = RMSE / mean(y) over the node's scored cells -- relative RMSE, a.k.a. CV(RMSE). Each
-    node is expressed in units of its own level, so a 7,000-case region and a 5-case region
-    contribute comparably. UNDEFINED (NaN) when mean(y) <= 0, never 0 and never clipped: a node
-    that records no cases has no scale to normalise by. Raw rmse is reported alongside, unchanged
-    -- this is an addition, not a replacement.
-
-UQ METRICS (Week 4, same Review Doc para.) live below METRICS, not in it: they consume the full
-QUANTILE prediction [.., nQ], not a point forecast, so they cannot flow through per_node_scores.
-Week 5 (G4) wires them into a scoring path once quantile artifacts exist on disk. Implemented and
-self-checked here so the calibration claim is not resting on a NotImplementedError:
-  * wis        -- Weighted Interval Score, Bracher et al. (2021), the CDC FluSight / Forecast Hub
-                  standard. Decomposes into sharpness + under/over-prediction penalties.
-  * crps       -- quantile approximation, 2 * mean pinball over the quantile grid.
-  * coverage   -- empirical coverage of each central interval vs its nominal level (PICP).
-  * interval_width -- mean width of each central interval, the sharpness half of the story.
-  * pit        -- PIT values for the histogram; 5 quantiles gives a coarse histogram, say so.
-All of them call sort_quantiles first -- the Adapter's plain Linear head can emit CROSSING
-quantiles (q05 > q95, models/adapters.py:21) and every interval metric is garbage if it does.
-
-EBOLA METRIC RULES -- pre-registered now, in Week 3, while no Ebola number exists (Task 13.1). Ebola
-is scored once in Week 5; fixing the rules here is what makes them demonstrably independent of the
-data. Ebola runs at mask density 0.2175 with districts that never record a case, so PCC is
-near-meaningless on much of the panel and sMAPE is undefined at zero:
-  * MAE and RMSE are PRIMARY for Ebola.
-  * PCC is reported only over districts with >= 5 observed non-zero cells, with the qualifying
-    district count printed beside it.
-  * sMAPE inherits the 0/0-excluded rule; if qualifying cells fall below 30% of the query set, drop
-    sMAPE for Ebola entirely and say so.
-  * peak_timing is undefined for districts with no peak; exclude them and report the count.
-These are decisions, not defaults to revisit after seeing results.
-"""
+EBOLA RULES, pre-registered in Week 3 before any Ebola number existed. Mask density is 0.2175 with
+districts that never record a case, so: MAE and RMSE are PRIMARY; PCC only over districts with >= 5
+observed non-zero cells, printing the qualifying count; sMAPE dropped entirely if qualifying cells
+fall below 30% of the query set; peak_timing excludes no-peak districts and reports the count."""
 from __future__ import annotations
 
 import collections

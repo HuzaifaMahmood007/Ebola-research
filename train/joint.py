@@ -1,37 +1,22 @@
-"""train/joint.py -- multi-disease joint training over one block-diagonal supergraph (Day 14, G2).
+"""Multi-disease joint training over one block-diagonal supergraph.
 
-Replaces sequential per-dataset gradient accumulation with a single forward over a block-diagonal
-supergraph: the 4 dev datasets are stacked along the node axis ([SigmaN=7271, 20, 4]) with a
-block-diagonal adjacency that has NO cross-dataset edges. One forward, one backward, one step.
+The dev datasets are stacked along the node axis with a block-diagonal adjacency that has NO
+cross-dataset edges, so it is one forward, one backward, one step. This is safe because nothing in
+the encoder reduces over the node dimension (the TCN treats nodes as the conv batch dim, message
+passing follows edges only, no BatchNorm), so each block's math is identical alone or inside the
+supergraph. _equiv_check asserts block == solo.
 
-Verified precondition (why this is safe): nothing in the encoder reduces over the node dimension --
-the TCN treats nodes as the conv batch dim, spatial message passing follows edges only, and there is
-no BatchNorm. So each block's math is identical whether run alone or inside the supergraph
-(_equiv_check asserts this: block == solo). No cross-block edges => no inter-dataset leakage.
+Samplers are LOSS WEIGHTS, not sampling, and the two vectors are orthogonal. Across datasets w_i is
+uniform | proportional | sqrt from train n_obs; within dengue v_node is uniform | country, a
+per-CELL country balance (per-cell because observation density spans 97x across countries, so
+per-node would not actually balance them). uniform+uniform is bit-identical to the pre-weighting
+loss. Training is in STEPS, not epochs: "epoch" is ill-defined when datasets contribute at a fixed
+ratio every step. One shared encoder plus one small Adapter per dataset, so a new disease is one new
+adapter fit with the trunk frozen.
 
-Samplers as loss weights (not sampling), two orthogonal vectors:
-  * ACROSS datasets  w_i : uniform (P2 primary) | proportional | sqrt, from TRAIN n_obs. uniform
-    hands each dataset 1/4 (dengue's 98.5% node share -> 25%); proportional = the dengue-dominated
-    pooled mean; sqrt = the Week-6 middle ground (dengue ~81%).
-  * WITHIN dengue  v_node : uniform | country -- per-CELL country balance (v proportional to
-    1/train_obs_c) so each of dengue's 12 countries contributes equal mass. Per-cell not per-node
-    because obs density spans 97x across countries; per-node would NOT actually balance them.
-The two compose cleanly: v balances inside a dataset (L_i stays a proper mean), w balances across.
-uniform+uniform is bit-identical to the pre-weighting loss (mean of the 4 per-dataset means).
-
-Training is in STEPS, not epochs -- "epoch" is ill-defined when 4 datasets contribute at a fixed
-ratio every step (one pass over dengue is ~24 passes over japan). Val every val_every steps,
-patience counted in val-checks.
-
-Architecture: ONE shared encoder (the transferable trunk) + one small Adapter per dataset (FiLM +
-head, 1,428 params each at d=64/|H|=4/|Q|=5, P5). A new disease = one new adapter few-shot-fit with
-the trunk frozen.
-
-Run from the repo root as a module:
   python -m train.joint --all                              # 5 seeds, uniform-uniform (primary)
-  python -m train.joint --all --sampler sqrt --dengue-balance country   # a Week-6 ablation cell
-  python -m train.joint --seed 42                          # one joint run, all 4 datasets scored
-  python -m train.joint --smoke                            # 3 small datasets, few steps (CI-cheap)
+  python -m train.joint --all --sampler sqrt --dengue-balance country
+  python -m train.joint --smoke                            # 3 small datasets, few steps
   python -m train.joint --equiv                            # gates: block==solo, routing, balance
 """
 from __future__ import annotations

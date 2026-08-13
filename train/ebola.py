@@ -1,26 +1,22 @@
-"""train/ebola.py -- the Ebola case study, scored ONCE against the locked config.
+"""The Ebola case study, scored ONCE against the locked config.
 
 The protocol is `progress/decisions/Ebola_Prereg.md` (frozen 2026-08-07, amendments A1-A5) and the
-split is `configs/ebola_arms.json`. Nothing here chooses anything: every free parameter the run
-could have tuned was fixed in writing before this file was executed, and this module asserts the
-frozen hashes before it will score.
+split is `configs/ebola_arms.json`. Nothing here chooses anything: every free parameter was fixed in
+writing before this file was executed, and this module asserts the frozen hashes before it will score.
 
-  1. TRUNK. One shared encoder trained jointly on all five development bundles -- dengue, influenza
-     japan / us-regions / us-states, covid us-states -- with adapter_groups [0,1,1,1,2], so each
-     DISEASE gets one adaptation surface and the loss is rebalanced per disease rather than per
-     bundle. Nothing is held out: Ebola is the held-out disease. trunk_patience=30 (A5). One trunk
-     per seed, shared by both arms, so the arms differ only in their support set.
-  2. ZERO-SHOT arm. The element-wise mean of the three in-disease adapters, applied with NO fitting
-     (_mean_adapter, the same reference every dev fold used). No Ebola label is read.
-  3. FEW-SHOT arm. One fresh Adapter fit on the arm's SUPPORT cells only. The epoch count comes from
-     leave-one-district-out CV inside the support set (A2) -- no query cell is read at any point.
+  1. TRUNK. One shared encoder trained jointly on all five development bundles with adapter_groups
+     [0,1,1,1,2], so each DISEASE gets one adaptation surface. Ebola is the held-out disease. One
+     trunk per seed, shared by both arms, so the arms differ only in their support set.
+  2. ZERO-SHOT arm. Element-wise mean of the three in-disease adapters, applied with NO fitting. No
+     Ebola label is read.
+  3. FEW-SHOT arm. One fresh Adapter fit on the arm's SUPPORT cells only, epoch count from
+     leave-one-district-out CV inside the support set (A2). No query cell is read at any point.
   4. SCORE the query set at the common origin set t in [19, 36] (A1).
-  5. FLOORS. persistence and support_mean. Seasonal-naive is NOT reported: T=52 puts the t-52 lag
-     out of panel at every scored origin, so it would be a duplicate of persistence (A5).
+  5. FLOORS. persistence and support_mean. Seasonal-naive is NOT reported: T=52 puts the t-52 lag out
+     of panel at every scored origin, so it would duplicate persistence (A5).
 
-Run from the repo root:
-  PYTHONNOUSERSITE=1 conda run -n ebola-train python -m train.ebola --dry-run      # throwaway, misc/
-  PYTHONNOUSERSITE=1 conda run -n ebola-train python -m train.ebola --all          # the scored run
+  python -m train.ebola --dry-run      # throwaway, lands in misc/
+  python -m train.ebola --all          # the scored run
 """
 from __future__ import annotations
 

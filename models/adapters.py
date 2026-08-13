@@ -1,5 +1,4 @@
-"""Per-disease adaptation surface (plan §3.5, P5): FiLM affine + quantile head, plus the pinball
-loss and the shared/adaptation parameter split Week-4's MAML inner loop depends on."""
+"""Per-disease adaptation surface: FiLM affine + quantile head, and the pinball loss."""
 from __future__ import annotations
 
 import torch
@@ -10,18 +9,11 @@ from .config import D_HIDDEN, QUANTILES
 
 
 class Adapter(nn.Module):
-    """FiLM (gamma,beta) + quantile head -- the ONLY thing Week-4's MAML inner loop touches; the
-    trunk is the outer loop.
+    """FiLM (gamma,beta) + quantile head. 1,428 params at d=64, |H|=4, |Q|=5.
 
-    1,428 params at the shipped config (d=64, |H|=4, |Q|=5): gamma 64 + beta 64 + head 64*20 + 20.
-    The "~388" this docstring carried until 2026-07-31 was the |Q|=1 figure from before the
-    five-quantile pinball head landed (head was Linear(64,4) then, Linear(64,20) now). Corrected
-    because the number is quoted in the meta-learning scoping.
-
-    NOTE for the MAML inner loop: with the trunk frozen this surface is EXACTLY an affine map of the
-    frozen features -- gamma folds into the head weight, so Adapter(h) == (W@diag(gamma))h + (W@beta+b),
-    verified to 0.0 max deviation. FiLM adds no expressive power over a plain linear head here. That
-    is what makes the inner loop ANIL (adapt the head, freeze the body) in the exact sense."""
+    With the trunk frozen this is EXACTLY an affine map of the frozen features (gamma folds into the
+    head weight, verified to 0.0 deviation), so FiLM adds no expressive power over a plain linear
+    head and the inner loop is ANIL in the exact sense."""
     def __init__(self, d=D_HIDDEN, horizons=HORIZONS, quantiles=QUANTILES):
         super().__init__()
         self.nH, self.nQ = len(horizons), len(quantiles)
@@ -39,21 +31,12 @@ class Adapter(nn.Module):
 
 
 def pinball_loss(pred, target, mask, quantiles=QUANTILES, w=None):
-    """pred [N,H,Q], target [N,H], mask [N,H] (1=observed & in phase). MODEL space (plan §5).
+    """pred [N,H,Q], target [N,H], mask [N,H] (1=observed & in phase), MODEL space.
 
-    Optional w [N]: per-node weight for the joint trainer's within-dataset balance (e.g. dengue
-    per-cell country balance). w=None is the plain mean, so single-disease callers are bit-identical.
-    """
+    Optional w [N] is the joint trainer's per-node weight; w=None is the plain mean, so
+    single-disease callers stay bit-identical."""
     q = torch.tensor(quantiles, device=pred.device).view(1, 1, -1)
     err = target.unsqueeze(-1) - pred
     loss = torch.maximum(q * err, (q - 1) * err).mean(-1)     # avg over quantiles -> [N,H]
     m = mask if w is None else mask * w.view(-1, 1)           # fold node weight into the mask
     return (loss * m).sum() / m.sum().clamp(min=1)
-
-
-def shared_params(enc):
-    return list(enc.parameters())
-
-
-def adaptation_params(adapter):
-    return list(adapter.parameters())

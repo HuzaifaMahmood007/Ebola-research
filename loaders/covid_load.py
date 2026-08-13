@@ -1,38 +1,21 @@
-"""Build the COVID-19 US-states bundle, on the SAME 49 nodes and the SAME shipped graph as
-influenza_us-states.
+"""Build the COVID-19 US-states bundle on the SAME 49 nodes and shipped graph as influenza_us-states.
 
     conda run -n ebola python covid_load.py [--refresh]
 
-Why this node set. Reusing ColaGNN's 49-state ordering and its shipped `state-adj.txt` verbatim
-means the COVID bundle needs no new geography, no new adjacency and no new alias map: the only new
-thing in the repo is a case series. It also buys the scientific point the existing LODO cells cannot
-make -- COVID and influenza sit on an IDENTICAL graph with IDENTICAL covariates, so a transfer
-result between them isolates DISEASE transfer from GRAPH transfer. Every existing cross-disease cell
-confounds the two.
+Reusing ColaGNN's ordering and `state-adj.txt` verbatim means the only new thing in the repo is a
+case series, and it buys the point no other cell can make: COVID and influenza sit on an IDENTICAL
+graph with IDENTICAL covariates, so transfer between them isolates DISEASE transfer from GRAPH
+transfer. Three costs, stated rather than hidden: the 49-state set EXCLUDES Florida (~6.5% of US
+population, dropped by ColaGNN because ILINet does not report it) and DC, since a 50th node would
+fork the adjacency and forfeit the identical-graph property; the shipped adjacency is land
+contiguity built for ILI and must not be described as COVID-specific; and COVID 2020-2023 is
+NPI-dominated, so transfer may reflect policy response rather than pathogen dynamics.
 
-Cost of that choice, stated rather than hidden:
-  * The 49-state set EXCLUDES Florida (ILINet does not report it, so ColaGNN dropped it) and DC.
-    Florida is ~6.5% of the US population and had a large, distinctively-timed COVID burden. We drop
-    it anyway, because a 50th node would fork the adjacency and forfeit the identical-graph property
-    that is the entire reason for this construction.
-  * The shipped adjacency is land contiguity. It was built for ILI and is no better or worse suited
-    to COVID, but it is NOT a COVID-specific graph and must not be described as one.
-  * COVID 2020-2023 is NPI-dominated. Transfer to or from it may reflect policy response rather than
-    pathogen dynamics. This belongs in the limitations, not in a footnote.
-
-Cumulative -> incidence uses the same mass-preserving transform as Ebola (schema_spec.md §5):
-difference the running MAXIMUM, not the raw series. NYT ships cumulative counts and revises them
-downward on occasion; differencing raw would release those corrections back as fresh incidence, the
-exact defect that fabricated 35.8% of the Ebola target. The invariant is checked below against the
-source column, independently of the transform under test.
-
-Unlike Ebola, nothing is masked: NYT reports every state every day once that state's first case
-lands, and the absence of a row BEFORE that is a genuine zero (no cases yet), not a missing
-observation. M is therefore all-ones, which also makes the LOCF input fill (bundles.LOCF_INPUT) a
-no-op here -- COVID contributes no zero-fill covariate shift.
-
-Everything this script prints, it asserts.
-"""
+Cumulative -> incidence differences the running MAXIMUM, the same mass-preserving transform as
+Ebola: NYT revises cumulative counts downward on occasion and differencing raw would release those
+corrections back as fresh incidence, the defect that fabricated 35.8% of the Ebola target. Nothing is
+masked, unlike Ebola: absence of a row before a state's first case is a genuine zero, so M is
+all-ones and the LOCF input fill is a no-op here. Everything this script prints, it asserts."""
 from __future__ import annotations
 
 import argparse

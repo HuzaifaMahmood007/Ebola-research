@@ -1,32 +1,20 @@
-"""train/lodo.py -- leave-one-disease-out transfer probe (the decisive G2/G3 test, Day 14 follow-up).
+"""Leave-one-disease-out transfer probe: does a trunk trained on OTHER diseases carry structure that
+transfers to one it NEVER saw? The dev-set proxy for the Ebola mechanism, and unlike the
+sqrt-weighting probe it is not confounded by across-dataset loss weighting.
 
-Question it answers: does the shared trunk, trained on OTHER diseases, carry structure that transfers
-to a disease it NEVER saw? This is the dev-set proxy for the Week-5 Ebola mechanism (frozen trunk +
-a small adapter fit on the new disease), and -- unlike the sqrt-weighting probe -- it is not
-confounded by the across-dataset loss weighting.
+Per held-out disease X: train trunk + per-disease adapters jointly on the others (X never in trunk
+training), FREEZE the trunk, fit one fresh adapter on X's own train fold, then score X's test fold.
+Also scores a pure ZERO-SHOT reference, the mean of the trained in-adapters applied with no fitting.
+Fitting on X's full train fold makes this the OPTIMISTIC transfer number: if it fails here it will
+certainly fail few-shot on Ebola's 27 support cells.
 
-Protocol, per held-out disease X:
-  1. Train the shared trunk + per-disease adapters JOINTLY on the OTHER 3 dev diseases (block-diagonal
-     supergraph, uniform weighting -- same machinery as train.joint). X is never in trunk training.
-  2. FREEZE the trunk. Fit ONE fresh adapter (FiLM + quantile head, 1,428 params) on X's OWN train
-     fold, trunk frozen -- identical adapter-fit protocol to the single-disease trainer (epoch-based,
-     val early-stop). This is the OPTIMISTIC transfer number: X gets its full train fold to fit the
-     adapter, so if transfer fails here it will certainly fail few-shot on Ebola's 27 support cells.
-  3. Score X's test fold. Also score a pure ZERO-SHOT reference: the mean of the 3 trained in-adapters
-     applied to X with NO fitting (a rough lower bound -- adapters are all in per-node z-score space).
+Read against the single-disease encoder (CEILING, trunk trained on X itself) and the naive floors:
+near the ceiling means the trunk transfers, near the floor means you must train on the disease
+itself. Ebola is never touched (C8 guard inherited from train.joint's DEV list).
 
-Read against the baselines already in results/:
-  single-disease encoder (results/encoder__X__seed*.json)  = CEILING (trunk trained on X itself)
-  naive floors           (results/naive__X.json)            = FLOOR
-    LODO-adapter ~ ceiling  -> trunk transfers; a foreign trunk + small adapter recovers X  (Option A)
-    LODO-adapter ~ floor    -> trunk does not transfer; you must train on the disease itself (Option B)
-
-Ebola is never touched (only the 4 dev diseases; C8 guard inherited from train.joint's DEV list).
-
-Run from the repo root:
-  PYTHONNOUSERSITE=1 conda run -n ebola-train python -m train.lodo --held-out influenza_us-states
-  PYTHONNOUSERSITE=1 conda run -n ebola-train python -m train.lodo --all           # all 4 folds
-  PYTHONNOUSERSITE=1 conda run -n ebola-train python -m train.lodo --smoke          # fast, no dengue
+  python -m train.lodo --held-out influenza_us-states
+  python -m train.lodo --all-ldo3      # the three leave-one-disease-out folds
+  python -m train.lodo --smoke         # fast, no dengue
 """
 from __future__ import annotations
 

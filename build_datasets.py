@@ -8,11 +8,8 @@
     4. write one .npz per disease to data/processed/, plus the config and a pip freeze.
 
 The leakage suite GATES THE WRITE: nothing is written if a gate fails, so the only obtainable
-artifact is a clean one.
-
-Bundles are packaged as .npz (plain arrays + a JSON meta blob) rather than as pickled objects:
-a pickle couples the file to the class definitions and library versions that wrote it, and
-unpickling executes code, which makes it unsafe to share.
+artifact is a clean one. Bundles are .npz (arrays + a JSON meta blob), not pickles: a pickle couples
+the file to the classes and library versions that wrote it, and unpickling executes code.
 """
 from __future__ import annotations
 

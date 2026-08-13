@@ -1,7 +1,6 @@
-"""SharedEncoder (plan §3): the factorised, strictly inductive trunk -- temporal (TCN) + LTR degree
-feature, followed by gated inductive spatial message passing. forward(Z, A, M_t) -> h [N, d]. No C
-argument, no disease name, no parameter dimension sized by N (C1/C2). This is the locked Option-1
-design (encoder_architecture_plan.md)."""
+"""SharedEncoder: TCN + LTR degree feature, then gated inductive spatial mixing.
+
+forward(Z, A, M_t) -> h [N, d]. No disease name and no parameter dimension sized by N (C1/C2)."""
 from __future__ import annotations
 
 import torch
@@ -13,9 +12,9 @@ from .temporal import DilatedTCN
 
 
 class Gate(nn.Module):
-    """Gated inductive spatial mixing (plan §3.4, locked): h_out = (1-g)*h + g*h_spatial,
-    g = sigmoid(MLP(h)) per node -- data-dependent, N-independent. mode 'off' forces g=0 (the
-    graph-free model): the Day-12 nesting gate and the {g==0} cell of the P9 gate x topo-aug 2x2."""
+    """h_out = (1-g)*h + g*h_spatial, g = sigmoid(MLP(h)) per node: data-dependent, N-independent.
+
+    mode 'off' forces g=0, the graph-free model used as the {g==0} ablation cell."""
     def __init__(self, d=D_HIDDEN, mode="learned"):
         super().__init__()
         assert mode in {"learned", "off"}
@@ -34,8 +33,7 @@ class Gate(nn.Module):
 
 
 def spatial_contribution(g, h, h_s):
-    """Normalised spatial contribution (guide Task 12.5) -- the reportable gate quantity, scale-free
-    unlike raw g. Log mean/IQR per dataset per epoch; keep raw g debug-only."""
+    """The reportable gate quantity: scale-free, unlike raw g, which stays debug-only."""
     gs, hn, hsn = g.squeeze(-1), h.norm(dim=-1), h_s.norm(dim=-1)
     return (gs * hsn) / ((1 - gs) * hn + gs * hsn + 1e-8)
 

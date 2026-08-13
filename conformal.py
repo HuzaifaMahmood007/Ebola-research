@@ -1,67 +1,45 @@
-"""conformal.py -- cross-disease conformal calibration (lambda_h) + online ACI, for G4.
+"""Cross-disease conformal calibration (lambda_h) + online ACI, for G4.
 
-WHAT THIS FIXES. The quantile head is not calibrated. Recomputed from the archived LDO3 quantiles,
-empirical 90% coverage runs 0.492 to 0.918 across (panel, horizon), and it DEGRADES WITH HORIZON on
-every panel: covid 0.658 -> 0.492, dengue 0.749 -> 0.678, us-regions 0.918 -> 0.838, us-states
-0.815 -> 0.783, japan 0.899 -> 0.887. A single global multiplier would over-correct h3 and
-under-correct h15, so every correction here is PER HORIZON.
+WHAT THIS FIXES. The quantile head is not calibrated: empirical 90% coverage runs 0.492 to 0.918
+across (panel, horizon) and DEGRADES WITH HORIZON on every panel. A single global multiplier would
+over-correct h3 and under-correct h15, so every correction here is PER HORIZON.
 
-WHY NOT A CALIBRATION SPLIT OUT OF EBOLA. Arithmetic rules it out before the protocol does. The
-frozen primary arm has 48/38/18/0 adaptation pairs at h3/h5/h10/h15. Split conformal needs n >= 9
-just to form a FINITE 90% interval (ceil((n+1)*0.9) <= n). Split h3 and ~16 remain, where the index
-is ceil(17*0.9) = 16 -- literally the largest residual seen: valid, uselessly wide, high variance.
-h10 splits to 9, exactly the boundary. h15 has nothing to split. And the split would halve the
-adapter's fitting data, degrading the point forecast to buy an interval that says nothing.
+WHY NOT A CALIBRATION SPLIT OUT OF EBOLA. Arithmetic rules it out. The frozen primary arm has
+48/38/18/0 adaptation pairs at h3/h5/h10/h15, and split conformal needs n >= 9 just to form a FINITE
+90% interval. h10 splits to exactly the boundary, h15 has nothing to split, and the split would
+halve the adapter's fitting data. EnbPI is out too: no target-disease data enters training, so there
+are zero out-of-bag residuals for the headline case.
 
-WHY NOT EnbPI. No target-disease data enters training by design, so there are ZERO out-of-bag
-residuals for the headline case; bootstrapping the adapter alone prices the wrong variance. Also
-~300 GPU-hours.
-
-THE DESIGN. Fit the correction where we DO have data -- the five LDO3 held-out panels -- and
-transfer it. Those panels are the right calibration population because each is a frozen trunk plus a
-fresh adapter on a disease the trunk never saw, which is exactly what Ebola gets. Quantiles for the
-adapted arm are already archived for all five panels at five seeds, so this costs no GPU.
+THE DESIGN. Fit the correction on the five LDO3 held-out panels and transfer it. Each is a frozen
+trunk plus a fresh adapter on a disease the trunk never saw, which is exactly what Ebola gets, and
+their quantiles are already archived, so this costs no GPU.
 
   score      E = max(q_lo - y, y - q_hi) / (q_hi - q_lo + eps)
   fit        lambda_h = conformal (1-alpha) quantile of E pooled over the calibration panels
   apply      [q_lo - lambda_h*w, q_hi + lambda_h*w],  w = q_hi - q_lo
   adapt      alpha_{t+1} = alpha_t + gamma*(alpha - f_t),  lambda re-read at level 1 - alpha_t
 
-E is normalised by the interval width so panels at wildly different count scales are comparable --
-dengue's test counts have median 2 and mean 26.8, covid's median 4,605 and mean 8,808, a ~200x gap
-that an unnormalised residual would let covid dominate entirely.
-
-THE ACI UPDATE IS ON THE FRACTION, NOT THE INDICATOR. f_t is the miscovered FRACTION across the
-districts observed at origin t, not a binary miss. Same telescoping argument and same bound, much
-lower variance per step, because each Ebola step is then informed by up to 46 districts instead of
-one outcome. (61 districts exist; the most ever observed at a single origin is 46 at h3/h5/h10 and
-45 at h15.)
+E is width-normalised so panels at wildly different count scales are comparable: dengue's test
+counts have median 2, covid's 4,605, a ~200x gap that an unnormalised residual would let covid
+dominate. f_t is the miscovered FRACTION across districts observed at origin t, not a binary miss:
+same bound, much lower variance per step.
 
 TWO THINGS THAT MUST TRAVEL WITH ANY NUMBER THIS PRODUCES.
-
   * NO FINITE-SAMPLE GUARANTEE ON EBOLA. lambda_h is fitted on other diseases, so it is a TRANSFER
-    of the correction, not a conformal guarantee at the target. The guarantee comes from ACI's
-    online adaptation, not from the initialisation. Said here so a reviewer does not have to say it.
-  * THE T=18 BOUND. Ebola is scored at 18 origins, so ACI's worst case is
-    (alpha_1 + gamma)/(T*gamma) = (0.1 + 0.05)/(18*0.05) = 0.167 -- coverage could sit 17 points off
-    nominal in theory. Realised will be far better, but the bound goes in the paper.
-    The development panels have 47-630 origins, so their ACI result is OPTIMISTIC relative to
-    Ebola's 18 steps. Do not read the dev coverage as a prediction of the Ebola coverage.
+    of the correction. The guarantee comes from ACI's online adaptation, not the initialisation.
+  * THE T=18 BOUND. Ebola is scored at 18 origins, so ACI's worst case is (alpha_1 + gamma)/(T*gamma)
+    = 0.167: coverage could sit 17 points off nominal in theory. The dev panels have 47-630 origins,
+    so their ACI result is OPTIMISTIC relative to Ebola and must not be read as a prediction of it.
 
-LEAVE-ONE-PANEL-OUT IS THE HONEST VALIDATION. Fitting lambda_h on all five panels and scoring those
-same five is in-sample and will flatter itself. Ebola is a SIXTH panel the calibration never saw, so
---lopo (fit on four, score the fifth) is the number that estimates what Ebola gets. Both are
-reported; the in-sample row is what the frozen artefact contains, the LOPO row is what it is worth.
+--lopo IS THE HONEST VALIDATION. Fitting on all five panels and scoring those same five is in-sample.
+Ebola is a sixth panel the calibration never saw, so fit-on-four-score-the-fifth is what estimates
+what Ebola gets. Both are reported; the in-sample row is what the frozen artefact contains, the LOPO
+row is what it is worth. gamma and alpha_1 are fixed up front and lambda_h is written with a content
+digest, so the wrapper stays deterministic and compatible with scoring Ebola exactly once.
 
-FROZEN AND HASHED. gamma and alpha_1 are fixed up front and the fitted lambda_h are written to
-results/misc/conformal_config.json with a content digest, so the whole wrapper is deterministic
-given the data and stays compatible with scoring Ebola exactly once.
-
-    conda run -n ebola-train python -m conformal --selfcheck   # logic only, no data, seconds
-    conda run -n ebola-train python -m conformal --fit         # fit lambda_h, validate, freeze
-    conda run -n ebola-train python -m conformal --fit --lopo  # leave-one-panel-out validation too
-
-Run as a MODULE from the repo root, or `import bundles` fails.
+    conda run -n ebola-train python -m conformal --selfcheck        # logic only, no data
+    conda run -n ebola-train python -m conformal --fit --lopo       # fit, validate, freeze
+    conda run -n ebola-train python -m conformal --apply            # apply the frozen config
 """
 from __future__ import annotations
 

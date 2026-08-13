@@ -8,22 +8,18 @@ it without dragging in the torch/model stack.
     lodo/     encoder_lodo[_zeroshot]__<ds>__seed<S>...      (leave-one-DATASET-out transfer probe)
               encoder_ldo[_zeroshot]__<ds>__seed<S>...       (leave-one-DISEASE-out, Week-4 fold fix)
 
-  Two fold structures live side by side in lodo/ and MUST stay distinguishable (client D1: "report
-  both structures as separate tables"). `encoder_lodo__` holds out one DATASET; `encoder_ldo__` holds
-  out one DISEASE (all 3 influenza sets as a single fold, vs dengue). Records also carry an explicit
-  `fold_structure` field -- the filename is the fast path, the field is the one a reader can trust.
-  Note `encoder_ldo__` and `encoder_lodo__` are distinct strings, neither a prefix of the other, so
-  route order between them is not load-bearing; zeroshot goes first only to match the existing style.
+  Two fold structures live side by side in lodo/ and MUST stay distinguishable (client D1). Records
+  also carry a `fold_structure` field: the filename is the fast path, the field is the one a reader
+  can trust.
     ebola/    encoder_ebola[_zeroshot]__<arm>__seed<S>...     (the case study, scored once)
               encoder_ebola__alldev__seed<S>__ckpt.pt         (the all-dev trunk)
     naive/    naive__<ds>.json + naive__<ds>__<floor>__{pernode,perorigin}.npz
     reports/  *.txt / *.log  human-readable summaries and run logs
     misc/     anything unrouted, and *smoke* throwaways
-  results/day11_diagnostics.json stays at the root -- it's the one git-tracked artifact and docs cite
-  it by that exact path, so routing keeps it in place (subdir '.').
+  results/day11_diagnostics.json stays at the root: docs cite it by that exact path.
 
-Every write goes through rpath(fname, make=True); every read that names a file goes through rpath(fname).
-Change a location HERE and both ends follow.
+Every write goes through rpath(fname, make=True), every read through rpath(fname). Change a location
+HERE and both ends follow.
 """
 from pathlib import Path
 

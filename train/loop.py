@@ -1,21 +1,18 @@
-"""train/loop.py -- single-disease training + naive floors (Week-3 Day 13, G6 prerequisite).
+"""Single-disease training + naive floors.
 
-One forward pass emits all four horizons (direct multi-horizon, C5), so a run is one model per
-(dataset, seed), not per horizon: 4 datasets x 5 seeds = 20 runs. Selection is on the val fold
-only; the test fold is scored once at the end. Everything lands in results/*.json as one record per
-(model, dataset, horizon, seed, metric) -- Week 6's tables are generated from these, never typed.
+One forward pass emits all four horizons (C5), so a run is one model per (dataset, seed), not per
+horizon. Selection is on the val fold only; the test fold is scored once at the end. Records land in
+results/*.json, one per (model, dataset, horizon, seed, metric), and every table is generated from
+them, never typed.
 
-Two silent-bug guards from the guide (Task 13.2), asserted at run start:
-  * pinball loss is computed in MODEL space (targets ~ unit scale): assert targets.abs().median()<10;
-  * scaler round-trip: invert_scaler(apply_scaler(raw)) == raw on observed cells, to 1e-4.
+Two silent-bug guards asserted at run start: the pinball loss is computed in MODEL space
+(targets.abs().median() < 10), and the scaler round-trips to 1e-4 on observed cells. Naive floors
+are scored on the identical cells: persistence, seasonal-naive (with a recorded persistence fallback
+where y[t+h-52] is missing), and the per-node train mean.
 
-Naive floors (Task 13.3), scored on the identical cells: persistence, seasonal-naive (with a
-recorded persistence fallback where y[t+h-52] is missing/unobserved), and the per-node train mean.
-
-Run from the repo root as a module:
   python -m train.loop --dataset influenza_japan --seed 42     # one run
-  python -m train.loop --all                                   # the 20-run matrix + naive floors
-  python -m train.loop --smoke                                 # japan, 1 seed, few epochs (CI-cheap)
+  python -m train.loop --all                                   # the full matrix + naive floors
+  python -m train.loop --smoke                                 # japan, 1 seed, few epochs
 """
 from __future__ import annotations
 
@@ -121,7 +118,7 @@ def _fit_bias_correction(enc, ad, Z, A, Mt, b, origins, val_mask, grid=None):
 def train_one(name, seed, epochs=80, lr=1e-3, wd=1e-4, batch_origins=8, patience=15,
               device=DEVICE, verbose=True, zero_channels=None,
               training_regime="single", sampler=None, gate_mode="learned", topo_aug="none",
-              gate_read=True, quant_out=None, run_out=None):
+              gate_read=True, quant_out=None, run_out=None, epi=None):
     assert not name.startswith("ebola"), \
         "ebola must never enter trunk training/selection (§0.5, C8); Week-5 few-shot is a separate path"
     torch.manual_seed(seed)
@@ -148,6 +145,15 @@ def train_one(name, seed, epochs=80, lr=1e-3, wd=1e-4, batch_origins=8, patience
 
     params = list(enc.parameters()) + list(ad.parameters())
 
+    # Epi-informed ablation (Task 14.3 / CONFIRM-P3), off unless a caller asks for it. Imported
+    # lazily so train/ never depends on ablation/ in the default path. The penalty is added to the
+    # TRAIN objective only: model selection stays on val pinball in both arms, or the ablation would
+    # be comparing two different early-stopping criteria as well as two different losses.
+    sd_t = None
+    if epi:
+        from ablation.epi_penalty import growth_penalty
+        sd_t = torch.tensor(np.asarray(b.scaler["std"], dtype=np.float32), device=device)
+
     def run_phase(origins, train_mode):
         enc.train(train_mode); ad.train(train_mode)
         total, n = 0.0, 0
@@ -163,6 +169,11 @@ def train_one(name, seed, epochs=80, lr=1e-3, wd=1e-4, batch_origins=8, patience
             with ctx:
                 pred = ad(enc(window_slice(Z, t), A, Mt[:, t]))                  # [N,H,Q]
                 loss = pinball_loss(pred, tgt, msk)
+                if epi and train_mode:
+                    pen = growth_penalty(pred, msk, ymod[:, t], Mt[:, t], sd_t, epi["r_max"])
+                    epi.setdefault("_seen", [0.0, 0])
+                    epi["_seen"][0] += float(pen); epi["_seen"][1] += 1
+                    loss = loss + epi["lam"] * pen
             if train_mode:
                 loss.backward()
                 pending += 1

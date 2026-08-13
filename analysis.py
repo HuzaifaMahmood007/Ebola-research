@@ -1,23 +1,15 @@
-"""analysis.py -- offline post-hoc reads over the artifacts train/loop.py emits. No model, no
-retraining: everything here consumes results/*.npz.
+"""Offline post-hoc reads over the artifacts train/loop.py emits. No model, no retraining.
 
-  --ci     item 6: paired bootstrap-over-origins CIs. Resample origin indices with replacement
-           (B=10,000), rebuild the country-macro from the per-(origin,country) sufficient stats,
-           take 2.5/97.5 percentiles. For a comparison, resample the SAME origins for both models
-           and build the CI on the DIFFERENCE (the pairing is what cancels japan's +-7-10% seed sd).
-           Wilcoxon across the 5 seed-matched runs is printed as SUPPORTING ONLY (n=5, underpowered).
-  --reads  items 7-8: per-dataset gate distribution (mean, IQR, frac nodes g<0.05) and normalised
-           spatial contribution (mean, IQR), from the per-node gate readout, pooled over seeds.
-  --selfcheck  synthetic checks of the bootstrap engine + reads aggregation (need no artifacts).
+  --ci     paired bootstrap-over-origins CIs (B=10,000). For a comparison, resample the SAME
+           origins for both models and build the CI on the DIFFERENCE; the pairing is what cancels
+           japan's +-7-10% seed sd. Wilcoxon over the 5 seed-matched runs prints as SUPPORTING ONLY.
+  --reads  per-dataset gate distribution and normalised spatial contribution, pooled over seeds.
+  --selfcheck  synthetic checks of the bootstrap engine and reads aggregation, no artifacts needed.
 
-METRIC CAVEAT (item 6): the saved sae/sse/n are node-pooled within country, so the reconstructed
-country-macro is CELL-POOLED, not the NODE-AVERAGED headline (score.aggregate). Equal on the dense
-influenza panels; diverges on dengue. The CI is on the cell-pooled metric -- stated in every table.
-PCC is not covered here: it is not additive over origins from sae/sse/n (would need Sx/Sy/Sxx/... per
-origin-country). RMSE/MAE only.
+CAVEAT: the saved sae/sse/n are node-pooled within country, so the reconstructed country-macro is
+CELL-POOLED, not the node-averaged headline. Equal on the dense influenza panels, diverges on
+dengue, and stated on every table. RMSE/MAE only: PCC is not additive over origins from sae/sse/n.
 
-Run from the repo root:
-  PYTHONNOUSERSITE=1 conda run -n ebola-train python analysis.py --selfcheck
   PYTHONNOUSERSITE=1 conda run -n ebola-train python analysis.py --ci --reads
 """
 from __future__ import annotations

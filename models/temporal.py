@@ -1,6 +1,5 @@
-"""Temporal encoder (plan §3.2): dilated causal TCN, WaveNet block with the adaptive-adjacency
-machinery removed. Nodes go into the batch dimension, so it is node-count-agnostic for free (C2).
-The receptive field is asserted at construction (Correction B) -- a §8 gate, not a comment."""
+"""Dilated causal TCN, WaveNet block without the adaptive-adjacency machinery. Nodes go into the
+batch dimension, so it is node-count-agnostic (C2). Receptive field is asserted at construction."""
 from __future__ import annotations
 
 import torch
