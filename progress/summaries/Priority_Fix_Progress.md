@@ -777,3 +777,149 @@ recorded in §5.1 and **should not be quoted as a clean comparison**.
 - **`--apply` prints per-seed rows and no aggregate.** The §10.2 table was produced with a throwaway
   script. Copied straight from the tool, the output would breach the project's own dispersion rule,
   so the aggregation belongs in the tool.
+
+---
+
+## 11. 2026-08-17 — the ceiling got stronger, and the transfer verdict did not move
+
+Three things landed today, all read-only or cheap, none of them a retrain. Two close audit findings;
+the third changes how the transfer result can be defended.
+
+### 11.1 Seed ensembling the single-disease ceiling — free, and it was owed
+
+`diagnostics/seed_ensemble.py`. The mean over the five seeds of the count-space median forecast,
+rebuilt from the `__quantiles.npz` archives `write_quantiles` already wrote for all 25 ceiling runs.
+**No GPU, no retraining.** This is the one accuracy lever the client's work order permits by name
+("seed ensembling — take it, it's free").
+
+For squared error `MSE(mean of K) = mean(MSE) − across-seed variance`, so a gain is arithmetic
+whenever seeds disagree. The size is the only open question, and dengue h3 had a per-seed sd of 6.04
+on a mean of 42.06 — real variance to collect.
+
+| cell | per-seed mean | ensemble | vs best floor, before → after |
+|---|---|---|---|
+| dengue h3 RMSE | 42.06 ± 6.04 | **37.28** (+11.4%) | −33.4% → **−18.2%** vs persistence |
+| dengue h5 RMSE | 49.94 ± 6.05 | **44.87** (+10.2%) | −14.0% → **−2.4%** vs persistence |
+| influenza_us-regions h10 RMSE | 787.81 ± 40.5 | **736.95** (+6.5%) | −9.2% → **−2.2%** vs seasonal |
+| influenza_us-regions h15 RMSE | 812.80 ± 68.1 | **760.99** (+6.4%) | −13.6% → **−6.4%** vs seasonal |
+
+Three cells flipped that nobody asked for: `influenza_us-states` now clears its floor at **all four
+horizons** on both RMSE and MAE, and dengue h10/h15 now **beat** train_mean (+3.7%/+0.1% RMSE,
++14.4%/+10.8% MAE). Across the grid the ceiling goes from **6 of 20 to 8 of 20** cells beating their
+best naive floor on RMSE, and 7 to 8 on MAE.
+
+**The control that makes this quotable.** `--selfcheck` rebuilds ONE seed from its own archive and
+rescores it through `score_predictions`, and requires it to reproduce that seed's released JSON:
+**28 cells to 1e-6**, plus a mutation asserting the median quantile index is distinguishable on the
+selfcheck panel. A wrong quantile index or a shifted origin axis would have moved every ensemble
+cell in the same direction and looked entirely plausible.
+
+**`encoder_mc` cannot be ensembled this way.** The mean-correction is added in MODEL space before
+the scaler is inverted (`train/loop.py:222`) and the archives hold post-inversion counts only. The
+ensemble is the median arm and is comparable to `encoder`, never to `encoder_mc`.
+
+### 11.2 dengue h3: concentrated, not uniform — and the aggregation is doing half the work
+
+The residual −18.2% is not spread across the panel. Of 6,161 scored nodes, the **worst 1% (61 nodes)
+hold 43.2% of the excess error**; the worst 5% hold 70.5%, the worst 25% hold 96.9%.
+
+By country, encoder vs persistence RMSE at h3 on the shared node set: bolivia (9 nodes) **+105.9%**,
+nicaragua (17) +57.5%, mexico (32) +30.4%, brazil (5,189) +21.5% — against colombia (718) **−8.6%**
+and dominican republic (32) **−16.4%**, where the encoder wins.
+
+And the estimand matters: on identical nodes, **country-macro is 49.98 vs 31.53 (−58.5%) while
+node-mean is 23.05 vs 18.83 (−22%)**. The equal-weight country macro hands 1/12 of the score to a
+9-node country. That is audit finding M9 live in the headline.
+
+**The aggregation was NOT changed.** Introducing a minimum-node floor after seeing the result would
+move our own number and is indefensible however good the reasoning; it goes in the paper as a stated
+limitation with both columns shown. Japan (−32% to −56% vs seasonal) and COVID (−16% to −134%) are
+disclosed, not fixed — the Japan gap is annual periodicity the w=20 window cannot reach, and w>=53
+is blocked by both the receptive field (32) and the Ebola case study's 38-week span; COVID is the
+Omicron fold boundary already recorded in `LDO3_Results.md` section 1.
+
+### 11.3 The symmetric ensemble — the transfer verdict survives a stronger opponent
+
+A stronger ceiling makes transfer look worse, because every transfer number is a ratio against it.
+That is the honest consequence and it points the same way D18 already did. But ensembling **only**
+the ceiling would be the Week-3 reference mismatch pointing the other way — our best single-disease
+system against a single transfer run — so both arms get the same treatment or neither does.
+
+`--vs-transfer`: ensembled ceiling against the ensembled `encoder_ldo3` adapted arm, same datasets,
+same origins (asserted), and **one shared bootstrap draw applied to both arms** so the pairing is
+real and origin-to-origin difficulty cancels.
+
+**Result over the 36 attributable cells: 1 better, 10 within noise, 25 worse.**
+The per-seed table in `LDO3_Results.md` says **1 / 10 / 25**. The horizon gradient matches cell for
+cell:
+
+| horizon | transfer better | within noise | transfer worse |
+|---|---|---|---|
+| h3 | 1 | 5 | 4 |
+| h5 | 0 | 4 | 6 |
+| h10 | 0 | 1 | 7 |
+| h15 | 0 | 0 | 8 |
+
+Identical to the published table. **The conclusion is invariant to a change of estimator (single
+runs to ensembles), a change of significance instrument (seed-paired t at n=5 to paired origin
+bootstrap at B=10,000), and a materially stronger reference.** Individual cells moved — japan h3
+went from a loss to within noise (+9.8%), us-states h3 became a genuine transfer win (+3.5%, CI
+[+1.0, +7.0]) — but no verdict count changed. This is worth more to the paper than the original
+table was, because it pre-empts "you beat a weak baseline".
+
+Three limits travel with it:
+
+- **The seed axis is consumed.** An ensemble is one value, so the seed-paired t-interval cannot be
+  computed on it. This is a SECOND table, not a replacement; the per-seed record remains the one
+  carrying seed dispersion.
+- **Point and interval are on different estimands and are kept in separate labelled columns.** The
+  delta is node-averaged (the project headline); the CI is cell-pooled, because that is what the
+  per-(origin, country) sufficient statistics support. Printing one beside the other as a single
+  claim is defect M1 and is not done here.
+- **Zero-shot cannot be treated this way at all** — that arm wrote **0** quantile archives, the
+  omission `LDO3_Results.md` section 5 records. The symmetric treatment covers the adapted arm only,
+  which is the optimistic bound the headline rests on. The zero-shot table stays single-run and
+  labelled as such.
+
+### 11.4 Gate-off ablation — built, not yet run (M10)
+
+`ablation/run_gate_ablation.py` + `run_gate_night.py`. Across **13,177 records on disk `gate_mode`
+is `learned`, null or absent and never once `off`** — so "the graph helps" is untested in both
+directions. We have measured the gate's VALUE (g = 0.271 japan to 0.604 dengue, spatial contribution
+0.40–0.64, `g<0.05` fraction 0.0% everywhere) but a gate being open is not the claim that it is
+useful.
+
+Identical trainer, identical seeds, identical 80 epochs; the only change is
+`SharedEncoder(gate_mode="off")`, which forces g=0 and is already proven by
+`tests/test_encoder_invariants.py` to nest the graph-free model exactly. Paired against the released
+run at the same seed. ~13.5 h, dengue last (96% of the cost) so an interrupted night still leaves
+four readable panels.
+
+**Ceiling on the claim:** g=0 removes neighbour mixing but keeps the LTR degree feature, so this
+bounds the value of NEIGHBOUR INFORMATION, not of the graph in total. A shuffled-adjacency arm is
+the control that would separate "structure helps" from "any adjacency helps"; it is deliberately not
+built, because if the graph does not help at all there is nothing left for a shuffle to distinguish.
+
+### 11.5 Lag-h ACI — M5 closed in code
+
+`aci_run()` now takes `lag`. The lag is not a tuned parameter: a forecast issued at origin *t* is
+about week *t+h* and cannot be scored until *t+h*, so at step *k* only outcomes from origins
+*j <= k-h* have landed. **lag = h, per horizon, forced by the definition of the horizon.**
+
+`lag=1` is retained as the control and is asserted **bit-identical** to the pre-registered loop.
+`--apply` now prints `+ACIlag` beside `+ACI`, with `upd` = how many origins ever adapted, and names
+the gap between them as the size of the oracle.
+
+At T=18 Ebola origins the honest stream adapts on **15/13/8/3 of 18** origins at h3/h5/h10/h15 — at
+h15 fifteen of eighteen origins run at alpha_1 and ACI barely runs at all. That is the finding, not
+a footnote: the old h15 lift from 0.464 to 0.794 was bought with up to 14 weeks of future truth.
+
+The frozen wrapper config is **not** touched — its digest predates the first scored Ebola record and
+that ordering is itself a claim.
+
+### 11.6 Commits
+
+`883314f` gate-off arm, lag-h ACI, seed ensemble off the archives ·
+`bfba94c` symmetric ensemble, verdict does not move ·
+this section.
+
