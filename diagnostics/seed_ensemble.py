@@ -61,17 +61,17 @@ def field(ds):
     return HEADLINE.get(ds, "node_mean")
 
 
-def _archive(ds, seed):
-    return rpath(f"encoder__{ds}__seed{seed}__quantiles.npz")
+def _archive(ds, seed, prefix="encoder"):
+    return rpath(f"{prefix}__{ds}__seed{seed}__quantiles.npz")
 
 
-def ensemble_preds(ds, seeds=SEEDS):
+def ensemble_preds(ds, seeds=SEEDS, prefix="encoder"):
     """{h: [N,T] count-space mean-over-seeds median forecast}, plus the shared origin vector.
 
     One horizon at a time and one seed at a time: dengue is [7165, 630, 5] float32 per horizon, so
     holding all five seeds x four horizons at once is ~1.8 GB for a column we then throw away.
     """
-    paths = [(s, _archive(ds, s)) for s in seeds]
+    paths = [(s, _archive(ds, s, prefix)) for s in seeds]
     have = [(s, p) for s, p in paths if Path(p).exists()]
     if len(have) < 2:
         return None, None, [s for s, _ in have]
@@ -181,6 +181,85 @@ def report(datasets, seeds=SEEDS):
     print()
 
 
+def compare_transfer(datasets, seeds=SEEDS, transfer="encoder_ldo3", B=10000, rng_seed=0):
+    """Ensembled ceiling vs ensembled transfer arm -- the like-for-like fight.
+
+    WHY SYMMETRY IS THE POINT. Ensembling only the ceiling would compare our best single-disease
+    system against a single transfer run, which is the same reference mismatch that produced the
+    retracted +24% Week-3 headline, just pointing the other way. Both sides get the same treatment
+    or neither does.
+
+    TWO ESTIMANDS, NEVER MIXED (audit M1). The delta is reported on the node-averaged country-macro,
+    which is the headline everywhere else in this project. The INTERVAL is a paired bootstrap over
+    origins on the CELL-POOLED country-macro, because that is the statistic the sufficient stats
+    support -- and it is the same instrument LDO3_Results.md's 25-of-36 tally already uses. They are
+    printed as separate columns with their own labels. Printing the cell-pooled interval beside the
+    node-averaged point is exactly the defect M1 was raised about.
+
+    Both arms are resampled with the SAME origin draw, which is what makes it paired: the shared
+    origin-to-origin difficulty cancels instead of being counted twice.
+    """
+    from analysis import _cnt_matrix, _macro_dist, _point_macro
+
+    print(f"\n{'=' * 112}\nSYMMETRIC ENSEMBLE :: ceiling(encoder) vs transfer({transfer}), both "
+          f"5-seed ensembles of the count-space median\n{'=' * 112}")
+    tally = {"transfer better": 0, "within noise": 0, "transfer worse": 0}
+    rng = np.random.default_rng(rng_seed)
+    for ds in datasets:
+        c_pred, c_ctx, c_got = ensemble_preds(ds, seeds, "encoder")
+        t_pred, t_ctx, t_got = ensemble_preds(ds, seeds, transfer)
+        if c_pred is None or t_pred is None:
+            print(f"\n  {ds}: archives missing (ceiling {c_got}, transfer {t_got}) -- skipped")
+            continue
+        if not np.array_equal(c_ctx[1], t_ctx[1]):
+            raise SystemExit(f"{ds}: ceiling and transfer scored different origins; not comparable")
+        if c_got != t_got:
+            print(f"\n  {ds}: WARNING ceiling seeds {c_got} != transfer seeds {t_got}")
+
+        b, origins = c_ctx
+        c_rec, _, c_po = score_predictions("ens", ds, None, c_pred, b, origins)
+        t_rec, _, t_po = score_predictions("ens", ds, None, t_pred, b, origins)
+        c_pt = {(r["horizon"], r["metric"]): r[field(ds)] for r in c_rec}
+        t_pt = {(r["horizon"], r["metric"]): r[field(ds)] for r in t_rec}
+
+        print(f"\n  {ds}   seeds {c_got}   node-averaged field={field(ds)}")
+        print(f"    {'h':>3} {'metric':>5} | {'ceiling':>10} {'transfer':>10} {'delta%':>8} "
+              f"(node-avg) | {'delta% (cell-pooled)':>21} {'95% CI':>22} | verdict")
+        for h in bundles.HORIZONS:
+            K = c_po[f"h{h}__sae"].shape[0]
+            CNT = _cnt_matrix(K, B, rng)                       # ONE draw, applied to both arms
+            for m in ("rmse", "mae"):
+                cp, tp = c_pt.get((h, m)), t_pt.get((h, m))
+                if cp is None or tp is None:
+                    continue
+                d_node = (cp - tp) / cp * 100                  # + means transfer BETTER
+                args = (lambda po: (po[f"h{h}__sae"], po[f"h{h}__sse"], po[f"h{h}__n"]))
+                c_cell, t_cell = _point_macro(*args(c_po), m), _point_macro(*args(t_po), m)
+                d_cell = (c_cell - t_cell) / c_cell * 100
+                cd = _macro_dist(*args(c_po), CNT, m)
+                td = _macro_dist(*args(t_po), CNT, m)
+                rel = (cd - td) / cd * 100                     # paired: same CNT on both arms
+                lo, hi = np.nanpercentile(rel, [2.5, 97.5])
+                if lo <= 0 <= hi:
+                    v = "within noise"
+                else:
+                    v = "transfer better" if lo > 0 else "transfer worse"
+                tally[v] += 1
+                print(f"    {h:>3} {m:>5} | {cp:10.3f} {tp:10.3f} {d_node:+8.1f} "
+                      f"{'':11s} | {d_cell:+21.1f} {f'[{lo:+.1f}, {hi:+.1f}]':>22} | {v}")
+
+    tot = sum(tally.values())
+    print(f"\n  TALLY over {tot} cells: {tally['transfer better']} transfer better, "
+          f"{tally['within noise']} within noise, {tally['transfer worse']} transfer worse.")
+    print(f"  Reference: the 5-seed ENSEMBLED single-disease ceiling on the same dataset and the "
+          f"same origins. Positive delta = transfer better.")
+    print(f"  The delta% column is NODE-AVERAGED (the project headline). The CI is a paired "
+          f"bootstrap over origins (B={B:,}) on the CELL-POOLED macro, printed beside its OWN "
+          f"point so the two estimands are never mixed (audit M1).")
+    print(f"  Ensembling consumes the seed axis, so the seed-paired t-interval used in "
+          f"LDO3_Results.md cannot be computed here; that table stays as the per-seed record.\n")
+
+
 def _selfcheck():
     """One seed, rebuilt from its own archive and rescored, must reproduce its released record.
 
@@ -238,10 +317,16 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--datasets", nargs="+", default=list(PANELS))
     ap.add_argument("--seeds", type=int, nargs="+", default=list(SEEDS))
+    ap.add_argument("--vs-transfer", nargs="?", const="encoder_ldo3", default=None,
+                    help="symmetric comparison: ensembled ceiling vs an ensembled transfer family")
+    ap.add_argument("--boot", type=int, default=10000)
     ap.add_argument("--selfcheck", action="store_true")
     a = ap.parse_args()
     if a.selfcheck:
         return _selfcheck()
+    if a.vs_transfer:
+        compare_transfer(a.datasets, tuple(a.seeds), a.vs_transfer, B=a.boot)
+        return 0
     report(a.datasets, tuple(a.seeds))
     return 0
 
