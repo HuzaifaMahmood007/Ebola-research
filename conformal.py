@@ -122,11 +122,20 @@ def widen(lo, hi, lam):
     return lo - lam * w, hi + lam * w
 
 
-def aci_run(cells, sorted_E, alpha=ALPHA, gamma=GAMMA, sorted_w=None):
+def aci_run(cells, sorted_E, alpha=ALPHA, gamma=GAMMA, sorted_w=None, lag=1):
     """Online ACI over an ordered origin stream. Returns (covered, total, mean_width, alpha_trace).
 
     `cells` is [(y, lo, hi), ...] in origin order -- one entry per origin, each holding every
     district observed at that origin. One update per origin, on the miscovered FRACTION.
+
+    LAG IS THE HONESTY KNOB (audit M5). A forecast issued at origin t is not resolved until t+h, so
+    its miscoverage cannot inform the alpha used at t+1 -- yet lag=1, the textbook loop, does exactly
+    that. At h=15 over 18 origins it consumes truth up to 14 weeks ahead of the forecast that would
+    have used it. lag=1 is kept because it is what the pre-registered run did and is the control;
+    lag=h is the stream a forecaster could actually have run. Report BOTH; never the first alone.
+
+    Updates fire for k >= lag, so exactly max(0, T - lag) of T origins ever adapt; the rest run at
+    alpha_1. That count is the finding at long horizons, not a footnote.
 
     An origin whose alpha_t has been driven to <= 0 gets an INFINITE interval. That is ACI behaving
     as defined, not a bug, but it makes the mean width meaningless, so `n_inf` is counted and
@@ -134,8 +143,11 @@ def aci_run(cells, sorted_E, alpha=ALPHA, gamma=GAMMA, sorted_w=None):
     a_t = alpha
     cov = tot = n_inf = 0
     wsum = 0.0
-    trace = []
-    for y, lo, hi in cells:
+    trace, fs = [], []
+    for k, (y, lo, hi) in enumerate(cells):
+        j = k - lag                                # origin j's outcome has landed by step k
+        if j >= 0:
+            a_t = a_t + gamma * (alpha - fs[j])    # the telescoping update, delayed by `lag`
         lam = conformal_lambda(sorted_E, a_t, sorted_w)
         n_inf += 0 if np.isfinite(lam) else 1
         L, H = widen(lo, hi, lam) if np.isfinite(lam) else (
@@ -145,9 +157,10 @@ def aci_run(cells, sorted_E, alpha=ALPHA, gamma=GAMMA, sorted_w=None):
         cov += int(inside.sum()); tot += int(inside.size)
         wsum += float(np.sum(H - L)) if np.isfinite(lam) else np.inf
         trace.append(a_t)
-        a_t = a_t + gamma * (alpha - f_t)          # the telescoping update
-    trace.append(a_t)                              # T+1 entries: the alpha each step USED, then the
-    return cov, tot, (wsum / tot if tot else float("nan")), trace, n_inf   # one the next would use
+        fs.append(f_t)
+    j = len(cells) - lag                           # T+1 entries: the alpha each step USED, then the
+    trace.append(a_t + gamma * (alpha - fs[j]) if 0 <= j < len(fs) else a_t)   # one the next would use
+    return cov, tot, (wsum / tot if tot else float("nan")), trace, n_inf
 
 
 def aci_worst_case(T, alpha=ALPHA, gamma=GAMMA):
@@ -346,10 +359,16 @@ def apply_to_archive(quant_npz, bundle, phase, cfg, arm_label):
         # so the E pool is refitted from the same calibration panels the config names.
         E = _calibration_pool(cfg)
         acic, acin, aciw, _, ninf = aci_run(stream, E[h][0], alpha, gamma, E[h][1])
+        # M5: the same loop on the stream a forecaster could have run. lag=h, so an outcome informs
+        # alpha only once it has actually been observed. Reported BESIDE the lag-1 column, never
+        # instead of it -- the difference between them IS the size of the oracle.
+        lagc, lagn, lagw, _, laginf = aci_run(stream, E[h][0], alpha, gamma, E[h][1], lag=h)
         rows.append(dict(arm=arm_label, h=h, T=len(stream), n=rawn,
                          lam=lam, raw_cov=rawc / rawn, raw_w=raww / rawn,
                          stat_cov=statc / rawn, stat_w=statw / rawn,
                          aci_cov=acic / acin if acin else float("nan"), aci_w=aciw,
+                         lag_cov=lagc / lagn if lagn else float("nan"), lag_w=lagw,
+                         lag_upd=max(0, len(stream) - h), lag_inf=laginf / len(stream),
                          inf_frac=ninf / len(stream)))
     return rows
 
@@ -446,6 +465,24 @@ def _selfcheck():
     assert abs(a_half - (a_none + a_full) / 2) < 1e-12, \
         "a half-missed origin must land midway between all-hit and all-miss"
     assert a_full < a_half < a_none, "more misses must mean a lower alpha_t"
+
+    # 6b. THE LAG (M5). lag=1 must reproduce the pre-registered run bit for bit, or the control
+    #     column is not the thing that was reported. A longer lag must adapt strictly LESS: with
+    #     lag >= T no outcome ever lands, so every origin runs at alpha_1 and the trace is flat.
+    tr_1 = aci_run(miss, Ecal, 0.1, 0.05, lag=1)[3]
+    assert tr_1 == tr, "lag=1 must be bit-identical to the un-lagged loop (it is the control)"
+    #     The reportable quantity is how many origins ran at alpha_1 before any feedback landed --
+    #     `upd` in the apply table. It must be exactly `lag`, per horizon. NOT asserted on the final
+    #     alpha: an all-miss stream drives alpha <= 0, the interval goes infinite, everything then
+    #     "covers", and alpha climbs back -- so the trace is not monotone and an endpoint comparison
+    #     would be testing the bounce, not the lag.
+    T = len(miss)
+    for lg in (1, 3, 5, T, T + 4):
+        used = aci_run(miss, Ecal, 0.1, 0.05, lag=lg)[3][:T]      # the alphas each origin USED
+        frozen = next((i for i, a in enumerate(used) if a != 0.1), T)
+        assert frozen == min(lg, T), f"lag={lg}: {frozen} origins ran at alpha_1, expected {min(lg, T)}"
+    #     and with feedback available the honest stream must still be a real experiment
+    assert aci_run(miss, Ecal, 0.1, 0.05, lag=3)[3][T - 1] < 0.1, "lag=3 over 20 origins must adapt"
 
     # 7. the published bound
     assert abs(aci_worst_case(18) - 0.16666666) < 1e-6, "T=18 worst case must be 0.167"
@@ -594,18 +631,31 @@ def _apply(a):
         sys.exit("no Ebola quantile archives found -- nothing to apply the wrapper to")
 
     print(f"\n{'arm':30s} {'h':>3s} {'T':>3s} {'n':>7s} | "
-          f"{'raw cov':>8s} {'+lam':>8s} {'+ACI':>8s} | {'raw w':>10s} {'+lam w':>10s} "
-          f"{'+ACI w':>10s} {'inf%':>6s}")
+          f"{'raw cov':>8s} {'+lam':>8s} {'+ACI':>8s} {'+ACIlag':>8s} {'upd':>4s} | "
+          f"{'raw w':>10s} {'+lam w':>10s} {'+ACI w':>10s} {'+lag w':>10s} {'inf%':>6s}")
     for r in rows:
         print(f"{r['arm']:30s} {r['h']:3d} {r['T']:3d} {r['n']:7d} | "
-              f"{r['raw_cov']:8.3f} {r['stat_cov']:8.3f} {r['aci_cov']:8.3f} | "
-              f"{r['raw_w']:10.1f} {r['stat_w']:10.1f} {r['aci_w']:10.1f} "
+              f"{r['raw_cov']:8.3f} {r['stat_cov']:8.3f} {r['aci_cov']:8.3f} "
+              f"{r['lag_cov']:8.3f} {r['lag_upd']:4d} | "
+              f"{r['raw_w']:10.1f} {r['stat_w']:10.1f} {r['aci_w']:10.1f} {r['lag_w']:10.1f} "
               f"{100 * r['inf_frac']:6.1f}")
 
     T = max(r["T"] for r in rows)
     print(f"\nACI worst case at T={T}: {aci_worst_case(T, cfg['alpha_1'], cfg['gamma']):.3f} "
           f"-- coverage may sit this far from nominal in theory.")
     print(f"NO FINITE-SAMPLE GUARANTEE ON EBOLA: {cfg['guarantee']}")
+
+    # M5 in one line, so nobody quotes the +ACI column without it.
+    print(f"\n+ACI is LAG-1: it feeds the outcome of origin t into the alpha used at t+1, but a "
+          f"h-step forecast is not resolved until t+h, so at h=3/5/10/15 that outcome is 2/4/9/14 "
+          f"weeks of future truth. Label it RETROSPECTIVE / oracle-feedback.")
+    print(f"+ACIlag is the honest stream (update at t from origins <= t-h). `upd` is how many of "
+          f"the T origins ever adapted; the rest ran at alpha_1 = {cfg['alpha_1']}. Report the "
+          f"+lam and +ACIlag columns; the gap to +ACI is the size of the oracle.")
+    worst = max(rows, key=lambda r: abs(r["aci_cov"] - r["lag_cov"]))
+    print(f"largest oracle gap: {worst['arm']} h{worst['h']}  "
+          f"+ACI {worst['aci_cov']:.3f} vs +ACIlag {worst['lag_cov']:.3f} "
+          f"({worst['aci_cov'] - worst['lag_cov']:+.3f}, {worst['lag_upd']} of {worst['T']} origins adapted)")
 
 
 def main():
