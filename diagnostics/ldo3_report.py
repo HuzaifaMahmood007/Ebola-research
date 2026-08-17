@@ -279,12 +279,17 @@ def best_naive(points, ds, h, metric):
 # --------------------------------------------------------------------------- #
 # 2b. UQ metrics from the archived quantile forecasts
 # --------------------------------------------------------------------------- #
-def _eval_mask(b, origins, h):
-    """The [N,T] mask score_predictions used: observed AND in the test split, at t+h."""
-    phase = b.masks()["test"].astype(bool)
-    m = np.zeros_like(phase)
+def _eval_mask(b, origins, h, phase="test"):
+    """The [N,T] mask score_predictions used: observed AND in the eval split, at t+h.
+
+    `phase` is a parameter because Ebola has no test split -- its folds are support/query -- and the
+    pre-registered UQ block (WIS/CRPS/PIT) is defined on the QUERY set. Defaulting to "test" keeps
+    every development-fold number produced by this module bit-identical.
+    """
+    ph = b.masks()[phase].astype(bool)
+    m = np.zeros_like(ph)
     for t in origins:
-        m[:, t + h] = phase[:, t + h]
+        m[:, t + h] = ph[:, t + h]
     return m
 
 
@@ -321,7 +326,8 @@ def _node_means(vals, obs, n_obs):
                     np.where(n_obs > 0, n_obs, 1), np.nan)
 
 
-def uq_for_run(name, seed, prefix, bundle, horizons=HORIZONS, pit_bins=10, chunk=1024):
+def uq_for_run(name, seed, prefix, bundle, horizons=HORIZONS, pit_bins=10, chunk=1024,
+               phase="test"):
     """WIS / CRPS / coverage / width / PIT for one (dataset, seed, arm), aggregated the same way
     the point metrics are: per node over its observed eval cells, then country-macro over nodes.
 
@@ -352,7 +358,7 @@ def uq_for_run(name, seed, prefix, bundle, horizons=HORIZONS, pit_bins=10, chunk
     out = {}
     for h in horizons:
         qz = z[f"h{h}__quantiles"]                           # [N, K, Q] over the K origins
-        mask = _eval_mask(bundle, origins, h)
+        mask = _eval_mask(bundle, origins, h, phase)
         tcol = origins + h                                   # the scored column per origin
         truth = raw[:, tcol]                                 # [N, K]
         obs = mask[:, tcol].astype(np.float64)               # [N, K]
@@ -410,8 +416,11 @@ def uq_for_run(name, seed, prefix, bundle, horizons=HORIZONS, pit_bins=10, chunk
     return out
 
 
-def uq_table(names, prefixes=(ADAPTED,), seeds=SEEDS, verbose=True):
-    """{(arm, dataset, horizon, key): {seed: value}}, skipping arms with no archived quantiles."""
+def uq_table(names, prefixes=(ADAPTED,), seeds=SEEDS, verbose=True, phase="test"):
+    """{(arm, dataset, horizon, key): {seed: value}}, skipping arms with no archived quantiles.
+
+    `phase` selects the evaluation fold; pass "query" for the Ebola arms, which have no test split.
+    """
     import bundles
     out = collections.defaultdict(dict)
     for name in names:
@@ -424,7 +433,7 @@ def uq_table(names, prefixes=(ADAPTED,), seeds=SEEDS, verbose=True):
             if b is None:
                 b = bundles.load(name)
             for s in seeds:
-                r = uq_for_run(name, s, prefix, b)
+                r = uq_for_run(name, s, prefix, b, phase=phase)
                 if r is None:
                     continue
                 for h, agg in r.items():
