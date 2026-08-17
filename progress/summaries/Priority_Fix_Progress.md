@@ -923,3 +923,144 @@ that ordering is itself a claim.
 `bfba94c` symmetric ensemble, verdict does not move ·
 this section.
 
+
+---
+
+## 12. 2026-08-17 (evening) — G6 widened, the Ebola UQ block delivered, manuscript v2 drafted
+
+Four things landed after section 11. Two close audit findings, one is the client deliverable, one is
+the next night's queue. All of the compute here was CPU: the GPU was occupied by the gate ablation
+throughout and nothing below contended with it.
+
+### 12.1 G6 is now three comparators — HeatGNN scored, and nothing else moved
+
+51 finished-but-unscored HeatGNN runs had been parked on instruction since Day 15. Unparked and
+scored. HeatGNN now holds 60 record files covering **all three influenza panels at all four horizons
+across five seeds** — the Week-4 brief's "runs on only one dataset and two horizons" is stale in our
+favour and should be corrected wherever it was quoted.
+
+`score_baseline.py` has no model filter, so it rescores the whole tree. That is a risk worth
+checking rather than assuming: the existing records were backed up first and every value diffed
+afterwards. **1,603 pre-existing values rechecked, 0 moved.** EpiGNN, Cola-GNN and MTGNN all passed
+back through `score.py` unchanged, which is the result a rescore should give and is now on record.
+
+Per-model coverage: EpiGNN 80, MTGNN 80, Cola-GNN 60, HeatGNN 60.
+
+**The MTGNN question was settled on the record.** It stays in the paper. Dropping a comparator
+because it performed badly is its own selection bias, and CONFIRM-P6 locked MTGNN before any result
+existed. What cannot survive is the sentence already in `Week4_Experiments_Stakeholder_Brief.md`
+("strongest of the group... better in 12 of 16 against MTGNN"), because the model emits a single
+constant on 47 of 80 prediction files with negative pooled PCC on every influenza set. MTGNN is
+therefore the **non-epidemic control** — a pass on its own traffic benchmark, a documented collapse
+on sparse epidemic count panels — and the three epidemic-GNN comparators are EpiGNN, Cola-GNN and
+HeatGNN. Beating a constant is not evidence of quality and the brief needs correcting.
+
+### 12.2 The pre-registered Ebola UQ block is delivered (M6 → closed, G4 metric set complete)
+
+`diagnostics/ldo3_report._eval_mask` hard-coded `b.masks()["test"]`. Ebola has no test fold — it has
+support/query — so the UQ path could never reach the case study, which is why WIS, CRPS and PIT were
+implemented, hand-checked and never computed on the headline deliverable. The fix is a `phase`
+parameter threaded through `_eval_mask` → `uq_for_run` → `uq_table`, defaulting to `"test"`; the
+default is asserted to reproduce the development-fold mask exactly, so **no LDO3 number moves**.
+
+`diagnostics/ebola_uq.py` reads the 20 frozen archives and prints the E6 set. Read-only, no GPU,
+protocol-legal under prereg A7. It asserts the required columns are present, because a first pass
+guessed the key names (`coverage_90` rather than `cov0.9`) and silently dropped four of six.
+
+**Finding 1 — the raw intervals are much worse on Ebola than the development-panel figure suggests.**
+
+| arm / regime | cov0.9 at h3 / h5 / h10 / h15 | PIT saturated |
+|---|---|---|
+| L12 few-shot | 0.509 / 0.453 / 0.593 / **0.304** | 0.386–0.706 |
+| L12 zero-shot | 0.478 / 0.431 / 0.394 / 0.383 | 0.519–0.602 |
+| L20 few-shot | 0.713 / 0.679 / 0.699 / 0.669 | 0.281–0.311 |
+| L20 zero-shot | 0.562 / 0.495 / 0.410 / 0.385 | 0.434–0.588 |
+
+Nominal-90% coverage runs **0.304 to 0.713** against a 0.90 target. The figure quoted from the
+development panels is 0.492–0.918, so the case study is materially worse than the number the
+write-up has been carrying. Between 28% and 71% of cells fall entirely outside the predictive
+quantile range. This is the RAW head; the conformal wrapper's corrected coverage is separate.
+
+**Finding 2 — the zero-shot inversion holds on a probabilistic score, not only on point error.**
+Zero-shot beats few-shot on WIS in **7 of 8** arm-by-horizon cells: all four L20 cells, and L12 at
+h3, h5 and h15. Only L12 h10 favours few-shot (19.767 against 20.498). WIS scores the whole
+predictive distribution rather than the median, so this is independent corroboration of the point
+inversion rather than a restatement of it, and it strengthens that subsection materially.
+
+L20 few-shot is again the unstable arm: 90% widths of 94 to 138 with a seed sd reaching 52.0. More
+support data producing wider, less stable and worse-scoring intervals remains unexplained.
+
+**WIS and CRPS came out bit-identical in every cell**, as they must on a five-level grid. The reader
+asserts this rather than trusting it, and prints them as one number reported twice rather than as
+two independent columns.
+
+### 12.3 Manuscript v2 drafted — `Reports/Manuscript_v2.md`
+
+**11,984 words** in the body including tables (11,677 excluding), plus 669 of references — inside the
+12,000-word limit. Renders clean through `Reports/md_to_docx.py`: no markdown leakage, 7 tables, 43
+headings, Calibri 11 house style.
+
+**The thesis moved from results to approach.** The paper now argues the disease-agnostic shared
+encoder as the contribution and presents transfer as evidence about its operating envelope. That is
+what turns the negative transfer result from a headline into a finding, and it is what answers the
+client's two objections — too many negatives, and not enough technical contribution — without
+spinning anything.
+
+Locked with the client and implemented: hybrid layout with contributions stated early; the gap
+statement **narrowed** to "no system combines an inductive spatial channel with cross-disease
+transfer and calibrated uncertainty", with CAPE, PEMS, epiFFORMA and Roster et al. added and the
+false "not across diseases" sentence deleted; COVID declared as a fourth training panel with its
+three costs and the Omicron fold boundary; Ebola at 9.5 with 9.5.2 dedicated to the inversion; a
+single repo link and **no** reproducibility section.
+
+Three factual corrections carried in: equation 4 is now the running-maximum transform with the 35.8%
+fabrication stated as our own retracted error; the support set is the frozen L12/L20 arms with their
+hashes rather than "the first two observed weeks"; and no SHAP claim appears anywhere.
+
+Four sections are deliberate placeholders, each stating the construction and the honest current
+position rather than sitting empty: **9.1** (gate ablation), **9.4** (lag-h calibration), **9.7**
+(ANIL), **9.8** (attribution). Section 9.1 already reports the gate readout table and explicitly
+declines to claim the graph helps on that evidence.
+
+Open: the repo URL is a literal `<organisation>/<repository>` placeholder.
+
+### 12.4 ANIL scheduled — `run_anil_night.py`
+
+**The surface is `affine`, not `mlp-256`, and that is the substantive choice.** `Ebola_Prereg.md`
+defines the few-shot mechanism as the FiLM-plus-head adapter, which *is* the affine surface.
+mlp-256 is the strongest rung of D19's capacity ladder and is therefore the tempting pick; meta-
+training it would ablate a mechanism the pre-registration does not use, and the result could not be
+read back onto the case study. `--surface` overrides deliberately.
+
+**Ordering is seed-major, control before ANIL.** Both arms are required at a matched seed to say
+anything — the control is ordinary ERM on the same episodes with no inner loop, and without it a
+meta-learning result is confounded with having had more training. Arm-major would leave five
+controls and zero ANIL runs if the night died halfway, which is unanalysable; seed-major leaves
+complete matched pairs.
+
+Preflight and a timing probe run before anything is booked, and all five warm-start trunks
+(`encoder_ldo__dengue2flu-cap__seed*__ckpt.pt`) are present, so no arm pays the ~3 h from-scratch
+trunk fit. 10 cells outstanding. Reported as an ablation of the adaptation procedure whatever the
+sign, per the standing commitment.
+
+### 12.5 Queue and open items
+
+| Item | Cost | State |
+|---|---|---|
+| Gate-off ablation | ~10 min remaining | running (24 of 25 cells) |
+| Lag-h ACI | minutes, CPU | queued as phase 2 of `run_gate_night.py` |
+| ANIL + ERM control | priced at launch | scheduled, `run_anil_night.py` |
+| Attribution build (G5) | small build, light run | manuscript placeholder; needs a go-ahead |
+| Shuffled-adjacency control | ~6 h | only worth running **if** the gate returns positive |
+| LDO3 zero-shot quantile archives | ~10 h retrain | buys a table cell, not a claim; stated limitation |
+
+Also outstanding and not compute: client decision **B5** still records COVID as excluded from every
+released dataset, and the paper now declares it as a training panel — that needs a formal reversal
+from the client rather than an edit from us. And `Week4_Experiments_Stakeholder_Brief.md` lines
+168–175 still carry the MTGNN claim corrected in 12.1.
+
+### 12.6 Commits
+
+`5448ca9` progress section 11 · `7574b33` ebola uq block delivered, anil night scheduled on the
+prereg surface · this section.
+
