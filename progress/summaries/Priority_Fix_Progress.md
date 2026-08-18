@@ -1064,3 +1064,159 @@ from the client rather than an edit from us. And `Week4_Experiments_Stakeholder_
 `5448ca9` progress section 11 · `7574b33` ebola uq block delivered, anil night scheduled on the
 prereg surface · this section.
 
+
+---
+
+## 13. 2026-08-18 — the gate ablation landed, the ACI oracle did not matter, ANIL never started
+
+Two of the three overnight items returned results. The third aborted before booking, by design, and
+is now fixed. Nothing in this section is in the manuscript yet.
+
+### 13.1 The gate-off ablation: the graph does not improve accuracy (M10 → answered, negatively)
+
+25 of 25 cells, all five development panels, five seeds, paired against the released run at the same
+seed. Identical trainer, identical budget; the only change is `SharedEncoder(gate_mode="off")`.
+
+**Across 60 metric cells: 6 the graph helps, 9 the graph hurts, 45 within seed noise.**
+
+The split by metric family is the finding, because it is coherent rather than merely null:
+
+| Metric family | Cells | Graph helps | Graph hurts | Within noise |
+|---|---|---|---|---|
+| Error (RMSE, MAE) | 40 | **0** | 8 | 32 |
+| Correlation (PCC) | 20 | 6 | 1 | 13 |
+
+**On error the spatial channel never significantly helps — not on any panel, not at any horizon —
+and it significantly hurts in 8 of 40 cells.** Where it earns its place is correlation.
+
+By panel (helps / hurts / noise): influenza_japan 0 / 5 / 7, influenza_us-regions 2 / 0 / 10,
+influenza_us-states 1 / 0 / 11, covid_us-states 0 / 2 / 10, dengue 3 / 2 / 7.
+
+Every significant cell, `d = (gate off − learned)`:
+
+| verdict | panel | metric | h | paired d |
+|---|---|---|---|---|
+| gate HURTS | influenza_japan | RMSE | 3 | −45.265 |
+| gate HURTS | influenza_japan | RMSE | 5 | −61.658 |
+| gate HURTS | influenza_japan | MAE | 5 | −22.126 |
+| gate HURTS | influenza_japan | MAE | 10 | −24.007 |
+| gate HURTS | influenza_japan | PCC | 10 | +0.011 |
+| gate HURTS | covid_us-states | RMSE | 5 | −962.918 |
+| gate HURTS | covid_us-states | MAE | 5 | −736.761 |
+| gate HURTS | dengue | RMSE | 10 | −0.849 |
+| gate HURTS | dengue | MAE | 10 | −0.547 |
+| GATE HELPS | influenza_us-regions | PCC | 10 | −0.062 |
+| GATE HELPS | influenza_us-regions | PCC | 15 | −0.107 |
+| GATE HELPS | influenza_us-states | PCC | 10 | −0.023 |
+| GATE HELPS | dengue | PCC | 3 | −0.030 |
+| GATE HELPS | dengue | PCC | 5 | −0.039 |
+| GATE HELPS | dengue | PCC | 15 | −0.027 |
+
+**Reading.** Message passing over these graphs improves the SHAPE of a forecast — its co-movement
+with the truth — without improving its MAGNITUDE, and on influenza-Japan it actively degrades
+magnitude. This is a negative result for the component the encoder decision named as the
+differentiator, and it should be reported as one.
+
+It also explains an observation that was otherwise puzzling: the learned gate is HIGHEST on the
+panel whose graph is emptiest (dengue g = 0.604, roughly two thirds of dengue nodes having no
+observed neighbour at a typical origin), which is consistent with `Gate(h)` reading the LTR degree
+feature rather than epidemiological coupling.
+
+**Two limits bound the conclusion.** `g = 0` removes neighbour mixing but retains the LTR degree
+feature, so this prices NEIGHBOUR INFORMATION, not the graph in total. And it does not separate
+"structure helps" from "any adjacency helps" — a shuffled-adjacency arm would, and is not run,
+because a channel that does not help at all leaves a shuffle control nothing to distinguish. If
+anyone wants the shuffle anyway it is ~6 h.
+
+Runtime, for the record: the four small panels are ~2 min per seed; dengue ran 63.8 / 103.0 / 136.6
+/ 90.5 min per seed, so the whole job was ~8 h rather than the 13.5 h estimated.
+
+### 13.2 Lag-h ACI: the oracle was almost entirely immaterial (M5 → closed)
+
+`conformal.py --apply` now runs the honest lag-*h* stream beside the lag-1 one and prints both.
+
+**In 15 of 16 (arm, regime, horizon) cells `+ACIlag` matches the un-lagged `+ACI` to within 0.01.**
+The single exception is the PRIMARY arm at h15, where removing the oracle costs 0.154 of coverage
+(0.812 → 0.658) — exactly the arm and horizon at which only 3 of 18 origins ever adapt and which
+has zero adaptation pairs. So M5 was a real defect, its blast radius is one cell, and every other
+calibrated figure this project holds stands without oracle feedback.
+
+Aggregate over five seeds, coverage of the nominal 0.90 interval:
+
+| arm / regime | h | raw | +lam | **+ACIlag** | +ACI (oracle) | origins adapting |
+|---|---|---|---|---|---|---|
+| L12 zero-shot | 3 | 0.460 | 0.833 | **0.863** | 0.864 | 15 / 18 |
+| L12 zero-shot | 5 | 0.421 | 0.813 | **0.862** | 0.870 | 13 / 18 |
+| L12 zero-shot | 10 | 0.396 | 0.896 | **0.899** | 0.904 | 8 / 18 |
+| L12 zero-shot | 15 | 0.363 | 0.921 | **0.921** | 0.920 | 3 / 18 |
+| L12 few-shot | 3 | 0.491 | 0.829 | **0.859** | 0.862 | 15 / 18 |
+| L12 few-shot | 5 | 0.437 | 0.793 | **0.839** | 0.849 | 13 / 18 |
+| L12 few-shot | 10 | 0.584 | 0.942 | **0.942** | 0.941 | 8 / 18 |
+| L12 few-shot | 15 | 0.275 | 0.651 | **0.658** | 0.812 | 3 / 18 |
+
+Both L20 arms OVER-cover after correction, 0.90 to 0.98, because their raw intervals are already far
+too wide — the same instability §12.2 recorded on width and seed sd.
+
+**The more useful finding is which component is doing the work.** `+lam` — the frozen cross-disease
+correction, which reads NO Ebola outcome whatsoever — already lifts coverage from 0.28–0.70 to
+0.65–0.98. ACI adds about 0.03 at short horizons and nothing at long ones. The calibration therefore
+genuinely TRANSFERS rather than being recovered online from the target disease, which is a stronger
+claim than the reverse would have been and does not depend on the oracle at all.
+
+`--apply` also gained the over-seeds aggregate table it was missing (the gap logged at §10.5). Its
+per-seed rows remain the record; the aggregate is what is reportable without breaching the
+dispersion rule.
+
+### 13.3 ANIL did not run — the timing probe aborted, and the scheduler was right to stop
+
+Preflight passed on all five seeds. The **timing probe then died** and `run_anil_night.py` refused to
+book an unpriced job, so no arm trained.
+
+**Cause.** `timing_probe` drew 40 episodes with `val_every = max(steps // 2, 1) = 20`. But
+`--outer-steps` counts EPISODES and ~75% are skipped on mask density, so 40 episodes yielded only
+**13 usable updates**. 13 < 20, so no validation check ever fired, `best_state` stayed None, and
+`meta_train`'s last-iterate guard called `sys.exit`. That guard is correct for a scoring run — the
+arm exists to avoid returning a last iterate — and wrong for a pass that prices a step and throws
+the model away.
+
+**Fix.** `meta_train` takes `require_val=True`; only the timing probe passes False, so no scoring
+path can ever return a last iterate. The probe now draws 120 episodes with `val_every = steps // 6`,
+so a check fires reliably even at a pathological skip rate.
+
+**Verified, and the job is far cheaper than feared.** 120 episodes → 30 usable updates (90 skipped,
+75%), **0.412 s per outer update — 3.5x a trunk step — and 0.23 h per seed at 8,000 steps.** Two
+arms x five seeds is therefore roughly **2.3 GPU-hours**, not a night. Re-launch with
+`run_anil_night.py`; resume is keyed on the per-arm JSON so nothing is repeated.
+
+### 13.4 State of the manuscript — changed but NOT committed, and not git-revertible
+
+The gate and calibration results were written into `Reports/Manuscript_v2.md` before this was
+paused: §9.1 rewritten with the ablation, §9.4 filled with the coverage table, §9.5.2 given the WIS
+corroboration, the Conclusion corrected (it still said the spatial channel was "under test"), a new
+Threats paragraph, one abstract sentence declaring the gate result, tables renumbered 1–9, and a
+broken cross-reference fixed. Related Work and §6 were trimmed to absorb the added words; the body
+currently sits at 12,841 with tables, ~840 over the 12,000 limit.
+
+**`Reports/` is gitignored, so the manuscript is untracked and `git checkout` will NOT revert it.**
+Reversing those edits means re-applying them backwards by hand, which is doable precisely but is not
+a one-command operation. Nothing else in the working tree is affected.
+
+### 13.5 Queue after this
+
+| Item | Cost | State |
+|---|---|---|
+| ANIL + ERM control | ~2.3 GPU-h, measured | fixed and ready to launch |
+| Attribution build (G5) | small build, light run | manuscript placeholder; needs a go-ahead |
+| Shuffled-adjacency control | ~6 h | now optional — the gate does not help, so there is little for it to distinguish |
+| LDO3 zero-shot quantile archives | ~10 h retrain | still a stated limitation |
+
+Carried forward unchanged from §12.5: client decision **B5** still records COVID as excluded from
+every released dataset while the paper declares it a training panel, and
+`Week4_Experiments_Stakeholder_Brief.md` lines 168–175 still carry the MTGNN claim corrected in
+§12.1.
+
+### 13.6 Commits
+
+`f602b8c` progress section 12 · this section, with the `conformal.py` seed aggregate and the
+`train/anil.py` probe fix.
+

@@ -640,6 +640,32 @@ def _apply(a):
               f"{r['raw_w']:10.1f} {r['stat_w']:10.1f} {r['aci_w']:10.1f} {r['lag_w']:10.1f} "
               f"{100 * r['inf_frac']:6.1f}")
 
+    # AGGREGATE over seeds. The per-seed rows above are the record; this is the reportable table.
+    # Printing only per-seed rows breaches the project's dispersion rule the moment anyone copies
+    # the output into a document, which is how the first calibration table was built.
+    import collections as _c
+    import statistics as _st
+    agg = _c.defaultdict(list)
+    for r in rows:
+        arm_regime = r["arm"].rsplit(" s", 1)[0]            # strip the trailing seed tag
+        agg[(arm_regime, r["h"])].append(r)
+    print(f"\n{'=' * 104}\nAGGREGATE over seeds -- mean +- sd. Report the +lam and +ACIlag columns."
+          f"\n{'=' * 104}")
+    print(f"{'arm':24s} {'h':>3s} {'n':>4s} | {'raw cov':>15s} {'+lam':>15s} {'+ACIlag':>15s} "
+          f"| {'+ACI (oracle)':>15s} {'upd':>4s}")
+    for (arm_regime, h), rs in sorted(agg.items(), key=lambda kv: (kv[0][0], kv[0][1])):
+        def ms(key):
+            v = [x[key] for x in rs if x[key] == x[key]]
+            if not v:
+                return float("nan"), float("nan")
+            return sum(v) / len(v), (_st.stdev(v) if len(v) > 1 else 0.0)
+        cells = []
+        for key in ("raw_cov", "stat_cov", "lag_cov", "aci_cov"):
+            m, sd = ms(key)
+            cells.append(f"{m:8.3f}+-{sd:<6.3f}")
+        print(f"{arm_regime:24s} {h:3d} {len(rs):4d} | {cells[0]:>15s} {cells[1]:>15s} "
+              f"{cells[2]:>15s} | {cells[3]:>15s} {rs[0]['lag_upd']:4d}")
+
     T = max(r["T"] for r in rows)
     print(f"\nACI worst case at T={T}: {aci_worst_case(T, cfg['alpha_1'], cfg['gamma']):.3f} "
           f"-- coverage may sit this far from nominal in theory.")

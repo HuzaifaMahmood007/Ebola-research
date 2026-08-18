@@ -303,7 +303,7 @@ def meta_val(enc, ad, d, A, eps, inner_steps, inner_lr, arm, device):
 def meta_train(seed, device, arm="anil", surface="mlp-256", outer_steps=8000, inner_steps=5,
                inner_lr=1e-2, outer_lr=1e-4, wd=1e-4, n_sup=2, n_qry=2, extra_lag=0,
                second_order=True, warm_start=True, val_every=250, patience=8, n_val_episodes=32,
-               log_every=100, verbose=True, _budget_s=None):
+               log_every=100, verbose=True, _budget_s=None, require_val=True):
     """Meta-train the trunk on dengue episodes. Returns (enc, ad, stats).
 
     SELECTION. Early-stopped on a fixed held-out meta-objective with a cosine outer schedule, so the
@@ -427,10 +427,19 @@ def meta_train(seed, device, arm="anil", surface="mlp-256", outer_steps=8000, in
         sys.exit(f"seed {seed}: {step} episodes drawn, zero usable. Check --n-sup/--n-qry against "
                  f"{META_NAME}'s mask density before rerunning.")
     if best_state is None:
-        sys.exit(f"seed {seed}: training ended before the first validation check (updates={updates}, "
-                 f"val_every={val_every}). The trunk would be a last iterate, which is the defect "
-                 f"this arm exists to avoid. Lower --val-every or raise --outer-steps.")
-    enc.load_state_dict(best_state[0]); ad.load_state_dict(best_state[1])
+        # `require_val=False` is for the TIMING PROBE only, which prices an outer update and throws
+        # the model away. Every scoring path leaves this True, so a real arm can still never return
+        # a last iterate -- the defect this arm exists to avoid.
+        if require_val:
+            sys.exit(f"seed {seed}: training ended before the first validation check "
+                     f"(updates={updates}, val_every={val_every}). The trunk would be a last "
+                     f"iterate, which is the defect this arm exists to avoid. Lower --val-every or "
+                     f"raise --outer-steps.")
+        if verbose:
+            print(f"    [probe] no val check fired in {updates} updates; returning the last iterate. "
+                  f"Timing only -- this model is not scored.")
+    else:
+        enc.load_state_dict(best_state[0]); ad.load_state_dict(best_state[1])
 
     stats = dict(seed=seed, arm=arm, surface=surface, episodes_drawn=step, outer_updates=updates,
                  skipped=skipped, best_val=best_val, minutes=(time.time() - t0) / 60,
@@ -686,17 +695,24 @@ def report(args):
     return out
 
 
-def timing_probe(device, args, steps=40):
+def timing_probe(device, args, steps=120):
     """Price one outer UPDATE before booking anything. The comparator is the measured 3 h trunk at
     91,000 steps (D17) = ~0.119 s/step. Uses meta_train's own clock, which starts after setup, rather
-    than the wall clock around it -- `_prepare` alone is ~2 s and would inflate a 40-step estimate."""
+    than the wall clock around it -- `_prepare` alone is ~2 s and would inflate a short estimate.
+
+    `--outer-steps` counts EPISODES, and a large fraction are skipped (mask density), so the update
+    count is well below the episode count. The first version drew 40 episodes with val_every=20, got
+    13 usable updates, never reached a validation check, and died on the last-iterate guard -- which
+    aborted a whole night's queue before anything was booked. Now: enough episodes that a check
+    reliably fires, and `require_val=False` so a pricing pass cannot be killed by that guard even at
+    a pathological skip rate. The model this returns is discarded."""
     seed = args.seeds[0]
     _, _, st = meta_train(seed, device, arm=args.arm, surface=args.surface, outer_steps=steps,
                           inner_steps=args.inner_steps, inner_lr=args.inner_lr,
                           outer_lr=args.outer_lr, n_sup=args.n_sup, n_qry=args.n_qry,
                           extra_lag=args.extra_lag, second_order=not args.first_order,
-                          warm_start=not args.from_scratch, val_every=max(steps // 2, 1),
-                          patience=99, log_every=10, verbose=args.verbose)
+                          warm_start=not args.from_scratch, val_every=max(steps // 6, 1),
+                          patience=99, log_every=10, verbose=args.verbose, require_val=False)
     upd = max(st["outer_updates"], 1)
     per_update = st["minutes"] * 60 / upd
     trunk_per_step = 3 * 3600 / 91000
