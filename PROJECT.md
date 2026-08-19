@@ -237,7 +237,7 @@ window as an ablation for comparability.
   `fetch_gadm.py` (shapefile manifest), `dengue_aliases.py`, `japan_nodes.py`.
 - **Per-disease loaders:** `loaders/` (`covid_load.py`, `dengue_load.py`, `ebola_load.py`,
   `influenza_load.py`) — run as `python -m loaders.<name>`.
-- **Validity:** `tests/` — `test_leakage.py` (86 gates + 6 controls), `test_schema.py`,
+- **Validity:** `tests/` — `test_leakage.py` (101 gates + 6 controls), `test_schema.py`,
   `test_dengue_7_1.py`, `test_influenza_covariates.py`, `test_encoder_invariants.py`
   (the §8 encoder gates) — run as `python -m tests.<name>`.
 - **Diagnostics/audits:** `diagnostics/` (`ebola_audit.py`, `capacity_probe.py`,

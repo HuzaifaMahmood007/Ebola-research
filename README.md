@@ -60,7 +60,7 @@ progress/                   dated progress notes, decisions, results write-ups, 
 
 Phase-2 data-build code (frozen — do not edit): `to_schema.py`, `build_datasets.py`,
 `fetch_gadm.py`, `dengue_aliases.py`, `japan_*.py`, and the Phase-2 tests in `tests/`:
-`test_leakage.py` (86 gates + 6 negative controls), `test_schema.py`, `test_dengue_7_1.py`,
+`test_leakage.py` (101 gates + 6 negative controls), `test_schema.py`, `test_dengue_7_1.py`,
 `test_influenza_covariates.py`. `dengue_coverage.py` and `ebola_audit.py` are diagnostics
 now (`diagnostics/`), not part of the frozen build path.
 
@@ -100,7 +100,7 @@ Run scripts as modules from the repo root (the `models`/`train`/`tests`/`loaders
 packages need it):
 
 ```bash
-# rebuild the five datasets (ebola env) — deterministic, gated by 86 checks
+# rebuild the six datasets (ebola env) - deterministic, gated by 101 checks
 conda run -n ebola python build_datasets.py
 
 # data-layer checks (ebola-train env)
@@ -145,7 +145,7 @@ gated in `tests/test_encoder_invariants.py`:
   what cannot be reproduced from this repository alone. Current where this README is stale.
 - [progress/planning/encoder_architecture_plan.md](progress/planning/encoder_architecture_plan.md) — the frozen encoder design.
 - [progress/planning/Phase3_Week3_Developer_Execution_Guide.md](progress/planning/Phase3_Week3_Developer_Execution_Guide.md) — the day-by-day Week-3 schedule.
-- [progress/planning/data_audit.md](progress/planning/data_audit.md) — the authoritative data-methods record (86 gates, every alteration declared).
+- [progress/planning/data_audit.md](progress/planning/data_audit.md) — the authoritative data-methods record (101 gates, every alteration declared).
 - [progress/planning/schema_spec.md](progress/planning/schema_spec.md) — the `DiseaseTensors` contract.
 - `progress/` — dated summaries, decisions, results write-ups (see `progress/summaries|decisions|outcomes|planning`).
 - `Reports/` — Phase-1 and Phase-2 reports and the manuscript.
