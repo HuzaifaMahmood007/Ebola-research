@@ -37,8 +37,18 @@ the write-up whatever this run says:
     picked. `--surface affine` runs the pre-registered surface instead; `compare()` reports against
     BOTH references regardless, because affine is what D2 means by "the linear probe".
 
-THE DIRECTION. dengue -> influenza, matching capacity-probe arm 1: the Ebola-shaped direction (train
-big, adapt to a small unseen graph; work order 3c), with baselines already on disk at five seeds.
+THE DIRECTION. `--fold dengue2flu` (the default, and the run already reported) is dengue ->
+influenza, matching capacity-probe arm 1: the Ebola-shaped direction (train big, adapt to a small
+unseen graph; work order 3c), with baselines already on disk at five seeds.
+
+THE OTHER FOLDS. `--fold dengue|influenza|covid` runs the disease-out folds of the LDO3 transfer
+table: meta-train on that fold in-diseases, meta-test on the held-out one, warm starting from that
+fold own LDO3 trunk and differenced against that fold own freeze-then-adapt row. They exist because
+G2 calls meta-learning REQUIRED and a verdict resting on one held-out disease is not an answer to it.
+Two things to carry into any write-up of them: `--fold influenza` is the SAME direction as the legacy
+run but meta-trains across dengue AND covid, so it is the arm that answers the objection below; and
+`--fold dengue` is the backwards-from-Ebola direction (work order 3c), so it is evidence about the
+method, not about the case study. A covid fold also inherits the unresolved client decision B5.
 
 THE OBJECTION WE RAISE AGAINST OURSELVES (D13, unretracted, and NOT mitigated here). Meta-training
 on dengue ALONE means episodes vary population and time origin, not disease, so ANIL is trained on
@@ -85,13 +95,43 @@ from models.adapters import Adapter
 from models.config import D_HIDDEN, QUANTILES
 from results_paths import RESULTS, rpath
 from train.joint import _prepare, _test_dataset
-from train.lodo import FLU_NAMES, _fit_shared_adapter, _fit_trunk
+from train.lodo import FLU_NAMES, _fit_shared_adapter, _fit_trunk, _ldo3_plan
 from train.loop import (DEVICE, write_checkpoint, write_per_node, write_per_origin, write_quantiles,
                         write_records)
 
 SEEDS = (42, 52, 62, 72, 82)
-META_NAME = "dengue"                  # the single meta-train disease. See the objection above.
+META_NAME = "dengue"                  # the LEGACY fold's meta-train disease. See the objection above.
 ARMS = ("anil", "control")
+
+# --------------------------------------------------------------------------- #
+# FOLDS. `dengue2flu` is the run already on disk and already reported (D13); its names, paths and
+# every default are frozen so re-running it reproduces the same artifacts byte for byte. The three
+# LDO3 folds are the disease-out folds of the main transfer table, and they exist so the
+# meta-learning verdict is not one fold wide -- G2 calls meta-learning REQUIRED, and 12 cells on a
+# single held-out disease is not an answer to it.
+#
+# Every LDO3 fold has a MULTI-BUNDLE meta-train side (holding dengue out leaves three influenza
+# panels plus covid), which is why `meta_train` samples a panel per episode instead of taking ds[0].
+# The legacy fold is the only single-bundle one and it still reads exactly as it did.
+# --------------------------------------------------------------------------- #
+LEGACY_FOLD = "dengue2flu"
+FOLDS = (LEGACY_FOLD, "dengue", "influenza", "covid")
+
+
+def fold_plan(fold):
+    """(meta-train bundle names, meta-test bundle names, direction label) for one fold.
+
+    The LDO3 folds defer to `train.lodo._ldo3_plan`, the same function that built the transfer table,
+    so a fold here can never disagree with the fold of the same name there."""
+    assert fold in FOLDS, f"unknown fold {fold!r}; want one of {FOLDS}"
+    if fold == LEGACY_FOLD:
+        return [META_NAME], list(FLU_NAMES), "dengue2flu"
+    in_names, _groups, held_names = _ldo3_plan(fold)
+    return list(in_names), list(held_names), f"ldo3:{fold}"
+
+
+def fold_tag(fold):
+    return "dengue2flu" if fold == LEGACY_FOLD else f"ldo3{fold}"
 CAP_JSON = RESULTS / "misc" / "capacity_probe_5seed.json"    # the reference this is differenced against
 # Two-sided 95% t, same table and convention as the capacity probe. scipy is not a dependency.
 T_CRIT = {2: 12.706, 3: 4.303, 4: 3.182, 5: 2.776, 6: 2.571, 7: 2.447, 8: 2.365}
@@ -121,22 +161,30 @@ def surface_factory(name):
     return SURFACES[name][0]
 
 
-def meta_ckpt(seed, surface, arm):
+def meta_ckpt(seed, surface, arm, fold=LEGACY_FOLD):
     """Own checkpoint family, keyed by surface AND arm so the three configurations cannot overwrite
     each other. Starts with `encoder_ldo__` so results_paths routes it to lodo/ unchanged, and
     carries `-anil` so it can never collide with the D1 two-disease table or the `-cap` trunks.
     D19 records what silently overwriting a results family costs."""
-    return f"encoder_ldo__dengue2flu-anil-{surface}-{arm}__seed{seed}__ckpt.pt"
+    return f"encoder_ldo__{fold_tag(fold)}-anil-{surface}-{arm}__seed{seed}__ckpt.pt"
 
 
-def artifact(surface, arm, ds_name, seed, suffix):
-    return f"encoder_ldo__anil-{surface}-{arm}__{ds_name}__seed{seed}{suffix}"
+def artifact(surface, arm, ds_name, seed, suffix, fold=LEGACY_FOLD):
+    """The legacy fold keeps its exact existing names. A new fold carries its tag, which matters for
+    fold="influenza": it meta-tests on the same three panels as the legacy fold, so without the tag
+    it would overwrite results that are already reported."""
+    tag = "" if fold == LEGACY_FOLD else f"{fold_tag(fold)}-"
+    return f"encoder_ldo__{tag}anil-{surface}-{arm}__{ds_name}__seed{seed}{suffix}"
 
 
-def warm_ckpt(seed):
-    """The capacity probe's frozen dengue trunk, this seed's. Starting point for every arm, and the
-    trunk that produced the baseline row `compare()` differences against."""
-    return f"encoder_ldo__dengue2flu-cap__seed{seed}__ckpt.pt"
+def warm_ckpt(seed, fold=LEGACY_FOLD):
+    """This seed's frozen starting trunk. Legacy: the capacity probe's dengue trunk, which produced
+    the baseline row `compare()` differences against. LDO3 folds: that fold's own trunk from the
+    transfer run, so the ANIL arm starts where freeze-then-adapt started and the delta is
+    attributable to the objective rather than to the trunk."""
+    if fold == LEGACY_FOLD:
+        return f"encoder_ldo__dengue2flu-cap__seed{seed}__ckpt.pt"
+    return f"encoder_ldo3__{fold}__seed{seed}__ckpt.pt"
 
 
 # --------------------------------------------------------------------------- #
@@ -273,13 +321,14 @@ def _val_episodes(d, countries, seed, n, n_sup, n_qry, extra_lag):
     return eps
 
 
-def meta_val(enc, ad, d, A, eps, inner_steps, inner_lr, arm, device):
+def meta_val(enc, ad, panels, eps, inner_steps, inner_lr, arm, device):
     """Held-out meta-objective: adapt on each val episode's support, score its query. No second-order
     graph and no trunk gradient -- this is a measurement, not a step."""
     was_training = enc.training
     enc.eval(); ad.eval()
     tot, n = 0.0, 0
-    for node_idx, sup_ts, qry_ts in eps:
+    for pi, (node_idx, sup_ts, qry_ts) in eps:
+        d, A, _cs = panels[pi]
         idx, sup_tm = _targets(d, sup_ts, node_idx, d.mva, device)
         _, qry_tm = _targets(d, qry_ts, node_idx, d.mva, device)
         if not any(m.sum() > 0 for _, m in sup_tm) or not any(m.sum() > 0 for _, m in qry_tm):
@@ -303,8 +352,14 @@ def meta_val(enc, ad, d, A, eps, inner_steps, inner_lr, arm, device):
 def meta_train(seed, device, arm="anil", surface="mlp-256", outer_steps=8000, inner_steps=5,
                inner_lr=1e-2, outer_lr=1e-4, wd=1e-4, n_sup=2, n_qry=2, extra_lag=0,
                second_order=True, warm_start=True, val_every=250, patience=8, n_val_episodes=32,
-               log_every=100, verbose=True, _budget_s=None, require_val=True):
-    """Meta-train the trunk on dengue episodes. Returns (enc, ad, stats).
+               log_every=100, verbose=True, _budget_s=None, require_val=True, fold=LEGACY_FOLD):
+    """Meta-train the trunk on this fold's episodes. Returns (enc, ad, stats).
+
+    PANELS. The meta-train side of an LDO3 fold is several bundles, so each outer step first draws a
+    PANEL and then an episode inside it. Uniform over panels, deliberately: it matches `_fit_trunk`'s
+    uniform across-bundle sampler, so the meta arm and the freeze-then-adapt arm it is differenced
+    against weight the in-diseases the same way. Cells-proportional sampling would make dengue 98% of
+    episodes, which is the failure `train/joint.py` already documented.
 
     SELECTION. Early-stopped on a fixed held-out meta-objective with a cosine outer schedule, so the
     returned trunk is a best-val checkpoint. This is not optional polish: the baseline trunk this is
@@ -324,17 +379,24 @@ def meta_train(seed, device, arm="anil", surface="mlp-256", outer_steps=8000, in
     training and that we therefore measure meta-FINE-TUNING. `--from-scratch` runs the pure version.
     """
     assert arm in ARMS, f"unknown arm {arm}"
-    assert not META_NAME.startswith("ebola"), "ebola must never enter meta-training (C8)"
+    meta_names, _test_names, direction = fold_plan(fold)
+    assert not any(x.startswith("ebola") for x in meta_names),         "ebola must never enter meta-training (C8)"
     torch.manual_seed(seed); np.random.seed(seed)
-    ds, A = _prepare([META_NAME], device)
-    d = ds[0]
-    countries = country_index(d.b)
+    # ONE _prepare per bundle rather than a block-diagonal supergraph: an episode lives inside a
+    # single panel, so a shared graph would put other diseases' nodes in the trunk's receptive field
+    # during a task. SharedEncoder carries no node dimension, so per-panel graphs cost only the
+    # resident tensors.
+    panels = []
+    for _nm in meta_names:
+        _ds, _A = _prepare([_nm], device)
+        panels.append((_ds[0], _A, country_index(_ds[0].b)))
+    d, A, countries = panels[0]
 
     if warm_start:
-        ck = rpath(warm_ckpt(seed))
+        ck = rpath(warm_ckpt(seed, fold))
         if not ck.exists():
-            sys.exit(f"no warm-start trunk at {ck}. Run the capacity probe for seed {seed} first, "
-                     f"or pass --from-scratch.")
+            sys.exit(f"no warm-start trunk at {ck} for fold={fold}. Run that fold's trunk for "
+                     f"seed {seed} first, or pass --from-scratch.")
         enc = SharedEncoder().to(device)
         enc.load_state_dict(torch.load(ck, map_location=device, weights_only=False)["encoder"])
         if verbose:
@@ -345,8 +407,8 @@ def meta_train(seed, device, arm="anil", surface="mlp-256", outer_steps=8000, in
         # the same reason (A5). Running the "pure" arm under a stop rule we have on record as broken
         # would be a defect we already documented.
         if verbose:
-            print(f"[anil] seed {seed}: from scratch -- fitting a dengue trunk first (~3 h)")
-        enc, _ = _fit_trunk(seed, [META_NAME], device, patience=30, verbose=verbose)
+            print(f"[anil] seed {seed}: from scratch -- fitting a {meta_names} trunk first (~3 h)")
+        enc, _ = _fit_trunk(seed, list(meta_names), device, patience=30, verbose=verbose)
 
     ad = surface_factory(surface)().to(device)
     for p in enc.parameters():
@@ -355,15 +417,22 @@ def meta_train(seed, device, arm="anil", surface="mlp-256", outer_steps=8000, in
     opt = torch.optim.AdamW(meta_params, lr=outer_lr, weight_decay=wd)
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=max(outer_steps, 1))
     rng = np.random.default_rng(seed)
-    val_eps = _val_episodes(d, countries, seed, n_val_episodes, n_sup, n_qry, extra_lag)
+    # Spread the fixed val set over every panel, so the early-stop signal is the FOLD's
+    # meta-objective and not whichever panel happened to sort first.
+    val_eps = []
+    for _pi, (_d, _A, _cs) in enumerate(panels):
+        _k = n_val_episodes // len(panels) + (1 if _pi < n_val_episodes % len(panels) else 0)
+        val_eps += [(_pi, e) for e in
+                    _val_episodes(_d, _cs, seed + _pi, _k, n_sup, n_qry, extra_lag)]
     if not val_eps:
-        sys.exit(f"seed {seed}: could not draw a single validation episode from {META_NAME}'s val "
+        sys.exit(f"seed {seed}: could not draw a single validation episode from {meta_names} val "
                  f"origins at n_sup={n_sup} n_qry={n_qry}. Early stopping would be unguarded.")
 
     enc.train(); ad.train()
     hist, updates, skipped, step, t0 = [], 0, 0, 0, time.time()
     best_val, best_state, bad = float("inf"), None, 0
     for step in range(1, outer_steps + 1):
+        d, A, countries = panels[int(rng.integers(0, len(panels)))]
         ep = episode(d.tr, countries, rng, n_sup, n_qry, extra_lag)
         if ep is None:
             skipped += 1
@@ -401,7 +470,7 @@ def meta_train(seed, device, arm="anil", surface="mlp-256", outer_steps=8000, in
         hist.append(float(L.detach()))
 
         if updates % val_every == 0:
-            v = meta_val(enc, ad, d, A, val_eps, inner_steps, inner_lr, arm, device)
+            v = meta_val(enc, ad, panels, val_eps, inner_steps, inner_lr, arm, device)
             if v < best_val - 1e-5:
                 best_val, bad = v, 0
                 best_state = ({k: t.detach().clone() for k, t in enc.state_dict().items()},
@@ -425,7 +494,7 @@ def meta_train(seed, device, arm="anil", surface="mlp-256", outer_steps=8000, in
 
     if not updates:
         sys.exit(f"seed {seed}: {step} episodes drawn, zero usable. Check --n-sup/--n-qry against "
-                 f"{META_NAME}'s mask density before rerunning.")
+                 f"the mask density of {meta_names} before rerunning.")
     if best_state is None:
         # `require_val=False` is for the TIMING PROBE only, which prices an outer update and throws
         # the model away. Every scoring path leaves this True, so a real arm can still never return
@@ -441,7 +510,9 @@ def meta_train(seed, device, arm="anil", surface="mlp-256", outer_steps=8000, in
     else:
         enc.load_state_dict(best_state[0]); ad.load_state_dict(best_state[1])
 
-    stats = dict(seed=seed, arm=arm, surface=surface, episodes_drawn=step, outer_updates=updates,
+    stats = dict(seed=seed, arm=arm, surface=surface, fold=fold, direction=direction,
+                 meta_names=list(meta_names), n_panels=len(panels),
+                 episodes_drawn=step, outer_updates=updates,
                  skipped=skipped, best_val=best_val, minutes=(time.time() - t0) / 60,
                  train_first100=float(np.mean(hist[:100])), train_last100=float(np.mean(hist[-100:])),
                  second_order=second_order, warm_start=warm_start, inner_steps=inner_steps,
@@ -453,8 +524,8 @@ def meta_train(seed, device, arm="anil", surface="mlp-256", outer_steps=8000, in
 # --------------------------------------------------------------------------- #
 # Meta-test -- deliberately the capacity probe's stage 2, unchanged
 # --------------------------------------------------------------------------- #
-def meta_test(enc, seed, device, surface, arm, verbose=True, archive=True):
-    """Freeze the meta-trunk, fit ONE fresh adapter on the 3 influenza panels, score.
+def meta_test(enc, seed, device, surface, arm, verbose=True, archive=True, fold=LEGACY_FOLD):
+    """Freeze the meta-trunk, fit ONE fresh adapter on the fold's HELD-OUT panels, score.
 
     Calls `_fit_shared_adapter` with the SAME factory, epochs, patience, lr, wd, sampler and
     validation objective the capacity probe used, so the only thing differing from that run's row for
@@ -471,24 +542,25 @@ def meta_test(enc, seed, device, surface, arm, verbose=True, archive=True):
         p.requires_grad_(False)
     enc.eval()
     torch.manual_seed(seed); np.random.seed(seed)
-    ad, ds = _fit_shared_adapter(enc, list(FLU_NAMES), seed, device, verbose=verbose,
+    _meta_names, test_names, direction = fold_plan(fold)
+    ad, ds = _fit_shared_adapter(enc, list(test_names), seed, device, verbose=verbose,
                                  adapter_factory=surface_factory(surface))
     rmse = {}
     for d in ds:
         quant = {}
         recs, pn, po, _ = _test_dataset(enc, ad, d, seed, f"anil-{arm}:{surface}",
                                         dict(training_regime=f"anil_{arm}", surface=surface,
-                                             direction="dengue2flu", seed=seed),
+                                             direction=direction, fold=fold, seed=seed),
                                         quant_out=quant)
         rmse.update(_records_rmse(recs))
         if archive:
             # D14: every metric except rmse used to be computed and thrown away here. Records carry
             # mae/pcc/nrmse/coverage, and the quantiles are the only material WIS/CRPS/PIT can ever
             # be recomputed from. Seconds to write, a whole rerun to reconstruct.
-            write_records(recs, artifact(surface, arm, d.name, seed, ".json"))
-            write_per_node(pn, artifact(surface, arm, d.name, seed, "__pernode.npz"))
-            write_per_origin(po, artifact(surface, arm, d.name, seed, "__perorigin.npz"))
-            write_quantiles(quant, d.te, artifact(surface, arm, d.name, seed, "__quantiles.npz"))
+            write_records(recs, artifact(surface, arm, d.name, seed, ".json", fold))
+            write_per_node(pn, artifact(surface, arm, d.name, seed, "__pernode.npz", fold))
+            write_per_origin(po, artifact(surface, arm, d.name, seed, "__perorigin.npz", fold))
+            write_quantiles(quant, d.te, artifact(surface, arm, d.name, seed, "__quantiles.npz", fold))
     assert rmse, "meta_test produced no rmse cells -- the record schema has moved"
     return rmse
 
@@ -511,14 +583,15 @@ def run_seed(seed, device, args):
     The checkpoint is written BEFORE scoring and reused on a later invocation, so a crash in the
     scoring pass costs a scoring pass rather than the hours that preceded it. The seed's row enters
     the JSON only after scoring returns, so resume still treats a killed seed as unfinished."""
-    ck = rpath(meta_ckpt(seed, args.surface, args.arm))
+    ck = rpath(meta_ckpt(seed, args.surface, args.arm, args.fold))
     if ck.exists() and not args.refit:
         print(f"[anil] seed {seed}: reusing meta-trunk {ck} (--refit to retrain)")
         blob = torch.load(ck, map_location=device, weights_only=False)
         enc = SharedEncoder().to(device)
         enc.load_state_dict(blob["encoder"])
         stats = dict(blob.get("meta", {}))
-        stats.update(seed=seed, arm=args.arm, surface=args.surface, reused_checkpoint=True)
+        stats.update(seed=seed, arm=args.arm, surface=args.surface, fold=args.fold,
+                     reused_checkpoint=True)
     else:
         try:
             enc, ad, stats = meta_train(
@@ -527,24 +600,27 @@ def run_seed(seed, device, args):
                 n_sup=args.n_sup, n_qry=args.n_qry, extra_lag=args.extra_lag,
                 second_order=not args.first_order, warm_start=not args.from_scratch,
                 val_every=args.val_every, patience=args.patience, verbose=args.verbose,
-                _budget_s=(args.max_hours * 3600 if args.max_hours else None))
+                _budget_s=(args.max_hours * 3600 if args.max_hours else None), fold=args.fold)
         except torch.cuda.OutOfMemoryError:
             sys.exit(f"seed {seed}: CUDA OOM during meta-training. This module holds "
                      f"n_sup + n_qry = {args.n_sup + args.n_qry} trunk graphs live at once on "
-                     f"{META_NAME}'s full node set. Lower --n-sup/--n-qry, or --first-order "
+                     f"this fold's full node set. Lower --n-sup/--n-qry, or --first-order "
                      f"(a stated deviation from D13), before rerunning.")
         # `extra` and `stats` both carry `seed`; dict(seed=..., **stats) is a TypeError, not a merge.
-        write_checkpoint(enc, ad, meta_ckpt(seed, args.surface, args.arm),
-                         extra=dict(stats, fold="ldo", direction="dengue2flu", regime="anil"))
-    stats["rmse"] = meta_test(enc, seed, device, args.surface, args.arm, verbose=args.verbose)
+        write_checkpoint(enc, ad, meta_ckpt(seed, args.surface, args.arm, args.fold),
+                         extra=dict(stats, regime="anil"))
+    stats["rmse"] = meta_test(enc, seed, device, args.surface, args.arm, verbose=args.verbose,
+                              fold=args.fold)
     return stats
 
 
 # --------------------------------------------------------------------------- #
 # Preflight, resume, and the comparison the run exists to produce
 # --------------------------------------------------------------------------- #
-def out_json(surface, arm):
-    return RESULTS / "misc" / f"anil_{surface}_{arm}.json"
+def out_json(surface, arm, fold=LEGACY_FOLD):
+    """Legacy fold keeps its existing filename, so resume still reads the rows already on disk."""
+    tag = "" if fold == LEGACY_FOLD else f"{fold_tag(fold)}_"
+    return RESULTS / "misc" / f"anil_{tag}{surface}_{arm}.json"
 
 
 def preflight(seeds, args, device):
@@ -557,33 +633,44 @@ def preflight(seeds, args, device):
                         f"CPU it will not finish. --allow-cpu to override.")
     if not args.from_scratch:
         for s in seeds:
-            if not rpath(warm_ckpt(s)).exists():
-                problems.append(f"seed {s}: no warm-start trunk at {rpath(warm_ckpt(s))} "
-                                f"(run the capacity probe for that seed, or pass --from-scratch)")
-    try:
-        b = bundles.load(META_NAME)
-        need = args.n_sup + args.n_qry
-        for phase in ("train", "val"):
-            n = len(b.origins(phase=phase))
-            if n < need:
-                problems.append(f"{META_NAME} has {n} {phase} origins, an episode needs {need}")
-        # An episode must be drawable in practice, not just in principle: the lag is on origin VALUES
-        # and val origins are a short contiguous block, so this can fail even when the count passes.
-        cs = country_index(b)
-        if not problems and episode(b.origins(phase="val"), cs, np.random.default_rng(0),
-                                    args.n_sup, args.n_qry, args.extra_lag) is None:
-            problems.append(f"no admissible VAL episode at n_sup={args.n_sup} n_qry={args.n_qry} "
-                            f"lag={required_lag() + args.extra_lag}; early stopping would be "
-                            f"unguarded. Lower --n-sup/--n-qry or --extra-lag.")
-    except Exception as e:
-        problems.append(f"could not load {META_NAME} to size an episode: {e!r}")
-    if not CAP_JSON.exists():
+            if not rpath(warm_ckpt(s, args.fold)).exists():
+                problems.append(f"seed {s}: no warm-start trunk at {rpath(warm_ckpt(s, args.fold))} "
+                                f"for fold={args.fold} (run that fold trunk, or --from-scratch)")
+    meta_names, test_names, _direction = fold_plan(args.fold)
+    # EVERY meta-train panel is sized, not just the first. A fold whose second panel cannot yield an
+    # episode would otherwise train on a silently smaller set than the one named on the table.
+    for nm in meta_names:
+        try:
+            b = bundles.load(nm)
+            need = args.n_sup + args.n_qry
+            for phase in ("train", "val"):
+                k = len(b.origins(phase=phase))
+                if k < need:
+                    problems.append(f"{nm} has {k} {phase} origins, an episode needs {need}")
+            # An episode must be drawable in practice, not just in principle: the lag is on origin
+            # VALUES and val origins are a short contiguous block, so this can fail even when the
+            # count passes.
+            cs = country_index(b)
+            if episode(b.origins(phase="val"), cs, np.random.default_rng(0),
+                       args.n_sup, args.n_qry, args.extra_lag) is None:
+                problems.append(f"{nm}: no admissible VAL episode at n_sup={args.n_sup} "
+                                f"n_qry={args.n_qry} lag={required_lag() + args.extra_lag}; early "
+                                f"stopping would be unguarded. Lower --n-sup/--n-qry or --extra-lag.")
+        except Exception as e:
+            problems.append(f"could not load {nm} to size an episode: {e!r}")
+    if args.fold != LEGACY_FOLD:
+        for nm in test_names:
+            if not rpath(f"encoder_ldo3__{nm}__seed{args.seeds[0]}.json").exists():
+                print(f"[preflight] WARNING: no LDO3 record for {nm} seed {args.seeds[0]}; the run "
+                      f"will produce absolute RMSE but no seed-paired delta.")
+    if args.fold == LEGACY_FOLD and not CAP_JSON.exists():
         print(f"[preflight] WARNING: {CAP_JSON} missing -- the run will produce absolute RMSE but "
               f"no seed-paired delta against freeze-then-adapt.")
     if problems:
         sys.exit("preflight failed:\n  - " + "\n  - ".join(problems))
-    print(f"[preflight] ok: {len(seeds)} seeds, device {device}, arm={args.arm}, "
-          f"surface={args.surface}, target lag {required_lag() + args.extra_lag} origins, "
+    print(f"[preflight] ok: fold={args.fold} meta-train={meta_names} -> meta-test={test_names}, "
+          f"{len(seeds)} seeds, device {device}, arm={args.arm}, surface={args.surface}, "
+          f"target lag {required_lag() + args.extra_lag} origins, "
           f"second_order={not args.first_order}, warm_start={not args.from_scratch}")
 
 
@@ -616,7 +703,44 @@ def cap_reference(surface):
     return out
 
 
-def compare(rows, ref, ref_label):
+def ldo3_reference(fold, seeds=SEEDS):
+    """{seed: {cell: rmse}} from the LDO3 freeze-then-adapt records for this fold.
+
+    This is the comparator D2 actually asks for on a disease-out fold: the SAME trunk this arm warm
+    starts from, frozen, with one shared adapter fitted on the held-out disease full train fold and
+    scored by the same score.py pass. The capacity probe cannot serve here, because it only ever ran
+    the dengue->flu direction, so its rows carry no cells for a dengue or covid meta-test.
+
+    Missing seeds are simply absent; compare() takes its t critical value from the pair count, so a
+    partial reference widens the interval rather than silently narrowing it."""
+    _meta, test_names, _dir = fold_plan(fold)
+    out = {}
+    for sd in seeds:
+        cells = {}
+        for nm in test_names:
+            f = rpath(f"encoder_ldo3__{nm}__seed{sd}.json")
+            if not f.exists():
+                continue
+            try:
+                cells.update(_records_rmse(json.loads(f.read_text(encoding="utf-8"))))
+            except (json.JSONDecodeError, OSError, KeyError):
+                continue
+        if cells:
+            out[sd] = cells
+    return out
+
+
+def reference_for(fold, surface):
+    """(reference, label, provenance) for this fold. The legacy fold keeps the capacity probe."""
+    if fold == LEGACY_FOLD:
+        return (cap_reference(surface), SURFACES[surface][1],
+                "freeze-then-adapt, capacity probe, same surface/direction")
+    return (ldo3_reference(fold), f"LDO3 freeze-then-adapt ({fold} held out)",
+            "freeze-then-adapt, LDO3 fold of the same name, same seeds and scorer")
+
+
+def compare(rows, ref, ref_label,
+            provenance="freeze-then-adapt, capacity probe, same surface/direction"):
     """Seed-paired delta vs a freeze-then-adapt reference. Positive = the ANIL/control arm is better.
 
     Paired WITHIN a seed by construction: both arms descend from that seed's own warm-start trunk, so
@@ -645,7 +769,7 @@ def compare(rows, ref, ref_label):
         print(f"\nno seed paired against '{ref_label}'.")
         return None
     # D3: the reference, the formula and the units go ON the table, not in someone's memory.
-    print(f"\nreference: {ref_label} (freeze-then-adapt, capacity probe, same surface/direction)")
+    print(f"\nreference: {ref_label} ({provenance})")
     print("delta% = (reference_rmse - arm_rmse) / |reference_rmse| x 100; positive = arm better; "
           "units = per cent of reference RMSE (country-macro, count space)")
     print(f"\n{'cell':<28} {'n':>2} {'mean d%':>9} {'sd':>7} {'95% CI':>20}   verdict")
@@ -677,19 +801,25 @@ def report(args):
     surface'; affine answers D2's actual question, 'does meta-learning beat the linear probe', and it
     is the pre-registered Ebola surface. Both sit in the same JSON, so reporting one is a choice, not
     a constraint."""
-    rows = load_done(out_json(args.surface, args.arm))
+    path = out_json(args.surface, args.arm, args.fold)
+    rows = load_done(path)
     if not rows:
-        print(f"nothing scored yet in {out_json(args.surface, args.arm)}")
+        print(f"nothing scored yet in {path}")
         return {}
-    print(f"\n=== arm={args.arm} surface={args.surface}, {len(rows)} seeds ===")
+    print(f"\n=== fold={args.fold} arm={args.arm} surface={args.surface}, {len(rows)} seeds ===")
     out = {}
-    for ref_name in dict.fromkeys([args.surface, "affine"]):
-        s = compare(rows, cap_reference(ref_name), SURFACES[ref_name][1])
-        if s:
-            out[ref_name] = s
+    if args.fold == LEGACY_FOLD:
+        for ref_name in dict.fromkeys([args.surface, "affine"]):
+            sm = compare(rows, cap_reference(ref_name), SURFACES[ref_name][1])
+            if sm:
+                out[ref_name] = sm
+    else:
+        ref, label, prov = reference_for(args.fold, args.surface)
+        sm = compare(rows, ref, label, prov)
+        if sm:
+            out[args.fold] = sm
     if out:
-        p = out_json(args.surface, args.arm).with_name(
-            out_json(args.surface, args.arm).stem + "_summary.json")
+        p = path.with_name(path.stem + "_summary.json")
         p.write_text(json.dumps(out, indent=2), encoding="utf-8")
         print(f"\nwrote {p}")
     return out
@@ -712,7 +842,8 @@ def timing_probe(device, args, steps=120):
                           outer_lr=args.outer_lr, n_sup=args.n_sup, n_qry=args.n_qry,
                           extra_lag=args.extra_lag, second_order=not args.first_order,
                           warm_start=not args.from_scratch, val_every=max(steps // 6, 1),
-                          patience=99, log_every=10, verbose=args.verbose, require_val=False)
+                          patience=99, log_every=10, verbose=args.verbose, require_val=False,
+                          fold=args.fold)
     upd = max(st["outer_updates"], 1)
     per_update = st["minutes"] * 60 / upd
     trunk_per_step = 3 * 3600 / 91000
@@ -738,6 +869,9 @@ def main():
                     help="anil = meta-training; control = same episodes/updates, no inner loop")
     ap.add_argument("--surface", choices=sorted(SURFACES), default="mlp-256",
                     help="mlp-256 = D19's strongest rung; affine = the pre-registered Ebola surface")
+    ap.add_argument("--fold", choices=FOLDS, default=LEGACY_FOLD,
+                    help="dengue2flu = the reported single-direction run; dengue/influenza/covid = "
+                         "the LDO3 disease-out folds, meta-trained on that fold in-diseases")
     ap.add_argument("--outer-steps", type=int, default=8000, help="EPISODES DRAWN, not updates")
     ap.add_argument("--inner-steps", type=int, default=5)
     ap.add_argument("--inner-lr", type=float, default=1e-2)
@@ -777,7 +911,7 @@ def main():
     if a.timing:
         timing_probe(DEVICE, a); return
 
-    path = out_json(a.surface, a.arm)
+    path = out_json(a.surface, a.arm, a.fold)
     rows = load_done(path)
     # --refit has to drop the seed from `done` too. It used to be consulted only inside run_seed,
     # which the resume skip never reached, so the flag silently did nothing.
@@ -800,10 +934,17 @@ def main():
     print(f"\nwrote {path}")
     print("ABLATION ONLY. This is an ablation of the adaptation procedure, not a headline, and that "
           "does not change if the sign is positive.")
-    print("Report with ALL of: (1) D13's objection -- dengue-only episodes vary population and "
-          "origin, not disease; (2) warm start, so this is meta-FINE-TUNING; (3) the meta-test fits "
-          "a fresh adapter on FULL train folds, so nothing here measures few-shot; (4) the surface "
-          "was selected on h15, where the Ebola primary arm has zero adaptation pairs.")
+    if a.fold == LEGACY_FOLD:
+        one = ("(1) D13's objection -- dengue-only episodes vary population and origin, not disease")
+    else:
+        mtr, mte, _d = fold_plan(a.fold)
+        one = (f"(1) episodes here DO vary disease -- meta-train {mtr} over {len(mtr)} panels, "
+               f"held out {mte} -- which answers D13's objection for this fold but NOT for the "
+               f"dengue2flu run, so do not read this back onto that table")
+    print(f"Report with ALL of: {one}; (2) warm start, so this is meta-FINE-TUNING; (3) the "
+          "meta-test fits a fresh adapter on FULL train folds, so nothing here measures few-shot; "
+          "(4) the surface was selected on h15, where the Ebola primary arm has zero adaptation "
+          "pairs.")
 
 
 # --------------------------------------------------------------------------- #
@@ -930,6 +1071,55 @@ def _selfcheck():
         assert not p.exists(), f"{p} already exists -- this run would overwrite it"
     assert not rpath(meta_ckpt(42, "mlp-256", "anil")).exists()
 
+    # 10. FOLDS. Two things must hold at once: the legacy fold reproduces its existing names byte
+    #     for byte (or resume rereads nothing and the reported run is orphaned), and every new fold
+    #     writes somewhere else (or fold="influenza", which meta-tests on the same three panels,
+    #     silently overwrites results that are already in a stakeholder brief).
+    assert artifact("affine", "anil", "influenza_japan", 42, ".json") == \
+        "encoder_ldo__anil-affine-anil__influenza_japan__seed42.json", \
+        "legacy artifact name changed; the reported run would be orphaned"
+    assert out_json("affine", "anil").name == "anil_affine_anil.json", \
+        "legacy out_json changed; resume would not see the 5 seeds already scored"
+    assert warm_ckpt(42) == "encoder_ldo__dengue2flu-cap__seed42__ckpt.pt"
+    assert meta_ckpt(42, "affine", "anil") == \
+        "encoder_ldo__dengue2flu-anil-affine-anil__seed42__ckpt.pt"
+    for f_ in FOLDS:
+        if f_ == LEGACY_FOLD:
+            continue
+        assert artifact("affine", "anil", "influenza_japan", 42, ".json", f_) != \
+            artifact("affine", "anil", "influenza_japan", 42, ".json"), \
+            f"fold {f_} shares the legacy artifact name and would overwrite it"
+        assert out_json("affine", "anil", f_) != out_json("affine", "anil"), \
+            f"fold {f_} shares the legacy out_json and would overwrite it"
+        assert warm_ckpt(42, f_) == f"encoder_ldo3__{f_}__seed42__ckpt.pt"
+    #     fold_plan must agree with the transfer table it borrows its folds from, and no fold may
+    #     ever put ebola on either side (C8).
+    from train.lodo import DISEASES as _DIS
+    for f_ in FOLDS[1:]:
+        mtr, mte, _d = fold_plan(f_)
+        assert mte == list(_DIS[f_]), f"fold {f_} meta-tests on {mte}, not {list(_DIS[f_])}"
+        assert set(mtr) == {x for k, v in _DIS.items() if k != f_ for x in v}, \
+            f"fold {f_} meta-train side disagrees with lodo.DISEASES"
+        assert not set(mtr) & set(mte), f"fold {f_} has a bundle on both sides"
+    for f_ in FOLDS:
+        mtr, mte, _d = fold_plan(f_)
+        assert not any(x.startswith("ebola") for x in mtr + mte), "ebola entered a fold (C8)"
+    assert fold_plan("dengue")[0] and len(fold_plan("dengue")[0]) == 4, \
+        "the dengue fold must meta-train on 4 bundles (3 flu + covid)"
+    #     the multi-panel path is what makes those 4 bundles reachable: assert it is actually wired,
+    #     because a meta_train that silently kept ds[0] would train on one panel and still finish.
+    src_mt = __import__("inspect").getsource(meta_train)
+    assert "panels[int(rng.integers(0, len(panels)))]" in src_mt, \
+        "meta_train does not draw a panel per outer step; a multi-bundle fold would train on one"
+    assert "for _nm in meta_names:" in src_mt, "meta_train does not prepare every meta-train bundle"
+    assert "meta_val(enc, ad, panels," in src_mt, "meta_val is not receiving the panel list"
+    try:
+        fold_plan("nope")
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("fold_plan accepted an unknown fold")
+
     print(f"ok  surfaces match the capacity probe by state-dict shape (mlp-256 21,780 / affine 1,428)")
     print(f"ok  episodes: support/query TARGET weeks disjoint at lag {required_lag()}; "
           f"the old gap=4 case is still detectably overlapping")
@@ -939,6 +1129,8 @@ def _selfcheck():
     print("ok  rmse read from country_macro, agrees with capacity_probe.rmse_of")
     print("ok  compare(): t follows each cell's pair count (n=3 -> 4.303), sign-flip reads as noise")
     print("ok  cap_reference parses both surfaces; artifact names route to lodo/ and collide with nothing")
+    print(f"ok  folds {FOLDS}: legacy names byte-identical, every LDO3 fold writes elsewhere, "
+          f"fold plans agree with lodo.DISEASES, no ebola on either side, panel draw wired")
 
 
 if __name__ == "__main__":

@@ -41,6 +41,9 @@ import sys
 from pathlib import Path
 
 from run_queue import FREE_MB, POLL_SECONDS, run, say, wait_for_gpu
+from train.anil import FOLDS, LEGACY_FOLD, fold_plan
+from train.anil import out_json as anil_out
+from train.anil import warm_ckpt as anil_warm
 
 LOG = Path("results/reports/anil_night.log")
 SEEDS = (42, 52, 62, 72, 82)
@@ -49,14 +52,16 @@ SURFACE = "affine"                  # the pre-registered adaptation surface. See
 RESULTS = Path("results")
 
 
-def out_json(surface, arm):
-    """Must match train.anil.out_json exactly, or resume reads a file nothing writes."""
-    return RESULTS / "misc" / f"anil_{surface}_{arm}.json"
+def out_json(surface, arm, fold=LEGACY_FOLD):
+    """Delegates to the writer rather than re-deriving the name. The old copy here was a second
+    source of truth for a path, and the self-check existed only because of it; one fold argument
+    added in one place and forgotten in the other would make resume read a file nothing writes."""
+    return anil_out(surface, arm, fold)
 
 
-def done_seeds(surface, arm):
+def done_seeds(surface, arm, fold=LEGACY_FOLD):
     """Seeds already scored, read from the artifact rather than from a flag."""
-    p = out_json(surface, arm)
+    p = out_json(surface, arm, fold)
     if not p.exists():
         return set()
     try:
@@ -65,21 +70,24 @@ def done_seeds(surface, arm):
         return set()
 
 
-def todo(surface, seeds, arms=ARMS):
+def todo(surface, seeds, arms=ARMS, fold=LEGACY_FOLD):
     """(seed, arm) pairs still outstanding, seed-major so matched pairs complete together."""
-    have = {a: done_seeds(surface, a) for a in arms}
+    have = {a: done_seeds(surface, a, fold) for a in arms}
     return [(s, a) for s in seeds for a in arms if s not in have[a]]
 
 
-def cmd(arm, seed, surface, extra=()):
+def cmd(arm, seed, surface, extra=(), fold=LEGACY_FOLD):
     return ["-m", "train.anil", "--arm", arm, "--seeds", str(seed),
-            "--surface", surface, *extra]
+            "--surface", surface, "--fold", fold, *extra]
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--seeds", type=int, nargs="+", default=list(SEEDS))
     ap.add_argument("--surface", default=SURFACE, choices=("affine", "mlp-256"))
+    ap.add_argument("--folds", nargs="+", default=[LEGACY_FOLD], choices=FOLDS,
+                    help="run these folds in order, each seed-major. Default is the legacy "
+                         "dengue2flu run, which is already complete on disk.")
     ap.add_argument("--poll", type=int, default=POLL_SECONDS)
     ap.add_argument("--free-mb", type=int, default=FREE_MB)
     ap.add_argument("--max-wait-hours", type=float, default=16.0)
@@ -96,18 +104,25 @@ def main():
     if a.selfcheck:
         return _selfcheck()
 
-    left = todo(a.surface, a.seeds)
-    say(f"ANIL NIGHT: surface={a.surface}  {len(left)} of {len(a.seeds) * len(ARMS)} "
-        f"(seed, arm) cells outstanding")
-    say(f"  order is seed-major: {' -> '.join(f'{s}/{x}' for s, x in left[:4])}"
-        f"{' ...' if len(left) > 4 else ''}")
+    plan = [(f, s, arm) for f in a.folds for s, arm in todo(a.surface, a.seeds, fold=f)]
+    say(f"ANIL NIGHT: surface={a.surface}  folds={a.folds}  {len(plan)} of "
+        f"{len(a.folds) * len(a.seeds) * len(ARMS)} (fold, seed, arm) cells outstanding")
+    for f in a.folds:
+        mtr, mte, _d = fold_plan(f)
+        k = len([x for x in plan if x[0] == f])
+        say(f"  fold={f}: meta-train {mtr} -> meta-test {mte}  ({k} cells outstanding)")
+    say(f"  order is fold-major then seed-major: "
+        f"{' -> '.join(f'{f}/{s}/{x}' for f, s, x in plan[:4])}{' ...' if len(plan) > 4 else ''}")
     if a.dry:
-        for s, arm in left:
-            say(f"  DRY seed{s} {arm}: {' '.join(cmd(arm, s, a.surface))}")
+        for f, s, arm in plan:
+            say(f"  DRY {f} seed{s} {arm}: {' '.join(cmd(arm, s, a.surface, fold=f))}")
         return 0
-    if not left and not a.price:
+    if not plan and not a.price:
         say("nothing outstanding; --report on train.anil to reprint")
-        return run(["-m", "train.anil", "--surface", a.surface, "--report"], LOG, "anil report")
+        for f in a.folds:
+            run(["-m", "train.anil", "--surface", a.surface, "--fold", f, "--report"],
+                LOG, f"anil report {f}")
+        return 0
 
     if a.skip_wait:
         say("--skip-wait: starting immediately")
@@ -116,15 +131,17 @@ def main():
                      max_hours=a.max_wait_hours)
 
     # 1. everything knowable to be wrong before the first hour is spent
-    rc = run(["-m", "train.anil", "--preflight", "--surface", a.surface,
-              "--seeds", *[str(s) for s in a.seeds]], LOG, "anil preflight")
-    if rc != 0:
-        say(f"preflight FAILED (exit {rc}) -- nothing booked. Fix the prerequisite and re-run.")
-        return rc
+    for f in a.folds:
+        rc = run(["-m", "train.anil", "--preflight", "--surface", a.surface, "--fold", f,
+                  "--seeds", *[str(s) for s in a.seeds]], LOG, f"anil preflight {f}")
+        if rc != 0:
+            say(f"preflight FAILED for fold={f} (exit {rc}) -- nothing booked. Every fold is "
+                f"checked before any is booked, so fix it and re-run.")
+            return rc
 
     # 2. price one outer update before committing the card for the night
-    rc = run(["-m", "train.anil", "--timing", "--surface", a.surface,
-              "--seeds", str(a.seeds[0])], LOG, "anil timing probe")
+    rc = run(["-m", "train.anil", "--timing", "--surface", a.surface, "--fold", a.folds[0],
+              "--seeds", str(a.seeds[0])], LOG, f"anil timing probe {a.folds[0]}")
     if rc != 0:
         say(f"timing probe FAILED (exit {rc}) -- refusing to book an unpriced job.")
         return rc
@@ -136,23 +153,24 @@ def main():
 
     # 3. the arms, seed-major
     failed = []
-    for s, arm in left:
-        rc = run(cmd(arm, s, a.surface), LOG, f"anil seed{s} {arm}")
+    for f, s, arm in plan:
+        rc = run(cmd(arm, s, a.surface, fold=f), LOG, f"anil {f} seed{s} {arm}")
         if rc != 0:
-            failed.append((s, arm))
-            say(f"seed{s} {arm} exited {rc}; continuing so the remaining pairs still land")
+            failed.append((f, s, arm))
+            say(f"{f} seed{s} {arm} exited {rc}; continuing so the remaining pairs still land")
 
-    # 4. the comparison, from whatever completed
-    run(["-m", "train.anil", "--surface", a.surface, "--report"], LOG, "anil report")
-
-    both = [s for s in a.seeds
-            if s in done_seeds(a.surface, "anil") and s in done_seeds(a.surface, "control")]
-    say(f"DONE  matched pairs complete: {sorted(both)} ({len(both)} of {len(a.seeds)})")
+    # 4. the comparison, per fold, from whatever completed
+    for f in a.folds:
+        run(["-m", "train.anil", "--surface", a.surface, "--fold", f, "--report"],
+            LOG, f"anil report {f}")
+        both = [s for s in a.seeds
+                if s in done_seeds(a.surface, "anil", f) and s in done_seeds(a.surface, "control", f)]
+        say(f"DONE fold={f}  matched pairs complete: {sorted(both)} ({len(both)} of {len(a.seeds)})")
+        if len(both) < len(a.seeds):
+            say(f"  WARNING fold={f}: fewer than {len(a.seeds)} matched pairs. Report the seed "
+                f"count on every cell and do NOT print a 5-seed interval over {len(both)} pairs.")
     if failed:
         say(f"  cells that failed: {failed}. Re-run this script to resume them.")
-    if len(both) < len(a.seeds):
-        say(f"  WARNING: fewer than {len(a.seeds)} matched pairs. Report the seed count on every "
-            f"cell and do NOT print a 5-seed interval over {len(both)} pairs.")
     say(f"  log: {LOG}")
     return 0
 
@@ -165,28 +183,32 @@ def _selfcheck():
 
     # 2. seed-major ordering, control before anil. Arm-major would leave 5 controls and 0 anil
     #    runs if the night died halfway, which is unanalysable.
-    order = todo("affine", [42, 52], ARMS)
+    order = todo("affine", [42, 52], ARMS, fold="dengue")
     if len(order) == 4:                       # only assertable when nothing is done yet
         assert [x[0] for x in order] == [42, 42, 52, 52], f"not seed-major: {order}"
         assert [x[1] for x in order] == ["control", "anil"] * 2, f"control must precede anil: {order}"
 
     # 3. resume must read the file train.anil actually writes, or every seed is retrained
-    from train.anil import out_json as anil_out
     for arm in ARMS:
-        assert out_json("affine", arm) == anil_out("affine", arm), \
-            f"resume path {out_json('affine', arm)} != writer path {anil_out('affine', arm)}"
+        for f in FOLDS:
+            assert out_json("affine", arm, f) == anil_out("affine", arm, f), \
+                f"resume path != writer path for fold={f} arm={arm}"
+    #    a fold must not read another fold's rows, or a finished fold makes the next one look done
+    assert len({str(out_json("affine", "anil", f)) for f in FOLDS}) == len(FOLDS), \
+        "two folds share one resume file; one would be skipped as already scored"
 
     # 4. the warm-start checkpoints must exist for every seed, or each arm silently pays ~3 h
     #    fitting a trunk from scratch -- 10 arms x 3 h is the difference between one night and four
     from results_paths import rpath
-    missing = [s for s in SEEDS
-               if not rpath(f"encoder_ldo__dengue2flu-cap__seed{s}__ckpt.pt").exists()]
-    warm = "all 5 warm-start trunks present" if not missing else \
-        f"WARNING warm-start missing for seeds {missing}: those arms will fit a trunk from scratch"
+    missing = [(f, s) for f in FOLDS for s in SEEDS if not rpath(anil_warm(s, f)).exists()]
+    warm = f"all {len(FOLDS) * len(SEEDS)} warm-start trunks present" if not missing else \
+        f"WARNING warm-start missing for {missing}: those arms would fit a trunk from scratch"
 
     say(f"selfcheck ok: surface=affine (the prereg mechanism), order is seed-major with control "
-        f"first, resume path matches the writer. {warm}. "
-        f"{len(todo('affine', list(SEEDS)))} of {len(SEEDS) * len(ARMS)} cells outstanding.")
+        f"first, resume path matches the writer for every fold and no two folds share one. {warm}.")
+    for f in FOLDS:
+        say(f"  fold={f}: {len(todo('affine', list(SEEDS), fold=f))} of "
+            f"{len(SEEDS) * len(ARMS)} cells outstanding")
     return 0
 
 
