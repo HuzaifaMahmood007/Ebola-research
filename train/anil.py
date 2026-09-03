@@ -380,7 +380,8 @@ def meta_train(seed, device, arm="anil", surface="mlp-256", outer_steps=8000, in
     """
     assert arm in ARMS, f"unknown arm {arm}"
     meta_names, _test_names, direction = fold_plan(fold)
-    assert not any(x.startswith("ebola") for x in meta_names),         "ebola must never enter meta-training (C8)"
+    assert not any(x.startswith("ebola") for x in meta_names), \
+        "ebola must never enter meta-training (C8)"
     torch.manual_seed(seed); np.random.seed(seed)
     # ONE _prepare per bundle rather than a block-diagonal supergraph: an episode lives inside a
     # single panel, so a shared graph would put other diseases' nodes in the trunk's receptive field
