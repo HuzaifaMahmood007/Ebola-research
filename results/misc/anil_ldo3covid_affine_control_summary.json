@@ -1,0 +1,40 @@
+{
+  "covid": {
+    "covid_us-states|h10": {
+      "n": 5,
+      "mean": -13.674418572683848,
+      "sd": 24.87245676846001,
+      "lo": -44.552701649948425,
+      "hi": 17.20386450458073,
+      "clears_zero": false,
+      "reference": "LDO3 freeze-then-adapt (covid held out)"
+    },
+    "covid_us-states|h15": {
+      "n": 5,
+      "mean": -75.21409942938168,
+      "sd": 101.89823613386898,
+      "lo": -201.7171871503125,
+      "hi": 51.288988291549146,
+      "clears_zero": false,
+      "reference": "LDO3 freeze-then-adapt (covid held out)"
+    },
+    "covid_us-states|h3": {
+      "n": 5,
+      "mean": -37.43527026682081,
+      "sd": 61.52801257600932,
+      "lo": -113.8201407759813,
+      "hi": 38.949600242339685,
+      "clears_zero": false,
+      "reference": "LDO3 freeze-then-adapt (covid held out)"
+    },
+    "covid_us-states|h5": {
+      "n": 5,
+      "mean": -11.242322004663647,
+      "sd": 25.219164949501486,
+      "lo": -42.5510311334865,
+      "hi": 20.066387124159206,
+      "clears_zero": false,
+      "reference": "LDO3 freeze-then-adapt (covid held out)"
+    }
+  }
+}

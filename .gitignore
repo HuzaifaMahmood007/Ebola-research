@@ -1,9 +1,10 @@
 #AI Context
 .claude/
+CLAUDE.md
 
 #Docs
 /docs/
-/Reports/
+
 
 #Baseline Models
 /baselines/*
@@ -16,8 +17,6 @@ __pycache__/
 
 #Environment Variables
 .env
-
-/results/
 
 #Generated run artifacts (regenerable from code + data, not source)
 /ablation/*.json

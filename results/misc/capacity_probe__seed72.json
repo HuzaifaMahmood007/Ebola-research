@@ -1,0 +1,135 @@
+{
+  "seed": 72,
+  "cross": [
+    {
+      "label": "affine (current)",
+      "params": 1428,
+      "minutes": 5.6,
+      "seed": 72,
+      "rmse": {
+        "influenza_japan|h3": 636.4638615204677,
+        "influenza_japan|h5": 929.0581988491862,
+        "influenza_japan|h10": 1451.9200427358412,
+        "influenza_japan|h15": 1558.1881479495198,
+        "influenza_us-regions|h3": 599.541869893795,
+        "influenza_us-regions|h5": 758.6620886472567,
+        "influenza_us-regions|h10": 1006.2820797584558,
+        "influenza_us-regions|h15": 1155.8874584490159,
+        "influenza_us-states|h3": 115.09340967997043,
+        "influenza_us-states|h5": 142.08645352751992,
+        "influenza_us-states|h10": 163.6651710539321,
+        "influenza_us-states|h15": 173.49109470384474
+      }
+    },
+    {
+      "label": "mlp-64",
+      "params": 5460,
+      "minutes": 4.7,
+      "seed": 72,
+      "rmse": {
+        "influenza_japan|h3": 900.7359857656703,
+        "influenza_japan|h5": 1287.5026750717564,
+        "influenza_japan|h10": 1450.214454447206,
+        "influenza_japan|h15": 1408.6472444946457,
+        "influenza_us-regions|h3": 604.4884072357612,
+        "influenza_us-regions|h5": 741.1168161457814,
+        "influenza_us-regions|h10": 971.2684489892426,
+        "influenza_us-regions|h15": 1045.5362869874903,
+        "influenza_us-states|h3": 118.1589638047561,
+        "influenza_us-states|h5": 146.3105490633638,
+        "influenza_us-states|h10": 164.56502102620618,
+        "influenza_us-states|h15": 169.09154668900712
+      }
+    },
+    {
+      "label": "film+mlp-64",
+      "params": 5588,
+      "minutes": 3.4,
+      "seed": 72,
+      "rmse": {
+        "influenza_japan|h3": 726.421423416911,
+        "influenza_japan|h5": 1046.2665948070935,
+        "influenza_japan|h10": 1404.0975138814074,
+        "influenza_japan|h15": 1424.954936330351,
+        "influenza_us-regions|h3": 632.3332473023522,
+        "influenza_us-regions|h5": 822.6621892233482,
+        "influenza_us-regions|h10": 980.1189391398709,
+        "influenza_us-regions|h15": 1035.8883924529257,
+        "influenza_us-states|h3": 116.80341086311928,
+        "influenza_us-states|h5": 146.80500963120627,
+        "influenza_us-states|h10": 167.92934279060808,
+        "influenza_us-states|h15": 172.52928540210254
+      }
+    },
+    {
+      "label": "mlp-256",
+      "params": 21780,
+      "minutes": 2.0,
+      "seed": 72,
+      "rmse": {
+        "influenza_japan|h3": 788.8907079246735,
+        "influenza_japan|h5": 1050.5030637939599,
+        "influenza_japan|h10": 1325.531743102448,
+        "influenza_japan|h15": 1365.2308477309782,
+        "influenza_us-regions|h3": 648.9466070976292,
+        "influenza_us-regions|h5": 712.0438505319609,
+        "influenza_us-regions|h10": 917.0875713544541,
+        "influenza_us-regions|h15": 1025.8112448864429,
+        "influenza_us-states|h3": 118.90268852071428,
+        "influenza_us-states|h5": 142.30972634465866,
+        "influenza_us-states|h10": 164.0055514999794,
+        "influenza_us-states|h15": 170.35790131219497
+      }
+    }
+  ],
+  "control": [
+    {
+      "label": "affine (current)",
+      "params": 1428,
+      "minutes": 22.6,
+      "seed": 72,
+      "rmse": {
+        "dengue|h3": 41.85545948187585,
+        "dengue|h5": 48.45276461646301,
+        "dengue|h10": 56.20703871887654,
+        "dengue|h15": 57.48848561869184
+      }
+    },
+    {
+      "label": "mlp-64",
+      "params": 5460,
+      "minutes": 15.9,
+      "seed": 72,
+      "rmse": {
+        "dengue|h3": 45.05940954980485,
+        "dengue|h5": 49.070842913807475,
+        "dengue|h10": 57.61504082266301,
+        "dengue|h15": 57.87554843726199
+      }
+    },
+    {
+      "label": "film+mlp-64",
+      "params": 5588,
+      "minutes": 16.0,
+      "seed": 72,
+      "rmse": {
+        "dengue|h3": 42.879934884106945,
+        "dengue|h5": 47.56580177389776,
+        "dengue|h10": 58.77114688861651,
+        "dengue|h15": 57.760655384849976
+      }
+    },
+    {
+      "label": "mlp-256",
+      "params": 21780,
+      "minutes": 15.9,
+      "seed": 72,
+      "rmse": {
+        "dengue|h3": 40.35313960588598,
+        "dengue|h5": 47.041277418610385,
+        "dengue|h10": 57.9751995160332,
+        "dengue|h15": 57.94336137315139
+      }
+    }
+  ]
+}

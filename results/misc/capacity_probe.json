@@ -1,0 +1,129 @@
+{
+  "seed": 42,
+  "verdict": "ADAPTER-BOUND AND TRANSFER-SPECIFIC (provisional)",
+  "detail": "Larger surfaces recover up to +23.2% cross-disease (median +2.5%) while the in-domain control gains only +0.2%. The adaptation surface was a real, transfer-specific bottleneck. There is a cheap partial fix available now AND a genuine prior that shaping the trunk for adaptability will pay. Strongest case for ANIL this evidence could produce.",
+  "cross_disease": [
+    {
+      "label": "affine (current)",
+      "params": 1428,
+      "minutes": 4.4,
+      "rmse": {
+        "influenza_japan|h3": 700.3352955388624,
+        "influenza_japan|h5": 976.6258014958789,
+        "influenza_japan|h10": 1492.9298218430554,
+        "influenza_japan|h15": 1558.6837820780213,
+        "influenza_us-regions|h3": 629.1390524729278,
+        "influenza_us-regions|h5": 725.5252535425218,
+        "influenza_us-regions|h10": 978.775018185099,
+        "influenza_us-regions|h15": 1243.2700299277371,
+        "influenza_us-states|h3": 116.53656163712547,
+        "influenza_us-states|h5": 142.9104601489643,
+        "influenza_us-states|h10": 161.98196227725612,
+        "influenza_us-states|h15": 181.4453774040122
+      }
+    },
+    {
+      "label": "mlp-64",
+      "params": 5460,
+      "minutes": 3.3,
+      "rmse": {
+        "influenza_japan|h3": 748.3612886918877,
+        "influenza_japan|h5": 932.6632041379897,
+        "influenza_japan|h10": 1422.683285201636,
+        "influenza_japan|h15": 1443.860610627878,
+        "influenza_us-regions|h3": 603.1721063173194,
+        "influenza_us-regions|h5": 701.6904489055885,
+        "influenza_us-regions|h10": 871.6467311038668,
+        "influenza_us-regions|h15": 1067.6774275284204,
+        "influenza_us-states|h3": 117.14304301012596,
+        "influenza_us-states|h5": 142.5675400873967,
+        "influenza_us-states|h10": 166.66078592493673,
+        "influenza_us-states|h15": 177.0882632157981
+      }
+    },
+    {
+      "label": "film+mlp-64",
+      "params": 5588,
+      "minutes": 4.9,
+      "rmse": {
+        "influenza_japan|h3": 807.5728237553965,
+        "influenza_japan|h5": 1012.5515783943285,
+        "influenza_japan|h10": 1435.4145557935785,
+        "influenza_japan|h15": 1443.3396296403655,
+        "influenza_us-regions|h3": 686.27150604961,
+        "influenza_us-regions|h5": 790.6909339214162,
+        "influenza_us-regions|h10": 959.640026798936,
+        "influenza_us-regions|h15": 1114.3323589927131,
+        "influenza_us-states|h3": 122.76387722115504,
+        "influenza_us-states|h5": 147.08500444145875,
+        "influenza_us-states|h10": 170.7818206821896,
+        "influenza_us-states|h15": 176.55959127080993
+      }
+    },
+    {
+      "label": "mlp-256",
+      "params": 21780,
+      "minutes": 3.1,
+      "rmse": {
+        "influenza_japan|h3": 643.8414342429438,
+        "influenza_japan|h5": 920.4075411464644,
+        "influenza_japan|h10": 1438.3457272957141,
+        "influenza_japan|h15": 1480.9694384618576,
+        "influenza_us-regions|h3": 624.7206136701147,
+        "influenza_us-regions|h5": 729.6100057098398,
+        "influenza_us-regions|h10": 852.5117547171487,
+        "influenza_us-regions|h15": 955.3057092018338,
+        "influenza_us-states|h3": 116.63108483364844,
+        "influenza_us-states|h5": 143.9257500880255,
+        "influenza_us-states|h10": 166.17150480562213,
+        "influenza_us-states|h15": 170.07441306890877
+      }
+    }
+  ],
+  "in_domain_control": [
+    {
+      "label": "affine (current)",
+      "params": 1428,
+      "minutes": 21.7,
+      "rmse": {
+        "dengue|h3": 37.181066540881694,
+        "dengue|h5": 47.42903620861872,
+        "dengue|h10": 56.00127119123409,
+        "dengue|h15": 57.544200884433415
+      }
+    },
+    {
+      "label": "mlp-64",
+      "params": 5460,
+      "minutes": 21.7,
+      "rmse": {
+        "dengue|h3": 38.80180653400749,
+        "dengue|h5": 47.330806436813624,
+        "dengue|h10": 56.77873128702683,
+        "dengue|h15": 57.59837821956288
+      }
+    },
+    {
+      "label": "film+mlp-64",
+      "params": 5588,
+      "minutes": 21.9,
+      "rmse": {
+        "dengue|h3": 37.588498533558344,
+        "dengue|h5": 48.0261386520472,
+        "dengue|h10": 56.231918369019105,
+        "dengue|h15": 57.617753276359615
+      }
+    },
+    {
+      "label": "mlp-256",
+      "params": 21780,
+      "minutes": 30.5,
+      "rmse": {
+        "dengue|h3": 37.737198525681414,
+        "dengue|h5": 50.79988796738237,
+        "dengue|h10": 57.111723711917115,
+        "dengue|h15": 58.14944825687928
+      }
+    }
+  ]
+}

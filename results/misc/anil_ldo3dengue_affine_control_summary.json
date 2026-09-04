@@ -1,0 +1,40 @@
+{
+  "dengue": {
+    "dengue|h10": {
+      "n": 5,
+      "mean": -0.09612436151900237,
+      "sd": 0.4087908942774827,
+      "lo": -0.6036239250086363,
+      "hi": 0.4113752019706315,
+      "clears_zero": false,
+      "reference": "LDO3 freeze-then-adapt (dengue held out)"
+    },
+    "dengue|h15": {
+      "n": 5,
+      "mean": 0.0072879918427066984,
+      "sd": 0.2517233101557247,
+      "lo": -0.30521767257525145,
+      "hi": 0.3197936562606648,
+      "clears_zero": false,
+      "reference": "LDO3 freeze-then-adapt (dengue held out)"
+    },
+    "dengue|h3": {
+      "n": 5,
+      "mean": -0.019293835129145266,
+      "sd": 3.401433929176893,
+      "lo": -4.242054807697093,
+      "hi": 4.2034671374388015,
+      "clears_zero": false,
+      "reference": "LDO3 freeze-then-adapt (dengue held out)"
+    },
+    "dengue|h5": {
+      "n": 5,
+      "mean": 0.48690780922477883,
+      "sd": 2.1594475681119634,
+      "lo": -2.1939706387469013,
+      "hi": 3.167786257196459,
+      "clears_zero": false,
+      "reference": "LDO3 freeze-then-adapt (dengue held out)"
+    }
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "influenza": {
+    "influenza_japan|h10": {
+      "n": 5,
+      "mean": -0.56420662095704,
+      "sd": 1.2658895374396353,
+      "lo": -2.1357641010036224,
+      "hi": 1.0073508590895424,
+      "clears_zero": false,
+      "reference": "LDO3 freeze-then-adapt (influenza held out)"
+    },
+    "influenza_japan|h15": {
+      "n": 5,
+      "mean": -2.8150761303466827,
+      "sd": 2.0820502763260396,
+      "lo": -5.399868554029441,
+      "hi": -0.23028370666392428,
+      "clears_zero": true,
+      "reference": "LDO3 freeze-then-adapt (influenza held out)"
+    },
+    "influenza_japan|h3": {
+      "n": 5,
+      "mean": -10.43393775782055,
+      "sd": 7.302591710790846,
+      "lo": -19.499849345992423,
+      "hi": -1.368026169648676,
+      "clears_zero": true,
+      "reference": "LDO3 freeze-then-adapt (influenza held out)"
+    },
+    "influenza_japan|h5": {
+      "n": 5,
+      "mean": -7.647655848509396,
+      "sd": 9.62614418505824,
+      "lo": -19.598176372308714,
+      "hi": 4.302864675289923,
+      "clears_zero": false,
+      "reference": "LDO3 freeze-then-adapt (influenza held out)"
+    },
+    "influenza_us-regions|h10": {
+      "n": 5,
+      "mean": -1.2198961667395527,
+      "sd": 5.099624510034137,
+      "lo": -7.550901208761401,
+      "hi": 5.111108875282294,
+      "clears_zero": false,
+      "reference": "LDO3 freeze-then-adapt (influenza held out)"
+    },
+    "influenza_us-regions|h15": {
+      "n": 5,
+      "mean": -0.12449681935540133,
+      "sd": 4.519805748755121,
+      "lo": -5.735677197052749,
+      "hi": 5.486683558341947,
+      "clears_zero": false,
+      "reference": "LDO3 freeze-then-adapt (influenza held out)"
+    },
+    "influenza_us-regions|h3": {
+      "n": 5,
+      "mean": -2.807819035283141,
+      "sd": 9.721899547377502,
+      "lo": -14.877216484324908,
+      "hi": 9.261578413758624,
+      "clears_zero": false,
+      "reference": "LDO3 freeze-then-adapt (influenza held out)"
+    },
+    "influenza_us-regions|h5": {
+      "n": 5,
+      "mean": 0.5965308170700562,
+      "sd": 8.078217742033203,
+      "lo": -9.432293296299852,
+      "hi": 10.625354930439963,
+      "clears_zero": false,
+      "reference": "LDO3 freeze-then-adapt (influenza held out)"
+    },
+    "influenza_us-states|h10": {
+      "n": 5,
+      "mean": 1.1763425920297041,
+      "sd": 4.621171443425475,
+      "lo": -4.560679741831935,
+      "hi": 6.913364925891344,
+      "clears_zero": false,
+      "reference": "LDO3 freeze-then-adapt (influenza held out)"
+    },
+    "influenza_us-states|h15": {
+      "n": 5,
+      "mean": 0.675253010428012,
+      "sd": 1.3697996394759142,
+      "lo": -1.0253052183235534,
+      "hi": 2.3758112391795776,
+      "clears_zero": false,
+      "reference": "LDO3 freeze-then-adapt (influenza held out)"
+    },
+    "influenza_us-states|h3": {
+      "n": 5,
+      "mean": -0.9007933877242937,
+      "sd": 2.6429084631184097,
+      "lo": -4.181871587243116,
+      "hi": 2.3802848117945286,
+      "clears_zero": false,
+      "reference": "LDO3 freeze-then-adapt (influenza held out)"
+    },
+    "influenza_us-states|h5": {
+      "n": 5,
+      "mean": -0.6626893842340194,
+      "sd": 2.8226796142519452,
+      "lo": -4.166947165307732,
+      "hi": 2.841568396839694,
+      "clears_zero": false,
+      "reference": "LDO3 freeze-then-adapt (influenza held out)"
+    }
+  }
+}

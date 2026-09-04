@@ -1,0 +1,35 @@
+{
+  "alpha": 0.1,
+  "alpha_1": 0.1,
+  "gamma": 0.05,
+  "eps": 1e-06,
+  "quantile_levels": [
+    0.05,
+    0.95
+  ],
+  "nominal_coverage": 0.9,
+  "lambda_by_horizon": {
+    "3": 0.19454524824680638,
+    "5": 0.1808599346775337,
+    "10": 0.4143669200572853,
+    "15": 0.4584126198838505
+  },
+  "calibration_panels": [
+    "dengue",
+    "influenza_japan",
+    "influenza_us-regions",
+    "influenza_us-states",
+    "covid_us-states"
+  ],
+  "calibration_seeds": [
+    42,
+    52,
+    62,
+    72,
+    82
+  ],
+  "aci_update": "fraction: alpha_{t+1} = alpha_t + gamma*(alpha - f_t), f_t in [0,1]",
+  "aci_worst_case_T18": 0.16666666666666669,
+  "guarantee": "NO finite-sample guarantee on Ebola: lambda_h is fitted on other diseases and TRANSFERRED. The guarantee comes from ACI's online adaptation, not from this initialisation.",
+  "sha256_content": "8e2b657df2e39319be2270809e8b5f5be41d872d9b5fba773b3746764074580c"
+}

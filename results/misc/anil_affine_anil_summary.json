@@ -1,0 +1,112 @@
+{
+  "affine": {
+    "influenza_japan|h10": {
+      "n": 5,
+      "mean": -1.204650400587759,
+      "sd": 1.598291753297726,
+      "lo": -3.1888735779687356,
+      "hi": 0.7795727767932177,
+      "clears_zero": false,
+      "reference": "affine (current)"
+    },
+    "influenza_japan|h15": {
+      "n": 5,
+      "mean": -2.5999277387489856,
+      "sd": 3.213081201515817,
+      "lo": -6.588855403363666,
+      "hi": 1.3889999258656944,
+      "clears_zero": false,
+      "reference": "affine (current)"
+    },
+    "influenza_japan|h3": {
+      "n": 5,
+      "mean": -22.32314910288215,
+      "sd": 21.45919558877377,
+      "lo": -48.96398809072173,
+      "hi": 4.317689884957421,
+      "clears_zero": false,
+      "reference": "affine (current)"
+    },
+    "influenza_japan|h5": {
+      "n": 5,
+      "mean": -0.4783948870063647,
+      "sd": 6.277077043104842,
+      "lo": -8.271165968654161,
+      "hi": 7.314376194641432,
+      "clears_zero": false,
+      "reference": "affine (current)"
+    },
+    "influenza_us-regions|h10": {
+      "n": 5,
+      "mean": -3.488659501973406,
+      "sd": 5.959950187551709,
+      "lo": -10.887728710568204,
+      "hi": 3.910409706621393,
+      "clears_zero": false,
+      "reference": "affine (current)"
+    },
+    "influenza_us-regions|h15": {
+      "n": 5,
+      "mean": -2.971351512218687,
+      "sd": 3.461715991003314,
+      "lo": -7.268950551121833,
+      "hi": 1.3262475266844596,
+      "clears_zero": false,
+      "reference": "affine (current)"
+    },
+    "influenza_us-regions|h3": {
+      "n": 5,
+      "mean": -3.875230408019744,
+      "sd": 7.376111802063464,
+      "lo": -13.032414611973625,
+      "hi": 5.281953795934136,
+      "clears_zero": false,
+      "reference": "affine (current)"
+    },
+    "influenza_us-regions|h5": {
+      "n": 5,
+      "mean": -0.786308588317971,
+      "sd": 5.314329537271807,
+      "lo": -7.383862394334999,
+      "hi": 5.8112452176990566,
+      "clears_zero": false,
+      "reference": "affine (current)"
+    },
+    "influenza_us-states|h10": {
+      "n": 5,
+      "mean": -0.5693197279453429,
+      "sd": 2.876149432010562,
+      "lo": -4.139958413173806,
+      "hi": 3.0013189572831207,
+      "clears_zero": false,
+      "reference": "affine (current)"
+    },
+    "influenza_us-states|h15": {
+      "n": 5,
+      "mean": -0.3226010193974148,
+      "sd": 1.9709999753366074,
+      "lo": -2.7695283877023154,
+      "hi": 2.1243263489074855,
+      "clears_zero": false,
+      "reference": "affine (current)"
+    },
+    "influenza_us-states|h3": {
+      "n": 5,
+      "mean": 2.3411736532877288,
+      "sd": 2.255272465515272,
+      "lo": -0.4586680452954184,
+      "hi": 5.141015351870876,
+      "clears_zero": false,
+      "reference": "affine (current)"
+    },
+    "influenza_us-states|h5": {
+      "n": 5,
+      "mean": 1.8767252764048863,
+      "sd": 1.9760505293691533,
+      "lo": -0.5764721776645907,
+      "hi": 4.3299227304743635,
+      "clears_zero": false,
+      "reference": "affine (current)"
+    }
+  }
+}

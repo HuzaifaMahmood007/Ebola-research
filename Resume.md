@@ -1,0 +1,219 @@
+# Resume — session handoff
+
+**Written 2026-09-01.** Everything a fresh chat needs to continue without re-deriving it. Read this
+first, then `progress/summaries/Priority_Fix_Progress.md` §13 for the last engineering session and
+`Reports/Phase0_to_Now_Audit.md` for the standing audit findings.
+
+---
+
+## 1. What the project is
+
+A disease-agnostic spatio-temporal GNN. Train a shared encoder on data-rich diseases (dengue,
+influenza x3 panels, COVID), then forecast a data-scarce emerging disease (Ebola, 2014 West Africa)
+it has never seen. Deliverables are code plus a journal manuscript. Goals G1-G7 are in
+`progress/planning/Final Internal Project Brief.md`.
+
+Four experiments, and almost every file belongs to one:
+
+| experiment | code | results | what it answers |
+|---|---|---|---|
+| single-disease | `train/loop.py` | `results/single/` (25) | what the architecture does with no transfer |
+| transfer (LDO3) | `train/lodo.py` | `results/lodo/` (158) | what transfer costs |
+| Ebola case study | `train/ebola.py` | `results/ebola/` (20) | the actual claim |
+| published baselines | `run_baselines.py` | `results/baselines/` (280) | the SOTA comparison |
+
+---
+
+## 2. Current state
+
+**All expensive compute is finished.** Nothing is pending except optional extras.
+
+- Ebola: 20 scored records + 20 quantile archives, both arms (L12 primary, L20 secondary) x both
+  regimes (few-shot, zero-shot) x 5 seeds. Scored ONCE under a hash-frozen pre-registration.
+- Single-disease ceilings: 25 records + 25 quantile archives, all five panels.
+- LDO3 transfer: 158 records.
+- Baselines: EpiGNN 80, MTGNN 80, Cola-GNN 60, HeatGNN 60.
+- ANIL: ran 2026-08-18, both arms. **Clean null, 0 of 12 cells clear zero in either arm.** The
+  progress doc still says it never started; the doc is stale, the disk is right.
+
+**Open / unfinished:**
+
+| item | state |
+|---|---|
+| G5 explainability | **not built.** Zero attribution code in our source. Only REQUIRED goal with nothing written. |
+| Manuscript v2 | `Reports/Manuscript_v2.md`, ~13,516 words against a 12,000 limit. `Reports/` is gitignored so there is NO git safety net on it. |
+| COVID contradiction | client decision B5 records COVID as excluded; the paper declares it a training panel. Both on record, cannot both be true. |
+| MTGNN sentence | `Week4_Experiments_Stakeholder_Brief.md:168-175` still claims we beat MTGNN 12 of 16. MTGNN emits a constant on 47 of 80 files. Beating a constant is not evidence. |
+| LDO3 zero-shot quantiles | ~10 h retrain, still a stated limitation |
+| Shuffled-adjacency control | ~6 h, now optional since the gate does not help |
+
+---
+
+## 3. The results, as they actually stand
+
+**Ebola.** With no Ebola data at all the model beats persistence by 16% / 15% / 16% / 44% at
+h3/h5/h10/h15 (primary arm), and 19% / 17% / 14% / 42% on the secondary. On the corrected interval
+(see §4) **14 comparisons clear zero, spanning every horizon.** Unadapted wins 12 of 16; adapted
+wins 2 of 16.
+
+**The pre-registered criterion was NOT met.** It required the *adapted* model to beat persistence at
+h3 or h5 with the interval clearing zero. All four such intervals span zero (closest: h3 RMSE
+[-11.85, +0.35]). The wins we have come from the *unadapted* model, which is not what the criterion
+asked for.
+
+**Transfer is negative.** Symmetric seed-ensembled comparison: 1 better, 10 within noise, 25 worse
+over 36 cells. Verdict survived making the opponent stronger.
+
+**The graph does not help accuracy.** Gate-off ablation, 25 cells: on error the spatial channel
+helps in **0 of 40** and hurts in 8. It only helps correlation (6 of 20 PCC cells). Negative result
+for the component the architecture was chosen for.
+
+**Meta-learning does not help.** ANIL 0/12, its control 0/12.
+
+**Calibration transfers, and that is the strong result.** The frozen cross-disease correction, which
+reads no Ebola outcome whatsoever, lifts coverage from 0.28-0.70 up to 0.65-0.98. Online adaptation
+adds ~0.03 at short horizons and nothing at long ones.
+
+**The honest thesis:** a shared representation transfers to an unseen pathogen well enough to beat
+naive floors and carries its uncertainty calibration with it, but every mechanism added to *improve*
+transfer (spatial message passing, few-shot adaptation, meta-learning) fails to help. That is a
+boundary-conditions paper and it is publishable as one.
+
+---
+
+## 4. Corrections made this session (do not regress these)
+
+**M1 — the estimand mismatch. FIXED, committed as `ebola_ci.py`.**
+The Ebola headline is a NODE-AVERAGED country-macro (`score.py:255-278`). The interval adjudicating
+the pre-registration was a CELL-POOLED one (`analysis.py:71-90`). They diverge 1.5-2.0x on Ebola;
+the headline 38.20 sat OUTSIDE its own quoted interval [38.349, 104.537]. Point and interval were
+different statistics, so the criterion was never adjudicable as reported.
+`ebola_ci.py` rebuilds the macro from `*__pernode.npz`, asserts it matches the scored JSON before
+printing (so "same estimand" is checked, not claimed), resamples DISTRICTS (E6's missing axis, M3),
+and shares one draw across the five seeds with pooled seed-level differences (M2). Read-only.
+Result: wins went 8 -> 14 and stopped being h10/h15-only. Verdict unchanged, now defensible.
+
+**Two things asserted this session that turned out to be wrong:**
+1. "The pre-registered criterion is NOT met" — incomplete. It is not met AND was not adjudicable on
+   the reported statistic. Corrected in memory.
+2. "Pooled normalisation makes the task harder, so our Ebola numbers are a lower bound" — **wrong.**
+   Measured: pooling HELPS (see §6). That was the comfortable assumption, not a measured one.
+
+---
+
+## 5. Experiments run this session
+
+**Sampling ablation (free, already on disk, nobody had read it).** `uniform` vs `sqrt` weighting
+across diseases. Uniform wins 9 of 16 cells, sqrt wins 2, 5 too close to call. Giving dengue MORE
+weight made dengue **69% worse at h3 and 73% worse at h5**. More of a big noisy dataset made the
+model worse at that dataset. Caveat: sqrt has one seed, uniform has five, so do not quote the exact
+percentages; the direction is safe because the gaps dwarf the seed spread.
+**Conclusion: uniform sampling is correct, and now measured rather than argued.**
+
+**Pooled-vs-per-node normalisation.** See §6.
+
+Logs: `results/reports/` — `ebola_district_ci.log`, `ebola_district_ci_unstratified.log`,
+`pooled_scaler_cost.log`, `pooled_scaler_cost_usstates.log`, `verify_brief_numbers.log`.
+
+---
+
+## 6. The normalisation finding, and the open diagnosis
+
+Ebola uses `scaler_scope=per_disease_support` (one pooled scale for the whole disease); every
+training panel uses `per_node_train`. Measured divergence of district means from zero:
+
+```
+influenza (all three)  0.0000      dengue  0.0387
+ebola_L12  0.6550      ebola_L20  0.5363
+```
+
+So the encoder trains on inputs centred at zero and is handed Ebola inputs scattered by ~+-0.8. That
+is a covariate shift we introduced ourselves, and a reviewer will find it because we publish the
+diagnostic.
+
+**Priced it.** Retrained a dev panel with a pooled scaler, 5 seeds, everything else identical:
+
+| panel | pooled severity | vs ebola | mean cost |
+|---|---|---|---|
+| influenza_japan | 0.0603 | 0.09x | -1.3% (nothing) |
+| **influenza_us-states** | **0.5772** | **0.88x** | **-6.8% (POOLING HELPS)** |
+
+On the matched panel pooling helps at every horizon: -1.1 / -4.3 / -10.1 / -11.8 % at h3/h5/h10/h15.
+The long-horizon gains are ~3 seed SDs, so real.
+
+**Not settled:** the experiment trained AND tested with pooling, consistently. Ebola's real situation
+is a MISMATCH (trunk trained per-node, Ebola arrives pooled). That is an LDO3-shaped experiment and
+has not been run. Also untested on dengue, where 7,165 wildly uneven nodes could flip the answer.
+
+**Awkward implication for the paper:** pooling helps most at h10/h15, which is exactly where the
+Ebola wins are. It does not invalidate them (naive floors are scored in raw counts and never touch
+the scaler) but it must be stated before a reviewer states it.
+
+### The standing diagnosis, and how to confirm it
+
+Three symptoms pointing one way:
+- loses to `train_mean` on COVID and dengue h15
+- 90% intervals cover ~50%
+- per-node scaling loses to blunter pooled scaling at long horizons
+
+Proposed chain: per-node scaling amplifies noise on small quiet nodes -> the model learns noise is
+signal -> it predicts more variation than it can justify -> over-jumpy point forecasts AND
+too-narrow intervals. **This is a hypothesis, not established.**
+
+**Test 1, the shrinkage test (free, post-hoc, run this first).** Take saved predictions, form
+`new = mean + lam*(pred - mean)`, sweep lam in [0,1] per horizon, find the best.
+- Diagnosis right: best lam well below 1 and falling with horizon. Also an immediate patch with no
+  retraining.
+- Diagnosis wrong: best lam near 1 everywhere.
+
+**Test 2, bias vs variance.** Split the loss to `train_mean` into aim (bias) and wobble (variance).
+Mostly wobble confirms over-commitment; mostly bias means it is the median-vs-mean issue instead,
+whose fix already exists (`train/loop.py:87-118`, the `encoder_mc` arm) and is simply not wired into
+the transfer/Ebola scoring path (`train/lodo.py:348-377`).
+
+**Test 3, is it really ONE bug.** Correlate per-cell best-lam against per-cell coverage. Moving
+together = one cause. Independent = two problems, and stop describing it as one fix.
+
+---
+
+## 7. Standing audit findings not yet closed
+
+From `Reports/Phase0_to_Now_Audit.md` (71 agents, 45 findings survived adversarial verification,
+16 refuted, 33 things confirmed done right, no CRITICAL survived):
+
+- **M4** the criterion driver was untracked and unregenerable. `ebola_ci.py` closes the regenerable
+  half; git-tracking the decision-bearing logs is still open (`progress/outcomes/` is not ignored).
+- **M7** the Ebola cumulative envelope discards cells on a premise false for 69% of them.
+- **M8** COVID absent from the authoritative data register (see §2).
+- **M12** a client-facing document claims SHAP global+local; no attribution code exists.
+- **M13** baselines are two usable comparators, not the four `PROJECT.md:40` still claims.
+- The **"unsafe to claim"** list in that report names the exact sentences that must not appear in
+  the paper. Check any Ebola sentence against it before publishing.
+
+---
+
+## 8. Conventions to keep
+
+- **Slack updates**: date line alone, one prose paragraph, bold section headers, bullet dots,
+  **no em dashes**, junior-dev terms.
+- **Commits**: terse lowercase, no `Co-Authored-By` trailer.
+- **Who runs what**: assistant runs evaluation/analysis directly; the user runs anything taking
+  minutes in their own PowerShell and pastes output.
+- **Verification rule**: before signing off a results doc, parse the numbers OUT of the doc and
+  recompute them from disk. This caught 6 stale numbers in one brief this session.
+- **Do not trust progress docs over disk.** Three times this session the doc was stale and the
+  artifacts were right.
+- `/Reports/` and `/results/` are **gitignored**. Documents and logs there have no version control.
+
+---
+
+## 9. Suggested next actions, ordered
+
+1. **Run the shrinkage test (§6).** Free, post-hoc, decides whether the standing diagnosis is real,
+   and is a no-retrain accuracy patch if it is.
+2. **Wire the median-to-mean correction into the transfer path.** Built and tested already; absent
+   from Ebola and LDO3 scoring. Directly attacks the `train_mean` losses.
+3. **Write the Threats paragraph on normalisation** using the §6 numbers, before a reviewer does.
+4. **Decide G5.** It is REQUIRED and has no code. Either build attribution or renegotiate the goal.
+5. **Fix the manuscript word count and get it under version control.**
+6. **Resolve the COVID B5 contradiction** and correct the MTGNN sentence.

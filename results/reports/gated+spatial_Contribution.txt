@@ -1,0 +1,153 @@
+============================================================================================
+encoder :: gate + spatial contribution per dataset (pooled over seeds x nodes; pre-head, horizon-independent)
+============================================================================================
+  dataset                  g mean            g IQR   g<0.05    sc mean           sc IQR
+  dengue                    0.604 [ 0.554, 0.664]     0.0%      0.637 [ 0.585, 0.703]
+  influenza_japan           0.271 [ 0.238, 0.297]     0.0%      0.395 [ 0.371, 0.411]
+  influenza_us-regions      0.370 [ 0.335, 0.414]     0.0%      0.490 [ 0.441, 0.526]
+  influenza_us-states       0.373 [ 0.319, 0.425]     0.0%      0.468 [ 0.429, 0.515]
+  read: g near 0 or a high g<0.05 fraction => the gate is ~off => the Day-14 2x2's {gate on vs g==0} arm is measuring little.
+
+============================================================================================
+encoder :: dengue  paired bootstrap over origins (B=10000, cell-pooled country-macro)
+============================================================================================
+  h3  RMSE encoder   113.636  95% CI [  98.028,  126.474]
+        vs persistence d(enc-naive) [  13.844,   37.100] lose   wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [ -76.512,  -51.079] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [ -45.804,  -32.772] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h3  MAE  encoder    24.014  95% CI [  21.675,   26.486]
+        vs persistence d(enc-naive) [   2.546,    5.748] lose   wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [ -21.449,  -15.153] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [ -15.479,  -13.211] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h5  RMSE encoder   132.947  95% CI [ 115.892,  146.888]
+        vs persistence d(enc-naive) [  -7.533,   20.407] n.s.   wilcoxon p=0.812 (n=5, supporting)
+        vs seasonal    d(enc-naive) [ -60.192,  -33.594] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [ -27.527,  -12.631] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h5  MAE  encoder    28.894  95% CI [  26.064,   31.779]
+        vs persistence d(enc-naive) [  -1.297,    2.716] n.s.   wilcoxon p=0.812 (n=5, supporting)
+        vs seasonal    d(enc-naive) [ -17.859,  -11.747] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [ -10.324,   -8.492] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h10 RMSE encoder   148.219  95% CI [ 130.319,  162.958]
+        vs persistence d(enc-naive) [ -46.674,  -24.425] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [ -50.016,  -24.788] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [  -8.321,   -1.462] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h10 MAE  encoder    34.105  95% CI [  30.992,   37.191]
+        vs persistence d(enc-naive) [ -10.829,   -5.372] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [ -15.442,   -8.794] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [  -4.947,   -3.277] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h15 RMSE encoder   154.577  95% CI [ 135.386,  171.059]
+        vs persistence d(enc-naive) [ -61.923,  -34.843] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [ -48.239,  -21.910] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [   0.894,    2.993] lose   wilcoxon p=0.062 (n=5, supporting)
+  h15 MAE  encoder    35.319  95% CI [  32.011,   38.820]
+        vs persistence d(enc-naive) [ -16.450,   -9.591] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [ -15.780,   -8.664] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [  -3.400,   -2.279] WIN    wilcoxon p=0.062 (n=5, supporting)
+
+============================================================================================
+encoder :: influenza_japan  paired bootstrap over origins (B=10000, cell-pooled country-macro)
+============================================================================================
+  h3  RMSE encoder  1036.103  95% CI [ 566.218, 1428.361]
+        vs persistence d(enc-naive) [-640.975,  -42.818] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [  55.004,  609.543] lose   wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [-745.022, -395.993] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h3  MAE  encoder   261.526  95% CI [ 145.735,  404.211]
+        vs persistence d(enc-naive) [-278.903,  -88.564] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [ -35.137,   93.777] n.s.   wilcoxon p=0.125 (n=5, supporting)
+        vs train_mean  d(enc-naive) [-548.744, -390.317] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h5  RMSE encoder  1169.861  95% CI [ 730.930, 1554.782]
+        vs persistence d(enc-naive) [-1219.209, -488.343] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [ 165.161,  700.610] lose   wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [-857.666, -437.961] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h5  MAE  encoder   323.461  95% CI [ 191.824,  478.555]
+        vs persistence d(enc-naive) [-583.807, -251.781] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [  -1.737,  146.709] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [-575.999, -396.156] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h10 RMSE encoder  1473.028  95% CI [ 994.983, 1885.526]
+        vs persistence d(enc-naive) [-1743.323, -966.704] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [ 281.854,  945.763] lose   wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [-765.626, -379.696] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h10 MAE  encoder   444.963  95% CI [ 279.927,  626.315]
+        vs persistence d(enc-naive) [-1032.812, -539.373] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [  21.169,  240.335] lose   wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [-542.996, -366.693] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h15 RMSE encoder  1435.520  95% CI [ 991.343, 1817.799]
+        vs persistence d(enc-naive) [-1844.103, -1097.397] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [ 271.602,  874.182] lose   wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [-751.125, -365.401] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h15 MAE  encoder   443.764  95% CI [ 291.306,  610.260]
+        vs persistence d(enc-naive) [-1158.887, -659.544] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [  14.757,  211.261] lose   wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [-518.615, -329.512] WIN    wilcoxon p=0.062 (n=5, supporting)
+
+============================================================================================
+encoder :: influenza_us-regions  paired bootstrap over origins (B=10000, cell-pooled country-macro)
+============================================================================================
+  h3  RMSE encoder   773.082  95% CI [ 657.255,  891.192]
+        vs persistence d(enc-naive) [ -20.898,  107.056] n.s.   wilcoxon p=0.438 (n=5, supporting)
+        vs seasonal    d(enc-naive) [-237.368,  -26.864] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [-717.032, -573.764] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h3  MAE  encoder   374.116  95% CI [ 329.291,  422.704]
+        vs persistence d(enc-naive) [ -30.198,   23.515] n.s.   wilcoxon p=1.000 (n=5, supporting)
+        vs seasonal    d(enc-naive) [-100.643,  -15.284] WIN    wilcoxon p=0.125 (n=5, supporting)
+        vs train_mean  d(enc-naive) [-493.746, -388.355] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h5  RMSE encoder   910.820  95% CI [ 781.595, 1040.170]
+        vs persistence d(enc-naive) [-129.571,    1.046] n.s.   wilcoxon p=0.312 (n=5, supporting)
+        vs seasonal    d(enc-naive) [-100.043,  118.114] n.s.   wilcoxon p=1.000 (n=5, supporting)
+        vs train_mean  d(enc-naive) [-563.414, -441.082] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h5  MAE  encoder   451.308  95% CI [ 396.967,  508.307]
+        vs persistence d(enc-naive) [-135.184,  -70.811] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [ -23.390,   66.616] n.s.   wilcoxon p=0.625 (n=5, supporting)
+        vs train_mean  d(enc-naive) [-404.273, -315.603] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h10 RMSE encoder   974.973  95% CI [ 857.698, 1093.890]
+        vs persistence d(enc-naive) [-564.569, -338.887] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [ -24.504,  188.473] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [-487.081, -356.477] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h10 MAE  encoder   512.441  95% CI [ 460.485,  569.256]
+        vs persistence d(enc-naive) [-455.960, -332.765] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [  43.962,  132.838] lose   wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [-333.000, -241.820] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h15 RMSE encoder   998.788  95% CI [ 874.874, 1121.585]
+        vs persistence d(enc-naive) [-869.778, -618.023] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [   3.981,  220.669] lose   wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [-444.648, -330.649] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h15 MAE  encoder   542.326  95% CI [ 489.317,  599.049]
+        vs persistence d(enc-naive) [-700.241, -526.444] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [  77.825,  166.282] lose   wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [-290.770, -208.517] WIN    wilcoxon p=0.062 (n=5, supporting)
+
+============================================================================================
+encoder :: influenza_us-states  paired bootstrap over origins (B=10000, cell-pooled country-macro)
+============================================================================================
+  h3  RMSE encoder   187.483  95% CI [ 137.533,  236.150]
+        vs persistence d(enc-naive) [ -53.310,   17.562] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [-199.257,  -85.583] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [-155.895, -120.861] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h3  MAE  encoder    68.270  95% CI [  55.738,   82.469]
+        vs persistence d(enc-naive) [ -21.602,   -4.104] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [ -73.919,  -42.003] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [ -89.776,  -69.541] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h5  RMSE encoder   221.828  95% CI [ 167.397,  275.671]
+        vs persistence d(enc-naive) [ -72.709,   -1.958] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [-164.909,  -46.307] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [-114.646,  -88.138] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h5  MAE  encoder    84.005  95% CI [  68.443,  101.588]
+        vs persistence d(enc-naive) [ -39.869,  -16.277] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [ -55.252,  -25.505] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [ -71.844,  -53.896] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h10 RMSE encoder   240.405  95% CI [ 188.934,  291.404]
+        vs persistence d(enc-naive) [-192.774,  -73.970] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [-136.637,  -22.699] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [ -91.542,  -66.521] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h10 MAE  encoder    96.871  95% CI [  80.808,  114.250]
+        vs persistence d(enc-naive) [ -97.460,  -51.262] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [ -36.711,   -9.917] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [ -59.536,  -39.992] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h15 RMSE encoder   244.217  95% CI [ 192.654,  295.730]
+        vs persistence d(enc-naive) [-247.536, -130.723] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [-125.329,  -12.264] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [ -85.321,  -59.319] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h15 MAE  encoder   100.297  95% CI [  84.248,  117.734]
+        vs persistence d(enc-naive) [-131.758,  -80.642] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs seasonal    d(enc-naive) [ -29.423,   -2.635] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs train_mean  d(enc-naive) [ -55.481,  -36.733] WIN    wilcoxon p=0.062 (n=5, supporting)
