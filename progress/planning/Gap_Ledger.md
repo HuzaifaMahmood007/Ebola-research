@@ -148,6 +148,17 @@ not be done casually.
 **C8 is a review pass, not an edit**, and is the last Group C item because it gates Group E touching
 the paper.
 
+Notes carried out of Group C:
+
+- **C1.** The amendment was written 2026-09-06 and sat uncommitted until Group C was worked. Its
+  three factual claims are now checked against disk rather than repeated: `covid_us-states` is
+  49 nodes x 164 weeks x 4 channels, its `A_geo` is **bit-identical** to `influenza_us-states`
+  (same sha256, `fddc2673a17e...`), and the client instruction it quotes is at `Review Doc.md:97`.
+  The original two sentences are kept above the amendment as the record the client returned.
+- **C1 turned up an off-by-one inside the manuscript.** Table 2 lists five development panels and
+  the paragraph three lines below called COVID "a fourth training panel". Corrected to "a fifth
+  training panel and a third training disease", which is what the table says.
+
 ---
 
 ## Group D: pending runs, and the decisions about them
