@@ -21,7 +21,7 @@ numbers, a verifier re-derives them from the artifacts.
 | A2 | Shrinkage experiment had no verdict, no script, no version control | `progress/outcomes/Shrinkage_Verdict.md` | **DONE** `38f5796` |
 | A3 | Docs asserted the superseded one-fold meta-learning result | `CLAUDE.md`, `Resume.md`, `Manuscript_v2.md` 9.7 + conclusion | **DONE** `944e5ae` |
 | A4 | `REPRODUCIBILITY.md` had no mention of ANIL at all | `REPRODUCIBILITY.md` | **DONE** `ae1eafe` |
-| A5 | Stale line references in the two navigation docs | `CLAUDE.md:222`, `Resume.md:171` cite `train/loop.py:87-118`; actual is **loop.py:84**. Both cite `lodo.py:348-377`; `_score` is at **lodo.py:336** | OPEN *(verified)* |
+| A5 | Stale line references in the two navigation docs | Five per doc, not the two expected. All corrected to the real definitions | **DONE** |
 
 Notes carried out of Group A:
 
@@ -30,6 +30,14 @@ Notes carried out of Group A:
 - The manuscript grew 13,516 → **13,628 words** against a 12,000 limit, so the overage is now 1,628.
   Deliberate: the stronger four-fold claim was judged worth 112 words. E2 absorbs it.
 - `CLAUDE.md` is gitignored, so its edits are local only and will not appear in any commit.
+- A5 was five stale references per doc, not the two expected. Corrected to: `score.py:215-237`
+  (`aggregate()`), `analysis.py:63-83` (`_macro_dist()`, the cell-pooled estimator),
+  `train/loop.py:84-116` (`_fit_bias_correction()`), `train/lodo.py:336-369` (`_score()`), and
+  `Reports/Week4_Experiments_Stakeholder_Brief.md:172-174`, which was also missing its directory.
+- A sweep found 202 code line-references across 85 tracked markdown files, of which 8 point past the
+  end of their file. Six of those 8 sit in dated historical records (the audit, `decisions.md`,
+  `Doubt.md`) that are deliberately not rewritten, so **no permanent reference checker was added**:
+  it would fail on history we have chosen to keep. Re-run the sweep by hand after any large doc edit.
 
 ---
 
@@ -107,7 +115,7 @@ with no such code (`data_audit.md:997`, `PROJECT.md:121-123`); retract the SHAP 
 client-held comparison table (`Reports/Phase1/RelatedWork_CompetitiveAnalysis_Benchmark.docx`);
 relabel `ebola_bootstrap.log`'s cell-pooled verdicts; docstrings claiming quantile sorting cannot
 move the median when it moves in 100% of L12 h15 cells (`score.py:130-132`,
-`models/adapters.py:31-32`); `windows.py:21-23` justifying the zero pad on the opposite
+`models/adapters.py:31-32`); `models/windows.py:21-23` justifying the zero pad on the opposite
 normalisation convention; a residual sweep of superseded constants (388-param adapter, 27-cell
 support, "two folds" over three).
 

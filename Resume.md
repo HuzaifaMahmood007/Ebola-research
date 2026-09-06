@@ -45,7 +45,7 @@ Four experiments, and almost every file belongs to one:
 | G5 explainability | **not built.** Zero attribution code in our source. Only REQUIRED goal with nothing written. |
 | Manuscript v2 | `Reports/Manuscript_v2.md`, ~13,516 words against a 12,000 limit. `Reports/` is gitignored so there is NO git safety net on it. |
 | COVID contradiction | client decision B5 records COVID as excluded; the paper declares it a training panel. Both on record, cannot both be true. |
-| MTGNN sentence | `Week4_Experiments_Stakeholder_Brief.md:168-175` still claims we beat MTGNN 12 of 16. MTGNN emits a constant on 47 of 80 files. Beating a constant is not evidence. |
+| MTGNN sentence | `Reports/Week4_Experiments_Stakeholder_Brief.md:172-174` still claims we beat MTGNN 12 of 16. MTGNN emits a constant on 47 of 80 files. Beating a constant is not evidence. |
 | LDO3 zero-shot quantiles | ~10 h retrain, still a stated limitation |
 | Shuffled-adjacency control | ~6 h, now optional since the gate does not help |
 
@@ -90,8 +90,8 @@ boundary-conditions paper and it is publishable as one.
 ## 4. Corrections made this session (do not regress these)
 
 **M1 — the estimand mismatch. FIXED, committed as `ebola_ci.py`.**
-The Ebola headline is a NODE-AVERAGED country-macro (`score.py:255-278`). The interval adjudicating
-the pre-registration was a CELL-POOLED one (`analysis.py:71-90`). They diverge 1.5-2.0x on Ebola;
+The Ebola headline is a NODE-AVERAGED country-macro (`score.py:215-237`). The interval adjudicating
+the pre-registration was a CELL-POOLED one (`analysis.py:63-83`). They diverge 1.5-2.0x on Ebola;
 the headline 38.20 sat OUTSIDE its own quoted interval [38.349, 104.537]. Point and interval were
 different statistics, so the criterion was never adjudicable as reported.
 `ebola_ci.py` rebuilds the macro from `*__pernode.npz`, asserts it matches the scored JSON before
@@ -174,8 +174,8 @@ too-narrow intervals. **This is a hypothesis, not established.**
 
 **Test 2, bias vs variance.** Split the loss to `train_mean` into aim (bias) and wobble (variance).
 Mostly wobble confirms over-commitment; mostly bias means it is the median-vs-mean issue instead,
-whose fix already exists (`train/loop.py:87-118`, the `encoder_mc` arm) and is simply not wired into
-the transfer/Ebola scoring path (`train/lodo.py:348-377`).
+whose fix already exists (`train/loop.py:84-116`, the `encoder_mc` arm) and is simply not wired into
+the transfer/Ebola scoring path (`train/lodo.py:336-369`).
 
 **Test 3, is it really ONE bug.** Correlate per-cell best-lam against per-cell coverage. Moving
 together = one cause. Independent = two problems, and stop describing it as one fix.
