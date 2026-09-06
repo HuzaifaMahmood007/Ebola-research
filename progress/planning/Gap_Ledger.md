@@ -136,7 +136,7 @@ Notes carried out of B3:
 | C3 | Status table stale: "Phase 3 not yet started", G5 as SHAP, MTGNN as a passing control | `PROJECT.md` §2 goal table, §7 baseline table, §Week-5 list, §9 outputs row | **DONE** |
 | C4 | Two navigation docs claim `Reports/` and `results/` are gitignored; they are not. `*.log` is | `CLAUDE.md` §7, `Resume.md` §2 and §8, `.gitignore` | **DONE**, and audit M4's live half is now half-closed |
 | C5 | "Run the shrinkage test" still listed as next action #1 | `CLAUDE.md` §9, `Resume.md` §9, both replaced | **DONE** |
-| C6 | M8: three sites still deny COVID enters the schema | `data_audit.md:864-870`, `:1414-1423`, `:1569` | OPEN *(audit)* |
+| C6 | M8: three sites still denied COVID enters the schema | `data_audit.md` §2.9, §4.1 table, decision register row | **DONE**, M8 closed |
 | C7 | M7: Ebola cumulative envelope discards cells on a premise false for 69% of them | `to_schema.py:226-233`; no per-district masked-week table in `data_audit.md` §3.5 | OPEN *(audit)* |
 | C8 | Run the audit's "unsafe to claim" list over every Ebola sentence in the manuscript | `Reports/Phase0_to_Now_Audit.md:246-265` | OPEN *(audit)* |
 | C9 | US-States losses to EpiGNN and HeatGNN appear in no document | found in B2; `Reports/baseline_reproduction_table.md` has the cells, the manuscript results section does not | OPEN *(verified)* |
@@ -201,6 +201,15 @@ Notes carried out of Group C:
 - **C4 retro-fixed a warning in `Shrinkage_Verdict.md`.** It said its two source logs had no version
   history and that the document was the only surviving record. Both are now committed under
   `results/reports/`, and the note says so.
+- **C6 closed audit M8.** §2.9 now reads as a reversal rather than an exclusion, keeping the original
+  wording as a block quote because the reversal is what a reader needs to follow. The decision
+  register row says dengue, influenza and COVID-19.
+- **C6 turned up a fourth site the ledger did not have.** The §4.1 released-datasets table said "five
+  datasets" and **omitted COVID-19 entirely**. It now lists six rows, and every row was recomputed
+  from `data/processed/*.npz`.
+- **It also carried a stale Ebola mask density of 0.5255 against a measured 0.4095**, which is one of
+  the audit long-tail items. Fixed in the table and in the prose bullet at §4. The document's own
+  §5 correction table already recorded 1,299 cells at 0.4095, so it had been contradicting itself.
 
 ---
 
