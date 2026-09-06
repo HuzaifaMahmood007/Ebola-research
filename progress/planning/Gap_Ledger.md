@@ -139,7 +139,7 @@ Notes carried out of B3:
 | C6 | M8: three sites still denied COVID enters the schema | `data_audit.md` §2.9, §4.1 table, decision register row | **DONE**, M8 closed |
 | C7 | M7: Ebola cumulative envelope discards cells on a premise false for 69% of them | `data_audit.md` §3.5.1, generated and checked by `diagnostics/ebola_masking_audit.py` | **DONE (disclosure half only)**, the fix half is deliberately not done |
 | C8 | Run the audit's "unsafe to claim" list over every Ebola sentence in the manuscript | `Reports/Phase0_to_Now_Audit.md:246-265` | OPEN *(audit)* |
-| C9 | US-States losses to EpiGNN and HeatGNN appear in no document | found in B2; `Reports/baseline_reproduction_table.md` has the cells, the manuscript results section does not | OPEN *(verified)* |
+| C9 | US-States losses to EpiGNN and HeatGNN appear in no document | `Manuscript_v2.md` §9 results, verified by `diagnostics/verify_usstates_claim.py` | **DONE** |
 
 **C7 carries a warning.** Re-basing would change `data/processed/ebola_L12.npz`, which is a
 hash-frozen arm. The *disclosure* half is safe; the *fix* half engages the pre-registration and must
@@ -227,6 +227,19 @@ Notes carried out of Group C:
   ten hold 196. Both are true and they are different statements.
 - `diagnostics/ebola_masking_audit.py --check` re-derives the filed table and prose from the source
   and fails on a mismatch; mutation-tested by corrupting one row.
+- **C9 is more interesting than "we lose on one panel".** Which model leads on US-states **depends on
+  the aggregation**. On the paper's headline country-macro RMSE we are worse than EpiGNN only at
+  h3, better at h15, and within noise at h5 and h10; against HeatGNN all four cells are within noise.
+  On cell-pooled RMSE, the definition the baselines' own papers use, we are behind EpiGNN at **every**
+  horizon by 2.8% to 13.1% and behind HeatGNN at three of four.
+- Both are stated in the manuscript, with the reason: a mean of per-node RMSEs and an RMSE pooled
+  over all cells are different statistics and by Jensen the first is always smaller. US-states is the
+  only panel where that gap is wide enough to flip the ranking, and a reader arriving from those
+  papers will compute the pooled one.
+- `diagnostics/verify_usstates_claim.py` checks the paragraph under **both** aggregations, since a
+  claim that is true one way and false the other cannot be verified one way. It caught my own first
+  parse reading the published-delta column instead of the encoder-vs-reproduced column.
+- Manuscript is now **13,812 words** against a 12,000 limit, so the overage is 1,812. E2 absorbs it.
 
 ---
 
