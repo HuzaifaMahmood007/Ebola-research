@@ -44,7 +44,7 @@ Four experiments, and almost every file belongs to one:
 |---|---|
 | G5 explainability | **not built.** Zero attribution code in our source. Only REQUIRED goal with nothing written. |
 | Manuscript v2 | `Reports/Manuscript_v2.md`, ~13,516 words against a 12,000 limit. `Reports/` is gitignored so there is NO git safety net on it. |
-| COVID contradiction | client decision B5 records COVID as excluded; the paper declares it a training panel. Both on record, cannot both be true. |
+| COVID contradiction | **resolved 2026-09-06.** B5 amended in `progress/decisions/client_decisions.md` under the client's own Week 3 instruction (`Review Doc.md:97`). COVID is the third development disease. Ledger C1 DONE. |
 | MTGNN sentence | `Reports/Week4_Experiments_Stakeholder_Brief.md:172-174` still claims we beat MTGNN 12 of 16. MTGNN emits a constant on 47 of 80 files. Beating a constant is not evidence. |
 | LDO3 zero-shot quantiles | ~10 h retrain, still a stated limitation |
 | Shuffled-adjacency control | ~6 h, now optional since the gate does not help |
@@ -222,4 +222,4 @@ From `Reports/Phase0_to_Now_Audit.md` (71 agents, 45 findings survived adversari
 3. **Write the Threats paragraph on normalisation** using the §6 numbers, before a reviewer does.
 4. **Decide G5.** It is REQUIRED and has no code. Either build attribution or renegotiate the goal.
 5. **Fix the manuscript word count and get it under version control.**
-6. **Resolve the COVID B5 contradiction** and correct the MTGNN sentence.
+6. **Correct the MTGNN sentence** (ledger C2). The COVID B5 contradiction is resolved, see §2.

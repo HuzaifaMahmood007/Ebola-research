@@ -131,10 +131,10 @@ Notes carried out of B3:
 
 | id | what | where | status |
 |---|---|---|---|
-| C1 | Amend B5 to admit COVID as a labelled secondary panel | `progress/decisions/client_decisions.md:192-197` | OPEN, decision taken *(verified)* |
+| C1 | Amend B5 to admit COVID as a labelled development panel | `progress/decisions/client_decisions.md:192-211`, amendment block under the original, which is kept as the returned record | **DONE** |
 | C2 | MTGNN "better in 12 of 16" and "HeatGNN one dataset, two horizons" both false | `Reports/Week4_Experiments_Stakeholder_Brief.md:171-175` | OPEN *(verified)* |
 | C3 | Status table stale: "Phase 3 not yet started", G5 as SHAP, MTGNN as a passing control | `PROJECT.md:36-44`, `PROJECT.md:166` | OPEN *(verified)* |
-| C4 | Two navigation docs claim `Reports/` and `results/` are gitignored; they are not. `*.log` is | `CLAUDE.md` §7, `Resume.md` | OPEN *(verified)* |
+| C4 | Two navigation docs claim `Reports/` and `results/` are gitignored; they are not. `*.log` is | `CLAUDE.md` §7, `Resume.md` | HALF DONE: `CLAUDE.md` §3, §7, §9 corrected 2026-09-06 (local only, file is gitignored). `Resume.md:46` still wrong *(verified)* |
 | C5 | "Run the shrinkage test" still listed as next action #1 | `CLAUDE.md:219`, `Resume.md:212` | OPEN, depends on A2 *(verified)* |
 | C6 | M8: three sites still deny COVID enters the schema | `data_audit.md:864-870`, `:1414-1423`, `:1569` | OPEN *(audit)* |
 | C7 | M7: Ebola cumulative envelope discards cells on a premise false for 69% of them | `to_schema.py:226-233`; no per-district masked-week table in `data_audit.md` §3.5 | OPEN *(audit)* |

@@ -196,6 +196,19 @@ harmonised schema or any released dataset.
 
 (Yes) Confirmed
 
+**Amended 2026-09-06.** The two sentences above are kept as the record the client returned, and they
+are no longer true. The client's own Week 3 review superseded them (`Review Doc.md:97`, under "What
+I'm taking to Nora": "Adding COVID-19 back as a third development disease. It's in the brief as a
+suggestion and it got dropped. Restructured folds make our claim honest, a third disease makes it
+strong, and I want it back."). The build followed that instruction. COVID-19 US-states enters the
+harmonised schema as `data/processed/covid_us-states.npz` (49 nodes, 164 weeks, 4 channels) on the
+influenza US-states graph, bit-identical, and it trains the shared trunk behind every result in the
+paper, including the Ebola case study. The development set is therefore **dengue, influenza and
+COVID-19**: five panels, three diseases. COVID-19 is labelled a development panel in every table and
+its three costs are disclosed alongside (`Reports/Manuscript_v2.md:204-211`): 49 states without
+Florida or the District of Columbia, a contiguity graph built for influenza, and a 2020 to 2023
+window dominated by interventions. Gap Ledger item C1.
+
 ### B6. Mobility data
 **Not used**, for any disease. A real commuting matrix exists for Japan and is tempting, but no
 equivalent exists for dengue or Ebola, so attaching it to influenza alone would let the model identify
