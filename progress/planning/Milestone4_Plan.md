@@ -51,11 +51,16 @@ are entirely within noise. On the one fold where the held-out meta-objective sep
 dengue fold, it separates **against** ANIL (−1.2%, [−2.41, −0.03]). So the inner loop does not win
 the objective it optimises, and does not win test accuracy either.
 
-The design objection is retired for three of the four folds and the answer did not change.
+The design objection is partly retired for three of the four folds: the episode distribution now
+spans diseases, but each task still sits inside one panel, so the inner loop still adapts within a
+single disease. The answer did not change.
 
-**Why ANIL against its own control is the primary comparison.** The control runs the same episode
-stream and the same number of outer updates with no inner loop, so differencing against it changes
-exactly one thing: whether adaptation happened during training. That is the definition of "does
+**Why ANIL against its own control is the primary comparison.** The control runs the same seeded
+episode stream with no inner loop, so differencing against it changes exactly one thing: whether
+adaptation happened during training. The arms are not step-matched: each early-stops on its own
+validation curve, so outer-update counts agree only on the legacy fold and differ per seed on the
+LDO3 folds (covid seed 42: 4750 ANIL vs 6542 control). Each arm is scored at its own best-val
+checkpoint. That is the definition of "does
 meta-learning beat the probe", which is what G2 asks. `train.anil.compare()` does not compute it, so
 `diagnostics/anil_report.py` does.
 
