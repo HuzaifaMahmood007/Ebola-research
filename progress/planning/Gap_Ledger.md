@@ -47,7 +47,7 @@ Notes carried out of Group A:
 |---|---|---|---|
 | B1 | `reproduction_failure_log.md` did not exist anywhere in the repo | `Reports/reproduction_failure_log.md`, verified by `diagnostics/verify_repro_log.py` | **DONE** |
 | B2 | Published-versus-ours reproduction table never written up | `Reports/baseline_reproduction_table.md`, verified by `diagnostics/verify_paper_table.py` | **DONE** |
-| B3 | Explainability scoping note (work order §8d) never written | recorded outstanding in three docs | OPEN *(audit)* |
+| B3 | Explainability scoping note (work order §8d) never written | `progress/decisions/G5_Explainability_Scope.md`, verified by `diagnostics/verify_g5_scope.py` | **DONE**, three decisions now sit with the client |
 
 Notes carried out of B1:
 
@@ -93,6 +93,37 @@ Notes carried out of B2:
   its runs are constant.
 - `diagnostics/verify_paper_table.py` re-runs the generator to prove the filed table is current, then
   re-derives every prose tally from the filed table text. 11 mutations, all caught.
+
+Notes carried out of B3:
+
+- **Decision taken: integrated gradients, not SHAP.** KernelSHAP does not fit dengue at 7,165 nodes
+  over 1,409 steps, and GradientSHAP on a 4-channel 20-lag surface is integrated gradients with a
+  sampler bolted on. Calling a sampled gradient approximation "SHAP" would also claim an efficiency
+  axiom we would not be honouring, which is exactly the kind of sentence the audit's unsafe list
+  exists to stop.
+- **I corrected my own earlier planning claim.** I had written that `obs_mask` is constant-1 on the
+  fully observed development panels. Measured: constant 1.0 on all three influenza panels **and
+  COVID**, but it varies on **dengue**, where only **21.75 percent** of input cells are observed, and
+  on Ebola at 40.95 percent. So attribution to that channel is structurally zero on four of five
+  panels and a visible disease-identifier leak on the fifth. `Doubt.md` §3.3 had this and the
+  planning text did not.
+- Gate-off ablation recomputed from `Reports/gate_ablation.log`: over the 40 error cells the graph
+  helps in **0** and hurts in 8; over the 20 PCC cells it helps in 6 and hurts in 1. That is what
+  forbids framing neighbour attribution as a source of accuracy. The log's own ceiling caveat
+  travels with it: g=0 removes neighbour mixing but keeps the LTR degree feature, so the tally bounds
+  the value of neighbour information, not of the graph in total.
+- 118 checkpoints confirmed on disk, so G5 is inference-only: 26 single-disease, 15 Ebola plus 3
+  smoke, 15 LDO3 plus 3 full-budget, the balance ANIL and its controls.
+- The trunk surface is `[N, 20, 4]` on every panel via `core_feature_idx`. The Ebola bundles carry a
+  fifth channel, `deaths_norm`, that the trunk never sees, so it is not an attribution target.
+- `diagnostics/verify_g5_scope.py` catches 14 mutations. Three of its first failures were verifier
+  bugs, not document bugs, the worst being that the ablation log's own legend line
+  (`'within noise' = |mean| < sd`) contains both a pipe and the phrase and was being counted as a
+  21st PCC cell.
+- **Three decisions now sit with the client** and are listed in the note: adopt integrated gradients
+  or renegotiate G5; retract the SHAP row from the comparison table already in their hands and fix
+  `PROJECT.md:39` and `:206` (that is C3's territory); and confirm they accept a neighbour figure
+  that cannot be described as explaining accuracy.
 
 ---
 
