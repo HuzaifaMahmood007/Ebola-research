@@ -229,6 +229,7 @@ both readers and writers follow.
 | **Baselines** | `python run_baselines.py` then `python score_baseline.py` | `baselines/<Model>__<ds>__h<H>__seed<S>` — 229 | not recorded |
 | **Capacity probe** | `python -m diagnostics.capacity_probe --seeds 42 52 62 72 82` | `misc/capacity_probe*` | ~15 h (trunk 71 min + arm1 16 min + arm2 96 min per seed) |
 | **Epi-informed ablation** | `python run_epi_night.py` | `ablation/single/encoder__…` | ~2.6 h for the four small panels; ~30 h if dengue is added |
+| **Meta-learning ablation** (ANIL against its ERM control) | `python run_anil_night.py --folds influenza covid dengue` | `misc/anil_[ldo3<fold>_]affine_<arm>` — 16; `lodo/…anil-affine-…` — 80 records, 240 npz, 40 meta-trunks | ~12 h for the three LDO3 folds (dengue ~8 h, influenza ~2.7 h, covid ~1.3 h); the `dengue2flu` fold ~2.75 h |
 
 **The runtimes above are the figures the runner scripts document, measured on the RTX 3060.** They
 are not derived from the records, because **no record carries a wall-clock field** — a gap worth
@@ -254,6 +255,12 @@ conda run -n ebola-train python -m train.lodo  --smoke-ldo3
 conda run -n ebola-train python -m train.ebola --dry-run
 ```
 
+`train.anil` has no `--smoke`, because its cheap paths are finer grained. Use all three before a
+meta-learning night, in this order: `--selfcheck` (logic only, seconds), `--preflight --fold <f>`
+(prerequisites for every seed and every meta-train panel of that fold, seconds), and `--timing
+--fold <f>` (prices one outer update against the measured trunk step, a few minutes). The night
+runner calls all three itself and refuses to book anything if preflight fails on any requested fold.
+
 ### The queue scripts
 
 One GPU means the schedule is part of the method. Four runners serialise multi-job nights, wait for
@@ -265,6 +272,7 @@ the card by polling `nvidia-smi`, and are safe to launch unattended:
 | `run_tonight.py` | Ebola (GPU) with the conformal fit detached beside it (CPU), then the ceilings |
 | `run_ldo3full.py` | The two remaining full-budget LDO3 folds, back to back, then the comparison |
 | `run_epi_night.py` | Waits out the LDO3 queue, then the epidemiology-informed ablation |
+| `run_anil_night.py` | The meta-learning ablation. Fold-major, then seed-major with the **control before ANIL at each seed**, so a night that dies halfway leaves complete matched pairs rather than an unanalysable set of one-armed cells. Preflights every requested fold before booking any of them |
 
 Each has `--selfcheck` (logic only, no GPU, seconds) and `--dry`/`--dry-run` (print the plan, run
 nothing). The idle detector requires several *consecutive* polls below the memory threshold, because
@@ -283,6 +291,8 @@ These read L3 and write L4. None retrains, none rescores, none writes to `result
 | `python ebola_ci.py` | The pre-registered Ebola interval, recomputed on the statistic actually reported (node-averaged country-macro), resampling **districts and origins** |
 | `python analysis.py --ci --reads` | Paired bootstrap-over-origins CIs (B = 10,000) and the gate/spatial-contribution reads |
 | `python -m diagnostics.ldo3_report` | The LDO3 transfer tables |
+| `python -m diagnostics.anil_report` | The meta-learning tables, four folds: ANIL against its own seed-matched control, and each arm against that fold's freeze-then-adapt reference. Verifies all 40 runs first and exits non-zero if any artifact is missing or disagrees with its filename |
+| `python -m diagnostics.verify_anil_doc --mutate` | Reads the numbers back out of `ANIL_Results.md` and recomputes them from the artifacts **without importing the generator**, so a shared bug cannot verify itself. `--mutate` corrupts the document seven ways in memory and confirms each corruption is caught |
 | `python -m diagnostics.paper_compare` | Our numbers against the published baseline claims |
 | `python Reports/md_to_docx.py <file.md>` | The client-facing `.docx`, rendered from the markdown source |
 
@@ -428,4 +438,6 @@ conda run -n ebola python freeze_ebola_arms.py --verify
 conda run -n ebola-train python ebola_report.py
 conda run -n ebola-train python ebola_ci.py
 conda run -n ebola-train python results_matrix.py
+conda run -n ebola-train python -m diagnostics.anil_report --verify-only
+conda run -n ebola-train python -m diagnostics.verify_anil_doc --mutate
 ```
