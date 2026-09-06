@@ -45,15 +45,30 @@ Notes carried out of Group A:
 
 | id | what | where | status |
 |---|---|---|---|
-| B1 | `reproduction_failure_log.md` does not exist anywhere in the repo | ordered by work order §1d and decision D10; content already drafted at `Phase3_Week4_Work_Order.md:75-95` and `Day15_Progress.md:429-450` | OPEN *(verified absent)* |
+| B1 | `reproduction_failure_log.md` did not exist anywhere in the repo | `Reports/reproduction_failure_log.md`, verified by `diagnostics/verify_repro_log.py` | **DONE** |
 | B2 | Published-versus-ours reproduction table never written up | `diagnostics/paper_compare.py` computes it (degeneracy flag at line 95); no output saved anywhere | OPEN *(verified)* |
 | B3 | Explainability scoping note (work order §8d) never written | recorded outstanding in three docs | OPEN *(audit)* |
 
-B1 is the cheapest high-value item in the inventory: all six entries already exist in prose
-elsewhere (MepoGNN needs an OD matrix we lack; MSGNN needs Ubuntu + CUDA 10.1; STOEP's paper table
-disagrees with its shipped dataset and metric; dengue is not like-for-like at 7,165 nodes against a
-2,392-node subsample; Cola and Heat are influenza-only; MTGNN emits a constant on 47 of 80 files).
-It is assembly, not analysis.
+Notes carried out of B1:
+
+- It was mostly assembly, but **not entirely**. Every disk-backed number was recomputed rather than
+  copied: MTGNN 47 of 80 constant files confirmed, and the same check returns 0 for EpiGNN, Cola-GNN
+  and HeatGNN; degree-0 nodes are 2 on japan, 2 on us-states, 0 on us-regions; dengue is 7,165
+  against 2,392, so 33.4 percent retained; baseline records are 80/80/60/60.
+- **The STOEP entry changed.** The recorded reason for excluding it, that the paper's table
+  disagrees with the shipped dataset by roughly threefold, does not survive. The repo ships exactly
+  one dataset, `od (539, 47, 47, 1)` and `node (539, 47, 4)`, which is the paper's COVID-19 panel,
+  and the Zhejiang flu data is not shipped at all. Against the COVID row the run is **8.2 percent
+  off on RMSE**, inside the field's own 9 to 26 percent tolerance. STOEP was not a failed
+  reproduction. It stays excluded because it needs an OD tensor and our schema ships `A_mob = None`,
+  which is the MepoGNN blocker, not a reproduction blocker.
+- The old STOEP sentence still stands in `Phase3_Developer_Execution_Guide.md:243`,
+  `Phase3_Week3_Developer_Execution_Guide.md:509` and `Phase3_Week4_Work_Order.md` §1d. Those are
+  dated execution records and are **not** rewritten, same precedent as A5. The failure log is the
+  live statement and it names the correction explicitly.
+- `diagnostics/verify_repro_log.py` re-derives every disk-backed number from the artifacts and
+  mutation-tests itself over 9 mutations, all caught. It exits 2 rather than 1 when `baselines/` is
+  absent, since that directory is gitignored and "cannot check" is not "wrong".
 
 ---
 
