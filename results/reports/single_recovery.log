@@ -1,0 +1,1106 @@
+================================================================================================
+SINGLE-DISEASE EPOCH RECOVERY  20 run(s)  budget=80 epochs
+NOTE: this measures TODAY's trainer. train/loop.py has changed since these ceilings were
+      trained, so a non-zero repro delta below is expected and is itself a finding.
+================================================================================================
+================================================================================================
+SINGLE-DISEASE EPOCH RECOVERY  20 run(s)  budget=80 epochs
+NOTE: this measures TODAY's trainer. train/loop.py has changed since these ceilings were
+      trained, so a non-zero repro delta below is expected and is itself a finding.
+================================================================================================
+
+----- [1/20] influenza_us-regions seed42 -----
+    influenza_us-regions seed42 ep00 val_pinball=0.1119 best=0.1119
+    influenza_us-regions seed42 ep01 val_pinball=0.0957 best=0.0957
+    influenza_us-regions seed42 ep02 val_pinball=0.0979 best=0.0957
+    influenza_us-regions seed42 ep03 val_pinball=0.0899 best=0.0899
+    influenza_us-regions seed42 ep04 val_pinball=0.0983 best=0.0899
+    influenza_us-regions seed42 ep05 val_pinball=0.0981 best=0.0899
+    influenza_us-regions seed42 ep06 val_pinball=0.0902 best=0.0899
+    influenza_us-regions seed42 ep07 val_pinball=0.1004 best=0.0899
+    influenza_us-regions seed42 ep08 val_pinball=0.0894 best=0.0894
+    influenza_us-regions seed42 ep09 val_pinball=0.0953 best=0.0894
+    influenza_us-regions seed42 ep10 val_pinball=0.0881 best=0.0881
+    influenza_us-regions seed42 ep11 val_pinball=0.1016 best=0.0881
+    influenza_us-regions seed42 ep12 val_pinball=0.0982 best=0.0881
+    influenza_us-regions seed42 ep13 val_pinball=0.0955 best=0.0881
+    influenza_us-regions seed42 ep14 val_pinball=0.1048 best=0.0881
+    influenza_us-regions seed42 ep15 val_pinball=0.1243 best=0.0881
+    influenza_us-regions seed42 ep16 val_pinball=0.0978 best=0.0881
+    influenza_us-regions seed42 ep17 val_pinball=0.1121 best=0.0881
+    influenza_us-regions seed42 ep18 val_pinball=0.1225 best=0.0881
+    influenza_us-regions seed42 ep19 val_pinball=0.0986 best=0.0881
+    influenza_us-regions seed42 ep20 val_pinball=0.1295 best=0.0881
+    influenza_us-regions seed42 ep21 val_pinball=0.1416 best=0.0881
+    influenza_us-regions seed42 ep22 val_pinball=0.1088 best=0.0881
+    influenza_us-regions seed42 ep23 val_pinball=0.1115 best=0.0881
+    influenza_us-regions seed42 ep24 val_pinball=0.1260 best=0.0881
+    influenza_us-regions seed42 ep25 val_pinball=0.1254 best=0.0881
+
+----- [2/20] influenza_us-regions seed52 -----
+    influenza_us-regions seed52 ep00 val_pinball=0.1221 best=0.1221
+    influenza_us-regions seed52 ep01 val_pinball=0.1131 best=0.1131
+================================================================================================
+SINGLE-DISEASE EPOCH RECOVERY  18 run(s)  budget=80 epochs
+NOTE: this measures TODAY's trainer. train/loop.py has changed since these ceilings were
+      trained, so a non-zero repro delta below is expected and is itself a finding.
+================================================================================================
+================================================================================================
+SINGLE-DISEASE EPOCH RECOVERY  18 run(s)  budget=80 epochs
+NOTE: this measures TODAY's trainer. train/loop.py has changed since these ceilings were
+      trained, so a non-zero repro delta below is expected and is itself a finding.
+================================================================================================
+
+----- [1/18] influenza_us-regions seed62 -----
+    influenza_us-regions seed62 ep00 val_pinball=0.0976 best=0.0976
+    influenza_us-regions seed62 ep01 val_pinball=0.1054 best=0.0976
+    influenza_us-regions seed62 ep02 val_pinball=0.0812 best=0.0812
+    influenza_us-regions seed62 ep03 val_pinball=0.0959 best=0.0812
+    influenza_us-regions seed62 ep04 val_pinball=0.0886 best=0.0812
+    influenza_us-regions seed62 ep05 val_pinball=0.0914 best=0.0812
+    influenza_us-regions seed62 ep06 val_pinball=0.1041 best=0.0812
+    influenza_us-regions seed62 ep07 val_pinball=0.1014 best=0.0812
+    influenza_us-regions seed62 ep08 val_pinball=0.0954 best=0.0812
+    influenza_us-regions seed62 ep09 val_pinball=0.0922 best=0.0812
+    influenza_us-regions seed62 ep10 val_pinball=0.0869 best=0.0812
+    influenza_us-regions seed62 ep11 val_pinball=0.1117 best=0.0812
+    influenza_us-regions seed62 ep12 val_pinball=0.1057 best=0.0812
+    influenza_us-regions seed62 ep13 val_pinball=0.0937 best=0.0812
+    influenza_us-regions seed62 ep14 val_pinball=0.1016 best=0.0812
+    influenza_us-regions seed62 ep15 val_pinball=0.1110 best=0.0812
+    influenza_us-regions seed62 ep16 val_pinball=0.1016 best=0.0812
+    influenza_us-regions seed62 ep17 val_pinball=0.1227 best=0.0812
+
+----- [2/18] influenza_us-regions seed72 -----
+    influenza_us-regions seed72 ep00 val_pinball=0.1016 best=0.1016
+    influenza_us-regions seed72 ep01 val_pinball=0.1156 best=0.1016
+    influenza_us-regions seed72 ep02 val_pinball=0.0902 best=0.0902
+    influenza_us-regions seed72 ep03 val_pinball=0.0963 best=0.0902
+    influenza_us-regions seed72 ep04 val_pinball=0.1090 best=0.0902
+    influenza_us-regions seed72 ep05 val_pinball=0.0926 best=0.0902
+    influenza_us-regions seed72 ep06 val_pinball=0.0962 best=0.0902
+    influenza_us-regions seed72 ep07 val_pinball=0.0993 best=0.0902
+    influenza_us-regions seed72 ep08 val_pinball=0.0909 best=0.0902
+    influenza_us-regions seed72 ep09 val_pinball=0.0964 best=0.0902
+    influenza_us-regions seed72 ep10 val_pinball=0.1306 best=0.0902
+    influenza_us-regions seed72 ep11 val_pinball=0.0851 best=0.0851
+    influenza_us-regions seed72 ep12 val_pinball=0.0915 best=0.0851
+    influenza_us-regions seed72 ep13 val_pinball=0.1059 best=0.0851
+    influenza_us-regions seed72 ep14 val_pinball=0.1159 best=0.0851
+    influenza_us-regions seed72 ep15 val_pinball=0.1115 best=0.0851
+    influenza_us-regions seed72 ep16 val_pinball=0.1249 best=0.0851
+    influenza_us-regions seed72 ep17 val_pinball=0.1412 best=0.0851
+    influenza_us-regions seed72 ep18 val_pinball=0.1306 best=0.0851
+    influenza_us-regions seed72 ep19 val_pinball=0.1211 best=0.0851
+    influenza_us-regions seed72 ep20 val_pinball=0.1132 best=0.0851
+    influenza_us-regions seed72 ep21 val_pinball=0.1275 best=0.0851
+    influenza_us-regions seed72 ep22 val_pinball=0.1282 best=0.0851
+    influenza_us-regions seed72 ep23 val_pinball=0.1299 best=0.0851
+    influenza_us-regions seed72 ep24 val_pinball=0.1222 best=0.0851
+    influenza_us-regions seed72 ep25 val_pinball=0.1176 best=0.0851
+    influenza_us-regions seed72 ep26 val_pinball=0.1230 best=0.0851
+
+----- [3/18] influenza_us-regions seed82 -----
+    influenza_us-regions seed82 ep00 val_pinball=0.1257 best=0.1257
+    influenza_us-regions seed82 ep01 val_pinball=0.1001 best=0.1001
+    influenza_us-regions seed82 ep02 val_pinball=0.0988 best=0.0988
+    influenza_us-regions seed82 ep03 val_pinball=0.0968 best=0.0968
+    influenza_us-regions seed82 ep04 val_pinball=0.1050 best=0.0968
+    influenza_us-regions seed82 ep05 val_pinball=0.0925 best=0.0925
+    influenza_us-regions seed82 ep06 val_pinball=0.0915 best=0.0915
+    influenza_us-regions seed82 ep07 val_pinball=0.0995 best=0.0915
+    influenza_us-regions seed82 ep08 val_pinball=0.0943 best=0.0915
+    influenza_us-regions seed82 ep09 val_pinball=0.1036 best=0.0915
+    influenza_us-regions seed82 ep10 val_pinball=0.0873 best=0.0873
+    influenza_us-regions seed82 ep11 val_pinball=0.1049 best=0.0873
+    influenza_us-regions seed82 ep12 val_pinball=0.1283 best=0.0873
+    influenza_us-regions seed82 ep13 val_pinball=0.1035 best=0.0873
+    influenza_us-regions seed82 ep14 val_pinball=0.1165 best=0.0873
+    influenza_us-regions seed82 ep15 val_pinball=0.1200 best=0.0873
+    influenza_us-regions seed82 ep16 val_pinball=0.1244 best=0.0873
+    influenza_us-regions seed82 ep17 val_pinball=0.1047 best=0.0873
+    influenza_us-regions seed82 ep18 val_pinball=0.1187 best=0.0873
+    influenza_us-regions seed82 ep19 val_pinball=0.1155 best=0.0873
+    influenza_us-regions seed82 ep20 val_pinball=0.1143 best=0.0873
+    influenza_us-regions seed82 ep21 val_pinball=0.1234 best=0.0873
+    influenza_us-regions seed82 ep22 val_pinball=0.1012 best=0.0873
+    influenza_us-regions seed82 ep23 val_pinball=0.1273 best=0.0873
+    influenza_us-regions seed82 ep24 val_pinball=0.1168 best=0.0873
+    influenza_us-regions seed82 ep25 val_pinball=0.1204 best=0.0873
+
+----- [4/18] influenza_japan seed42 -----
+    influenza_japan seed42 ep00 val_pinball=0.1367 best=0.1367
+    influenza_japan seed42 ep01 val_pinball=0.1116 best=0.1116
+    influenza_japan seed42 ep02 val_pinball=0.1063 best=0.1063
+    influenza_japan seed42 ep03 val_pinball=0.0959 best=0.0959
+    influenza_japan seed42 ep04 val_pinball=0.0987 best=0.0959
+    influenza_japan seed42 ep05 val_pinball=0.0964 best=0.0959
+    influenza_japan seed42 ep06 val_pinball=0.0968 best=0.0959
+    influenza_japan seed42 ep07 val_pinball=0.0942 best=0.0942
+    influenza_japan seed42 ep08 val_pinball=0.0986 best=0.0942
+    influenza_japan seed42 ep09 val_pinball=0.0936 best=0.0936
+    influenza_japan seed42 ep10 val_pinball=0.0940 best=0.0936
+    influenza_japan seed42 ep11 val_pinball=0.0935 best=0.0935
+    influenza_japan seed42 ep12 val_pinball=0.0935 best=0.0935
+    influenza_japan seed42 ep13 val_pinball=0.0942 best=0.0935
+    influenza_japan seed42 ep14 val_pinball=0.0990 best=0.0935
+    influenza_japan seed42 ep15 val_pinball=0.0885 best=0.0885
+    influenza_japan seed42 ep16 val_pinball=0.0988 best=0.0885
+    influenza_japan seed42 ep17 val_pinball=0.0898 best=0.0885
+    influenza_japan seed42 ep18 val_pinball=0.0904 best=0.0885
+    influenza_japan seed42 ep19 val_pinball=0.0878 best=0.0878
+    influenza_japan seed42 ep20 val_pinball=0.0893 best=0.0878
+    influenza_japan seed42 ep21 val_pinball=0.0877 best=0.0877
+    influenza_japan seed42 ep22 val_pinball=0.0924 best=0.0877
+    influenza_japan seed42 ep23 val_pinball=0.0886 best=0.0877
+    influenza_japan seed42 ep24 val_pinball=0.0916 best=0.0877
+    influenza_japan seed42 ep25 val_pinball=0.0941 best=0.0877
+    influenza_japan seed42 ep26 val_pinball=0.0922 best=0.0877
+    influenza_japan seed42 ep27 val_pinball=0.0876 best=0.0876
+    influenza_japan seed42 ep28 val_pinball=0.0910 best=0.0876
+    influenza_japan seed42 ep29 val_pinball=0.0927 best=0.0876
+    influenza_japan seed42 ep30 val_pinball=0.0872 best=0.0872
+    influenza_japan seed42 ep31 val_pinball=0.0901 best=0.0872
+    influenza_japan seed42 ep32 val_pinball=0.0894 best=0.0872
+    influenza_japan seed42 ep33 val_pinball=0.0870 best=0.0870
+    influenza_japan seed42 ep34 val_pinball=0.0872 best=0.0870
+    influenza_japan seed42 ep35 val_pinball=0.0873 best=0.0870
+    influenza_japan seed42 ep36 val_pinball=0.0900 best=0.0870
+    influenza_japan seed42 ep37 val_pinball=0.0872 best=0.0870
+    influenza_japan seed42 ep38 val_pinball=0.0926 best=0.0870
+    influenza_japan seed42 ep39 val_pinball=0.0869 best=0.0869
+    influenza_japan seed42 ep40 val_pinball=0.0907 best=0.0869
+    influenza_japan seed42 ep41 val_pinball=0.0866 best=0.0866
+    influenza_japan seed42 ep42 val_pinball=0.0936 best=0.0866
+    influenza_japan seed42 ep43 val_pinball=0.0876 best=0.0866
+    influenza_japan seed42 ep44 val_pinball=0.0859 best=0.0859
+    influenza_japan seed42 ep45 val_pinball=0.0849 best=0.0849
+    influenza_japan seed42 ep46 val_pinball=0.0887 best=0.0849
+    influenza_japan seed42 ep47 val_pinball=0.0859 best=0.0849
+    influenza_japan seed42 ep48 val_pinball=0.0904 best=0.0849
+    influenza_japan seed42 ep49 val_pinball=0.0861 best=0.0849
+    influenza_japan seed42 ep50 val_pinball=0.0880 best=0.0849
+    influenza_japan seed42 ep51 val_pinball=0.0859 best=0.0849
+    influenza_japan seed42 ep52 val_pinball=0.0869 best=0.0849
+    influenza_japan seed42 ep53 val_pinball=0.0854 best=0.0849
+    influenza_japan seed42 ep54 val_pinball=0.0870 best=0.0849
+    influenza_japan seed42 ep55 val_pinball=0.0872 best=0.0849
+    influenza_japan seed42 ep56 val_pinball=0.0865 best=0.0849
+    influenza_japan seed42 ep57 val_pinball=0.0873 best=0.0849
+    influenza_japan seed42 ep58 val_pinball=0.0852 best=0.0849
+    influenza_japan seed42 ep59 val_pinball=0.0865 best=0.0849
+    influenza_japan seed42 ep60 val_pinball=0.0872 best=0.0849
+
+----- [5/18] influenza_japan seed52 -----
+    influenza_japan seed52 ep00 val_pinball=0.1367 best=0.1367
+    influenza_japan seed52 ep01 val_pinball=0.1050 best=0.1050
+    influenza_japan seed52 ep02 val_pinball=0.0993 best=0.0993
+    influenza_japan seed52 ep03 val_pinball=0.0947 best=0.0947
+    influenza_japan seed52 ep04 val_pinball=0.0944 best=0.0944
+    influenza_japan seed52 ep05 val_pinball=0.0972 best=0.0944
+    influenza_japan seed52 ep06 val_pinball=0.1026 best=0.0944
+    influenza_japan seed52 ep07 val_pinball=0.0941 best=0.0941
+    influenza_japan seed52 ep08 val_pinball=0.0882 best=0.0882
+    influenza_japan seed52 ep09 val_pinball=0.0964 best=0.0882
+    influenza_japan seed52 ep10 val_pinball=0.0922 best=0.0882
+    influenza_japan seed52 ep11 val_pinball=0.0913 best=0.0882
+    influenza_japan seed52 ep12 val_pinball=0.0957 best=0.0882
+    influenza_japan seed52 ep13 val_pinball=0.0970 best=0.0882
+    influenza_japan seed52 ep14 val_pinball=0.0905 best=0.0882
+    influenza_japan seed52 ep15 val_pinball=0.0910 best=0.0882
+    influenza_japan seed52 ep16 val_pinball=0.0913 best=0.0882
+    influenza_japan seed52 ep17 val_pinball=0.0891 best=0.0882
+    influenza_japan seed52 ep18 val_pinball=0.0913 best=0.0882
+    influenza_japan seed52 ep19 val_pinball=0.0885 best=0.0882
+    influenza_japan seed52 ep20 val_pinball=0.0921 best=0.0882
+    influenza_japan seed52 ep21 val_pinball=0.0911 best=0.0882
+    influenza_japan seed52 ep22 val_pinball=0.0927 best=0.0882
+    influenza_japan seed52 ep23 val_pinball=0.0923 best=0.0882
+
+----- [6/18] influenza_japan seed62 -----
+    influenza_japan seed62 ep00 val_pinball=0.1426 best=0.1426
+    influenza_japan seed62 ep01 val_pinball=0.1065 best=0.1065
+    influenza_japan seed62 ep02 val_pinball=0.1054 best=0.1054
+    influenza_japan seed62 ep03 val_pinball=0.0951 best=0.0951
+    influenza_japan seed62 ep04 val_pinball=0.1032 best=0.0951
+    influenza_japan seed62 ep05 val_pinball=0.0969 best=0.0951
+    influenza_japan seed62 ep06 val_pinball=0.0941 best=0.0941
+    influenza_japan seed62 ep07 val_pinball=0.0963 best=0.0941
+    influenza_japan seed62 ep08 val_pinball=0.0906 best=0.0906
+    influenza_japan seed62 ep09 val_pinball=0.0933 best=0.0906
+    influenza_japan seed62 ep10 val_pinball=0.0974 best=0.0906
+    influenza_japan seed62 ep11 val_pinball=0.0931 best=0.0906
+    influenza_japan seed62 ep12 val_pinball=0.0935 best=0.0906
+    influenza_japan seed62 ep13 val_pinball=0.0904 best=0.0904
+    influenza_japan seed62 ep14 val_pinball=0.0959 best=0.0904
+    influenza_japan seed62 ep15 val_pinball=0.0995 best=0.0904
+    influenza_japan seed62 ep16 val_pinball=0.0904 best=0.0904
+    influenza_japan seed62 ep17 val_pinball=0.0896 best=0.0896
+    influenza_japan seed62 ep18 val_pinball=0.0897 best=0.0896
+    influenza_japan seed62 ep19 val_pinball=0.0922 best=0.0896
+    influenza_japan seed62 ep20 val_pinball=0.0958 best=0.0896
+    influenza_japan seed62 ep21 val_pinball=0.0923 best=0.0896
+    influenza_japan seed62 ep22 val_pinball=0.0936 best=0.0896
+    influenza_japan seed62 ep23 val_pinball=0.0889 best=0.0889
+    influenza_japan seed62 ep24 val_pinball=0.0897 best=0.0889
+    influenza_japan seed62 ep25 val_pinball=0.0897 best=0.0889
+    influenza_japan seed62 ep26 val_pinball=0.0890 best=0.0889
+    influenza_japan seed62 ep27 val_pinball=0.0888 best=0.0888
+    influenza_japan seed62 ep28 val_pinball=0.0885 best=0.0885
+    influenza_japan seed62 ep29 val_pinball=0.0897 best=0.0885
+    influenza_japan seed62 ep30 val_pinball=0.0917 best=0.0885
+    influenza_japan seed62 ep31 val_pinball=0.0887 best=0.0885
+    influenza_japan seed62 ep32 val_pinball=0.0932 best=0.0885
+    influenza_japan seed62 ep33 val_pinball=0.0890 best=0.0885
+    influenza_japan seed62 ep34 val_pinball=0.0871 best=0.0871
+    influenza_japan seed62 ep35 val_pinball=0.0915 best=0.0871
+    influenza_japan seed62 ep36 val_pinball=0.0900 best=0.0871
+    influenza_japan seed62 ep37 val_pinball=0.0906 best=0.0871
+    influenza_japan seed62 ep38 val_pinball=0.0882 best=0.0871
+    influenza_japan seed62 ep39 val_pinball=0.0893 best=0.0871
+    influenza_japan seed62 ep40 val_pinball=0.0869 best=0.0869
+    influenza_japan seed62 ep41 val_pinball=0.0871 best=0.0869
+    influenza_japan seed62 ep42 val_pinball=0.0874 best=0.0869
+    influenza_japan seed62 ep43 val_pinball=0.0888 best=0.0869
+    influenza_japan seed62 ep44 val_pinball=0.0874 best=0.0869
+    influenza_japan seed62 ep45 val_pinball=0.0899 best=0.0869
+    influenza_japan seed62 ep46 val_pinball=0.0875 best=0.0869
+    influenza_japan seed62 ep47 val_pinball=0.0875 best=0.0869
+    influenza_japan seed62 ep48 val_pinball=0.0861 best=0.0861
+    influenza_japan seed62 ep49 val_pinball=0.0875 best=0.0861
+    influenza_japan seed62 ep50 val_pinball=0.0899 best=0.0861
+    influenza_japan seed62 ep51 val_pinball=0.0868 best=0.0861
+    influenza_japan seed62 ep52 val_pinball=0.0857 best=0.0857
+    influenza_japan seed62 ep53 val_pinball=0.0887 best=0.0857
+    influenza_japan seed62 ep54 val_pinball=0.0866 best=0.0857
+    influenza_japan seed62 ep55 val_pinball=0.0852 best=0.0852
+    influenza_japan seed62 ep56 val_pinball=0.0864 best=0.0852
+    influenza_japan seed62 ep57 val_pinball=0.0876 best=0.0852
+    influenza_japan seed62 ep58 val_pinball=0.0866 best=0.0852
+    influenza_japan seed62 ep59 val_pinball=0.0875 best=0.0852
+    influenza_japan seed62 ep60 val_pinball=0.0855 best=0.0852
+    influenza_japan seed62 ep61 val_pinball=0.0860 best=0.0852
+    influenza_japan seed62 ep62 val_pinball=0.0867 best=0.0852
+    influenza_japan seed62 ep63 val_pinball=0.0858 best=0.0852
+    influenza_japan seed62 ep64 val_pinball=0.0861 best=0.0852
+    influenza_japan seed62 ep65 val_pinball=0.0866 best=0.0852
+    influenza_japan seed62 ep66 val_pinball=0.0867 best=0.0852
+    influenza_japan seed62 ep67 val_pinball=0.0863 best=0.0852
+    influenza_japan seed62 ep68 val_pinball=0.0867 best=0.0852
+    influenza_japan seed62 ep69 val_pinball=0.0870 best=0.0852
+    influenza_japan seed62 ep70 val_pinball=0.0871 best=0.0852
+
+----- [7/18] influenza_japan seed72 -----
+    influenza_japan seed72 ep00 val_pinball=0.1259 best=0.1259
+    influenza_japan seed72 ep01 val_pinball=0.1000 best=0.1000
+    influenza_japan seed72 ep02 val_pinball=0.1016 best=0.1000
+    influenza_japan seed72 ep03 val_pinball=0.0979 best=0.0979
+    influenza_japan seed72 ep04 val_pinball=0.0901 best=0.0901
+    influenza_japan seed72 ep05 val_pinball=0.1037 best=0.0901
+    influenza_japan seed72 ep06 val_pinball=0.0920 best=0.0901
+    influenza_japan seed72 ep07 val_pinball=0.0980 best=0.0901
+    influenza_japan seed72 ep08 val_pinball=0.0953 best=0.0901
+    influenza_japan seed72 ep09 val_pinball=0.0938 best=0.0901
+    influenza_japan seed72 ep10 val_pinball=0.0887 best=0.0887
+    influenza_japan seed72 ep11 val_pinball=0.0911 best=0.0887
+    influenza_japan seed72 ep12 val_pinball=0.0967 best=0.0887
+    influenza_japan seed72 ep13 val_pinball=0.0897 best=0.0887
+    influenza_japan seed72 ep14 val_pinball=0.0887 best=0.0887
+    influenza_japan seed72 ep15 val_pinball=0.0917 best=0.0887
+    influenza_japan seed72 ep16 val_pinball=0.0957 best=0.0887
+    influenza_japan seed72 ep17 val_pinball=0.0945 best=0.0887
+    influenza_japan seed72 ep18 val_pinball=0.0920 best=0.0887
+    influenza_japan seed72 ep19 val_pinball=0.0902 best=0.0887
+    influenza_japan seed72 ep20 val_pinball=0.0913 best=0.0887
+    influenza_japan seed72 ep21 val_pinball=0.0960 best=0.0887
+    influenza_japan seed72 ep22 val_pinball=0.0945 best=0.0887
+    influenza_japan seed72 ep23 val_pinball=0.0891 best=0.0887
+    influenza_japan seed72 ep24 val_pinball=0.0923 best=0.0887
+    influenza_japan seed72 ep25 val_pinball=0.0874 best=0.0874
+    influenza_japan seed72 ep26 val_pinball=0.0899 best=0.0874
+    influenza_japan seed72 ep27 val_pinball=0.0940 best=0.0874
+    influenza_japan seed72 ep28 val_pinball=0.0894 best=0.0874
+    influenza_japan seed72 ep29 val_pinball=0.0877 best=0.0874
+    influenza_japan seed72 ep30 val_pinball=0.0875 best=0.0874
+    influenza_japan seed72 ep31 val_pinball=0.0906 best=0.0874
+    influenza_japan seed72 ep32 val_pinball=0.0906 best=0.0874
+    influenza_japan seed72 ep33 val_pinball=0.0875 best=0.0874
+    influenza_japan seed72 ep34 val_pinball=0.0907 best=0.0874
+    influenza_japan seed72 ep35 val_pinball=0.0896 best=0.0874
+    influenza_japan seed72 ep36 val_pinball=0.0891 best=0.0874
+    influenza_japan seed72 ep37 val_pinball=0.0897 best=0.0874
+    influenza_japan seed72 ep38 val_pinball=0.0879 best=0.0874
+    influenza_japan seed72 ep39 val_pinball=0.0861 best=0.0861
+    influenza_japan seed72 ep40 val_pinball=0.0868 best=0.0861
+    influenza_japan seed72 ep41 val_pinball=0.0897 best=0.0861
+    influenza_japan seed72 ep42 val_pinball=0.0894 best=0.0861
+    influenza_japan seed72 ep43 val_pinball=0.0885 best=0.0861
+    influenza_japan seed72 ep44 val_pinball=0.0883 best=0.0861
+    influenza_japan seed72 ep45 val_pinball=0.0893 best=0.0861
+    influenza_japan seed72 ep46 val_pinball=0.0874 best=0.0861
+    influenza_japan seed72 ep47 val_pinball=0.0901 best=0.0861
+    influenza_japan seed72 ep48 val_pinball=0.0877 best=0.0861
+    influenza_japan seed72 ep49 val_pinball=0.0877 best=0.0861
+    influenza_japan seed72 ep50 val_pinball=0.0872 best=0.0861
+    influenza_japan seed72 ep51 val_pinball=0.0881 best=0.0861
+    influenza_japan seed72 ep52 val_pinball=0.0881 best=0.0861
+    influenza_japan seed72 ep53 val_pinball=0.0918 best=0.0861
+    influenza_japan seed72 ep54 val_pinball=0.0858 best=0.0858
+    influenza_japan seed72 ep55 val_pinball=0.0867 best=0.0858
+    influenza_japan seed72 ep56 val_pinball=0.0893 best=0.0858
+    influenza_japan seed72 ep57 val_pinball=0.0853 best=0.0853
+    influenza_japan seed72 ep58 val_pinball=0.0882 best=0.0853
+    influenza_japan seed72 ep59 val_pinball=0.0881 best=0.0853
+    influenza_japan seed72 ep60 val_pinball=0.0877 best=0.0853
+    influenza_japan seed72 ep61 val_pinball=0.0880 best=0.0853
+    influenza_japan seed72 ep62 val_pinball=0.0868 best=0.0853
+    influenza_japan seed72 ep63 val_pinball=0.0871 best=0.0853
+    influenza_japan seed72 ep64 val_pinball=0.0879 best=0.0853
+    influenza_japan seed72 ep65 val_pinball=0.0870 best=0.0853
+    influenza_japan seed72 ep66 val_pinball=0.0864 best=0.0853
+    influenza_japan seed72 ep67 val_pinball=0.0867 best=0.0853
+    influenza_japan seed72 ep68 val_pinball=0.0868 best=0.0853
+    influenza_japan seed72 ep69 val_pinball=0.0862 best=0.0853
+    influenza_japan seed72 ep70 val_pinball=0.0869 best=0.0853
+    influenza_japan seed72 ep71 val_pinball=0.0869 best=0.0853
+    influenza_japan seed72 ep72 val_pinball=0.0871 best=0.0853
+
+----- [8/18] influenza_japan seed82 -----
+    influenza_japan seed82 ep00 val_pinball=0.1398 best=0.1398
+    influenza_japan seed82 ep01 val_pinball=0.1064 best=0.1064
+    influenza_japan seed82 ep02 val_pinball=0.0930 best=0.0930
+    influenza_japan seed82 ep03 val_pinball=0.1067 best=0.0930
+    influenza_japan seed82 ep04 val_pinball=0.0980 best=0.0930
+    influenza_japan seed82 ep05 val_pinball=0.1035 best=0.0930
+    influenza_japan seed82 ep06 val_pinball=0.0959 best=0.0930
+    influenza_japan seed82 ep07 val_pinball=0.0940 best=0.0930
+    influenza_japan seed82 ep08 val_pinball=0.0918 best=0.0918
+    influenza_japan seed82 ep09 val_pinball=0.0937 best=0.0918
+    influenza_japan seed82 ep10 val_pinball=0.0922 best=0.0918
+    influenza_japan seed82 ep11 val_pinball=0.0921 best=0.0918
+    influenza_japan seed82 ep12 val_pinball=0.0872 best=0.0872
+    influenza_japan seed82 ep13 val_pinball=0.0962 best=0.0872
+    influenza_japan seed82 ep14 val_pinball=0.0924 best=0.0872
+    influenza_japan seed82 ep15 val_pinball=0.0942 best=0.0872
+    influenza_japan seed82 ep16 val_pinball=0.0907 best=0.0872
+    influenza_japan seed82 ep17 val_pinball=0.0943 best=0.0872
+    influenza_japan seed82 ep18 val_pinball=0.0891 best=0.0872
+    influenza_japan seed82 ep19 val_pinball=0.0885 best=0.0872
+    influenza_japan seed82 ep20 val_pinball=0.0918 best=0.0872
+    influenza_japan seed82 ep21 val_pinball=0.0948 best=0.0872
+    influenza_japan seed82 ep22 val_pinball=0.0874 best=0.0872
+    influenza_japan seed82 ep23 val_pinball=0.0929 best=0.0872
+    influenza_japan seed82 ep24 val_pinball=0.0881 best=0.0872
+    influenza_japan seed82 ep25 val_pinball=0.0916 best=0.0872
+    influenza_japan seed82 ep26 val_pinball=0.0867 best=0.0867
+    influenza_japan seed82 ep27 val_pinball=0.0868 best=0.0867
+    influenza_japan seed82 ep28 val_pinball=0.0875 best=0.0867
+    influenza_japan seed82 ep29 val_pinball=0.0890 best=0.0867
+    influenza_japan seed82 ep30 val_pinball=0.0872 best=0.0867
+    influenza_japan seed82 ep31 val_pinball=0.0885 best=0.0867
+    influenza_japan seed82 ep32 val_pinball=0.0892 best=0.0867
+    influenza_japan seed82 ep33 val_pinball=0.0872 best=0.0867
+    influenza_japan seed82 ep34 val_pinball=0.0877 best=0.0867
+    influenza_japan seed82 ep35 val_pinball=0.0871 best=0.0867
+    influenza_japan seed82 ep36 val_pinball=0.0870 best=0.0867
+    influenza_japan seed82 ep37 val_pinball=0.0905 best=0.0867
+    influenza_japan seed82 ep38 val_pinball=0.0898 best=0.0867
+    influenza_japan seed82 ep39 val_pinball=0.0873 best=0.0867
+    influenza_japan seed82 ep40 val_pinball=0.0903 best=0.0867
+    influenza_japan seed82 ep41 val_pinball=0.0876 best=0.0867
+
+----- [9/18] influenza_us-states seed42 -----
+    influenza_us-states seed42 ep00 val_pinball=0.1994 best=0.1994
+    influenza_us-states seed42 ep01 val_pinball=0.1779 best=0.1779
+    influenza_us-states seed42 ep02 val_pinball=0.1682 best=0.1682
+    influenza_us-states seed42 ep03 val_pinball=0.1748 best=0.1682
+    influenza_us-states seed42 ep04 val_pinball=0.1600 best=0.1600
+    influenza_us-states seed42 ep05 val_pinball=0.1587 best=0.1587
+    influenza_us-states seed42 ep06 val_pinball=0.1674 best=0.1587
+    influenza_us-states seed42 ep07 val_pinball=0.1571 best=0.1571
+    influenza_us-states seed42 ep08 val_pinball=0.1661 best=0.1571
+    influenza_us-states seed42 ep09 val_pinball=0.1640 best=0.1571
+    influenza_us-states seed42 ep10 val_pinball=0.1579 best=0.1571
+    influenza_us-states seed42 ep11 val_pinball=0.1574 best=0.1571
+    influenza_us-states seed42 ep12 val_pinball=0.1590 best=0.1571
+    influenza_us-states seed42 ep13 val_pinball=0.1575 best=0.1571
+    influenza_us-states seed42 ep14 val_pinball=0.1573 best=0.1571
+    influenza_us-states seed42 ep15 val_pinball=0.1637 best=0.1571
+    influenza_us-states seed42 ep16 val_pinball=0.1619 best=0.1571
+    influenza_us-states seed42 ep17 val_pinball=0.1575 best=0.1571
+    influenza_us-states seed42 ep18 val_pinball=0.1556 best=0.1556
+    influenza_us-states seed42 ep19 val_pinball=0.1554 best=0.1554
+    influenza_us-states seed42 ep20 val_pinball=0.1530 best=0.1530
+    influenza_us-states seed42 ep21 val_pinball=0.1543 best=0.1530
+    influenza_us-states seed42 ep22 val_pinball=0.1561 best=0.1530
+    influenza_us-states seed42 ep23 val_pinball=0.1533 best=0.1530
+    influenza_us-states seed42 ep24 val_pinball=0.1525 best=0.1525
+    influenza_us-states seed42 ep25 val_pinball=0.1536 best=0.1525
+    influenza_us-states seed42 ep26 val_pinball=0.1584 best=0.1525
+    influenza_us-states seed42 ep27 val_pinball=0.1564 best=0.1525
+    influenza_us-states seed42 ep28 val_pinball=0.1550 best=0.1525
+    influenza_us-states seed42 ep29 val_pinball=0.1529 best=0.1525
+    influenza_us-states seed42 ep30 val_pinball=0.1537 best=0.1525
+    influenza_us-states seed42 ep31 val_pinball=0.1552 best=0.1525
+    influenza_us-states seed42 ep32 val_pinball=0.1531 best=0.1525
+    influenza_us-states seed42 ep33 val_pinball=0.1548 best=0.1525
+    influenza_us-states seed42 ep34 val_pinball=0.1525 best=0.1525
+    influenza_us-states seed42 ep35 val_pinball=0.1562 best=0.1525
+    influenza_us-states seed42 ep36 val_pinball=0.1540 best=0.1525
+    influenza_us-states seed42 ep37 val_pinball=0.1522 best=0.1522
+    influenza_us-states seed42 ep38 val_pinball=0.1533 best=0.1522
+    influenza_us-states seed42 ep39 val_pinball=0.1534 best=0.1522
+    influenza_us-states seed42 ep40 val_pinball=0.1527 best=0.1522
+    influenza_us-states seed42 ep41 val_pinball=0.1590 best=0.1522
+    influenza_us-states seed42 ep42 val_pinball=0.1554 best=0.1522
+    influenza_us-states seed42 ep43 val_pinball=0.1538 best=0.1522
+    influenza_us-states seed42 ep44 val_pinball=0.1599 best=0.1522
+    influenza_us-states seed42 ep45 val_pinball=0.1543 best=0.1522
+    influenza_us-states seed42 ep46 val_pinball=0.1550 best=0.1522
+    influenza_us-states seed42 ep47 val_pinball=0.1573 best=0.1522
+    influenza_us-states seed42 ep48 val_pinball=0.1580 best=0.1522
+    influenza_us-states seed42 ep49 val_pinball=0.1550 best=0.1522
+    influenza_us-states seed42 ep50 val_pinball=0.1550 best=0.1522
+    influenza_us-states seed42 ep51 val_pinball=0.1546 best=0.1522
+    influenza_us-states seed42 ep52 val_pinball=0.1563 best=0.1522
+
+----- [10/18] influenza_us-states seed52 -----
+    influenza_us-states seed52 ep00 val_pinball=0.2100 best=0.2100
+    influenza_us-states seed52 ep01 val_pinball=0.1722 best=0.1722
+    influenza_us-states seed52 ep02 val_pinball=0.1722 best=0.1722
+    influenza_us-states seed52 ep03 val_pinball=0.1632 best=0.1632
+    influenza_us-states seed52 ep04 val_pinball=0.1604 best=0.1604
+    influenza_us-states seed52 ep05 val_pinball=0.1684 best=0.1604
+    influenza_us-states seed52 ep06 val_pinball=0.1757 best=0.1604
+    influenza_us-states seed52 ep07 val_pinball=0.1569 best=0.1569
+    influenza_us-states seed52 ep08 val_pinball=0.1640 best=0.1569
+    influenza_us-states seed52 ep09 val_pinball=0.1619 best=0.1569
+    influenza_us-states seed52 ep10 val_pinball=0.1642 best=0.1569
+    influenza_us-states seed52 ep11 val_pinball=0.1604 best=0.1569
+    influenza_us-states seed52 ep12 val_pinball=0.1626 best=0.1569
+    influenza_us-states seed52 ep13 val_pinball=0.1689 best=0.1569
+    influenza_us-states seed52 ep14 val_pinball=0.1637 best=0.1569
+    influenza_us-states seed52 ep15 val_pinball=0.1623 best=0.1569
+    influenza_us-states seed52 ep16 val_pinball=0.1546 best=0.1546
+    influenza_us-states seed52 ep17 val_pinball=0.1611 best=0.1546
+    influenza_us-states seed52 ep18 val_pinball=0.1597 best=0.1546
+    influenza_us-states seed52 ep19 val_pinball=0.1615 best=0.1546
+    influenza_us-states seed52 ep20 val_pinball=0.1570 best=0.1546
+    influenza_us-states seed52 ep21 val_pinball=0.1561 best=0.1546
+    influenza_us-states seed52 ep22 val_pinball=0.1550 best=0.1546
+    influenza_us-states seed52 ep23 val_pinball=0.1590 best=0.1546
+    influenza_us-states seed52 ep24 val_pinball=0.1593 best=0.1546
+    influenza_us-states seed52 ep25 val_pinball=0.1599 best=0.1546
+    influenza_us-states seed52 ep26 val_pinball=0.1547 best=0.1546
+    influenza_us-states seed52 ep27 val_pinball=0.1551 best=0.1546
+    influenza_us-states seed52 ep28 val_pinball=0.1548 best=0.1546
+    influenza_us-states seed52 ep29 val_pinball=0.1601 best=0.1546
+    influenza_us-states seed52 ep30 val_pinball=0.1562 best=0.1546
+    influenza_us-states seed52 ep31 val_pinball=0.1617 best=0.1546
+
+----- [11/18] influenza_us-states seed62 -----
+    influenza_us-states seed62 ep00 val_pinball=0.2051 best=0.2051
+    influenza_us-states seed62 ep01 val_pinball=0.1815 best=0.1815
+    influenza_us-states seed62 ep02 val_pinball=0.1664 best=0.1664
+    influenza_us-states seed62 ep03 val_pinball=0.1660 best=0.1660
+    influenza_us-states seed62 ep04 val_pinball=0.1657 best=0.1657
+    influenza_us-states seed62 ep05 val_pinball=0.1687 best=0.1657
+    influenza_us-states seed62 ep06 val_pinball=0.1602 best=0.1602
+    influenza_us-states seed62 ep07 val_pinball=0.1600 best=0.1600
+    influenza_us-states seed62 ep08 val_pinball=0.1613 best=0.1600
+    influenza_us-states seed62 ep09 val_pinball=0.1611 best=0.1600
+    influenza_us-states seed62 ep10 val_pinball=0.1627 best=0.1600
+    influenza_us-states seed62 ep11 val_pinball=0.1602 best=0.1600
+    influenza_us-states seed62 ep12 val_pinball=0.1569 best=0.1569
+    influenza_us-states seed62 ep13 val_pinball=0.1587 best=0.1569
+    influenza_us-states seed62 ep14 val_pinball=0.1606 best=0.1569
+    influenza_us-states seed62 ep15 val_pinball=0.1619 best=0.1569
+    influenza_us-states seed62 ep16 val_pinball=0.1559 best=0.1559
+    influenza_us-states seed62 ep17 val_pinball=0.1590 best=0.1559
+    influenza_us-states seed62 ep18 val_pinball=0.1520 best=0.1520
+    influenza_us-states seed62 ep19 val_pinball=0.1588 best=0.1520
+    influenza_us-states seed62 ep20 val_pinball=0.1637 best=0.1520
+    influenza_us-states seed62 ep21 val_pinball=0.1597 best=0.1520
+    influenza_us-states seed62 ep22 val_pinball=0.1547 best=0.1520
+    influenza_us-states seed62 ep23 val_pinball=0.1538 best=0.1520
+    influenza_us-states seed62 ep24 val_pinball=0.1597 best=0.1520
+    influenza_us-states seed62 ep25 val_pinball=0.1543 best=0.1520
+    influenza_us-states seed62 ep26 val_pinball=0.1553 best=0.1520
+    influenza_us-states seed62 ep27 val_pinball=0.1535 best=0.1520
+    influenza_us-states seed62 ep28 val_pinball=0.1590 best=0.1520
+    influenza_us-states seed62 ep29 val_pinball=0.1575 best=0.1520
+    influenza_us-states seed62 ep30 val_pinball=0.1523 best=0.1520
+    influenza_us-states seed62 ep31 val_pinball=0.1530 best=0.1520
+    influenza_us-states seed62 ep32 val_pinball=0.1557 best=0.1520
+    influenza_us-states seed62 ep33 val_pinball=0.1541 best=0.1520
+
+----- [12/18] influenza_us-states seed72 -----
+    influenza_us-states seed72 ep00 val_pinball=0.1935 best=0.1935
+    influenza_us-states seed72 ep01 val_pinball=0.1859 best=0.1859
+    influenza_us-states seed72 ep02 val_pinball=0.1728 best=0.1728
+    influenza_us-states seed72 ep03 val_pinball=0.1637 best=0.1637
+    influenza_us-states seed72 ep04 val_pinball=0.1717 best=0.1637
+    influenza_us-states seed72 ep05 val_pinball=0.1609 best=0.1609
+    influenza_us-states seed72 ep06 val_pinball=0.1628 best=0.1609
+    influenza_us-states seed72 ep07 val_pinball=0.1615 best=0.1609
+    influenza_us-states seed72 ep08 val_pinball=0.1625 best=0.1609
+    influenza_us-states seed72 ep09 val_pinball=0.1609 best=0.1609
+    influenza_us-states seed72 ep10 val_pinball=0.1620 best=0.1609
+    influenza_us-states seed72 ep11 val_pinball=0.1572 best=0.1572
+    influenza_us-states seed72 ep12 val_pinball=0.1683 best=0.1572
+    influenza_us-states seed72 ep13 val_pinball=0.1562 best=0.1562
+    influenza_us-states seed72 ep14 val_pinball=0.1608 best=0.1562
+    influenza_us-states seed72 ep15 val_pinball=0.1578 best=0.1562
+    influenza_us-states seed72 ep16 val_pinball=0.1609 best=0.1562
+    influenza_us-states seed72 ep17 val_pinball=0.1576 best=0.1562
+    influenza_us-states seed72 ep18 val_pinball=0.1552 best=0.1552
+    influenza_us-states seed72 ep19 val_pinball=0.1684 best=0.1552
+    influenza_us-states seed72 ep20 val_pinball=0.1588 best=0.1552
+    influenza_us-states seed72 ep21 val_pinball=0.1575 best=0.1552
+    influenza_us-states seed72 ep22 val_pinball=0.1600 best=0.1552
+    influenza_us-states seed72 ep23 val_pinball=0.1531 best=0.1531
+    influenza_us-states seed72 ep24 val_pinball=0.1569 best=0.1531
+    influenza_us-states seed72 ep25 val_pinball=0.1561 best=0.1531
+    influenza_us-states seed72 ep26 val_pinball=0.1579 best=0.1531
+    influenza_us-states seed72 ep27 val_pinball=0.1551 best=0.1531
+    influenza_us-states seed72 ep28 val_pinball=0.1605 best=0.1531
+    influenza_us-states seed72 ep29 val_pinball=0.1532 best=0.1531
+    influenza_us-states seed72 ep30 val_pinball=0.1555 best=0.1531
+    influenza_us-states seed72 ep31 val_pinball=0.1544 best=0.1531
+    influenza_us-states seed72 ep32 val_pinball=0.1559 best=0.1531
+    influenza_us-states seed72 ep33 val_pinball=0.1528 best=0.1528
+    influenza_us-states seed72 ep34 val_pinball=0.1584 best=0.1528
+    influenza_us-states seed72 ep35 val_pinball=0.1584 best=0.1528
+    influenza_us-states seed72 ep36 val_pinball=0.1605 best=0.1528
+    influenza_us-states seed72 ep37 val_pinball=0.1557 best=0.1528
+    influenza_us-states seed72 ep38 val_pinball=0.1568 best=0.1528
+    influenza_us-states seed72 ep39 val_pinball=0.1603 best=0.1528
+    influenza_us-states seed72 ep40 val_pinball=0.1523 best=0.1523
+    influenza_us-states seed72 ep41 val_pinball=0.1545 best=0.1523
+    influenza_us-states seed72 ep42 val_pinball=0.1534 best=0.1523
+    influenza_us-states seed72 ep43 val_pinball=0.1545 best=0.1523
+    influenza_us-states seed72 ep44 val_pinball=0.1568 best=0.1523
+    influenza_us-states seed72 ep45 val_pinball=0.1550 best=0.1523
+    influenza_us-states seed72 ep46 val_pinball=0.1580 best=0.1523
+    influenza_us-states seed72 ep47 val_pinball=0.1557 best=0.1523
+    influenza_us-states seed72 ep48 val_pinball=0.1543 best=0.1523
+    influenza_us-states seed72 ep49 val_pinball=0.1571 best=0.1523
+    influenza_us-states seed72 ep50 val_pinball=0.1582 best=0.1523
+    influenza_us-states seed72 ep51 val_pinball=0.1565 best=0.1523
+    influenza_us-states seed72 ep52 val_pinball=0.1557 best=0.1523
+    influenza_us-states seed72 ep53 val_pinball=0.1553 best=0.1523
+    influenza_us-states seed72 ep54 val_pinball=0.1582 best=0.1523
+    influenza_us-states seed72 ep55 val_pinball=0.1584 best=0.1523
+
+----- [13/18] influenza_us-states seed82 -----
+    influenza_us-states seed82 ep00 val_pinball=0.1995 best=0.1995
+    influenza_us-states seed82 ep01 val_pinball=0.1852 best=0.1852
+    influenza_us-states seed82 ep02 val_pinball=0.1772 best=0.1772
+    influenza_us-states seed82 ep03 val_pinball=0.1667 best=0.1667
+    influenza_us-states seed82 ep04 val_pinball=0.1651 best=0.1651
+    influenza_us-states seed82 ep05 val_pinball=0.1641 best=0.1641
+    influenza_us-states seed82 ep06 val_pinball=0.1590 best=0.1590
+    influenza_us-states seed82 ep07 val_pinball=0.1754 best=0.1590
+    influenza_us-states seed82 ep08 val_pinball=0.1647 best=0.1590
+    influenza_us-states seed82 ep09 val_pinball=0.1581 best=0.1581
+    influenza_us-states seed82 ep10 val_pinball=0.1624 best=0.1581
+    influenza_us-states seed82 ep11 val_pinball=0.1606 best=0.1581
+    influenza_us-states seed82 ep12 val_pinball=0.1571 best=0.1571
+    influenza_us-states seed82 ep13 val_pinball=0.1636 best=0.1571
+    influenza_us-states seed82 ep14 val_pinball=0.1555 best=0.1555
+    influenza_us-states seed82 ep15 val_pinball=0.1609 best=0.1555
+    influenza_us-states seed82 ep16 val_pinball=0.1633 best=0.1555
+    influenza_us-states seed82 ep17 val_pinball=0.1558 best=0.1555
+    influenza_us-states seed82 ep18 val_pinball=0.1575 best=0.1555
+    influenza_us-states seed82 ep19 val_pinball=0.1651 best=0.1555
+    influenza_us-states seed82 ep20 val_pinball=0.1623 best=0.1555
+    influenza_us-states seed82 ep21 val_pinball=0.1570 best=0.1555
+    influenza_us-states seed82 ep22 val_pinball=0.1539 best=0.1539
+    influenza_us-states seed82 ep23 val_pinball=0.1575 best=0.1539
+    influenza_us-states seed82 ep24 val_pinball=0.1562 best=0.1539
+    influenza_us-states seed82 ep25 val_pinball=0.1580 best=0.1539
+    influenza_us-states seed82 ep26 val_pinball=0.1556 best=0.1539
+    influenza_us-states seed82 ep27 val_pinball=0.1579 best=0.1539
+    influenza_us-states seed82 ep28 val_pinball=0.1597 best=0.1539
+    influenza_us-states seed82 ep29 val_pinball=0.1630 best=0.1539
+    influenza_us-states seed82 ep30 val_pinball=0.1633 best=0.1539
+    influenza_us-states seed82 ep31 val_pinball=0.1592 best=0.1539
+    influenza_us-states seed82 ep32 val_pinball=0.1537 best=0.1537
+    influenza_us-states seed82 ep33 val_pinball=0.1555 best=0.1537
+    influenza_us-states seed82 ep34 val_pinball=0.1542 best=0.1537
+    influenza_us-states seed82 ep35 val_pinball=0.1587 best=0.1537
+    influenza_us-states seed82 ep36 val_pinball=0.1557 best=0.1537
+    influenza_us-states seed82 ep37 val_pinball=0.1562 best=0.1537
+    influenza_us-states seed82 ep38 val_pinball=0.1553 best=0.1537
+    influenza_us-states seed82 ep39 val_pinball=0.1580 best=0.1537
+    influenza_us-states seed82 ep40 val_pinball=0.1544 best=0.1537
+    influenza_us-states seed82 ep41 val_pinball=0.1551 best=0.1537
+    influenza_us-states seed82 ep42 val_pinball=0.1573 best=0.1537
+    influenza_us-states seed82 ep43 val_pinball=0.1575 best=0.1537
+    influenza_us-states seed82 ep44 val_pinball=0.1558 best=0.1537
+    influenza_us-states seed82 ep45 val_pinball=0.1544 best=0.1537
+    influenza_us-states seed82 ep46 val_pinball=0.1551 best=0.1537
+    influenza_us-states seed82 ep47 val_pinball=0.1560 best=0.1537
+
+----- [14/18] dengue seed42 -----
+    dengue seed42 ep00 val_pinball=0.2222 best=0.2222
+    dengue seed42 ep01 val_pinball=0.2155 best=0.2155
+    dengue seed42 ep02 val_pinball=0.2110 best=0.2110
+    dengue seed42 ep03 val_pinball=0.2091 best=0.2091
+    dengue seed42 ep04 val_pinball=0.2115 best=0.2091
+    dengue seed42 ep05 val_pinball=0.2057 best=0.2057
+    dengue seed42 ep06 val_pinball=0.2041 best=0.2041
+    dengue seed42 ep07 val_pinball=0.2032 best=0.2032
+    dengue seed42 ep08 val_pinball=0.2008 best=0.2008
+    dengue seed42 ep09 val_pinball=0.2024 best=0.2008
+    dengue seed42 ep10 val_pinball=0.2016 best=0.2008
+    dengue seed42 ep11 val_pinball=0.2004 best=0.2004
+    dengue seed42 ep12 val_pinball=0.2023 best=0.2004
+    dengue seed42 ep13 val_pinball=0.2018 best=0.2004
+    dengue seed42 ep14 val_pinball=0.2025 best=0.2004
+    dengue seed42 ep15 val_pinball=0.2023 best=0.2004
+    dengue seed42 ep16 val_pinball=0.2013 best=0.2004
+    dengue seed42 ep17 val_pinball=0.1995 best=0.1995
+    dengue seed42 ep18 val_pinball=0.2002 best=0.1995
+    dengue seed42 ep19 val_pinball=0.1999 best=0.1995
+    dengue seed42 ep20 val_pinball=0.2014 best=0.1995
+    dengue seed42 ep21 val_pinball=0.1997 best=0.1995
+    dengue seed42 ep22 val_pinball=0.2000 best=0.1995
+    dengue seed42 ep23 val_pinball=0.1978 best=0.1978
+    dengue seed42 ep24 val_pinball=0.2005 best=0.1978
+    dengue seed42 ep25 val_pinball=0.1980 best=0.1978
+    dengue seed42 ep26 val_pinball=0.1988 best=0.1978
+    dengue seed42 ep27 val_pinball=0.1976 best=0.1976
+    dengue seed42 ep28 val_pinball=0.2016 best=0.1976
+    dengue seed42 ep29 val_pinball=0.1988 best=0.1976
+    dengue seed42 ep30 val_pinball=0.1974 best=0.1974
+    dengue seed42 ep31 val_pinball=0.1982 best=0.1974
+    dengue seed42 ep32 val_pinball=0.1992 best=0.1974
+    dengue seed42 ep33 val_pinball=0.1966 best=0.1966
+    dengue seed42 ep34 val_pinball=0.1963 best=0.1963
+    dengue seed42 ep35 val_pinball=0.1983 best=0.1963
+    dengue seed42 ep36 val_pinball=0.1974 best=0.1963
+    dengue seed42 ep37 val_pinball=0.1970 best=0.1963
+    dengue seed42 ep38 val_pinball=0.1982 best=0.1963
+    dengue seed42 ep39 val_pinball=0.1977 best=0.1963
+    dengue seed42 ep40 val_pinball=0.1973 best=0.1963
+    dengue seed42 ep41 val_pinball=0.1968 best=0.1963
+    dengue seed42 ep42 val_pinball=0.1982 best=0.1963
+    dengue seed42 ep43 val_pinball=0.1985 best=0.1963
+    dengue seed42 ep44 val_pinball=0.1970 best=0.1963
+    dengue seed42 ep45 val_pinball=0.1959 best=0.1959
+    dengue seed42 ep46 val_pinball=0.1968 best=0.1959
+    dengue seed42 ep47 val_pinball=0.1958 best=0.1958
+    dengue seed42 ep48 val_pinball=0.1958 best=0.1958
+    dengue seed42 ep49 val_pinball=0.1970 best=0.1958
+    dengue seed42 ep50 val_pinball=0.1955 best=0.1955
+    dengue seed42 ep51 val_pinball=0.1972 best=0.1955
+    dengue seed42 ep52 val_pinball=0.1948 best=0.1948
+    dengue seed42 ep53 val_pinball=0.1960 best=0.1948
+    dengue seed42 ep54 val_pinball=0.1959 best=0.1948
+    dengue seed42 ep55 val_pinball=0.1958 best=0.1948
+    dengue seed42 ep56 val_pinball=0.1956 best=0.1948
+    dengue seed42 ep57 val_pinball=0.1958 best=0.1948
+    dengue seed42 ep58 val_pinball=0.1964 best=0.1948
+    dengue seed42 ep59 val_pinball=0.1957 best=0.1948
+    dengue seed42 ep60 val_pinball=0.1965 best=0.1948
+    dengue seed42 ep61 val_pinball=0.1953 best=0.1948
+    dengue seed42 ep62 val_pinball=0.1953 best=0.1948
+    dengue seed42 ep63 val_pinball=0.1960 best=0.1948
+    dengue seed42 ep64 val_pinball=0.1951 best=0.1948
+    dengue seed42 ep65 val_pinball=0.1955 best=0.1948
+    dengue seed42 ep66 val_pinball=0.1954 best=0.1948
+    dengue seed42 ep67 val_pinball=0.1962 best=0.1948
+
+----- [15/18] dengue seed52 -----
+    dengue seed52 ep00 val_pinball=0.2184 best=0.2184
+    dengue seed52 ep01 val_pinball=0.2156 best=0.2156
+    dengue seed52 ep02 val_pinball=0.2118 best=0.2118
+    dengue seed52 ep03 val_pinball=0.2126 best=0.2118
+    dengue seed52 ep04 val_pinball=0.2069 best=0.2069
+    dengue seed52 ep05 val_pinball=0.2053 best=0.2053
+    dengue seed52 ep06 val_pinball=0.2025 best=0.2025
+    dengue seed52 ep07 val_pinball=0.2044 best=0.2025
+    dengue seed52 ep08 val_pinball=0.2029 best=0.2025
+    dengue seed52 ep09 val_pinball=0.2017 best=0.2017
+    dengue seed52 ep10 val_pinball=0.2018 best=0.2017
+    dengue seed52 ep11 val_pinball=0.2005 best=0.2005
+    dengue seed52 ep12 val_pinball=0.2030 best=0.2005
+    dengue seed52 ep13 val_pinball=0.2002 best=0.2002
+    dengue seed52 ep14 val_pinball=0.2009 best=0.2002
+    dengue seed52 ep15 val_pinball=0.2008 best=0.2002
+    dengue seed52 ep16 val_pinball=0.2010 best=0.2002
+    dengue seed52 ep17 val_pinball=0.1984 best=0.1984
+    dengue seed52 ep18 val_pinball=0.1999 best=0.1984
+    dengue seed52 ep19 val_pinball=0.1989 best=0.1984
+    dengue seed52 ep20 val_pinball=0.1979 best=0.1979
+    dengue seed52 ep21 val_pinball=0.1993 best=0.1979
+    dengue seed52 ep22 val_pinball=0.2008 best=0.1979
+    dengue seed52 ep23 val_pinball=0.2015 best=0.1979
+    dengue seed52 ep24 val_pinball=0.1996 best=0.1979
+    dengue seed52 ep25 val_pinball=0.1981 best=0.1979
+    dengue seed52 ep26 val_pinball=0.1995 best=0.1979
+    dengue seed52 ep27 val_pinball=0.1998 best=0.1979
+    dengue seed52 ep28 val_pinball=0.1999 best=0.1979
+    dengue seed52 ep29 val_pinball=0.1992 best=0.1979
+    dengue seed52 ep30 val_pinball=0.1975 best=0.1975
+    dengue seed52 ep31 val_pinball=0.1982 best=0.1975
+    dengue seed52 ep32 val_pinball=0.1971 best=0.1971
+    dengue seed52 ep33 val_pinball=0.1975 best=0.1971
+    dengue seed52 ep34 val_pinball=0.1965 best=0.1965
+    dengue seed52 ep35 val_pinball=0.1966 best=0.1965
+    dengue seed52 ep36 val_pinball=0.1976 best=0.1965
+    dengue seed52 ep37 val_pinball=0.1967 best=0.1965
+    dengue seed52 ep38 val_pinball=0.1975 best=0.1965
+    dengue seed52 ep39 val_pinball=0.1963 best=0.1963
+    dengue seed52 ep40 val_pinball=0.1971 best=0.1963
+    dengue seed52 ep41 val_pinball=0.1976 best=0.1963
+    dengue seed52 ep42 val_pinball=0.1974 best=0.1963
+    dengue seed52 ep43 val_pinball=0.1976 best=0.1963
+    dengue seed52 ep44 val_pinball=0.1969 best=0.1963
+    dengue seed52 ep45 val_pinball=0.1962 best=0.1962
+    dengue seed52 ep46 val_pinball=0.1966 best=0.1962
+    dengue seed52 ep47 val_pinball=0.1970 best=0.1962
+    dengue seed52 ep48 val_pinball=0.1990 best=0.1962
+    dengue seed52 ep49 val_pinball=0.1965 best=0.1962
+    dengue seed52 ep50 val_pinball=0.1987 best=0.1962
+    dengue seed52 ep51 val_pinball=0.1964 best=0.1962
+    dengue seed52 ep52 val_pinball=0.1965 best=0.1962
+    dengue seed52 ep53 val_pinball=0.1966 best=0.1962
+    dengue seed52 ep54 val_pinball=0.1962 best=0.1962
+    dengue seed52 ep55 val_pinball=0.1960 best=0.1960
+    dengue seed52 ep56 val_pinball=0.1962 best=0.1960
+    dengue seed52 ep57 val_pinball=0.1962 best=0.1960
+    dengue seed52 ep58 val_pinball=0.1956 best=0.1956
+    dengue seed52 ep59 val_pinball=0.1955 best=0.1955
+    dengue seed52 ep60 val_pinball=0.1966 best=0.1955
+    dengue seed52 ep61 val_pinball=0.1952 best=0.1952
+    dengue seed52 ep62 val_pinball=0.1959 best=0.1952
+    dengue seed52 ep63 val_pinball=0.1963 best=0.1952
+    dengue seed52 ep64 val_pinball=0.1963 best=0.1952
+    dengue seed52 ep65 val_pinball=0.1960 best=0.1952
+    dengue seed52 ep66 val_pinball=0.1954 best=0.1952
+    dengue seed52 ep67 val_pinball=0.1960 best=0.1952
+    dengue seed52 ep68 val_pinball=0.1964 best=0.1952
+    dengue seed52 ep69 val_pinball=0.1961 best=0.1952
+    dengue seed52 ep70 val_pinball=0.1956 best=0.1952
+    dengue seed52 ep71 val_pinball=0.1956 best=0.1952
+    dengue seed52 ep72 val_pinball=0.1955 best=0.1952
+    dengue seed52 ep73 val_pinball=0.1956 best=0.1952
+    dengue seed52 ep74 val_pinball=0.1957 best=0.1952
+    dengue seed52 ep75 val_pinball=0.1957 best=0.1952
+    dengue seed52 ep76 val_pinball=0.1957 best=0.1952
+
+----- [16/18] dengue seed62 -----
+    dengue seed62 ep00 val_pinball=0.2212 best=0.2212
+    dengue seed62 ep01 val_pinball=0.2156 best=0.2156
+    dengue seed62 ep02 val_pinball=0.2129 best=0.2129
+    dengue seed62 ep03 val_pinball=0.2096 best=0.2096
+    dengue seed62 ep04 val_pinball=0.2080 best=0.2080
+    dengue seed62 ep05 val_pinball=0.2053 best=0.2053
+    dengue seed62 ep06 val_pinball=0.2077 best=0.2053
+    dengue seed62 ep07 val_pinball=0.2039 best=0.2039
+    dengue seed62 ep08 val_pinball=0.2018 best=0.2018
+    dengue seed62 ep09 val_pinball=0.2026 best=0.2018
+    dengue seed62 ep10 val_pinball=0.2024 best=0.2018
+    dengue seed62 ep11 val_pinball=0.2024 best=0.2018
+    dengue seed62 ep12 val_pinball=0.2002 best=0.2002
+    dengue seed62 ep13 val_pinball=0.1999 best=0.1999
+    dengue seed62 ep14 val_pinball=0.2022 best=0.1999
+    dengue seed62 ep15 val_pinball=0.1988 best=0.1988
+    dengue seed62 ep16 val_pinball=0.1999 best=0.1988
+    dengue seed62 ep17 val_pinball=0.1976 best=0.1976
+    dengue seed62 ep18 val_pinball=0.1994 best=0.1976
+    dengue seed62 ep19 val_pinball=0.1985 best=0.1976
+    dengue seed62 ep20 val_pinball=0.1990 best=0.1976
+    dengue seed62 ep21 val_pinball=0.1999 best=0.1976
+    dengue seed62 ep22 val_pinball=0.1992 best=0.1976
+    dengue seed62 ep23 val_pinball=0.1977 best=0.1976
+    dengue seed62 ep24 val_pinball=0.1972 best=0.1972
+    dengue seed62 ep25 val_pinball=0.1970 best=0.1970
+    dengue seed62 ep26 val_pinball=0.1979 best=0.1970
+    dengue seed62 ep27 val_pinball=0.1995 best=0.1970
+    dengue seed62 ep28 val_pinball=0.1971 best=0.1970
+    dengue seed62 ep29 val_pinball=0.1978 best=0.1970
+    dengue seed62 ep30 val_pinball=0.1978 best=0.1970
+    dengue seed62 ep31 val_pinball=0.1968 best=0.1968
+    dengue seed62 ep32 val_pinball=0.1983 best=0.1968
+    dengue seed62 ep33 val_pinball=0.1966 best=0.1966
+    dengue seed62 ep34 val_pinball=0.1973 best=0.1966
+    dengue seed62 ep35 val_pinball=0.1968 best=0.1966
+    dengue seed62 ep36 val_pinball=0.1988 best=0.1966
+    dengue seed62 ep37 val_pinball=0.1988 best=0.1966
+    dengue seed62 ep38 val_pinball=0.1976 best=0.1966
+    dengue seed62 ep39 val_pinball=0.1973 best=0.1966
+    dengue seed62 ep40 val_pinball=0.1954 best=0.1954
+    dengue seed62 ep41 val_pinball=0.1952 best=0.1952
+    dengue seed62 ep42 val_pinball=0.1963 best=0.1952
+    dengue seed62 ep43 val_pinball=0.1954 best=0.1952
+    dengue seed62 ep44 val_pinball=0.1984 best=0.1952
+    dengue seed62 ep45 val_pinball=0.1969 best=0.1952
+    dengue seed62 ep46 val_pinball=0.1957 best=0.1952
+    dengue seed62 ep47 val_pinball=0.1959 best=0.1952
+    dengue seed62 ep48 val_pinball=0.1965 best=0.1952
+    dengue seed62 ep49 val_pinball=0.1971 best=0.1952
+    dengue seed62 ep50 val_pinball=0.1963 best=0.1952
+    dengue seed62 ep51 val_pinball=0.1963 best=0.1952
+    dengue seed62 ep52 val_pinball=0.1965 best=0.1952
+    dengue seed62 ep53 val_pinball=0.1960 best=0.1952
+    dengue seed62 ep54 val_pinball=0.1965 best=0.1952
+    dengue seed62 ep55 val_pinball=0.1958 best=0.1952
+    dengue seed62 ep56 val_pinball=0.1969 best=0.1952
+
+----- [17/18] dengue seed72 -----
+    dengue seed72 ep00 val_pinball=0.2189 best=0.2189
+    dengue seed72 ep01 val_pinball=0.2166 best=0.2166
+    dengue seed72 ep02 val_pinball=0.2117 best=0.2117
+    dengue seed72 ep03 val_pinball=0.2086 best=0.2086
+    dengue seed72 ep04 val_pinball=0.2069 best=0.2069
+    dengue seed72 ep05 val_pinball=0.2059 best=0.2059
+    dengue seed72 ep06 val_pinball=0.2060 best=0.2059
+    dengue seed72 ep07 val_pinball=0.2061 best=0.2059
+    dengue seed72 ep08 val_pinball=0.2033 best=0.2033
+    dengue seed72 ep09 val_pinball=0.2015 best=0.2015
+    dengue seed72 ep10 val_pinball=0.2015 best=0.2015
+    dengue seed72 ep11 val_pinball=0.2006 best=0.2006
+    dengue seed72 ep12 val_pinball=0.2020 best=0.2006
+    dengue seed72 ep13 val_pinball=0.1993 best=0.1993
+    dengue seed72 ep14 val_pinball=0.1993 best=0.1993
+    dengue seed72 ep15 val_pinball=0.2016 best=0.1993
+    dengue seed72 ep16 val_pinball=0.2014 best=0.1993
+    dengue seed72 ep17 val_pinball=0.2002 best=0.1993
+    dengue seed72 ep18 val_pinball=0.1994 best=0.1993
+    dengue seed72 ep19 val_pinball=0.1981 best=0.1981
+    dengue seed72 ep20 val_pinball=0.1999 best=0.1981
+    dengue seed72 ep21 val_pinball=0.2006 best=0.1981
+    dengue seed72 ep22 val_pinball=0.2000 best=0.1981
+    dengue seed72 ep23 val_pinball=0.1979 best=0.1979
+    dengue seed72 ep24 val_pinball=0.1981 best=0.1979
+    dengue seed72 ep25 val_pinball=0.2020 best=0.1979
+    dengue seed72 ep26 val_pinball=0.1985 best=0.1979
+    dengue seed72 ep27 val_pinball=0.1993 best=0.1979
+    dengue seed72 ep28 val_pinball=0.2010 best=0.1979
+    dengue seed72 ep29 val_pinball=0.1973 best=0.1973
+    dengue seed72 ep30 val_pinball=0.1986 best=0.1973
+    dengue seed72 ep31 val_pinball=0.2009 best=0.1973
+    dengue seed72 ep32 val_pinball=0.1982 best=0.1973
+    dengue seed72 ep33 val_pinball=0.1972 best=0.1972
+    dengue seed72 ep34 val_pinball=0.1979 best=0.1972
+    dengue seed72 ep35 val_pinball=0.1967 best=0.1967
+    dengue seed72 ep36 val_pinball=0.1992 best=0.1967
+    dengue seed72 ep37 val_pinball=0.1989 best=0.1967
+    dengue seed72 ep38 val_pinball=0.1970 best=0.1967
+    dengue seed72 ep39 val_pinball=0.1964 best=0.1964
+    dengue seed72 ep40 val_pinball=0.1980 best=0.1964
+    dengue seed72 ep41 val_pinball=0.1978 best=0.1964
+    dengue seed72 ep42 val_pinball=0.1959 best=0.1959
+    dengue seed72 ep43 val_pinball=0.1971 best=0.1959
+    dengue seed72 ep44 val_pinball=0.1959 best=0.1959
+    dengue seed72 ep45 val_pinball=0.1968 best=0.1959
+    dengue seed72 ep46 val_pinball=0.1964 best=0.1959
+    dengue seed72 ep47 val_pinball=0.1975 best=0.1959
+    dengue seed72 ep48 val_pinball=0.1978 best=0.1959
+    dengue seed72 ep49 val_pinball=0.1980 best=0.1959
+    dengue seed72 ep50 val_pinball=0.1968 best=0.1959
+    dengue seed72 ep51 val_pinball=0.1968 best=0.1959
+    dengue seed72 ep52 val_pinball=0.1960 best=0.1959
+    dengue seed72 ep53 val_pinball=0.1974 best=0.1959
+    dengue seed72 ep54 val_pinball=0.1964 best=0.1959
+    dengue seed72 ep55 val_pinball=0.1967 best=0.1959
+    dengue seed72 ep56 val_pinball=0.1963 best=0.1959
+    dengue seed72 ep57 val_pinball=0.1965 best=0.1959
+    dengue seed72 ep58 val_pinball=0.1958 best=0.1958
+    dengue seed72 ep59 val_pinball=0.1962 best=0.1958
+    dengue seed72 ep60 val_pinball=0.1956 best=0.1956
+    dengue seed72 ep61 val_pinball=0.1967 best=0.1956
+    dengue seed72 ep62 val_pinball=0.1964 best=0.1956
+    dengue seed72 ep63 val_pinball=0.1958 best=0.1956
+    dengue seed72 ep64 val_pinball=0.1960 best=0.1956
+    dengue seed72 ep65 val_pinball=0.1963 best=0.1956
+    dengue seed72 ep66 val_pinball=0.1962 best=0.1956
+    dengue seed72 ep67 val_pinball=0.1959 best=0.1956
+    dengue seed72 ep68 val_pinball=0.1963 best=0.1956
+    dengue seed72 ep69 val_pinball=0.1965 best=0.1956
+    dengue seed72 ep70 val_pinball=0.1959 best=0.1956
+    dengue seed72 ep71 val_pinball=0.1958 best=0.1956
+    dengue seed72 ep72 val_pinball=0.1959 best=0.1956
+    dengue seed72 ep73 val_pinball=0.1959 best=0.1956
+    dengue seed72 ep74 val_pinball=0.1959 best=0.1956
+    dengue seed72 ep75 val_pinball=0.1958 best=0.1956
+
+----- [18/18] dengue seed82 -----
+    dengue seed82 ep00 val_pinball=0.2229 best=0.2229
+    dengue seed82 ep01 val_pinball=0.2148 best=0.2148
+    dengue seed82 ep02 val_pinball=0.2117 best=0.2117
+    dengue seed82 ep03 val_pinball=0.2067 best=0.2067
+    dengue seed82 ep04 val_pinball=0.2083 best=0.2067
+    dengue seed82 ep05 val_pinball=0.2078 best=0.2067
+    dengue seed82 ep06 val_pinball=0.2079 best=0.2067
+    dengue seed82 ep07 val_pinball=0.2057 best=0.2057
+    dengue seed82 ep08 val_pinball=0.2003 best=0.2003
+    dengue seed82 ep09 val_pinball=0.1993 best=0.1993
+    dengue seed82 ep10 val_pinball=0.2007 best=0.1993
+    dengue seed82 ep11 val_pinball=0.2051 best=0.1993
+    dengue seed82 ep12 val_pinball=0.2025 best=0.1993
+    dengue seed82 ep13 val_pinball=0.1998 best=0.1993
+    dengue seed82 ep14 val_pinball=0.1982 best=0.1982
+    dengue seed82 ep15 val_pinball=0.1989 best=0.1982
+    dengue seed82 ep16 val_pinball=0.1972 best=0.1972
+    dengue seed82 ep17 val_pinball=0.1995 best=0.1972
+    dengue seed82 ep18 val_pinball=0.2003 best=0.1972
+    dengue seed82 ep19 val_pinball=0.1995 best=0.1972
+    dengue seed82 ep20 val_pinball=0.1982 best=0.1972
+    dengue seed82 ep21 val_pinball=0.1976 best=0.1972
+    dengue seed82 ep22 val_pinball=0.2000 best=0.1972
+    dengue seed82 ep23 val_pinball=0.2009 best=0.1972
+    dengue seed82 ep24 val_pinball=0.1983 best=0.1972
+    dengue seed82 ep25 val_pinball=0.1972 best=0.1972
+    dengue seed82 ep26 val_pinball=0.1992 best=0.1972
+    dengue seed82 ep27 val_pinball=0.1987 best=0.1972
+    dengue seed82 ep28 val_pinball=0.1973 best=0.1972
+    dengue seed82 ep29 val_pinball=0.1957 best=0.1957
+    dengue seed82 ep30 val_pinball=0.1956 best=0.1956
+    dengue seed82 ep31 val_pinball=0.1977 best=0.1956
+    dengue seed82 ep32 val_pinball=0.1958 best=0.1956
+    dengue seed82 ep33 val_pinball=0.1968 best=0.1956
+    dengue seed82 ep34 val_pinball=0.1965 best=0.1956
+    dengue seed82 ep35 val_pinball=0.1979 best=0.1956
+    dengue seed82 ep36 val_pinball=0.1962 best=0.1956
+    dengue seed82 ep37 val_pinball=0.1974 best=0.1956
+    dengue seed82 ep38 val_pinball=0.1977 best=0.1956
+    dengue seed82 ep39 val_pinball=0.1972 best=0.1956
+    dengue seed82 ep40 val_pinball=0.1957 best=0.1956
+    dengue seed82 ep41 val_pinball=0.1968 best=0.1956
+    dengue seed82 ep42 val_pinball=0.1969 best=0.1956
+    dengue seed82 ep43 val_pinball=0.1959 best=0.1956
+    dengue seed82 ep44 val_pinball=0.1976 best=0.1956
+    dengue seed82 ep45 val_pinball=0.1953 best=0.1953
+    dengue seed82 ep46 val_pinball=0.1965 best=0.1953
+    dengue seed82 ep47 val_pinball=0.1970 best=0.1953
+    dengue seed82 ep48 val_pinball=0.1960 best=0.1953
+    dengue seed82 ep49 val_pinball=0.1950 best=0.1950
+    dengue seed82 ep50 val_pinball=0.1953 best=0.1950
+    dengue seed82 ep51 val_pinball=0.1955 best=0.1950
+    dengue seed82 ep52 val_pinball=0.1963 best=0.1950
+    dengue seed82 ep53 val_pinball=0.1959 best=0.1950
+    dengue seed82 ep54 val_pinball=0.1966 best=0.1950
+    dengue seed82 ep55 val_pinball=0.1949 best=0.1949
+    dengue seed82 ep56 val_pinball=0.1957 best=0.1949
+    dengue seed82 ep57 val_pinball=0.1953 best=0.1949
+    dengue seed82 ep58 val_pinball=0.1950 best=0.1949
+    dengue seed82 ep59 val_pinball=0.1960 best=0.1949
+    dengue seed82 ep60 val_pinball=0.1949 best=0.1949
+    dengue seed82 ep61 val_pinball=0.1947 best=0.1947
+    dengue seed82 ep62 val_pinball=0.1953 best=0.1947
+    dengue seed82 ep63 val_pinball=0.1960 best=0.1947
+    dengue seed82 ep64 val_pinball=0.1953 best=0.1947
+    dengue seed82 ep65 val_pinball=0.1954 best=0.1947
+    dengue seed82 ep66 val_pinball=0.1950 best=0.1947
+    dengue seed82 ep67 val_pinball=0.1951 best=0.1947
+    dengue seed82 ep68 val_pinball=0.1955 best=0.1947
+    dengue seed82 ep69 val_pinball=0.1954 best=0.1947
+    dengue seed82 ep70 val_pinball=0.1955 best=0.1947
+    dengue seed82 ep71 val_pinball=0.1954 best=0.1947
+    dengue seed82 ep72 val_pinball=0.1954 best=0.1947
+    dengue seed82 ep73 val_pinball=0.1953 best=0.1947
+    dengue seed82 ep74 val_pinball=0.1954 best=0.1947
+    dengue seed82 ep75 val_pinball=0.1952 best=0.1947
+    dengue seed82 ep76 val_pinball=0.1951 best=0.1947
+
+================================================================================================
+dataset                   seed |  worst repro delta |             at | cells | mins
+================================================================================================
+influenza_us-regions        62 |            65.823% | h3 peak_timing |    28 |   1.8
+influenza_us-regions        72 |            12.748% | h15 peak_timing |    28 |   2.6
+influenza_us-regions        82 |            27.069% | h5 peak_timing |    28 |   2.5
+influenza_japan             42 |             0.716% | h15 peak_intensity |    28 |   2.4
+influenza_japan             52 |             4.959% | h5 peak_intensity |    28 |   1.0
+influenza_japan             62 |             3.820% | h5 peak_timing |    28 |   2.9
+influenza_japan             72 |             0.785% | h10 peak_intensity |    28 |   3.0
+influenza_japan             82 |             3.199% | h5 peak_intensity |    28 |   1.7
+influenza_us-states         42 |             3.819% | h5 peak_timing |    28 |   2.2
+influenza_us-states         52 |            22.669% | h5 peak_timing |    28 |   1.3
+influenza_us-states         62 |             1.331% | h3 peak_intensity |    28 |   1.4
+influenza_us-states         72 |             1.264% | h5 peak_intensity |    28 |   2.3
+influenza_us-states         82 |             0.896% | h3 peak_intensity |    28 |   2.0
+dengue                      42 |            15.453% | h3 peak_timing |    28 | 135.9
+dengue                      52 |            23.246% | h3 peak_timing |    28 | 155.9
+dengue                      62 |            27.663% | h3 peak_timing |    28 | 169.6
+dengue                      72 |            26.554% |        h15 pcc |    28 | 147.7
+dengue                      82 |            15.057% | h15 peak_timing |    28 | 150.1
+
+total 786.4 min
+epoch counts -> python epoch_budget_audit.py
+================================================================================================
+SINGLE-DISEASE EPOCH RECOVERY  1 run(s)  budget=80 epochs
+NOTE: this measures TODAY's trainer. train/loop.py has changed since these ceilings were
+      trained, so a non-zero repro delta below is expected and is itself a finding.
+================================================================================================
+
+----- [1/1] influenza_us-regions seed52 -----
+    influenza_us-regions seed52 ep00 val_pinball=0.1223 best=0.1223
+    influenza_us-regions seed52 ep01 val_pinball=0.1135 best=0.1135
+    influenza_us-regions seed52 ep02 val_pinball=0.0994 best=0.0994
+    influenza_us-regions seed52 ep03 val_pinball=0.0858 best=0.0858
+    influenza_us-regions seed52 ep04 val_pinball=0.1171 best=0.0858
+    influenza_us-regions seed52 ep05 val_pinball=0.1027 best=0.0858
+    influenza_us-regions seed52 ep06 val_pinball=0.1019 best=0.0858
+    influenza_us-regions seed52 ep07 val_pinball=0.0911 best=0.0858
+    influenza_us-regions seed52 ep08 val_pinball=0.0906 best=0.0858
+    influenza_us-regions seed52 ep09 val_pinball=0.0987 best=0.0858
+    influenza_us-regions seed52 ep10 val_pinball=0.0918 best=0.0858
+    influenza_us-regions seed52 ep11 val_pinball=0.1049 best=0.0858
+    influenza_us-regions seed52 ep12 val_pinball=0.0948 best=0.0858
+    influenza_us-regions seed52 ep13 val_pinball=0.1686 best=0.0858
+    influenza_us-regions seed52 ep14 val_pinball=0.1295 best=0.0858
+    influenza_us-regions seed52 ep15 val_pinball=0.1055 best=0.0858
+    influenza_us-regions seed52 ep16 val_pinball=0.1323 best=0.0858
+    influenza_us-regions seed52 ep17 val_pinball=0.1081 best=0.0858
+    influenza_us-regions seed52 ep18 val_pinball=0.1130 best=0.0858
+[run-complete] influenza_us-regions seed52
+
+================================================================================================
+dataset                   seed |  worst repro delta |             at | cells | mins
+================================================================================================
+influenza_us-regions        52 |              exact |      h15 nrmse |    28 |   1.8
+
+total 1.8 min
+epoch counts -> python epoch_budget_audit.py
+
+===== recover influenza_us-regions seed52 :: 2026-08-08 04:10:00 =====
+================================================================================================
+SINGLE-DISEASE EPOCH RECOVERY  1 run(s)  budget=80 epochs
+NOTE: this measures TODAY's trainer. train/loop.py has changed since these ceilings were
+      trained, so a non-zero repro delta below is expected and is itself a finding.
+================================================================================================
+
+----- [1/1] influenza_us-regions seed52 -----
+    influenza_us-regions seed52 ep00 val_pinball=0.1223 best=0.1223
+    influenza_us-regions seed52 ep01 val_pinball=0.1135 best=0.1135
+    influenza_us-regions seed52 ep02 val_pinball=0.0994 best=0.0994
+    influenza_us-regions seed52 ep03 val_pinball=0.0858 best=0.0858
+    influenza_us-regions seed52 ep04 val_pinball=0.1171 best=0.0858
+    influenza_us-regions seed52 ep05 val_pinball=0.1027 best=0.0858
+    influenza_us-regions seed52 ep06 val_pinball=0.1019 best=0.0858
+    influenza_us-regions seed52 ep07 val_pinball=0.0911 best=0.0858
+    influenza_us-regions seed52 ep08 val_pinball=0.0906 best=0.0858
+    influenza_us-regions seed52 ep09 val_pinball=0.0987 best=0.0858
+    influenza_us-regions seed52 ep10 val_pinball=0.0918 best=0.0858
+    influenza_us-regions seed52 ep11 val_pinball=0.1049 best=0.0858
+    influenza_us-regions seed52 ep12 val_pinball=0.0948 best=0.0858
+    influenza_us-regions seed52 ep13 val_pinball=0.1686 best=0.0858
+    influenza_us-regions seed52 ep14 val_pinball=0.1295 best=0.0858
+    influenza_us-regions seed52 ep15 val_pinball=0.1055 best=0.0858
+    influenza_us-regions seed52 ep16 val_pinball=0.1323 best=0.0858
+    influenza_us-regions seed52 ep17 val_pinball=0.1081 best=0.0858
+    influenza_us-regions seed52 ep18 val_pinball=0.1130 best=0.0858
+[run-complete] influenza_us-regions seed52
+
+================================================================================================
+dataset                   seed |  worst repro delta |             at | cells | mins
+================================================================================================
+influenza_us-regions        52 |              exact |      h15 nrmse |    28 |   1.8
+
+total 1.8 min
+epoch counts -> python epoch_budget_audit.py
+ok  results/ untouched (954 artifacts fingerprinted, none changed)

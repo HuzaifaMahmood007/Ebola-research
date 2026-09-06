@@ -1,0 +1,16 @@
+per-node  node-mean var: 0.0000
+pooled    node-mean var: 0.5772   (ebola_L12 = 0.6550)
+  seed 42 done: h3=108.6  h5=133.4  h10=139.5  h15=139.2
+  seed 52 done: h3=105.0  h5=128.5  h10=136.6  h15=139.2
+  seed 62 done: h3=113.5  h5=128.7  h10=135.9  h15=139.9
+  seed 72 done: h3=111.5  h5=128.5  h10=149.8  h15=142.3
+  seed 82 done: h3=110.5  h5=129.4  h10=141.0  h15=136.9
+
+  h |   per-node (released) |           pooled |  cost of pooling
+  3 |        111.1 +-   4.2 |     109.8 +-  3.2 |     -1.3    -1.1%
+  5 |        135.6 +-   3.9 |     129.7 +-  2.1 |     -5.9    -4.3%
+ 10 |        156.3 +-   5.9 |     140.6 +-  5.6 |    -15.7   -10.1%
+ 15 |        158.2 +-   6.1 |     139.5 +-  1.9 |    -18.7   -11.8%
+
+mean cost of pooled normalisation: -6.8%  (range -11.8% .. -1.1%)
+READ AS: this is roughly how much of Ebola's difficulty is our scaler rather than the disease.

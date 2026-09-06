@@ -1,0 +1,141 @@
+LDO3: 1 fold(s) x 1 seed(s) = 1 runs | trunk_steps=91000 epochs=80 trunk_patience=999 prefix=encoder_ldo3full
+
+=== encoder_ldo3full fold: held-out DISEASE=influenza (['influenza_japan', 'influenza_us-regions', 'influenza_us-states'])
+    trunk on ['dengue', 'covid'] = ['dengue', 'covid_us-states']  adapter_groups=[0, 1]  seed=42 ===
+    trunk(-42) step  1000 val=0.1810 best=0.1810
+    trunk(-42) step  2000 val=0.1820 best=0.1810
+    trunk(-42) step  3000 val=0.1792 best=0.1792
+    trunk(-42) step  4000 val=0.1822 best=0.1792
+    trunk(-42) step  5000 val=0.1779 best=0.1779
+    trunk(-42) step  6000 val=0.1806 best=0.1779
+    trunk(-42) step  7000 val=0.1768 best=0.1768
+    trunk(-42) step  8000 val=0.1791 best=0.1768
+    trunk(-42) step  9000 val=0.1798 best=0.1768
+    trunk(-42) step 10000 val=0.1820 best=0.1768
+    trunk(-42) step 11000 val=0.1818 best=0.1768
+    trunk(-42) step 12000 val=0.1821 best=0.1768
+    trunk(-42) step 13000 val=0.1827 best=0.1768
+    trunk(-42) step 14000 val=0.1840 best=0.1768
+    trunk(-42) step 15000 val=0.1844 best=0.1768
+    trunk(-42) step 16000 val=0.1847 best=0.1768
+    trunk(-42) step 17000 val=0.1849 best=0.1768
+    trunk(-42) step 18000 val=0.1831 best=0.1768
+    trunk(-42) step 19000 val=0.1889 best=0.1768
+    trunk(-42) step 20000 val=0.1868 best=0.1768
+    trunk(-42) step 21000 val=0.1850 best=0.1768
+    trunk(-42) step 22000 val=0.1884 best=0.1768
+    trunk(-42) step 23000 val=0.1887 best=0.1768
+    trunk(-42) step 24000 val=0.1878 best=0.1768
+    trunk(-42) step 25000 val=0.1863 best=0.1768
+    trunk(-42) step 26000 val=0.1905 best=0.1768
+    trunk(-42) step 27000 val=0.1839 best=0.1768
+    trunk(-42) step 28000 val=0.1889 best=0.1768
+    trunk(-42) step 29000 val=0.1860 best=0.1768
+    trunk(-42) step 30000 val=0.1906 best=0.1768
+    trunk(-42) step 31000 val=0.1891 best=0.1768
+    trunk(-42) step 32000 val=0.1865 best=0.1768
+    trunk(-42) step 33000 val=0.1878 best=0.1768
+    trunk(-42) step 34000 val=0.1885 best=0.1768
+    trunk(-42) step 35000 val=0.1914 best=0.1768
+    trunk(-42) step 36000 val=0.1876 best=0.1768
+    trunk(-42) step 37000 val=0.1878 best=0.1768
+    trunk(-42) step 38000 val=0.1907 best=0.1768
+    trunk(-42) step 39000 val=0.1860 best=0.1768
+    trunk(-42) step 40000 val=0.1889 best=0.1768
+    trunk(-42) step 41000 val=0.1896 best=0.1768
+    trunk(-42) step 42000 val=0.1898 best=0.1768
+    trunk(-42) step 43000 val=0.1900 best=0.1768
+    trunk(-42) step 44000 val=0.1879 best=0.1768
+    trunk(-42) step 45000 val=0.1902 best=0.1768
+    trunk(-42) step 46000 val=0.1883 best=0.1768
+    trunk(-42) step 47000 val=0.1888 best=0.1768
+    trunk(-42) step 48000 val=0.1892 best=0.1768
+    trunk(-42) step 49000 val=0.1891 best=0.1768
+    trunk(-42) step 50000 val=0.1901 best=0.1768
+    trunk(-42) step 51000 val=0.1923 best=0.1768
+    trunk(-42) step 52000 val=0.1885 best=0.1768
+    trunk(-42) step 53000 val=0.1929 best=0.1768
+    trunk(-42) step 54000 val=0.1904 best=0.1768
+    trunk(-42) step 55000 val=0.1922 best=0.1768
+    trunk(-42) step 56000 val=0.1906 best=0.1768
+    trunk(-42) step 57000 val=0.1893 best=0.1768
+    trunk(-42) step 58000 val=0.1902 best=0.1768
+    trunk(-42) step 59000 val=0.1884 best=0.1768
+    trunk(-42) step 60000 val=0.1904 best=0.1768
+    trunk(-42) step 61000 val=0.1893 best=0.1768
+    trunk(-42) step 62000 val=0.1917 best=0.1768
+    trunk(-42) step 63000 val=0.1913 best=0.1768
+    trunk(-42) step 64000 val=0.1920 best=0.1768
+    trunk(-42) step 65000 val=0.1912 best=0.1768
+    trunk(-42) step 66000 val=0.1915 best=0.1768
+    trunk(-42) step 67000 val=0.1919 best=0.1768
+    trunk(-42) step 68000 val=0.1911 best=0.1768
+    trunk(-42) step 69000 val=0.1911 best=0.1768
+    trunk(-42) step 70000 val=0.1916 best=0.1768
+    trunk(-42) step 71000 val=0.1918 best=0.1768
+    trunk(-42) step 72000 val=0.1923 best=0.1768
+    trunk(-42) step 73000 val=0.1912 best=0.1768
+    trunk(-42) step 74000 val=0.1921 best=0.1768
+    trunk(-42) step 75000 val=0.1923 best=0.1768
+    trunk(-42) step 76000 val=0.1914 best=0.1768
+    trunk(-42) step 77000 val=0.1920 best=0.1768
+    trunk(-42) step 78000 val=0.1918 best=0.1768
+    trunk(-42) step 79000 val=0.1919 best=0.1768
+    trunk(-42) step 80000 val=0.1922 best=0.1768
+    trunk(-42) step 81000 val=0.1916 best=0.1768
+    trunk(-42) step 82000 val=0.1922 best=0.1768
+    trunk(-42) step 83000 val=0.1926 best=0.1768
+    trunk(-42) step 84000 val=0.1921 best=0.1768
+    trunk(-42) step 85000 val=0.1922 best=0.1768
+    trunk(-42) step 86000 val=0.1921 best=0.1768
+    trunk(-42) step 87000 val=0.1920 best=0.1768
+    trunk(-42) step 88000 val=0.1920 best=0.1768
+    trunk(-42) step 89000 val=0.1920 best=0.1768
+    trunk(-42) step 90000 val=0.1921 best=0.1768
+    trunk(-42) step 91000 val=0.1921 best=0.1768
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1940 best=0.1940
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1706 best=0.1706
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1631 best=0.1631
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1568 best=0.1568
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1483 best=0.1483
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1480 best=0.1480
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1485 best=0.1480
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1443 best=0.1443
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1427 best=0.1427
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1434 best=0.1427
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1432 best=0.1427
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1448 best=0.1427
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1459 best=0.1427
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1444 best=0.1427
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1416 best=0.1416
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1415 best=0.1415
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1400 best=0.1400
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1452 best=0.1400
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1404 best=0.1400
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1412 best=0.1400
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1393 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1397 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1407 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1418 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1407 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1386 best=0.1386
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1415 best=0.1386
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1405 best=0.1386
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1381 best=0.1381
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1365 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1395 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1386 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1389 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1402 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1376 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1405 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1412 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1392 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1401 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1404 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1402 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1403 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1383 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1405 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1401 best=0.1365
+LDO3 done in 161.0 min

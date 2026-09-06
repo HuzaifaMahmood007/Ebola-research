@@ -1,0 +1,64 @@
+loading archived LDO3 quantiles (adapted arm, 5 panels x 5 seeds)
+  loaded dengue                   2885 origin-steps over 5 seeds
+  loaded influenza_japan          460 origin-steps over 5 seeds
+  loaded influenza_us-regions     1115 origin-steps over 5 seeds
+  loaded influenza_us-states      480 origin-steps over 5 seeds
+  loaded covid_us-states          185 origin-steps over 5 seeds
+
+=== IN-SAMPLE (fit on all 5 panels, scored on the same 5) -- the frozen artefact ===
+panel                    h        n  lambda |  raw cov     +lam     +ACI |      raw w     +lam w     +ACI w   inf%
+dengue                   3  2045685   0.195 |    0.749    0.798    0.887 |       91.0      126.4      944.7    0.0
+dengue                   5  2055130   0.181 |    0.741    0.786    0.889 |       85.4      116.3      973.0    0.0
+dengue                  10  2081750   0.414 |    0.710    0.784    0.888 |       61.2      111.9      736.1    0.0
+dengue                  15  2110900   0.458 |    0.678    0.759    0.892 |       44.1       84.5      510.1    0.0
+influenza_japan          3    21620   0.195 |    0.899    0.954    0.922 |     1661.9     2308.5     1810.7    0.0
+influenza_japan          5    22090   0.181 |    0.900    0.956    0.921 |     1763.8     2401.8     1895.6    0.0
+influenza_japan         10    23265   0.414 |    0.882    0.947    0.920 |     1544.0     2823.7     2018.1    0.0
+influenza_japan         15    24440   0.458 |    0.887    0.950    0.927 |     1438.4     2757.2     2013.4    0.0
+influenza_us-regions     3    11150   0.195 |    0.918    0.954    0.907 |     1947.8     2705.6     1887.0    0.0
+influenza_us-regions     5    11250   0.181 |    0.904    0.944    0.906 |     2262.3     3080.6     2252.8    0.0
+influenza_us-regions    10    11500   0.414 |    0.862    0.949    0.905 |     2358.9     4313.9     2798.8    0.0
+influenza_us-regions    15    11750   0.458 |    0.838    0.931    0.902 |     2294.9     4399.0     3207.7    0.0
+influenza_us-states      3    23520   0.195 |    0.815    0.932    0.901 |      252.2      350.4      300.5    0.0
+influenza_us-states      5    24010   0.181 |    0.810    0.926    0.901 |      316.3      430.7      373.2    0.0
+influenza_us-states     10    25235   0.414 |    0.790    0.946    0.908 |      351.1      642.1      458.6    0.0
+influenza_us-states     15    26460   0.458 |    0.783    0.947    0.910 |      344.8      660.9      473.7    0.0
+covid_us-states          3     9065   0.195 |    0.658    0.862    0.912 |    28031.3    38938.0    51339.0    0.0
+covid_us-states          5     9555   0.181 |    0.712    0.888    0.915 |    28693.1    39071.9    44967.3    0.0
+covid_us-states         10    10780   0.414 |    0.535    0.874    0.917 |    35170.1    64316.7    78288.1    0.0
+covid_us-states         15    12005   0.458 |    0.492    0.914    0.918 |    44568.3    85429.7    85749.8    0.0
+  raw      coverage range 0.492 .. 0.918   mean abs dev from 0.90 0.124
+  +lambda  coverage range 0.759 .. 0.956   mean abs dev from 0.90 0.055
+  +ACI     coverage range 0.887 .. 0.927   mean abs dev from 0.90 0.012
+
+=== LEAVE-ONE-PANEL-OUT (fit on 4, scored on the 5th) -- what Ebola gets ===
+panel                    h        n  lambda |  raw cov     +lam     +ACI |      raw w     +lam w     +ACI w   inf%
+dengue                   3  2045685   0.105 |    0.749    0.783    0.889 |       91.0      110.0        inf    1.5
+dengue                   5  2055130   0.090 |    0.741    0.771    0.891 |       85.4      100.9        inf    1.6
+dengue                  10  2081750   0.227 |    0.710    0.761    0.890 |       61.2       89.0        inf    1.7
+dengue                  15  2110900   0.240 |    0.678    0.731    0.895 |       44.1       65.3        inf    2.6
+influenza_japan          3    21620   0.273 |    0.899    0.960    0.927 |     1661.9     2569.9     1864.3    0.0
+influenza_japan          5    22090   0.261 |    0.900    0.961    0.925 |     1763.8     2685.9     1953.4    0.0
+influenza_japan         10    23265   0.520 |    0.882    0.953    0.924 |     1544.0     3151.3     2087.8    0.0
+influenza_japan         15    24440   0.578 |    0.887    0.956    0.931 |     1438.4     3101.1     2060.3    0.0
+influenza_us-regions     3    11150   0.277 |    0.918    0.962    0.910 |     1947.8     3028.6     1918.9    0.0
+influenza_us-regions     5    11250   0.248 |    0.904    0.952    0.909 |     2262.3     3382.6     2283.7    0.0
+influenza_us-regions    10    11500   0.534 |    0.862    0.959    0.906 |     2358.9     4877.5     2833.6    0.0
+influenza_us-regions    15    11750   0.538 |    0.838    0.937    0.903 |     2294.9     4762.7     3227.0    0.0
+influenza_us-states      3    23520   0.246 |    0.815    0.942    0.902 |      252.2      376.5      302.4    0.0
+influenza_us-states      5    24010   0.219 |    0.810    0.933    0.902 |      316.3      455.0      375.9    0.0
+influenza_us-states     10    25235   0.527 |    0.790    0.956    0.910 |      351.1      721.2      467.0    0.0
+influenza_us-states     15    26460   0.582 |    0.783    0.957    0.912 |      344.8      745.9      484.6    0.0
+covid_us-states          3     9065   0.135 |    0.658    0.832    0.905 |    28031.3    35574.3    48917.6    0.0
+covid_us-states          5     9555   0.162 |    0.712    0.879    0.910 |    28693.1    37970.7    44343.7    0.0
+covid_us-states         10    10780   0.348 |    0.535    0.860    0.911 |    35170.1    59650.2    76014.7    0.0
+covid_us-states         15    12005   0.496 |    0.492    0.919    0.915 |    44568.3    88794.1    84516.4    0.0
+  raw      coverage range 0.492 .. 0.918   mean abs dev from 0.90 0.124
+  +lambda  coverage range 0.731 .. 0.962   mean abs dev from 0.90 0.066
+  +ACI     coverage range 0.889 .. 0.931   mean abs dev from 0.90 0.012
+
+frozen -> results/misc/conformal_config.json
+  gamma=0.05  alpha_1=0.1  lambda={3: 0.1945, 5: 0.1809, 10: 0.4144, 15: 0.4584}
+  sha256_content=8e2b657df2e39319be2270809e8b5f5be41d872d9b5fba773b3746764074580c
+  ACI worst case at Ebola's T=18: 0.167
+  NOTE: dev panels have 47-630 origins; Ebola has 18. The dev ACI rows are OPTIMISTIC.

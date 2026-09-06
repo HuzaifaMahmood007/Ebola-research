@@ -1,0 +1,360 @@
+[2026-08-07 22:23:35] ==============================================================================
+[2026-08-07 22:23:35] QUEUE: recovery -> capacity probe (seeds 42 52 62 72 82)
+[2026-08-07 22:23:35] waiting for PID 9676 to exit (poll 60s, giving up after 14.0 h)
+[2026-08-08 04:10:00] PID 9676 has exited
+[2026-08-08 04:10:00] single-disease recovery: 1 unfinished -> [('influenza_us-regions', 52)]
+[2026-08-08 04:10:00] START recover influenza_us-regions seed52: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m diagnostics.recover_single_epochs --dataset influenza_us-regions --seed 52 --force
+[2026-08-08 04:11:52] END   recover influenza_us-regions seed52: exit 0 after 1.9 min
+[2026-08-08 04:11:52] recovery done; 0 still unfinished
+[2026-08-08 04:11:52] START capacity probe (5 seeds): C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m diagnostics.capacity_probe --seeds 42 52 62 72 82
+[2026-08-08 17:05:51] END   capacity probe (5 seeds): exit 0 after 774.0 min
+[2026-08-08 17:05:51] QUEUE FINISHED, probe exit 0
+[2026-08-08 17:05:51] reads: Reports/Capacity_Probe_5Seed.md | python -m diagnostics.epoch_budget_audit
+[2026-08-10 20:05:37] ==============================================================================
+[2026-08-10 20:05:37] PLAN
+[2026-08-10 20:05:37]   conformal fit : skipped
+[2026-08-10 20:05:37]   ebola --all   : both arms, 5 seeds, GPU
+[2026-08-10 20:05:37]   ceilings      : 20 (dataset, seed) still missing quantiles
+[2026-08-10 20:05:37]       influenza_japan          5/5 to run
+[2026-08-10 20:05:37]       influenza_us-regions     5/5 to run
+[2026-08-10 20:05:37]       influenza_us-states      5/5 to run
+[2026-08-10 20:05:37]       dengue                   5/5 to run
+[2026-08-10 20:05:37] --dry: nothing run
+[2026-08-10 20:06:45] ==============================================================================
+[2026-08-10 20:06:45] PLAN
+[2026-08-10 20:06:45]   conformal fit : skipped
+[2026-08-10 20:06:45]   ebola --all   : both arms, 5 seeds, GPU
+[2026-08-10 20:06:45]   ceilings      : 20 (dataset, seed) still missing quantiles
+[2026-08-10 20:06:45]       influenza_japan          5/5 to run
+[2026-08-10 20:06:45]       influenza_us-regions     5/5 to run
+[2026-08-10 20:06:45]       influenza_us-states      5/5 to run
+[2026-08-10 20:06:45]       dengue                   5/5 to run
+[2026-08-10 20:06:45] --dry: nothing run
+[2026-08-10 20:09:53] ==============================================================================
+[2026-08-10 20:09:53] PLAN
+[2026-08-10 20:09:53]   conformal fit : skipped
+[2026-08-10 20:09:53]   ebola --all   : both arms, 5 seeds, GPU
+[2026-08-10 20:09:53]   ceilings      : 20 (dataset, seed) still missing quantiles
+[2026-08-10 20:09:53]       influenza_japan          5/5 to run
+[2026-08-10 20:09:53]       influenza_us-regions     5/5 to run
+[2026-08-10 20:09:53]       influenza_us-states      5/5 to run
+[2026-08-10 20:09:53]       dengue                   5/5 to run
+[2026-08-10 20:09:53] START ebola --all: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.ebola --all
+[2026-08-11 02:15:27] END   ebola --all: exit 0 after 365.6 min
+[2026-08-11 02:15:27] START ceiling influenza_japan seed42: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset influenza_japan --seed 42
+[2026-08-11 02:17:53] END   ceiling influenza_japan seed42: exit 0 after 2.4 min
+[2026-08-11 02:17:53] START ceiling influenza_japan seed52: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset influenza_japan --seed 52
+[2026-08-11 02:18:54] END   ceiling influenza_japan seed52: exit 0 after 1.0 min
+[2026-08-11 02:18:54] START ceiling influenza_japan seed62: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset influenza_japan --seed 62
+[2026-08-11 02:21:42] END   ceiling influenza_japan seed62: exit 0 after 2.8 min
+[2026-08-11 02:21:42] START ceiling influenza_japan seed72: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset influenza_japan --seed 72
+[2026-08-11 02:24:35] END   ceiling influenza_japan seed72: exit 0 after 2.9 min
+[2026-08-11 02:24:35] START ceiling influenza_japan seed82: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset influenza_japan --seed 82
+[2026-08-11 02:26:16] END   ceiling influenza_japan seed82: exit 0 after 1.7 min
+[2026-08-11 02:26:16] START ceiling influenza_us-regions seed42: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset influenza_us-regions --seed 42
+[2026-08-11 02:28:42] END   ceiling influenza_us-regions seed42: exit 0 after 2.4 min
+[2026-08-11 02:28:42] START ceiling influenza_us-regions seed52: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset influenza_us-regions --seed 52
+[2026-08-11 02:30:29] END   ceiling influenza_us-regions seed52: exit 0 after 1.8 min
+[2026-08-11 02:30:29] START ceiling influenza_us-regions seed62: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset influenza_us-regions --seed 62
+[2026-08-11 02:32:12] END   ceiling influenza_us-regions seed62: exit 0 after 1.7 min
+[2026-08-11 02:32:12] START ceiling influenza_us-regions seed72: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset influenza_us-regions --seed 72
+[2026-08-11 02:34:42] END   ceiling influenza_us-regions seed72: exit 0 after 2.5 min
+[2026-08-11 02:34:42] START ceiling influenza_us-regions seed82: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset influenza_us-regions --seed 82
+[2026-08-11 02:37:07] END   ceiling influenza_us-regions seed82: exit 0 after 2.4 min
+[2026-08-11 02:37:07] START ceiling influenza_us-states seed42: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset influenza_us-states --seed 42
+[2026-08-11 02:39:19] END   ceiling influenza_us-states seed42: exit 0 after 2.2 min
+[2026-08-11 02:39:19] START ceiling influenza_us-states seed52: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset influenza_us-states --seed 52
+[2026-08-11 02:41:29] END   ceiling influenza_us-states seed52: exit 0 after 2.2 min
+[2026-08-11 02:41:29] START ceiling influenza_us-states seed62: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset influenza_us-states --seed 62
+[2026-08-11 02:42:56] END   ceiling influenza_us-states seed62: exit 0 after 1.5 min
+[2026-08-11 02:42:56] START ceiling influenza_us-states seed72: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset influenza_us-states --seed 72
+[2026-08-11 02:45:15] END   ceiling influenza_us-states seed72: exit 0 after 2.3 min
+[2026-08-11 02:45:15] START ceiling influenza_us-states seed82: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset influenza_us-states --seed 82
+[2026-08-11 02:47:14] END   ceiling influenza_us-states seed82: exit 0 after 2.0 min
+[2026-08-11 02:47:14] START ceiling dengue seed42: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset dengue --seed 42
+[2026-08-11 05:15:47] END   ceiling dengue seed42: exit 0 after 148.6 min
+[2026-08-11 05:15:47] START ceiling dengue seed52: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset dengue --seed 52
+[2026-08-11 06:58:25] END   ceiling dengue seed52: exit 0 after 102.6 min
+[2026-08-11 06:58:25] START ceiling dengue seed62: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset dengue --seed 62
+[2026-08-11 08:44:38] END   ceiling dengue seed62: exit 0 after 106.2 min
+[2026-08-11 08:44:38] START ceiling dengue seed72: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset dengue --seed 72
+[2026-08-11 10:36:27] END   ceiling dengue seed72: exit 0 after 111.8 min
+[2026-08-11 10:36:27] START ceiling dengue seed82: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.loop --dataset dengue --seed 82
+[2026-08-11 12:59:27] END   ceiling dengue seed82: exit 0 after 143.0 min
+[2026-08-11 12:59:27] QUEUE FINISHED; 0 ceiling cells still missing quantiles
+[2026-08-11 12:59:27] next: python -m conformal --apply   (after the fit has regenerated the config)
+[2026-08-12 16:48:26] waiting for GPU: used < 1000 MB on 3 consecutive polls, 60s apart (giving up after 14.0 h)
+[2026-08-12 16:49:04] START ldo3full dengue seed42: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.lodo --ldo3 dengue --seed 42 --trunk-steps 91000 --trunk-patience 999 --prefix encoder_ldo3full
+[2026-08-12 18:00:21] END   ldo3full dengue seed42: exit 0 after 71.3 min
+[2026-08-12 18:00:21] START ldo3full covid seed42: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.lodo --ldo3 covid --seed 42 --trunk-steps 91000 --trunk-patience 999 --prefix encoder_ldo3full
+[2026-08-12 20:41:41] END   ldo3full covid seed42: exit 0 after 161.3 min
+[2026-08-12 20:41:41] START ldo3full_check: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m diagnostics.ldo3full_check
+[2026-08-12 20:41:41] END   ldo3full_check: exit 0 after 0.0 min
+[2026-08-12 20:55:15] START epi arm p0.99: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u ablation/run_epi_ablation.py --datasets influenza_japan influenza_us-regions influenza_us-states covid_us-states --quantile 0.99 --aggregator max
+[2026-08-12 22:25:23] END   epi arm p0.99: exit 0 after 90.1 min
+[2026-08-12 22:25:23] START epi arm p0.9: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u ablation/run_epi_ablation.py --datasets influenza_japan influenza_us-regions influenza_us-states covid_us-states --quantile 0.9 --aggregator max
+[2026-08-12 23:52:36] END   epi arm p0.9: exit 0 after 87.2 min
+[2026-08-12 23:52:36] START epi report p0.99: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u ablation/run_epi_ablation.py --datasets influenza_japan influenza_us-regions influenza_us-states covid_us-states --quantile 0.99 --aggregator max --report
+[2026-08-12 23:52:40] END   epi report p0.99: exit 0 after 0.1 min
+[2026-08-12 23:52:40] START epi report p0.9: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u ablation/run_epi_ablation.py --datasets influenza_japan influenza_us-regions influenza_us-states covid_us-states --quantile 0.9 --aggregator max --report
+[2026-08-12 23:52:44] END   epi report p0.9: exit 0 after 0.1 min
+[2026-08-12 23:52:44] START lookback sweep w=[12, 32]: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u ablation/window_sensitivity.py --run --panels influenza_japan influenza_us-regions influenza_us-states covid_us-states --windows 12 32
+[2026-08-13 02:21:49] END   lookback sweep w=[12, 32]: exit 0 after 149.1 min
+[2026-08-17 15:23:29] selfcheck ok: dengue last, resume reads ablation/single/, phase 2 is read-only (--apply, no --fit). 25 of 25 gate-off cells outstanding.
+[2026-08-17 15:23:34] GATE NIGHT: phase 1 = 25 of 25 gate-off cells
+[2026-08-17 15:23:34]   panels in order: ['influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states', 'dengue']   (dengue last: ~12.7 h, 96% of the job)
+[2026-08-17 15:23:34]   phase 2 = conformal --apply, lag-h ACI beside lag-1. CPU only, minutes.
+[2026-08-17 15:23:34]   DRY influenza_japan seed42
+[2026-08-17 15:23:34]   DRY influenza_japan seed52
+[2026-08-17 15:23:34]   DRY influenza_japan seed62
+[2026-08-17 15:23:34]   DRY influenza_japan seed72
+[2026-08-17 15:23:34]   DRY influenza_japan seed82
+[2026-08-17 15:23:34]   DRY influenza_us-regions seed42
+[2026-08-17 15:23:34]   DRY influenza_us-regions seed52
+[2026-08-17 15:23:34]   DRY influenza_us-regions seed62
+[2026-08-17 15:23:34]   DRY influenza_us-regions seed72
+[2026-08-17 15:23:34]   DRY influenza_us-regions seed82
+[2026-08-17 15:23:34]   DRY influenza_us-states seed42
+[2026-08-17 15:23:34]   DRY influenza_us-states seed52
+[2026-08-17 15:23:34]   DRY influenza_us-states seed62
+[2026-08-17 15:23:34]   DRY influenza_us-states seed72
+[2026-08-17 15:23:34]   DRY influenza_us-states seed82
+[2026-08-17 15:23:34]   DRY covid_us-states seed42
+[2026-08-17 15:23:34]   DRY covid_us-states seed52
+[2026-08-17 15:23:34]   DRY covid_us-states seed62
+[2026-08-17 15:23:34]   DRY covid_us-states seed72
+[2026-08-17 15:23:34]   DRY covid_us-states seed82
+[2026-08-17 15:23:34]   DRY dengue seed42
+[2026-08-17 15:23:34]   DRY dengue seed52
+[2026-08-17 15:23:34]   DRY dengue seed62
+[2026-08-17 15:23:34]   DRY dengue seed72
+[2026-08-17 15:23:34]   DRY dengue seed82
+[2026-08-17 15:23:34]   DRY phase 1: ablation/run_gate_ablation.py --datasets influenza_japan influenza_us-regions influenza_us-states covid_us-states dengue --seeds 42 52 62 72 82
+[2026-08-17 15:23:34]   DRY phase 2: conformal.py --apply
+[2026-08-17 15:24:54] selfcheck ok: dengue last, resume reads ablation/single/, phase 2 is read-only (--apply, no --fit). 25 of 25 gate-off cells outstanding.
+[2026-08-17 15:27:53] GATE NIGHT: phase 1 = 25 of 25 gate-off cells
+[2026-08-17 15:27:53]   panels in order: ['influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states', 'dengue']   (dengue last: ~12.7 h, 96% of the job)
+[2026-08-17 15:27:53]   phase 2 = conformal --apply, lag-h ACI beside lag-1. CPU only, minutes.
+[2026-08-17 15:27:53] --skip-wait: starting immediately
+[2026-08-17 15:27:53] START phase1 gate-off ablation: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u ablation/run_gate_ablation.py --datasets influenza_japan influenza_us-regions influenza_us-states covid_us-states dengue --seeds 42 52 62 72 82
+[2026-08-17 23:01:03] selfcheck ok: surface=affine (the prereg mechanism), order is seed-major with control first, resume path matches the writer. all 5 warm-start trunks present. 10 of 10 cells outstanding.
+[2026-08-17 23:01:06] ANIL NIGHT: surface=affine  10 of 10 (seed, arm) cells outstanding
+[2026-08-17 23:01:06]   order is seed-major: 42/control -> 42/anil -> 52/control -> 52/anil ...
+[2026-08-17 23:01:06]   DRY seed42 control: -m train.anil --arm control --seeds 42 --surface affine
+[2026-08-17 23:01:06]   DRY seed42 anil: -m train.anil --arm anil --seeds 42 --surface affine
+[2026-08-17 23:01:06]   DRY seed52 control: -m train.anil --arm control --seeds 52 --surface affine
+[2026-08-17 23:01:06]   DRY seed52 anil: -m train.anil --arm anil --seeds 52 --surface affine
+[2026-08-17 23:01:06]   DRY seed62 control: -m train.anil --arm control --seeds 62 --surface affine
+[2026-08-17 23:01:06]   DRY seed62 anil: -m train.anil --arm anil --seeds 62 --surface affine
+[2026-08-17 23:01:06]   DRY seed72 control: -m train.anil --arm control --seeds 72 --surface affine
+[2026-08-17 23:01:06]   DRY seed72 anil: -m train.anil --arm anil --seeds 72 --surface affine
+[2026-08-17 23:01:06]   DRY seed82 control: -m train.anil --arm control --seeds 82 --surface affine
+[2026-08-17 23:01:06]   DRY seed82 anil: -m train.anil --arm anil --seeds 82 --surface affine
+[2026-08-17 23:02:50] ANIL NIGHT: surface=affine  10 of 10 (seed, arm) cells outstanding
+[2026-08-17 23:02:50]   order is seed-major: 42/control -> 42/anil -> 52/control -> 52/anil ...
+[2026-08-17 23:02:50] waiting for GPU: used < 2000 MB on 3 consecutive polls, 60s apart (giving up after 16.0 h)
+[2026-08-18 00:30:18] END   phase1 gate-off ablation: exit 0 after 542.4 min
+[2026-08-18 00:30:18] START phase2 lag-h ACI: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u conformal.py --apply
+[2026-08-18 00:30:55] GPU used 1085 MB -- below threshold (1/3)
+[2026-08-18 00:31:17] END   phase2 lag-h ACI: exit 0 after 1.0 min
+[2026-08-18 00:31:17] DONE  phase1 exit 0, phase2 exit 0
+[2026-08-18 00:31:17]   gate table : results\reports\gate_ablation.log   (or --report to reprint without training)
+[2026-08-18 00:31:17]   ACI table  : results\reports\aci_lag.log    read the +lam and +ACIlag columns, not +ACI alone
+[2026-08-18 00:31:55] GPU used 1088 MB -- below threshold (2/3)
+[2026-08-18 00:32:55] GPU used 1087 MB -- below threshold (3/3)
+[2026-08-18 00:32:55] GPU is free
+[2026-08-18 00:32:55] START anil preflight: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --preflight --surface affine --seeds 42 52 62 72 82
+[2026-08-18 00:32:58] END   anil preflight: exit 0 after 0.1 min
+[2026-08-18 00:32:58] START anil timing probe: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --timing --surface affine --seeds 42
+[2026-08-18 00:33:09] END   anil timing probe: exit 1 after 0.2 min
+[2026-08-18 00:33:09] timing probe FAILED (exit 1) -- refusing to book an unpriced job.
+[2026-08-18 14:55:19] ANIL NIGHT: surface=affine  10 of 10 (seed, arm) cells outstanding
+[2026-08-18 14:55:19]   order is seed-major: 42/control -> 42/anil -> 52/control -> 52/anil ...
+[2026-08-18 14:55:19] --skip-wait: starting immediately
+[2026-08-18 14:55:19] START anil preflight: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --preflight --surface affine --seeds 42 52 62 72 82
+[2026-08-18 14:55:22] END   anil preflight: exit 0 after 0.1 min
+[2026-08-18 14:55:22] START anil timing probe: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --timing --surface affine --seeds 42
+[2026-08-18 14:55:40] END   anil timing probe: exit 0 after 0.3 min
+[2026-08-18 14:55:40] timing probe done. Read the projection above against --max-hours=14.0; this script does not parse it, so a wildly over-budget projection is YOUR abort.
+[2026-08-18 14:55:40] START anil seed42 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 42 --surface affine
+[2026-08-18 15:11:23] END   anil seed42 control: exit 0 after 15.7 min
+[2026-08-18 15:11:23] START anil seed42 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 42 --surface affine
+[2026-08-18 15:28:07] END   anil seed42 anil: exit 0 after 16.7 min
+[2026-08-18 15:28:07] START anil seed52 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 52 --surface affine
+[2026-08-18 15:44:23] END   anil seed52 control: exit 0 after 16.3 min
+[2026-08-18 15:44:23] START anil seed52 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 52 --surface affine
+[2026-08-18 16:01:09] END   anil seed52 anil: exit 0 after 16.8 min
+[2026-08-18 16:01:09] START anil seed62 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 62 --surface affine
+[2026-08-18 16:18:23] END   anil seed62 control: exit 0 after 17.2 min
+[2026-08-18 16:18:23] START anil seed62 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 62 --surface affine
+[2026-08-18 16:35:27] END   anil seed62 anil: exit 0 after 17.1 min
+[2026-08-18 16:35:27] START anil seed72 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 72 --surface affine
+[2026-08-18 16:50:18] END   anil seed72 control: exit 0 after 14.9 min
+[2026-08-18 16:50:18] START anil seed72 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 72 --surface affine
+[2026-08-18 17:05:47] END   anil seed72 anil: exit 0 after 15.5 min
+[2026-08-18 17:05:47] START anil seed82 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 82 --surface affine
+[2026-08-18 17:22:22] END   anil seed82 control: exit 0 after 16.6 min
+[2026-08-18 17:22:22] START anil seed82 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 82 --surface affine
+[2026-08-18 17:39:34] END   anil seed82 anil: exit 0 after 17.2 min
+[2026-08-18 17:39:34] START anil report: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --surface affine --report
+[2026-08-18 17:39:37] END   anil report: exit 0 after 0.0 min
+[2026-08-18 17:39:37] DONE  matched pairs complete: [42, 52, 62, 72, 82] (5 of 5)
+[2026-08-18 17:39:37]   log: results\reports\anil_night.log
+[2026-09-03 22:50:35] selfcheck ok: surface=affine (the prereg mechanism), order is seed-major with control first, resume path matches the writer for every fold and no two folds share one. all 20 warm-start trunks present.
+[2026-09-03 22:50:35]   fold=dengue2flu: 0 of 10 cells outstanding
+[2026-09-03 22:50:35]   fold=dengue: 10 of 10 cells outstanding
+[2026-09-03 22:50:35]   fold=influenza: 10 of 10 cells outstanding
+[2026-09-03 22:50:35]   fold=covid: 10 of 10 cells outstanding
+[2026-09-03 22:51:10] ANIL NIGHT: surface=affine  folds=['dengue', 'covid']  20 of 20 (fold, seed, arm) cells outstanding
+[2026-09-03 22:51:10]   fold=dengue: meta-train ['influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states'] -> meta-test ['dengue']  (10 cells outstanding)
+[2026-09-03 22:51:10]   fold=covid: meta-train ['dengue', 'influenza_japan', 'influenza_us-regions', 'influenza_us-states'] -> meta-test ['covid_us-states']  (10 cells outstanding)
+[2026-09-03 22:51:10]   order is fold-major then seed-major: dengue/42/control -> dengue/42/anil -> dengue/52/control -> dengue/52/anil ...
+[2026-09-03 22:51:10]   DRY dengue seed42 control: -m train.anil --arm control --seeds 42 --surface affine --fold dengue
+[2026-09-03 22:51:10]   DRY dengue seed42 anil: -m train.anil --arm anil --seeds 42 --surface affine --fold dengue
+[2026-09-03 22:51:10]   DRY dengue seed52 control: -m train.anil --arm control --seeds 52 --surface affine --fold dengue
+[2026-09-03 22:51:10]   DRY dengue seed52 anil: -m train.anil --arm anil --seeds 52 --surface affine --fold dengue
+[2026-09-03 22:51:10]   DRY dengue seed62 control: -m train.anil --arm control --seeds 62 --surface affine --fold dengue
+[2026-09-03 22:51:10]   DRY dengue seed62 anil: -m train.anil --arm anil --seeds 62 --surface affine --fold dengue
+[2026-09-03 22:51:10]   DRY dengue seed72 control: -m train.anil --arm control --seeds 72 --surface affine --fold dengue
+[2026-09-03 22:51:10]   DRY dengue seed72 anil: -m train.anil --arm anil --seeds 72 --surface affine --fold dengue
+[2026-09-03 22:51:10]   DRY dengue seed82 control: -m train.anil --arm control --seeds 82 --surface affine --fold dengue
+[2026-09-03 22:51:10]   DRY dengue seed82 anil: -m train.anil --arm anil --seeds 82 --surface affine --fold dengue
+[2026-09-03 22:51:10]   DRY covid seed42 control: -m train.anil --arm control --seeds 42 --surface affine --fold covid
+[2026-09-03 22:51:10]   DRY covid seed42 anil: -m train.anil --arm anil --seeds 42 --surface affine --fold covid
+[2026-09-03 22:51:10]   DRY covid seed52 control: -m train.anil --arm control --seeds 52 --surface affine --fold covid
+[2026-09-03 22:51:10]   DRY covid seed52 anil: -m train.anil --arm anil --seeds 52 --surface affine --fold covid
+[2026-09-03 22:51:10]   DRY covid seed62 control: -m train.anil --arm control --seeds 62 --surface affine --fold covid
+[2026-09-03 22:51:10]   DRY covid seed62 anil: -m train.anil --arm anil --seeds 62 --surface affine --fold covid
+[2026-09-03 22:51:10]   DRY covid seed72 control: -m train.anil --arm control --seeds 72 --surface affine --fold covid
+[2026-09-03 22:51:10]   DRY covid seed72 anil: -m train.anil --arm anil --seeds 72 --surface affine --fold covid
+[2026-09-03 22:51:10]   DRY covid seed82 control: -m train.anil --arm control --seeds 82 --surface affine --fold covid
+[2026-09-03 22:51:10]   DRY covid seed82 anil: -m train.anil --arm anil --seeds 82 --surface affine --fold covid
+[2026-09-03 23:29:11] ANIL NIGHT: surface=affine  folds=['influenza', 'covid', 'dengue']  30 of 30 (fold, seed, arm) cells outstanding
+[2026-09-03 23:29:11]   fold=influenza: meta-train ['dengue', 'covid_us-states'] -> meta-test ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']  (10 cells outstanding)
+[2026-09-03 23:29:11]   fold=covid: meta-train ['dengue', 'influenza_japan', 'influenza_us-regions', 'influenza_us-states'] -> meta-test ['covid_us-states']  (10 cells outstanding)
+[2026-09-03 23:29:11]   fold=dengue: meta-train ['influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states'] -> meta-test ['dengue']  (10 cells outstanding)
+[2026-09-03 23:29:11]   order is fold-major then seed-major: influenza/42/control -> influenza/42/anil -> influenza/52/control -> influenza/52/anil ...
+[2026-09-03 23:29:11]   DRY influenza seed42 control: -m train.anil --arm control --seeds 42 --surface affine --fold influenza
+[2026-09-03 23:29:11]   DRY influenza seed42 anil: -m train.anil --arm anil --seeds 42 --surface affine --fold influenza
+[2026-09-03 23:29:11]   DRY influenza seed52 control: -m train.anil --arm control --seeds 52 --surface affine --fold influenza
+[2026-09-03 23:29:11]   DRY influenza seed52 anil: -m train.anil --arm anil --seeds 52 --surface affine --fold influenza
+[2026-09-03 23:29:11]   DRY influenza seed62 control: -m train.anil --arm control --seeds 62 --surface affine --fold influenza
+[2026-09-03 23:29:11]   DRY influenza seed62 anil: -m train.anil --arm anil --seeds 62 --surface affine --fold influenza
+[2026-09-03 23:29:11]   DRY influenza seed72 control: -m train.anil --arm control --seeds 72 --surface affine --fold influenza
+[2026-09-03 23:29:11]   DRY influenza seed72 anil: -m train.anil --arm anil --seeds 72 --surface affine --fold influenza
+[2026-09-03 23:29:11]   DRY influenza seed82 control: -m train.anil --arm control --seeds 82 --surface affine --fold influenza
+[2026-09-03 23:29:11]   DRY influenza seed82 anil: -m train.anil --arm anil --seeds 82 --surface affine --fold influenza
+[2026-09-03 23:29:11]   DRY covid seed42 control: -m train.anil --arm control --seeds 42 --surface affine --fold covid
+[2026-09-03 23:29:11]   DRY covid seed42 anil: -m train.anil --arm anil --seeds 42 --surface affine --fold covid
+[2026-09-03 23:29:11]   DRY covid seed52 control: -m train.anil --arm control --seeds 52 --surface affine --fold covid
+[2026-09-03 23:29:11]   DRY covid seed52 anil: -m train.anil --arm anil --seeds 52 --surface affine --fold covid
+[2026-09-03 23:29:11]   DRY covid seed62 control: -m train.anil --arm control --seeds 62 --surface affine --fold covid
+[2026-09-03 23:29:11]   DRY covid seed62 anil: -m train.anil --arm anil --seeds 62 --surface affine --fold covid
+[2026-09-03 23:29:11]   DRY covid seed72 control: -m train.anil --arm control --seeds 72 --surface affine --fold covid
+[2026-09-03 23:29:11]   DRY covid seed72 anil: -m train.anil --arm anil --seeds 72 --surface affine --fold covid
+[2026-09-03 23:29:11]   DRY covid seed82 control: -m train.anil --arm control --seeds 82 --surface affine --fold covid
+[2026-09-03 23:29:11]   DRY covid seed82 anil: -m train.anil --arm anil --seeds 82 --surface affine --fold covid
+[2026-09-03 23:29:11]   DRY dengue seed42 control: -m train.anil --arm control --seeds 42 --surface affine --fold dengue
+[2026-09-03 23:29:11]   DRY dengue seed42 anil: -m train.anil --arm anil --seeds 42 --surface affine --fold dengue
+[2026-09-03 23:29:11]   DRY dengue seed52 control: -m train.anil --arm control --seeds 52 --surface affine --fold dengue
+[2026-09-03 23:29:11]   DRY dengue seed52 anil: -m train.anil --arm anil --seeds 52 --surface affine --fold dengue
+[2026-09-03 23:29:11]   DRY dengue seed62 control: -m train.anil --arm control --seeds 62 --surface affine --fold dengue
+[2026-09-03 23:29:11]   DRY dengue seed62 anil: -m train.anil --arm anil --seeds 62 --surface affine --fold dengue
+[2026-09-03 23:29:11]   DRY dengue seed72 control: -m train.anil --arm control --seeds 72 --surface affine --fold dengue
+[2026-09-03 23:29:11]   DRY dengue seed72 anil: -m train.anil --arm anil --seeds 72 --surface affine --fold dengue
+[2026-09-03 23:29:11]   DRY dengue seed82 control: -m train.anil --arm control --seeds 82 --surface affine --fold dengue
+[2026-09-03 23:29:11]   DRY dengue seed82 anil: -m train.anil --arm anil --seeds 82 --surface affine --fold dengue
+[2026-09-03 23:32:39] ANIL NIGHT: surface=affine  folds=['influenza', 'covid', 'dengue']  30 of 30 (fold, seed, arm) cells outstanding
+[2026-09-03 23:32:39]   fold=influenza: meta-train ['dengue', 'covid_us-states'] -> meta-test ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']  (10 cells outstanding)
+[2026-09-03 23:32:39]   fold=covid: meta-train ['dengue', 'influenza_japan', 'influenza_us-regions', 'influenza_us-states'] -> meta-test ['covid_us-states']  (10 cells outstanding)
+[2026-09-03 23:32:39]   fold=dengue: meta-train ['influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states'] -> meta-test ['dengue']  (10 cells outstanding)
+[2026-09-03 23:32:39]   order is fold-major then seed-major: influenza/42/control -> influenza/42/anil -> influenza/52/control -> influenza/52/anil ...
+[2026-09-03 23:32:39] waiting for GPU: used < 2000 MB on 3 consecutive polls, 60s apart (giving up after 16.0 h)
+[2026-09-03 23:32:39] GPU used 1534 MB -- below threshold (1/3)
+[2026-09-03 23:33:39] GPU used 1529 MB -- below threshold (2/3)
+[2026-09-03 23:34:39] GPU used 1534 MB -- below threshold (3/3)
+[2026-09-03 23:34:39] GPU is free
+[2026-09-03 23:34:39] START anil preflight influenza: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --preflight --surface affine --fold influenza --seeds 42 52 62 72 82
+[2026-09-03 23:34:42] END   anil preflight influenza: exit 0 after 0.1 min
+[2026-09-03 23:34:42] START anil preflight covid: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --preflight --surface affine --fold covid --seeds 42 52 62 72 82
+[2026-09-03 23:34:45] END   anil preflight covid: exit 0 after 0.1 min
+[2026-09-03 23:34:45] START anil preflight dengue: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --preflight --surface affine --fold dengue --seeds 42 52 62 72 82
+[2026-09-03 23:34:48] END   anil preflight dengue: exit 0 after 0.0 min
+[2026-09-03 23:34:48] START anil timing probe influenza: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --timing --surface affine --fold influenza --seeds 42
+[2026-09-03 23:35:07] END   anil timing probe influenza: exit 0 after 0.3 min
+[2026-09-03 23:35:07] timing probe done. Read the projection above against --max-hours=14.0; this script does not parse it, so a wildly over-budget projection is YOUR abort.
+[2026-09-03 23:35:07] START anil influenza seed42 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 42 --surface affine --fold influenza
+[2026-09-03 23:48:07] END   anil influenza seed42 control: exit 0 after 13.0 min
+[2026-09-03 23:48:07] START anil influenza seed42 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 42 --surface affine --fold influenza
+[2026-09-04 00:07:13] END   anil influenza seed42 anil: exit 0 after 19.1 min
+[2026-09-04 00:07:13] START anil influenza seed52 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 52 --surface affine --fold influenza
+[2026-09-04 00:25:53] END   anil influenza seed52 control: exit 0 after 18.7 min
+[2026-09-04 00:25:53] START anil influenza seed52 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 52 --surface affine --fold influenza
+[2026-09-04 00:42:25] END   anil influenza seed52 anil: exit 0 after 16.5 min
+[2026-09-04 00:42:25] START anil influenza seed62 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 62 --surface affine --fold influenza
+[2026-09-04 00:56:01] END   anil influenza seed62 control: exit 0 after 13.6 min
+[2026-09-04 00:56:01] START anil influenza seed62 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 62 --surface affine --fold influenza
+[2026-09-04 01:10:46] END   anil influenza seed62 anil: exit 0 after 14.7 min
+[2026-09-04 01:10:46] START anil influenza seed72 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 72 --surface affine --fold influenza
+[2026-09-04 01:20:14] END   anil influenza seed72 control: exit 0 after 9.5 min
+[2026-09-04 01:20:14] START anil influenza seed72 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 72 --surface affine --fold influenza
+[2026-09-04 01:28:36] END   anil influenza seed72 anil: exit 0 after 8.4 min
+[2026-09-04 01:28:36] START anil influenza seed82 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 82 --surface affine --fold influenza
+[2026-09-04 01:51:01] END   anil influenza seed82 control: exit 0 after 22.4 min
+[2026-09-04 01:51:01] START anil influenza seed82 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 82 --surface affine --fold influenza
+[2026-09-04 02:15:45] END   anil influenza seed82 anil: exit 0 after 24.7 min
+[2026-09-04 02:15:45] START anil covid seed42 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 42 --surface affine --fold covid
+[2026-09-04 02:24:48] END   anil covid seed42 control: exit 0 after 9.1 min
+[2026-09-04 02:24:48] START anil covid seed42 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 42 --surface affine --fold covid
+[2026-09-04 02:32:59] END   anil covid seed42 anil: exit 0 after 8.2 min
+[2026-09-04 02:32:59] START anil covid seed52 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 52 --surface affine --fold covid
+[2026-09-04 02:39:53] END   anil covid seed52 control: exit 0 after 6.9 min
+[2026-09-04 02:39:53] START anil covid seed52 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 52 --surface affine --fold covid
+[2026-09-04 02:50:52] END   anil covid seed52 anil: exit 0 after 11.0 min
+[2026-09-04 02:50:52] START anil covid seed62 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 62 --surface affine --fold covid
+[2026-09-04 02:56:25] END   anil covid seed62 control: exit 0 after 5.6 min
+[2026-09-04 02:56:25] START anil covid seed62 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 62 --surface affine --fold covid
+[2026-09-04 03:02:30] END   anil covid seed62 anil: exit 0 after 6.1 min
+[2026-09-04 03:02:30] START anil covid seed72 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 72 --surface affine --fold covid
+[2026-09-04 03:06:35] END   anil covid seed72 control: exit 0 after 4.1 min
+[2026-09-04 03:06:35] START anil covid seed72 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 72 --surface affine --fold covid
+[2026-09-04 03:13:52] END   anil covid seed72 anil: exit 0 after 7.3 min
+[2026-09-04 03:13:52] START anil covid seed82 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 82 --surface affine --fold covid
+[2026-09-04 03:22:35] END   anil covid seed82 control: exit 0 after 8.7 min
+[2026-09-04 03:22:35] START anil covid seed82 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 82 --surface affine --fold covid
+[2026-09-04 03:33:22] END   anil covid seed82 anil: exit 0 after 10.8 min
+[2026-09-04 03:33:22] START anil dengue seed42 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 42 --surface affine --fold dengue
+[2026-09-04 04:19:37] END   anil dengue seed42 control: exit 0 after 46.2 min
+[2026-09-04 04:19:37] START anil dengue seed42 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 42 --surface affine --fold dengue
+[2026-09-04 05:07:23] END   anil dengue seed42 anil: exit 0 after 47.8 min
+[2026-09-04 05:07:23] START anil dengue seed52 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 52 --surface affine --fold dengue
+[2026-09-04 06:01:04] END   anil dengue seed52 control: exit 0 after 53.7 min
+[2026-09-04 06:01:04] START anil dengue seed52 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 52 --surface affine --fold dengue
+[2026-09-04 06:56:27] END   anil dengue seed52 anil: exit 0 after 55.4 min
+[2026-09-04 06:56:27] START anil dengue seed62 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 62 --surface affine --fold dengue
+[2026-09-04 07:33:42] END   anil dengue seed62 control: exit 0 after 37.2 min
+[2026-09-04 07:33:42] START anil dengue seed62 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 62 --surface affine --fold dengue
+[2026-09-04 08:12:00] END   anil dengue seed62 anil: exit 0 after 38.3 min
+[2026-09-04 08:12:00] START anil dengue seed72 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 72 --surface affine --fold dengue
+[2026-09-04 09:07:57] END   anil dengue seed72 control: exit 0 after 56.0 min
+[2026-09-04 09:07:57] START anil dengue seed72 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 72 --surface affine --fold dengue
+[2026-09-04 10:17:31] END   anil dengue seed72 anil: exit 0 after 69.6 min
+[2026-09-04 10:17:31] START anil dengue seed82 control: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm control --seeds 82 --surface affine --fold dengue
+[2026-09-04 10:52:11] END   anil dengue seed82 control: exit 0 after 34.7 min
+[2026-09-04 10:52:11] START anil dengue seed82 anil: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --arm anil --seeds 82 --surface affine --fold dengue
+[2026-09-04 11:29:16] END   anil dengue seed82 anil: exit 0 after 37.1 min
+[2026-09-04 11:29:16] START anil report influenza: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --surface affine --fold influenza --report
+[2026-09-04 11:29:19] END   anil report influenza: exit 0 after 0.0 min
+[2026-09-04 11:29:19] DONE fold=influenza  matched pairs complete: [42, 52, 62, 72, 82] (5 of 5)
+[2026-09-04 11:29:19] START anil report covid: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --surface affine --fold covid --report
+[2026-09-04 11:29:22] END   anil report covid: exit 0 after 0.0 min
+[2026-09-04 11:29:22] DONE fold=covid  matched pairs complete: [42, 52, 62, 72, 82] (5 of 5)
+[2026-09-04 11:29:22] START anil report dengue: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.anil --surface affine --fold dengue --report
+[2026-09-04 11:29:24] END   anil report dengue: exit 0 after 0.0 min
+[2026-09-04 11:29:24] DONE fold=dengue  matched pairs complete: [42, 52, 62, 72, 82] (5 of 5)
+[2026-09-04 11:29:24]   log: results\reports\anil_night.log
+[2026-09-06 21:41:22] ANIL NIGHT: surface=affine  folds=['influenza', 'covid', 'dengue']  0 of 30 (fold, seed, arm) cells outstanding
+[2026-09-06 21:41:22]   fold=influenza: meta-train ['dengue', 'covid_us-states'] -> meta-test ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']  (0 cells outstanding)
+[2026-09-06 21:41:22]   fold=covid: meta-train ['dengue', 'influenza_japan', 'influenza_us-regions', 'influenza_us-states'] -> meta-test ['covid_us-states']  (0 cells outstanding)
+[2026-09-06 21:41:22]   fold=dengue: meta-train ['influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states'] -> meta-test ['dengue']  (0 cells outstanding)
+[2026-09-06 21:41:22]   order is fold-major then seed-major: 

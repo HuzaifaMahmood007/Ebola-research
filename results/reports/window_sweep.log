@@ -1,0 +1,181 @@
+
+===== lookback sweep w=[12, 32] :: 2026-08-12 23:52:44 =====
+
+w=12: 20 of 20 cells to train  (rf=32)
+  w12 influenza_japan seed42 done in 6.4 min
+  w12 influenza_japan seed52 done in 2.6 min
+  w12 influenza_japan seed62 done in 3.8 min
+  w12 influenza_japan seed72 done in 4.3 min
+  w12 influenza_japan seed82 done in 3.0 min
+  w12 influenza_us-regions seed42 done in 4.5 min
+  w12 influenza_us-regions seed52 done in 3.7 min
+  w12 influenza_us-regions seed62 done in 4.1 min
+  w12 influenza_us-regions seed72 done in 5.8 min
+  w12 influenza_us-regions seed82 done in 4.1 min
+  w12 influenza_us-states seed42 done in 4.3 min
+  w12 influenza_us-states seed52 done in 7.3 min
+  w12 influenza_us-states seed62 done in 5.0 min
+  w12 influenza_us-states seed72 done in 4.2 min
+  w12 influenza_us-states seed82 done in 6.9 min
+  w12 covid_us-states seed42 done in 1.2 min
+  w12 covid_us-states seed52 done in 0.9 min
+  w12 covid_us-states seed62 done in 1.1 min
+  w12 covid_us-states seed72 done in 1.1 min
+  w12 covid_us-states seed82 done in 1.1 min
+
+w=32: 20 of 20 cells to train  (rf=32)
+  w32 influenza_japan seed42 done in 5.6 min
+  w32 influenza_japan seed52 done in 5.8 min
+  w32 influenza_japan seed62 done in 5.9 min
+  w32 influenza_japan seed72 done in 5.8 min
+  w32 influenza_japan seed82 done in 6.2 min
+  w32 influenza_us-regions seed42 done in 4.2 min
+  w32 influenza_us-regions seed52 done in 4.0 min
+  w32 influenza_us-regions seed62 done in 4.4 min
+  w32 influenza_us-regions seed72 done in 4.2 min
+  w32 influenza_us-regions seed82 done in 3.8 min
+  w32 influenza_us-states seed42 done in 4.0 min
+  w32 influenza_us-states seed52 done in 3.2 min
+  w32 influenza_us-states seed62 done in 4.9 min
+  w32 influenza_us-states seed72 done in 3.4 min
+  w32 influenza_us-states seed82 done in 4.6 min
+  w32 covid_us-states seed42 done in 0.7 min
+  w32 covid_us-states seed52 done in 0.7 min
+  w32 covid_us-states seed62 done in 0.8 min
+  w32 covid_us-states seed72 done in 0.7 min
+  w32 covid_us-states seed82 done in 0.8 min
+
+========================================================================================================
+LOOKBACK SENSITIVITY :: reference = the released w=20 run, SAME seed (paired)
+========================================================================================================
+
+  influenza_japan   field=node_mean
+    RMSE (lower=better)
+        w |             this w |                w20 |           paired d |   h | verdict
+       12 |   616.686 +-39.647 |   666.249 +-73.188 |   -49.563 +-91.839 |   3 | within noise (n=5)
+       12 |   722.006 +-24.836 |   765.404 +-18.834 |   -43.397 +-37.154 |   5 | w12 BETTER (n=5)
+       12 |   936.014 +-78.491 |  1062.794 +-20.882 |  -126.780 +-78.945 |  10 | w12 BETTER (n=5)
+       12 |   893.765 +-57.797 |  1034.971 +-31.196 |  -141.206 +-74.292 |  15 | w12 BETTER (n=5)
+       32 |   725.861 +-21.782 |   666.249 +-73.188 |   +59.613 +-92.405 |   3 | within noise (n=5)
+       32 |   848.195 +-14.565 |   765.404 +-18.834 |   +82.791 +-23.301 |   5 | w32 WORSE (n=5)
+       32 |  1128.503 +-43.914 |  1062.794 +-20.882 |   +65.709 +-26.426 |  10 | w32 WORSE (n=5)
+       32 |  1181.945 +-50.224 |  1034.971 +-31.196 |  +146.973 +-68.890 |  15 | w32 WORSE (n=5)
+    MAE (lower=better)
+        w |             this w |                w20 |           paired d |   h | verdict
+       12 |   220.064 +-14.046 |   242.624 +-32.962 |   -22.560 +-40.212 |   3 | within noise (n=5)
+       12 |   278.344 +-10.074 |   294.732 +- 7.275 |   -16.388 +-14.754 |   5 | w12 BETTER (n=5)
+       12 |   392.106 +-32.787 |   444.117 +- 8.789 |   -52.011 +-36.449 |  10 | w12 BETTER (n=5)
+       12 |   394.771 +-22.172 |   444.600 +-13.253 |   -49.828 +-28.998 |  15 | w12 BETTER (n=5)
+       32 |   262.287 +- 8.339 |   242.624 +-32.962 |   +19.664 +-37.550 |   3 | within noise (n=5)
+       32 |   327.310 +- 5.683 |   294.732 +- 7.275 |   +32.578 +- 9.599 |   5 | w32 WORSE (n=5)
+       32 |   475.907 +-15.275 |   444.117 +- 8.789 |   +31.790 +- 9.817 |  10 | w32 WORSE (n=5)
+       32 |   499.911 +-18.274 |   444.600 +-13.253 |   +55.312 +-24.440 |  15 | w32 WORSE (n=5)
+    PCC (higher=better)
+        w |             this w |                w20 |           paired d |   h | verdict
+       12 |     0.901 +- 0.016 |     0.872 +- 0.040 |    +0.029 +- 0.047 |   3 | within noise (n=5)
+       12 |     0.915 +- 0.017 |     0.899 +- 0.022 |    +0.016 +- 0.020 |   5 | within noise (n=5)
+       12 |     0.880 +- 0.015 |     0.844 +- 0.006 |    +0.036 +- 0.020 |  10 | w12 BETTER (n=5)
+       12 |     0.873 +- 0.031 |     0.837 +- 0.020 |    +0.036 +- 0.044 |  15 | within noise (n=5)
+       32 |     0.851 +- 0.012 |     0.872 +- 0.040 |    -0.021 +- 0.048 |   3 | within noise (n=5)
+       32 |     0.885 +- 0.009 |     0.899 +- 0.022 |    -0.014 +- 0.029 |   5 | within noise (n=5)
+       32 |     0.825 +- 0.015 |     0.844 +- 0.006 |    -0.018 +- 0.020 |  10 | within noise (n=5)
+       32 |     0.773 +- 0.038 |     0.837 +- 0.020 |    -0.063 +- 0.048 |  15 | w32 WORSE (n=5)
+
+  influenza_us-regions   field=node_mean
+    RMSE (lower=better)
+        w |             this w |                w20 |           paired d |   h | verdict
+       12 |   561.144 +-30.834 |   573.580 +-45.785 |   -12.437 +-56.127 |   3 | within noise (n=5)
+       12 |   678.215 +-48.756 |   682.047 +-63.250 |    -3.833 +-70.158 |   5 | within noise (n=5)
+       12 |   760.112 +-50.430 |   761.432 +-72.811 |    -1.320 +-56.903 |  10 | within noise (n=5)
+       12 |   788.219 +-59.334 |   774.423 +-92.829 |   +13.796 +-52.353 |  15 | within noise (n=5)
+       32 |   586.410 +-15.626 |   573.580 +-45.785 |   +12.830 +-39.664 |   3 | within noise (n=5)
+       32 |   664.757 +-39.029 |   682.047 +-63.250 |   -17.291 +-88.779 |   5 | within noise (n=5)
+       32 |   734.384 +-41.842 |   761.432 +-72.811 |   -27.048 +-37.357 |  10 | within noise (n=5)
+       32 |   788.080 +-59.116 |   774.423 +-92.829 |   +13.657 +-92.210 |  15 | within noise (n=5)
+    MAE (lower=better)
+        w |             this w |                w20 |           paired d |   h | verdict
+       12 |   340.003 +-32.793 |   358.316 +-40.833 |   -18.314 +-45.672 |   3 | within noise (n=5)
+       12 |   433.536 +-33.296 |   432.156 +-58.893 |    +1.380 +-64.292 |   5 | within noise (n=5)
+       12 |   510.891 +-34.901 |   494.178 +-59.813 |   +16.713 +-48.040 |  10 | within noise (n=5)
+       12 |   538.658 +-44.082 |   509.962 +-74.054 |   +28.695 +-45.692 |  15 | within noise (n=5)
+       32 |   382.253 +-14.871 |   358.316 +-40.833 |   +23.936 +-31.898 |   3 | within noise (n=5)
+       32 |   429.816 +-33.470 |   432.156 +-58.893 |    -2.340 +-78.413 |   5 | within noise (n=5)
+       32 |   490.987 +-34.153 |   494.178 +-59.813 |    -3.191 +-36.294 |  10 | within noise (n=5)
+       32 |   528.740 +-52.087 |   509.962 +-74.054 |   +18.778 +-79.514 |  15 | within noise (n=5)
+    PCC (higher=better)
+        w |             this w |                w20 |           paired d |   h | verdict
+       12 |     0.841 +- 0.027 |     0.824 +- 0.032 |    +0.017 +- 0.042 |   3 | within noise (n=5)
+       12 |     0.754 +- 0.039 |     0.743 +- 0.044 |    +0.011 +- 0.050 |   5 | within noise (n=5)
+       12 |     0.685 +- 0.047 |     0.702 +- 0.059 |    -0.017 +- 0.038 |  10 | within noise (n=5)
+       12 |     0.648 +- 0.055 |     0.662 +- 0.110 |    -0.014 +- 0.071 |  15 | within noise (n=5)
+       32 |     0.815 +- 0.014 |     0.824 +- 0.032 |    -0.009 +- 0.029 |   3 | within noise (n=5)
+       32 |     0.757 +- 0.043 |     0.743 +- 0.044 |    +0.014 +- 0.077 |   5 | within noise (n=5)
+       32 |     0.698 +- 0.051 |     0.702 +- 0.059 |    -0.004 +- 0.024 |  10 | within noise (n=5)
+       32 |     0.644 +- 0.072 |     0.662 +- 0.110 |    -0.019 +- 0.091 |  15 | within noise (n=5)
+
+  influenza_us-states   field=node_mean
+    RMSE (lower=better)
+        w |             this w |                w20 |           paired d |   h | verdict
+       12 |   104.075 +- 1.734 |   108.725 +- 3.172 |    -4.649 +- 4.287 |   3 | w12 BETTER (n=5)
+       12 |   127.669 +- 3.148 |   134.351 +- 3.346 |    -6.683 +- 3.989 |   5 | w12 BETTER (n=5)
+       12 |   158.397 +- 7.459 |   161.086 +- 4.225 |    -2.690 +-10.451 |  10 | within noise (n=5)
+       12 |   164.130 +- 5.445 |   162.303 +- 5.077 |    +1.827 +- 8.242 |  15 | within noise (n=5)
+       32 |   112.924 +- 5.563 |   108.725 +- 3.172 |    +4.199 +- 6.085 |   3 | within noise (n=5)
+       32 |   134.157 +- 6.519 |   134.351 +- 3.346 |    -0.194 +- 7.327 |   5 | within noise (n=5)
+       32 |   165.550 +- 3.769 |   161.086 +- 4.225 |    +4.464 +- 6.683 |  10 | within noise (n=5)
+       32 |   166.164 +- 4.903 |   162.303 +- 5.077 |    +3.861 +- 5.907 |  15 | within noise (n=5)
+    MAE (lower=better)
+        w |             this w |                w20 |           paired d |   h | verdict
+       12 |    66.793 +- 1.761 |    69.844 +- 2.391 |    -3.052 +- 3.325 |   3 | within noise (n=5)
+       12 |    82.980 +- 2.539 |    87.075 +- 1.812 |    -4.094 +- 2.676 |   5 | w12 BETTER (n=5)
+       12 |   108.162 +- 6.277 |   108.916 +- 1.911 |    -0.754 +- 6.690 |  10 | within noise (n=5)
+       12 |   110.134 +- 3.677 |   110.581 +- 3.517 |    -0.448 +- 5.505 |  15 | within noise (n=5)
+       32 |    73.182 +- 4.241 |    69.844 +- 2.391 |    +3.338 +- 4.845 |   3 | within noise (n=5)
+       32 |    87.067 +- 4.952 |    87.075 +- 1.812 |    -0.008 +- 5.357 |   5 | within noise (n=5)
+       32 |   113.194 +- 2.356 |   108.916 +- 1.911 |    +4.278 +- 3.229 |  10 | w32 WORSE (n=5)
+       32 |   111.302 +- 2.071 |   110.581 +- 3.517 |    +0.720 +- 3.327 |  15 | within noise (n=5)
+    PCC (higher=better)
+        w |             this w |                w20 |           paired d |   h | verdict
+       12 |     0.827 +- 0.003 |     0.808 +- 0.012 |    +0.020 +- 0.012 |   3 | w12 BETTER (n=5)
+       12 |     0.744 +- 0.005 |     0.707 +- 0.015 |    +0.038 +- 0.015 |   5 | w12 BETTER (n=5)
+       12 |     0.660 +- 0.023 |     0.641 +- 0.010 |    +0.018 +- 0.032 |  10 | within noise (n=5)
+       12 |     0.629 +- 0.023 |     0.640 +- 0.026 |    -0.011 +- 0.043 |  15 | within noise (n=5)
+       32 |     0.793 +- 0.023 |     0.808 +- 0.012 |    -0.014 +- 0.030 |   3 | within noise (n=5)
+       32 |     0.698 +- 0.029 |     0.707 +- 0.015 |    -0.009 +- 0.039 |   5 | within noise (n=5)
+       32 |     0.625 +- 0.018 |     0.641 +- 0.010 |    -0.016 +- 0.024 |  10 | within noise (n=5)
+       32 |     0.631 +- 0.015 |     0.640 +- 0.026 |    -0.009 +- 0.030 |  15 | within noise (n=5)
+
+  covid_us-states   field=node_mean
+    RMSE (lower=better)
+        w |             this w |                w20 |           paired d |   h | verdict
+       12 |  6284.914 +-1164.981 |  6058.111 +-483.616 |  +226.803 +-1163.855 |   3 | within noise (n=5)
+       12 | 11247.139 +-1070.999 | 10683.311 +-1428.631 |  +563.828 +-2313.090 |   5 | within noise (n=5)
+       12 | 21479.675 +-1455.205 | 18059.034 +-4213.425 | +3420.641 +-3860.245 |  10 | within noise (n=5)
+       12 | 19329.983 +-2173.740 | 14451.019 +-479.635 | +4878.964 +-2068.797 |  15 | w12 WORSE (n=5)
+       32 | 11899.319 +-876.478 |  6058.111 +-483.616 | +5841.208 +-460.630 |   3 | w32 WORSE (n=5)
+       32 | 12516.312 +-2292.034 | 10683.311 +-1428.631 | +1833.001 +-3645.266 |   5 | within noise (n=5)
+       32 | 13923.300 +-1291.762 | 18059.034 +-4213.425 | -4135.733 +-5159.882 |  10 | within noise (n=5)
+       32 | 14245.998 +-1851.725 | 14451.019 +-479.635 |  -205.021 +-1534.797 |  15 | within noise (n=5)
+    MAE (lower=better)
+        w |             this w |                w20 |           paired d |   h | verdict
+       12 |  5096.106 +-1155.513 |  4843.402 +-528.696 |  +252.704 +-1204.410 |   3 | within noise (n=5)
+       12 |  8971.306 +-768.567 |  8378.659 +-935.794 |  +592.647 +-1586.131 |   5 | within noise (n=5)
+       12 | 15977.858 +-696.267 | 13707.492 +-2899.506 | +2270.366 +-2523.355 |  10 | within noise (n=5)
+       12 | 14866.743 +-1175.115 | 12218.222 +-510.169 | +2648.521 +-850.209 |  15 | w12 WORSE (n=5)
+       32 |  9989.732 +-580.027 |  4843.402 +-528.696 | +5146.330 +-250.058 |   3 | w32 WORSE (n=5)
+       32 | 10600.821 +-1809.752 |  8378.659 +-935.794 | +2222.162 +-2732.284 |   5 | within noise (n=5)
+       32 | 11868.910 +-970.884 | 13707.492 +-2899.506 | -1838.582 +-3634.637 |  10 | within noise (n=5)
+       32 | 11880.360 +-1592.609 | 12218.222 +-510.169 |  -337.862 +-1292.559 |  15 | within noise (n=5)
+    PCC (higher=better)
+        w |             this w |                w20 |           paired d |   h | verdict
+       12 |     0.294 +- 0.191 |     0.425 +- 0.128 |    -0.131 +- 0.110 |   3 | w12 WORSE (n=5)
+       12 |    -0.278 +- 0.064 |    -0.176 +- 0.091 |    -0.102 +- 0.077 |   5 | w12 WORSE (n=5)
+       12 |    -0.388 +- 0.019 |    -0.357 +- 0.033 |    -0.031 +- 0.037 |  10 | within noise (n=5)
+       12 |    -0.411 +- 0.028 |    -0.324 +- 0.087 |    -0.088 +- 0.064 |  15 | w12 WORSE (n=5)
+       32 |    -0.151 +- 0.184 |     0.425 +- 0.128 |    -0.576 +- 0.225 |   3 | w32 WORSE (n=5)
+       32 |    -0.375 +- 0.153 |    -0.176 +- 0.091 |    -0.199 +- 0.202 |   5 | within noise (n=5)
+       32 |    -0.498 +- 0.015 |    -0.357 +- 0.033 |    -0.141 +- 0.047 |  10 | w32 WORSE (n=5)
+       32 |    -0.440 +- 0.031 |    -0.324 +- 0.087 |    -0.117 +- 0.099 |  15 | w32 WORSE (n=5)
+
+  Both mean columns cover only the seeds present in both arms, so this w - w20 reproduces the delta column. 'within noise' = |mean| < sd across seeds.
+

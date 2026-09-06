@@ -1,0 +1,56 @@
+
+====================================================================================================
+EBOLA RMSE -- paired DISTRICT bootstrap on the node-averaged country-macro (B=10000, UNSTRATIFIED)
+====================================================================================================
+
+  ebola_L12 (PRIMARY)  few-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  -5.210 CI [ -11.906,   +0.436] n.s.  N=51
+    h3   vs support_mean  d=  -3.548 CI [  -6.250,   -0.688] WIN   N=51
+    h5   vs persistence   d=  -6.356 CI [ -14.984,   +1.308] n.s.  N=52
+    h5   vs support_mean  d=  -3.621 CI [  -6.064,   -1.682] WIN   N=52
+    h10  vs persistence   d=  -4.815 CI [ -13.409,   +6.813] n.s.  N=53
+    h10  vs support_mean  d=  +0.281 CI [  -3.817,  +10.422] n.s.  N=53
+    h15  vs persistence   d= -22.158 CI [ -45.718,   -5.594] WIN   N=50
+    h15  vs support_mean  d=  -1.101 CI [  -3.485,   +0.632] n.s.  N=50
+
+  ebola_L12 (PRIMARY)  zero-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  -6.858 CI [ -13.371,   -1.473] WIN   N=51
+    h3   vs support_mean  d=  -5.196 CI [  -7.457,   -3.222] WIN   N=51
+    h5   vs persistence   d=  -6.749 CI [ -15.314,   +0.816] n.s.  N=52
+    h5   vs support_mean  d=  -4.014 CI [  -6.003,   -2.354] WIN   N=52
+    h10  vs persistence   d=  -7.139 CI [ -14.082,   -1.935] WIN   N=53
+    h10  vs support_mean  d=  -2.043 CI [  -4.137,   -0.459] WIN   N=53
+    h15  vs persistence   d= -22.394 CI [ -46.122,   -5.749] WIN   N=50
+    h15  vs support_mean  d=  -1.338 CI [  -3.625,   +0.317] n.s.  N=50
+
+  ebola_L20 (secondary)  few-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  +3.630 CI [ -11.075,  +37.104] n.s.  N=51
+    h3   vs support_mean  d=  +5.432 CI [  -7.837,  +38.316] n.s.  N=51
+    h5   vs persistence   d=  -5.419 CI [ -13.924,   +2.080] n.s.  N=52
+    h5   vs support_mean  d=  -3.120 CI [  -8.574,   +1.081] n.s.  N=52
+    h10  vs persistence   d=  +5.574 CI [ -10.557,  +32.365] n.s.  N=53
+    h10  vs support_mean  d=  +9.901 CI [  -4.530,  +36.486] n.s.  N=53
+    h15  vs persistence   d=  -9.832 CI [ -39.532,  +16.948] n.s.  N=50
+    h15  vs support_mean  d=  +9.906 CI [  -4.541,  +31.364] n.s.  N=50
+
+  ebola_L20 (secondary)  zero-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  -8.169 CI [ -15.054,   -2.537] WIN   N=51
+    h3   vs support_mean  d=  -6.367 CI [ -11.348,   -2.446] WIN   N=51
+    h5   vs persistence   d=  -7.653 CI [ -16.145,   -0.236] WIN   N=52
+    h5   vs support_mean  d=  -5.354 CI [ -10.709,   -1.433] WIN   N=52
+    h10  vs persistence   d=  -6.633 CI [ -13.745,   -1.300] WIN   N=53
+    h10  vs support_mean  d=  -2.307 CI [  -8.134,   +2.027] n.s.  N=53
+    h15  vs persistence   d= -21.141 CI [ -45.475,   -4.209] WIN   N=50
+    h15  vs support_mean  d=  -1.404 CI [  -7.773,   +3.584] n.s.  N=50
+
+====================================================================================================
+PRE-REGISTERED CRITERION, on the reported statistic and E6's district axis
+====================================================================================================
+  h3 RMSE  d=  -5.210 CI [ -11.906,   +0.436]  spans zero
+  h5 RMSE  d=  -6.356 CI [ -14.984,   +1.308]  spans zero
+  h3 MAE   d=  -1.212 CI [  -5.434,   +2.470]  spans zero
+  h5 MAE   d=  -2.793 CI [  -8.518,   +2.313]  spans zero
+
+  VERDICT: the pre-registered positive result is NOT met, now adjudicable because point and interval share an estimand.
+
+NOTE: this interval resamples DISTRICTS. The origin axis needs per-(origin,node) sufficient stats, which the archives do not carry; E6 names both and this delivers one.

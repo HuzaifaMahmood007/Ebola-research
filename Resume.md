@@ -43,9 +43,9 @@ Four experiments, and almost every file belongs to one:
 | item | state |
 |---|---|
 | G5 explainability | **not built.** Zero attribution code in our source. Only REQUIRED goal with nothing written. |
-| Manuscript v2 | `Reports/Manuscript_v2.md`, ~13,516 words against a 12,000 limit. `Reports/` is gitignored so there is NO git safety net on it. |
+| Manuscript v2 | `Reports/Manuscript_v2.md`, ~13,628 words against a 12,000 limit. It IS git-tracked; the earlier claim that `Reports/` is ignored was wrong. |
 | COVID contradiction | **resolved 2026-09-06.** B5 amended in `progress/decisions/client_decisions.md` under the client's own Week 3 instruction (`Review Doc.md:97`). COVID is the third development disease. Ledger C1 DONE. |
-| MTGNN sentence | `Reports/Week4_Experiments_Stakeholder_Brief.md:172-174` still claims we beat MTGNN 12 of 16. MTGNN emits a constant on 47 of 80 files. Beating a constant is not evidence. |
+| MTGNN sentence | **corrected 2026-09-06.** MTGNN is excluded from the brief's head-to-head and from its naive-floor tally, with a dated correction note and a re-rendered `.docx`. Ledger C2 DONE. |
 | LDO3 zero-shot quantiles | ~10 h retrain, still a stated limitation |
 | Shuffled-adjacency control | ~6 h, now optional since the gate does not help |
 
@@ -209,7 +209,13 @@ From `Reports/Phase0_to_Now_Audit.md` (71 agents, 45 findings survived adversari
   recompute them from disk. This caught 6 stale numbers in one brief this session.
 - **Do not trust progress docs over disk.** Three times this session the doc was stale and the
   artifacts were right.
-- `/Reports/` and `/results/` are **gitignored**. Documents and logs there have no version control.
+- **`/Reports/` and `/results/` are NOT gitignored.** That claim was wrong and stood for weeks. Git
+  tracks 47 files in `Reports/`, including `Manuscript_v2.md`, and 1,650 under `results/`, of which
+  919 are in `results/lodo/`. What `.gitignore` really covers is `/docs/`, `/figs/`, `/baselines/*`,
+  `.claude/`, `CLAUDE.md`, `graphify-out/`, the ablation artifacts, and `*.log`.
+- **`*.log` was the live half of that**, and it is now half-fixed: `results/reports/*.log` is carved
+  back in as of 2026-09-06, so the 32 decision-bearing run logs have history. Logs anywhere else
+  still do not.
 
 ---
 

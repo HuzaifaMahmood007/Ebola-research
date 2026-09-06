@@ -1,0 +1,137 @@
+
+===== phase1 gate-off ablation :: 2026-08-17 15:27:53 =====
+GATE-OFF ABLATION: 25 of 25 cells to train
+  influenza_japan seed42 done in 2.4 min
+  influenza_japan seed52 done in 1.9 min
+  influenza_japan seed62 done in 1.9 min
+  influenza_japan seed72 done in 1.6 min
+  influenza_japan seed82 done in 2.7 min
+  influenza_us-regions seed42 done in 2.4 min
+  influenza_us-regions seed52 done in 2.3 min
+  influenza_us-regions seed62 done in 2.5 min
+  influenza_us-regions seed72 done in 2.4 min
+  influenza_us-regions seed82 done in 1.9 min
+  influenza_us-states seed42 done in 1.8 min
+  influenza_us-states seed52 done in 2.0 min
+  influenza_us-states seed62 done in 1.9 min
+  influenza_us-states seed72 done in 2.1 min
+  influenza_us-states seed82 done in 1.5 min
+  covid_us-states seed42 done in 0.6 min
+  covid_us-states seed52 done in 0.5 min
+  covid_us-states seed62 done in 0.4 min
+  covid_us-states seed72 done in 0.5 min
+  covid_us-states seed82 done in 0.4 min
+  dengue seed42 done in 63.8 min
+  dengue seed52 done in 103.0 min
+  dengue seed62 done in 136.6 min
+  dengue seed72 done in 90.5 min
+  dengue seed82 done in 114.9 min
+
+====================================================================================================
+GATE-OFF ABLATION :: g==0 (no spatial mixing)   model=encoder   reference = learned gate, SAME seed (paired)
+====================================================================================================
+
+  influenza_japan   field=node_mean
+    RMSE (lower=better)
+        h |       gate learned |           gate off |           paired d | verdict
+        3 |   734.888 +-58.527 |   689.623 +-23.549 |   -45.265 +-43.453 | gate HURTS (n=5)
+        5 |   841.106 +-35.417 |   779.448 +-39.179 |   -61.658 +-46.174 | gate HURTS (n=5)
+       10 |  1063.017 +-74.931 |  1001.610 +-52.004 |   -61.408 +-63.673 | within noise (n=5)
+       15 |  1031.386 +-121.019 |   999.916 +-44.264 |   -31.471 +-82.693 | within noise (n=5)
+    MAE (lower=better)
+        h |       gate learned |           gate off |           paired d | verdict
+        3 |   261.526 +-22.749 |   243.963 +-12.032 |   -17.564 +-22.239 | within noise (n=5)
+        5 |   323.461 +-10.447 |   301.335 +-13.961 |   -22.126 +-14.266 | gate HURTS (n=5)
+       10 |   444.963 +-28.834 |   420.956 +-17.019 |   -24.007 +-23.866 | gate HURTS (n=5)
+       15 |   443.764 +-43.632 |   431.896 +-17.418 |   -11.868 +-28.421 | within noise (n=5)
+    PCC (higher=better)
+        h |       gate learned |           gate off |           paired d | verdict
+        3 |     0.872 +- 0.040 |     0.879 +- 0.020 |    +0.006 +- 0.051 | within noise (n=5)
+        5 |     0.899 +- 0.022 |     0.906 +- 0.019 |    +0.008 +- 0.029 | within noise (n=5)
+       10 |     0.844 +- 0.006 |     0.855 +- 0.002 |    +0.011 +- 0.008 | gate HURTS (n=5)
+       15 |     0.837 +- 0.020 |     0.844 +- 0.018 |    +0.007 +- 0.016 | within noise (n=5)
+
+  influenza_us-regions   field=node_mean
+    RMSE (lower=better)
+        h |       gate learned |           gate off |           paired d | verdict
+        3 |   613.154 +-82.326 |   583.280 +-35.405 |   -29.874 +-49.050 | within noise (n=5)
+        5 |   728.231 +-76.318 |   703.326 +-32.367 |   -24.906 +-90.320 | within noise (n=5)
+       10 |   787.806 +-40.539 |   836.728 +-71.597 |   +48.922 +-77.676 | within noise (n=5)
+       15 |   812.798 +-68.057 |   868.142 +-32.758 |   +55.344 +-73.024 | within noise (n=5)
+    MAE (lower=better)
+        h |       gate learned |           gate off |           paired d | verdict
+        3 |   374.116 +-56.772 |   350.084 +-25.479 |   -24.032 +-31.783 | within noise (n=5)
+        5 |   451.308 +-67.698 |   431.196 +-19.540 |   -20.112 +-78.503 | within noise (n=5)
+       10 |   512.441 +-40.624 |   546.135 +-53.719 |   +33.694 +-70.073 | within noise (n=5)
+       15 |   542.326 +-54.148 |   597.338 +-27.902 |   +55.013 +-60.374 | within noise (n=5)
+    PCC (higher=better)
+        h |       gate learned |           gate off |           paired d | verdict
+        3 |     0.824 +- 0.032 |     0.831 +- 0.021 |    +0.007 +- 0.025 | within noise (n=5)
+        5 |     0.743 +- 0.044 |     0.736 +- 0.017 |    -0.007 +- 0.038 | within noise (n=5)
+       10 |     0.702 +- 0.059 |     0.640 +- 0.059 |    -0.062 +- 0.058 | GATE HELPS (n=5)
+       15 |     0.662 +- 0.110 |     0.555 +- 0.045 |    -0.107 +- 0.085 | GATE HELPS (n=5)
+
+  influenza_us-states   field=node_mean
+    RMSE (lower=better)
+        h |       gate learned |           gate off |           paired d | verdict
+        3 |   113.423 +- 3.880 |   109.940 +- 5.317 |    -3.483 +- 5.982 | within noise (n=5)
+        5 |   136.800 +- 4.307 |   134.712 +- 4.341 |    -2.088 +- 6.481 | within noise (n=5)
+       10 |   151.462 +- 1.939 |   154.710 +- 1.872 |    +3.248 +- 3.375 | within noise (n=5)
+       15 |   154.130 +- 4.164 |   156.715 +- 1.877 |    +2.585 +- 5.244 | within noise (n=5)
+    MAE (lower=better)
+        h |       gate learned |           gate off |           paired d | verdict
+        3 |    68.270 +- 1.757 |    66.427 +- 2.450 |    -1.843 +- 3.120 | within noise (n=5)
+        5 |    84.005 +- 2.051 |    81.845 +- 2.688 |    -2.161 +- 3.679 | within noise (n=5)
+       10 |    96.871 +- 1.370 |    98.691 +- 1.105 |    +1.820 +- 1.994 | within noise (n=5)
+       15 |   100.297 +- 1.841 |   102.128 +- 1.443 |    +1.831 +- 2.685 | within noise (n=5)
+    PCC (higher=better)
+        h |       gate learned |           gate off |           paired d | verdict
+        3 |     0.808 +- 0.012 |     0.803 +- 0.011 |    -0.004 +- 0.021 | within noise (n=5)
+        5 |     0.707 +- 0.015 |     0.712 +- 0.009 |    +0.005 +- 0.017 | within noise (n=5)
+       10 |     0.641 +- 0.010 |     0.618 +- 0.016 |    -0.023 +- 0.019 | GATE HELPS (n=5)
+       15 |     0.640 +- 0.026 |     0.629 +- 0.009 |    -0.010 +- 0.026 | within noise (n=5)
+
+  covid_us-states   field=node_mean
+    RMSE (lower=better)
+        h |       gate learned |           gate off |           paired d | verdict
+        3 |  5565.755 +-915.034 |  5435.618 +-531.670 |  -130.137 +-694.133 | within noise (n=5)
+        5 |  8798.302 +-841.697 |  7835.384 +-640.431 |  -962.918 +-790.682 | gate HURTS (n=5)
+       10 | 12263.816 +-1858.977 | 11949.107 +-2022.017 |  -314.709 +-1558.218 | within noise (n=5)
+       15 | 11343.231 +-1464.610 | 11903.546 +-1012.857 |  +560.315 +-1532.299 | within noise (n=5)
+    MAE (lower=better)
+        h |       gate learned |           gate off |           paired d | verdict
+        3 |  4352.600 +-806.405 |  4271.302 +-427.649 |   -81.298 +-585.241 | within noise (n=5)
+        5 |  7129.292 +-639.931 |  6392.531 +-652.300 |  -736.761 +-668.566 | gate HURTS (n=5)
+       10 |  9973.489 +-1461.983 |  9723.604 +-1642.097 |  -249.885 +-1020.179 | within noise (n=5)
+       15 |  9676.309 +-1301.582 | 10077.970 +-854.823 |  +401.661 +-1478.510 | within noise (n=5)
+    PCC (higher=better)
+        h |       gate learned |           gate off |           paired d | verdict
+        3 |     0.425 +- 0.128 |     0.367 +- 0.089 |    -0.058 +- 0.120 | within noise (n=5)
+        5 |    -0.176 +- 0.091 |    -0.115 +- 0.185 |    +0.061 +- 0.097 | within noise (n=5)
+       10 |    -0.357 +- 0.033 |    -0.349 +- 0.072 |    +0.008 +- 0.043 | within noise (n=5)
+       15 |    -0.324 +- 0.087 |    -0.313 +- 0.150 |    +0.010 +- 0.073 | within noise (n=5)
+
+  dengue   field=country_macro
+    RMSE (lower=better)
+        h |       gate learned |           gate off |           paired d | verdict
+        3 |    42.060 +- 6.039 |    37.953 +- 1.746 |    -4.108 +- 5.534 | within noise (n=5)
+        5 |    49.944 +- 6.045 |    46.244 +- 1.411 |    -3.700 +- 6.112 | within noise (n=5)
+       10 |    56.212 +- 0.619 |    55.363 +- 0.486 |    -0.849 +- 0.746 | gate HURTS (n=5)
+       15 |    57.381 +- 0.215 |    57.483 +- 0.524 |    +0.102 +- 0.675 | within noise (n=5)
+    MAE (lower=better)
+        h |       gate learned |           gate off |           paired d | verdict
+        3 |    18.371 +- 1.211 |    17.308 +- 0.603 |    -1.063 +- 1.200 | within noise (n=5)
+        5 |    22.373 +- 1.490 |    21.442 +- 0.538 |    -0.932 +- 1.675 | within noise (n=5)
+       10 |    26.609 +- 0.322 |    26.062 +- 0.332 |    -0.547 +- 0.406 | gate HURTS (n=5)
+       15 |    27.473 +- 0.207 |    27.266 +- 0.286 |    -0.206 +- 0.451 | within noise (n=5)
+    PCC (higher=better)
+        h |       gate learned |           gate off |           paired d | verdict
+        3 |     0.422 +- 0.004 |     0.392 +- 0.020 |    -0.030 +- 0.018 | GATE HELPS (n=5)
+        5 |     0.335 +- 0.009 |     0.296 +- 0.009 |    -0.039 +- 0.013 | GATE HELPS (n=5)
+       10 |     0.197 +- 0.011 |     0.174 +- 0.019 |    -0.023 +- 0.025 | within noise (n=5)
+       15 |     0.106 +- 0.013 |     0.079 +- 0.010 |    -0.027 +- 0.018 | GATE HELPS (n=5)
+
+  TALLY over 60 cells: 6 the graph helps, 9 the graph hurts, 45 within noise.
+  Paired: each delta is (gate-off - learned) at the SAME seed, then averaged. Both mean columns cover ONLY the seeds present in both arms. 'within noise' = |mean| < sd.
+  CEILING: g=0 removes neighbour mixing but keeps the LTR degree feature, so this bounds the value of NEIGHBOUR INFORMATION, not of the graph in total.
+

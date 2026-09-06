@@ -1,0 +1,211 @@
+
+===== ebola --all :: 2026-08-10 20:09:53 =====
+locked config: configs\ebola_arms.json  frozen 2026-08-07  prereg progress/decisions/Ebola_Prereg.md
+  arms verified against their registered content hashes: ['ebola_L12', 'ebola_L20']
+  floors scored (ebola_L12): persistence, support_mean
+  floors scored (ebola_L20): persistence, support_mean
+  trunk seed 42: training on ['dengue', 'influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states'] groups=[0, 1, 1, 1, 2] steps=91000 patience=30
+    trunk loss rebalanced per DISEASE (3 groups): [0.333, 0.111, 0.111, 0.111, 0.333]
+    trunk(-42) step  1000 val=0.1631 best=0.1631
+    trunk(-42) step  2000 val=0.1625 best=0.1625
+    trunk(-42) step  3000 val=0.1601 best=0.1601
+    trunk(-42) step  4000 val=0.1717 best=0.1601
+    trunk(-42) step  5000 val=0.1630 best=0.1601
+    trunk(-42) step  6000 val=0.1635 best=0.1601
+    trunk(-42) step  7000 val=0.1656 best=0.1601
+    trunk(-42) step  8000 val=0.1665 best=0.1601
+    trunk(-42) step  9000 val=0.1615 best=0.1601
+    trunk(-42) step 10000 val=0.1660 best=0.1601
+    trunk(-42) step 11000 val=0.1670 best=0.1601
+    trunk(-42) step 12000 val=0.1662 best=0.1601
+    trunk(-42) step 13000 val=0.1708 best=0.1601
+    trunk(-42) step 14000 val=0.1675 best=0.1601
+    trunk(-42) step 15000 val=0.1675 best=0.1601
+    trunk(-42) step 16000 val=0.1690 best=0.1601
+    trunk(-42) step 17000 val=0.1712 best=0.1601
+    trunk(-42) step 18000 val=0.1711 best=0.1601
+    trunk(-42) step 19000 val=0.1726 best=0.1601
+    trunk(-42) step 20000 val=0.1692 best=0.1601
+    trunk(-42) step 21000 val=0.1692 best=0.1601
+    trunk(-42) step 22000 val=0.1722 best=0.1601
+    trunk(-42) step 23000 val=0.1711 best=0.1601
+    trunk(-42) step 24000 val=0.1728 best=0.1601
+    trunk(-42) step 25000 val=0.1715 best=0.1601
+    trunk(-42) step 26000 val=0.1733 best=0.1601
+    trunk(-42) step 27000 val=0.1715 best=0.1601
+    trunk(-42) step 28000 val=0.1730 best=0.1601
+    trunk(-42) step 29000 val=0.1719 best=0.1601
+    trunk(-42) step 30000 val=0.1748 best=0.1601
+    trunk(-42) step 31000 val=0.1742 best=0.1601
+    trunk(-42) step 32000 val=0.1716 best=0.1601
+    trunk(-42) step 33000 val=0.1729 best=0.1601
+    LODO-CV over 17 support districts (104 held-out cells): best epoch 80 (pinball 0.2724, ep80 0.2724)
+    E4 ok: h15 has 0 support targets; head block is a uniform shrink (c=0.999990463, rel residual 1.4e-06) -- decay only, no label signal
+  ebola_L12 seed 42: adapter fit for 80 epochs on 59 support cells, scored 18 origins
+    LODO-CV over 36 support districts (320 held-out cells): best epoch 80 (pinball 0.2692, ep80 0.2692)
+  ebola_L20 seed 42: adapter fit for 80 epochs on 113 support cells, scored 18 origins
+  trunk seed 52: training on ['dengue', 'influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states'] groups=[0, 1, 1, 1, 2] steps=91000 patience=30
+    trunk loss rebalanced per DISEASE (3 groups): [0.333, 0.111, 0.111, 0.111, 0.333]
+    trunk(-52) step  1000 val=0.1686 best=0.1686
+    trunk(-52) step  2000 val=0.1621 best=0.1621
+    trunk(-52) step  3000 val=0.1652 best=0.1621
+    trunk(-52) step  4000 val=0.1652 best=0.1621
+    trunk(-52) step  5000 val=0.1612 best=0.1612
+    trunk(-52) step  6000 val=0.1619 best=0.1612
+    trunk(-52) step  7000 val=0.1620 best=0.1612
+    trunk(-52) step  8000 val=0.1618 best=0.1612
+    trunk(-52) step  9000 val=0.1664 best=0.1612
+    trunk(-52) step 10000 val=0.1629 best=0.1612
+    trunk(-52) step 11000 val=0.1651 best=0.1612
+    trunk(-52) step 12000 val=0.1675 best=0.1612
+    trunk(-52) step 13000 val=0.1661 best=0.1612
+    trunk(-52) step 14000 val=0.1689 best=0.1612
+    trunk(-52) step 15000 val=0.1668 best=0.1612
+    trunk(-52) step 16000 val=0.1676 best=0.1612
+    trunk(-52) step 17000 val=0.1694 best=0.1612
+    trunk(-52) step 18000 val=0.1677 best=0.1612
+    trunk(-52) step 19000 val=0.1683 best=0.1612
+    trunk(-52) step 20000 val=0.1683 best=0.1612
+    trunk(-52) step 21000 val=0.1679 best=0.1612
+    trunk(-52) step 22000 val=0.1708 best=0.1612
+    trunk(-52) step 23000 val=0.1700 best=0.1612
+    trunk(-52) step 24000 val=0.1709 best=0.1612
+    trunk(-52) step 25000 val=0.1694 best=0.1612
+    trunk(-52) step 26000 val=0.1703 best=0.1612
+    trunk(-52) step 27000 val=0.1717 best=0.1612
+    trunk(-52) step 28000 val=0.1717 best=0.1612
+    trunk(-52) step 29000 val=0.1737 best=0.1612
+    trunk(-52) step 30000 val=0.1726 best=0.1612
+    trunk(-52) step 31000 val=0.1714 best=0.1612
+    trunk(-52) step 32000 val=0.1722 best=0.1612
+    trunk(-52) step 33000 val=0.1712 best=0.1612
+    trunk(-52) step 34000 val=0.1724 best=0.1612
+    trunk(-52) step 35000 val=0.1718 best=0.1612
+    LODO-CV over 17 support districts (104 held-out cells): best epoch 73 (pinball 0.3135, ep80 0.3135)
+    E4 ok: h15 has 0 support targets; head block is a uniform shrink (c=0.999991119, rel residual 1.3e-06) -- decay only, no label signal
+  ebola_L12 seed 52: adapter fit for 73 epochs on 59 support cells, scored 18 origins
+    LODO-CV over 36 support districts (320 held-out cells): best epoch 73 (pinball 0.2710, ep80 0.2710)
+  ebola_L20 seed 52: adapter fit for 73 epochs on 113 support cells, scored 18 origins
+  trunk seed 62: training on ['dengue', 'influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states'] groups=[0, 1, 1, 1, 2] steps=91000 patience=30
+    trunk loss rebalanced per DISEASE (3 groups): [0.333, 0.111, 0.111, 0.111, 0.333]
+    trunk(-62) step  1000 val=0.1646 best=0.1646
+    trunk(-62) step  2000 val=0.1610 best=0.1610
+    trunk(-62) step  3000 val=0.1605 best=0.1605
+    trunk(-62) step  4000 val=0.1622 best=0.1605
+    trunk(-62) step  5000 val=0.1620 best=0.1605
+    trunk(-62) step  6000 val=0.1649 best=0.1605
+    trunk(-62) step  7000 val=0.1626 best=0.1605
+    trunk(-62) step  8000 val=0.1613 best=0.1605
+    trunk(-62) step  9000 val=0.1638 best=0.1605
+    trunk(-62) step 10000 val=0.1647 best=0.1605
+    trunk(-62) step 11000 val=0.1678 best=0.1605
+    trunk(-62) step 12000 val=0.1671 best=0.1605
+    trunk(-62) step 13000 val=0.1664 best=0.1605
+    trunk(-62) step 14000 val=0.1684 best=0.1605
+    trunk(-62) step 15000 val=0.1718 best=0.1605
+    trunk(-62) step 16000 val=0.1716 best=0.1605
+    trunk(-62) step 17000 val=0.1710 best=0.1605
+    trunk(-62) step 18000 val=0.1704 best=0.1605
+    trunk(-62) step 19000 val=0.1694 best=0.1605
+    trunk(-62) step 20000 val=0.1706 best=0.1605
+    trunk(-62) step 21000 val=0.1727 best=0.1605
+    trunk(-62) step 22000 val=0.1725 best=0.1605
+    trunk(-62) step 23000 val=0.1721 best=0.1605
+    trunk(-62) step 24000 val=0.1721 best=0.1605
+    trunk(-62) step 25000 val=0.1734 best=0.1605
+    trunk(-62) step 26000 val=0.1719 best=0.1605
+    trunk(-62) step 27000 val=0.1761 best=0.1605
+    trunk(-62) step 28000 val=0.1739 best=0.1605
+    trunk(-62) step 29000 val=0.1731 best=0.1605
+    trunk(-62) step 30000 val=0.1749 best=0.1605
+    trunk(-62) step 31000 val=0.1748 best=0.1605
+    trunk(-62) step 32000 val=0.1751 best=0.1605
+    trunk(-62) step 33000 val=0.1751 best=0.1605
+    LODO-CV over 17 support districts (104 held-out cells): best epoch 80 (pinball 0.2746, ep80 0.2746)
+    E4 ok: h15 has 0 support targets; head block is a uniform shrink (c=0.999990523, rel residual 1.4e-06) -- decay only, no label signal
+  ebola_L12 seed 62: adapter fit for 80 epochs on 59 support cells, scored 18 origins
+    LODO-CV over 36 support districts (320 held-out cells): best epoch 80 (pinball 0.2599, ep80 0.2599)
+  ebola_L20 seed 62: adapter fit for 80 epochs on 113 support cells, scored 18 origins
+  trunk seed 72: training on ['dengue', 'influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states'] groups=[0, 1, 1, 1, 2] steps=91000 patience=30
+    trunk loss rebalanced per DISEASE (3 groups): [0.333, 0.111, 0.111, 0.111, 0.333]
+    trunk(-72) step  1000 val=0.1672 best=0.1672
+    trunk(-72) step  2000 val=0.1633 best=0.1633
+    trunk(-72) step  3000 val=0.1659 best=0.1633
+    trunk(-72) step  4000 val=0.1646 best=0.1633
+    trunk(-72) step  5000 val=0.1628 best=0.1628
+    trunk(-72) step  6000 val=0.1650 best=0.1628
+    trunk(-72) step  7000 val=0.1665 best=0.1628
+    trunk(-72) step  8000 val=0.1662 best=0.1628
+    trunk(-72) step  9000 val=0.1638 best=0.1628
+    trunk(-72) step 10000 val=0.1651 best=0.1628
+    trunk(-72) step 11000 val=0.1657 best=0.1628
+    trunk(-72) step 12000 val=0.1673 best=0.1628
+    trunk(-72) step 13000 val=0.1659 best=0.1628
+    trunk(-72) step 14000 val=0.1704 best=0.1628
+    trunk(-72) step 15000 val=0.1694 best=0.1628
+    trunk(-72) step 16000 val=0.1674 best=0.1628
+    trunk(-72) step 17000 val=0.1676 best=0.1628
+    trunk(-72) step 18000 val=0.1685 best=0.1628
+    trunk(-72) step 19000 val=0.1677 best=0.1628
+    trunk(-72) step 20000 val=0.1662 best=0.1628
+    trunk(-72) step 21000 val=0.1678 best=0.1628
+    trunk(-72) step 22000 val=0.1679 best=0.1628
+    trunk(-72) step 23000 val=0.1692 best=0.1628
+    trunk(-72) step 24000 val=0.1688 best=0.1628
+    trunk(-72) step 25000 val=0.1682 best=0.1628
+    trunk(-72) step 26000 val=0.1698 best=0.1628
+    trunk(-72) step 27000 val=0.1708 best=0.1628
+    trunk(-72) step 28000 val=0.1698 best=0.1628
+    trunk(-72) step 29000 val=0.1691 best=0.1628
+    trunk(-72) step 30000 val=0.1690 best=0.1628
+    trunk(-72) step 31000 val=0.1695 best=0.1628
+    trunk(-72) step 32000 val=0.1711 best=0.1628
+    trunk(-72) step 33000 val=0.1703 best=0.1628
+    trunk(-72) step 34000 val=0.1713 best=0.1628
+    trunk(-72) step 35000 val=0.1722 best=0.1628
+    LODO-CV over 17 support districts (104 held-out cells): best epoch 77 (pinball 0.2928, ep80 0.2928)
+    E4 ok: h15 has 0 support targets; head block is a uniform shrink (c=0.999990761, rel residual 1.4e-06) -- decay only, no label signal
+  ebola_L12 seed 72: adapter fit for 77 epochs on 59 support cells, scored 18 origins
+    LODO-CV over 36 support districts (320 held-out cells): best epoch 80 (pinball 0.2677, ep80 0.2677)
+  ebola_L20 seed 72: adapter fit for 80 epochs on 113 support cells, scored 18 origins
+  trunk seed 82: training on ['dengue', 'influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states'] groups=[0, 1, 1, 1, 2] steps=91000 patience=30
+    trunk loss rebalanced per DISEASE (3 groups): [0.333, 0.111, 0.111, 0.111, 0.333]
+    trunk(-82) step  1000 val=0.1644 best=0.1644
+    trunk(-82) step  2000 val=0.1590 best=0.1590
+    trunk(-82) step  3000 val=0.1616 best=0.1590
+    trunk(-82) step  4000 val=0.1619 best=0.1590
+    trunk(-82) step  5000 val=0.1609 best=0.1590
+    trunk(-82) step  6000 val=0.1603 best=0.1590
+    trunk(-82) step  7000 val=0.1635 best=0.1590
+    trunk(-82) step  8000 val=0.1620 best=0.1590
+    trunk(-82) step  9000 val=0.1632 best=0.1590
+    trunk(-82) step 10000 val=0.1613 best=0.1590
+    trunk(-82) step 11000 val=0.1644 best=0.1590
+    trunk(-82) step 12000 val=0.1645 best=0.1590
+    trunk(-82) step 13000 val=0.1679 best=0.1590
+    trunk(-82) step 14000 val=0.1681 best=0.1590
+    trunk(-82) step 15000 val=0.1671 best=0.1590
+    trunk(-82) step 16000 val=0.1680 best=0.1590
+    trunk(-82) step 17000 val=0.1631 best=0.1590
+    trunk(-82) step 18000 val=0.1668 best=0.1590
+    trunk(-82) step 19000 val=0.1658 best=0.1590
+    trunk(-82) step 20000 val=0.1656 best=0.1590
+    trunk(-82) step 21000 val=0.1668 best=0.1590
+    trunk(-82) step 22000 val=0.1676 best=0.1590
+    trunk(-82) step 23000 val=0.1688 best=0.1590
+    trunk(-82) step 24000 val=0.1681 best=0.1590
+    trunk(-82) step 25000 val=0.1716 best=0.1590
+    trunk(-82) step 26000 val=0.1682 best=0.1590
+    trunk(-82) step 27000 val=0.1704 best=0.1590
+    trunk(-82) step 28000 val=0.1721 best=0.1590
+    trunk(-82) step 29000 val=0.1688 best=0.1590
+    trunk(-82) step 30000 val=0.1707 best=0.1590
+    trunk(-82) step 31000 val=0.1714 best=0.1590
+    trunk(-82) step 32000 val=0.1714 best=0.1590
+    LODO-CV over 17 support districts (104 held-out cells): best epoch 59 (pinball 0.2794, ep80 0.2798)
+    E4 ok: h15 has 0 support targets; head block is a uniform shrink (c=0.999992907, rel residual 1.0e-06) -- decay only, no label signal
+  ebola_L12 seed 82: adapter fit for 59 epochs on 59 support cells, scored 18 origins
+    LODO-CV over 36 support districts (320 held-out cells): best epoch 80 (pinball 0.2626, ep80 0.2626)
+  ebola_L20 seed 82: adapter fit for 80 epochs on 113 support cells, scored 18 origins
+
+done in 365.5 min  ->  results/ebola/

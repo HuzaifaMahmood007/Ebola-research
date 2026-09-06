@@ -1,0 +1,35 @@
+  loaded dengue                   2885 origin-steps over 5 seeds
+  loaded influenza_japan          460 origin-steps over 5 seeds
+  loaded influenza_us-regions     1115 origin-steps over 5 seeds
+  loaded influenza_us-states      480 origin-steps over 5 seeds
+  loaded covid_us-states          185 origin-steps over 5 seeds
+
+alpha_1 = 0.1   gamma = 0.05   static widen factor = 1 + 2*lambda_h
+
+panel                    h      T |   a_min   a_end |   lam_0  lam_max  stat x   max x |    mean w     p05 w    w<1
+dengue                   3   2885 |  0.0026  0.0441 |   0.195   22.166   1.39x  45.33x |      91.0      0.54  11.7%
+dengue                   5   2895 |  0.0027  0.0470 |   0.181   23.905   1.36x  48.81x |      85.4      0.57  11.0%
+dengue                  10   2920 |  0.0030  0.0539 |   0.414   29.352   1.83x  59.70x |      61.2      0.58  10.9%
+dengue                  15   2945 |  0.0027  0.0470 |   0.458   42.162   1.92x  85.32x |      44.1      0.56  11.2%
+influenza_japan          3    460 |  0.0850  0.2013 |   0.195    0.302   1.39x   1.60x |    1661.9      4.54   0.0%
+influenza_japan          5    470 |  0.0847  0.1977 |   0.181    0.285   1.36x   1.57x |    1763.8      5.01   0.0%
+influenza_japan         10    495 |  0.0548  0.1982 |   0.414    1.139   1.83x   3.28x |    1544.0      7.40   0.0%
+influenza_japan         15    520 |  0.0329  0.2398 |   0.458    2.331   1.92x   5.66x |    1438.4     13.79   0.0%
+influenza_us-regions     3   1115 |  0.0100  0.1830 |   0.195    4.813   1.39x  10.63x |    1947.8     65.19   0.0%
+influenza_us-regions     5   1125 |  0.0150  0.1710 |   0.181    3.591   1.36x   8.18x |    2262.3     77.75   0.0%
+influenza_us-regions    10   1150 |  0.0350  0.1550 |   0.414    1.968   1.83x   4.94x |    2358.9    101.44   0.0%
+influenza_us-regions    15   1175 |  0.0150  0.1190 |   0.458    5.974   1.92x  12.95x |    2294.9    113.85   0.0%
+influenza_us-states      3    480 |  0.0686  0.1043 |   0.195    0.485   1.39x   1.97x |     252.2     10.06   0.0%
+influenza_us-states      5    490 |  0.0695  0.1035 |   0.181    0.443   1.36x   1.89x |     316.3     12.18   0.0%
+influenza_us-states     10    515 |  0.0778  0.1391 |   0.414    0.672   1.83x   2.34x |     351.1     14.88   0.0%
+influenza_us-states     15    540 |  0.0766  0.1531 |   0.458    0.751   1.92x   2.50x |     344.8     17.30   0.0%
+covid_us-states          3    185 |  0.0198  0.1217 |   0.195    2.330   1.39x   5.66x |   28031.3    983.28   0.0%
+covid_us-states          5    195 |  0.0134  0.1285 |   0.181    4.098   1.36x   9.20x |   28693.1   1345.13   0.0%
+covid_us-states         10    220 |  0.0120  0.1380 |   0.414    6.604   1.83x  14.21x |   35170.1   1334.92   0.0%
+covid_us-states         15    245 |  0.0253  0.1450 |   0.458    3.215   1.92x   7.43x |   44568.3   1328.88   0.0%
+
+if dengue's a_min is the lowest AND its p05 w / w<1 are the smallest, the multiplicative
+score is the fault: it cannot widen a near-zero interval, so ACI pays for those cells by
+inflating every other cell in the panel. The fix is an additive floor on the widening, not
+a dengue exclusion. If a_min is ordinary and the widths are not extreme, drop this line of
+inquiry -- dengue is simply the panel with the most origins (2885) for drift to accumulate.

@@ -1,0 +1,1834 @@
+Traceback (most recent call last):
+  File "F:\Quickgen Projects\Research Paper\Ebola-Research\diagnostics\capacity_probe.py", line 47, in <module>
+    import bundles
+ModuleNotFoundError: No module named 'bundles'
+
+===== capacity probe (5 seeds) :: 2026-08-08 04:11:52 =====
+[device] torch 2.6.0+cu124 | cuda_available=True | n_gpu=1 | DEVICE=cuda | gpu=NVIDIA GeForce RTX 3060
+
+##############################################################################
+# seed 42   (1/5)
+##############################################################################
+[stage1] seed 42: fitting the dengue trunk (~70 min on the 3060)
+    trunk(-42) step  1000 val=0.2472 best=0.2472
+    trunk(-42) step  2000 val=0.2514 best=0.2472
+    trunk(-42) step  3000 val=0.2439 best=0.2439
+    trunk(-42) step  4000 val=0.2561 best=0.2439
+    trunk(-42) step  5000 val=0.2389 best=0.2389
+    trunk(-42) step  6000 val=0.2435 best=0.2389
+    trunk(-42) step  7000 val=0.2412 best=0.2389
+    trunk(-42) step  8000 val=0.2391 best=0.2389
+    trunk(-42) step  9000 val=0.2367 best=0.2367
+    trunk(-42) step 10000 val=0.2482 best=0.2367
+    trunk(-42) step 11000 val=0.2436 best=0.2367
+    trunk(-42) step 12000 val=0.2419 best=0.2367
+    trunk(-42) step 13000 val=0.2450 best=0.2367
+    trunk(-42) step 14000 val=0.2487 best=0.2367
+    trunk(-42) step 15000 val=0.2395 best=0.2367
+    trunk(-42) step 16000 val=0.2440 best=0.2367
+    trunk(-42) step 17000 val=0.2365 best=0.2365
+    trunk(-42) step 18000 val=0.2385 best=0.2365
+    trunk(-42) step 19000 val=0.2504 best=0.2365
+    trunk(-42) step 20000 val=0.2448 best=0.2365
+    trunk(-42) step 21000 val=0.2388 best=0.2365
+    trunk(-42) step 22000 val=0.2454 best=0.2365
+    trunk(-42) step 23000 val=0.2422 best=0.2365
+    trunk(-42) step 24000 val=0.2449 best=0.2365
+    trunk(-42) step 25000 val=0.2409 best=0.2365
+    trunk(-42) step 26000 val=0.2508 best=0.2365
+    trunk(-42) step 27000 val=0.2341 best=0.2341
+    trunk(-42) step 28000 val=0.2410 best=0.2341
+    trunk(-42) step 29000 val=0.2392 best=0.2341
+    trunk(-42) step 30000 val=0.2493 best=0.2341
+    trunk(-42) step 31000 val=0.2432 best=0.2341
+    trunk(-42) step 32000 val=0.2414 best=0.2341
+    trunk(-42) step 33000 val=0.2414 best=0.2341
+    trunk(-42) step 34000 val=0.2418 best=0.2341
+    trunk(-42) step 35000 val=0.2500 best=0.2341
+    trunk(-42) step 36000 val=0.2406 best=0.2341
+    trunk(-42) step 37000 val=0.2355 best=0.2341
+    trunk(-42) step 38000 val=0.2442 best=0.2341
+    trunk(-42) step 39000 val=0.2397 best=0.2341
+[stage1] seed 42: done in 64.5 min -> results\lodo\encoder_ldo__dengue2flu-cap__seed42__ckpt.pt
+[trunk] loaded results\lodo\encoder_ldo__dengue2flu-cap__seed42__ckpt.pt (142,305 params, frozen)
+
+[arm1-cross-disease] seed 42 surface 'affine (current)' (1,428 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.2011 best=0.2011
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1752 best=0.1752
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1678 best=0.1678
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1664 best=0.1664
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1566 best=0.1566
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1564 best=0.1564
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1577 best=0.1564
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1516 best=0.1516
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1505 best=0.1505
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1524 best=0.1505
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1541 best=0.1505
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1503 best=0.1503
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1548 best=0.1503
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1521 best=0.1503
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1498 best=0.1498
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1491 best=0.1491
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1488 best=0.1488
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1524 best=0.1488
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1476 best=0.1476
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1478 best=0.1476
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1450 best=0.1450
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1468 best=0.1450
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1471 best=0.1450
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1513 best=0.1450
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1491 best=0.1450
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1457 best=0.1450
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1488 best=0.1450
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1455 best=0.1450
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1471 best=0.1450
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1443 best=0.1443
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1472 best=0.1443
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1456 best=0.1443
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1468 best=0.1443
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1484 best=0.1443
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1445 best=0.1443
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1501 best=0.1443
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1490 best=0.1443
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1474 best=0.1443
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1477 best=0.1443
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1484 best=0.1443
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1471 best=0.1443
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1489 best=0.1443
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1455 best=0.1443
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1488 best=0.1443
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1477 best=0.1443
+[arm1-cross-disease] seed 42 'affine (current)' done in 3.7 min
+
+[arm1-cross-disease] seed 42 surface 'mlp-64' (5,460 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1811 best=0.1811
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1624 best=0.1624
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1509 best=0.1509
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1524 best=0.1509
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1442 best=0.1442
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1458 best=0.1442
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1489 best=0.1442
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1389 best=0.1389
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1385 best=0.1385
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1405 best=0.1385
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1378 best=0.1378
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1348 best=0.1348
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1353 best=0.1348
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1395 best=0.1348
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1353 best=0.1348
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1369 best=0.1348
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1335 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1429 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1390 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1392 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1354 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1400 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1375 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1359 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1356 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1338 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1366 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1334 best=0.1334
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1376 best=0.1334
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1356 best=0.1334
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1388 best=0.1334
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1333 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1353 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1375 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1367 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1371 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1340 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1342 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1349 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1367 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1344 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1376 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1345 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1382 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1351 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep45 val=0.1384 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep46 val=0.1360 best=0.1333
+[arm1-cross-disease] seed 42 'mlp-64' done in 4.0 min
+
+[arm1-cross-disease] seed 42 surface 'film+mlp-64' (5,588 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1694 best=0.1694
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1570 best=0.1570
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1481 best=0.1481
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1522 best=0.1481
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1423 best=0.1423
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1438 best=0.1423
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1496 best=0.1423
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1401 best=0.1401
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1408 best=0.1401
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1402 best=0.1401
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1392 best=0.1392
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1360 best=0.1360
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1355 best=0.1355
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1409 best=0.1355
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1364 best=0.1355
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1376 best=0.1355
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1343 best=0.1343
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1434 best=0.1343
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1381 best=0.1343
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1390 best=0.1343
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1367 best=0.1343
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1390 best=0.1343
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1372 best=0.1343
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1370 best=0.1343
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1372 best=0.1343
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1353 best=0.1343
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1352 best=0.1343
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1340 best=0.1340
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1380 best=0.1340
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1363 best=0.1340
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1390 best=0.1340
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1352 best=0.1340
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1354 best=0.1340
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1371 best=0.1340
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1360 best=0.1340
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1365 best=0.1340
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1352 best=0.1340
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1343 best=0.1340
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1358 best=0.1340
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1371 best=0.1340
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1335 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1370 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1350 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1380 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1348 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep45 val=0.1386 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep46 val=0.1359 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep47 val=0.1339 best=0.1335
+    shared-adapter[japan+us-regions+us-states] ep48 val=0.1334 best=0.1334
+    shared-adapter[japan+us-regions+us-states] ep49 val=0.1368 best=0.1334
+    shared-adapter[japan+us-regions+us-states] ep50 val=0.1334 best=0.1334
+    shared-adapter[japan+us-regions+us-states] ep51 val=0.1339 best=0.1334
+    shared-adapter[japan+us-regions+us-states] ep52 val=0.1357 best=0.1334
+    shared-adapter[japan+us-regions+us-states] ep53 val=0.1367 best=0.1334
+    shared-adapter[japan+us-regions+us-states] ep54 val=0.1337 best=0.1334
+    shared-adapter[japan+us-regions+us-states] ep55 val=0.1355 best=0.1334
+    shared-adapter[japan+us-regions+us-states] ep56 val=0.1335 best=0.1334
+    shared-adapter[japan+us-regions+us-states] ep57 val=0.1336 best=0.1334
+    shared-adapter[japan+us-regions+us-states] ep58 val=0.1333 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep59 val=0.1338 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep60 val=0.1353 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep61 val=0.1356 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep62 val=0.1359 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep63 val=0.1349 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep64 val=0.1345 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep65 val=0.1347 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep66 val=0.1359 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep67 val=0.1343 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep68 val=0.1350 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep69 val=0.1345 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep70 val=0.1341 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep71 val=0.1351 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep72 val=0.1347 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep73 val=0.1344 best=0.1333
+[arm1-cross-disease] seed 42 'film+mlp-64' done in 6.5 min
+
+[arm1-cross-disease] seed 42 surface 'mlp-256' (21,780 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1577 best=0.1577
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1433 best=0.1433
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1468 best=0.1433
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1376 best=0.1376
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1406 best=0.1376
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1348 best=0.1348
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1458 best=0.1348
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1330 best=0.1330
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1347 best=0.1330
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1365 best=0.1330
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1340 best=0.1330
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1395 best=0.1330
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1345 best=0.1330
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1301 best=0.1301
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1301 best=0.1301
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1309 best=0.1301
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1344 best=0.1301
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1369 best=0.1301
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1353 best=0.1301
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1433 best=0.1301
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1307 best=0.1301
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1484 best=0.1301
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1354 best=0.1301
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1356 best=0.1301
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1344 best=0.1301
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1322 best=0.1301
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1350 best=0.1301
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1351 best=0.1301
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1392 best=0.1301
+[arm1-cross-disease] seed 42 'mlp-256' done in 2.5 min
+
+[arm2-in-domain] seed 42 surface 'affine (current)' (1,428 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2471 best=0.2471
+    shared-adapter[dengue] ep01 val=0.2424 best=0.2424
+    shared-adapter[dengue] ep02 val=0.2426 best=0.2424
+    shared-adapter[dengue] ep03 val=0.2423 best=0.2423
+    shared-adapter[dengue] ep04 val=0.2431 best=0.2423
+    shared-adapter[dengue] ep05 val=0.2421 best=0.2421
+    shared-adapter[dengue] ep06 val=0.2410 best=0.2410
+    shared-adapter[dengue] ep07 val=0.2410 best=0.2410
+    shared-adapter[dengue] ep08 val=0.2387 best=0.2387
+    shared-adapter[dengue] ep09 val=0.2405 best=0.2387
+    shared-adapter[dengue] ep10 val=0.2420 best=0.2387
+    shared-adapter[dengue] ep11 val=0.2406 best=0.2387
+    shared-adapter[dengue] ep12 val=0.2404 best=0.2387
+    shared-adapter[dengue] ep13 val=0.2401 best=0.2387
+    shared-adapter[dengue] ep14 val=0.2411 best=0.2387
+    shared-adapter[dengue] ep15 val=0.2404 best=0.2387
+    shared-adapter[dengue] ep16 val=0.2420 best=0.2387
+    shared-adapter[dengue] ep17 val=0.2415 best=0.2387
+    shared-adapter[dengue] ep18 val=0.2395 best=0.2387
+    shared-adapter[dengue] ep19 val=0.2409 best=0.2387
+    shared-adapter[dengue] ep20 val=0.2409 best=0.2387
+    shared-adapter[dengue] ep21 val=0.2409 best=0.2387
+    shared-adapter[dengue] ep22 val=0.2413 best=0.2387
+    shared-adapter[dengue] ep23 val=0.2413 best=0.2387
+[arm2-in-domain] seed 42 'affine (current)' done in 21.1 min
+
+[arm2-in-domain] seed 42 surface 'mlp-64' (5,460 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2434 best=0.2434
+    shared-adapter[dengue] ep01 val=0.2416 best=0.2416
+    shared-adapter[dengue] ep02 val=0.2429 best=0.2416
+    shared-adapter[dengue] ep03 val=0.2413 best=0.2413
+    shared-adapter[dengue] ep04 val=0.2442 best=0.2413
+    shared-adapter[dengue] ep05 val=0.2432 best=0.2413
+    shared-adapter[dengue] ep06 val=0.2423 best=0.2413
+    shared-adapter[dengue] ep07 val=0.2419 best=0.2413
+    shared-adapter[dengue] ep08 val=0.2386 best=0.2386
+    shared-adapter[dengue] ep09 val=0.2402 best=0.2386
+    shared-adapter[dengue] ep10 val=0.2416 best=0.2386
+    shared-adapter[dengue] ep11 val=0.2411 best=0.2386
+    shared-adapter[dengue] ep12 val=0.2403 best=0.2386
+    shared-adapter[dengue] ep13 val=0.2426 best=0.2386
+    shared-adapter[dengue] ep14 val=0.2414 best=0.2386
+    shared-adapter[dengue] ep15 val=0.2400 best=0.2386
+    shared-adapter[dengue] ep16 val=0.2440 best=0.2386
+    shared-adapter[dengue] ep17 val=0.2430 best=0.2386
+    shared-adapter[dengue] ep18 val=0.2392 best=0.2386
+    shared-adapter[dengue] ep19 val=0.2428 best=0.2386
+    shared-adapter[dengue] ep20 val=0.2417 best=0.2386
+    shared-adapter[dengue] ep21 val=0.2416 best=0.2386
+    shared-adapter[dengue] ep22 val=0.2403 best=0.2386
+    shared-adapter[dengue] ep23 val=0.2428 best=0.2386
+[arm2-in-domain] seed 42 'mlp-64' done in 21.2 min
+
+[arm2-in-domain] seed 42 surface 'film+mlp-64' (5,588 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2438 best=0.2438
+    shared-adapter[dengue] ep01 val=0.2416 best=0.2416
+    shared-adapter[dengue] ep02 val=0.2428 best=0.2416
+    shared-adapter[dengue] ep03 val=0.2411 best=0.2411
+    shared-adapter[dengue] ep04 val=0.2442 best=0.2411
+    shared-adapter[dengue] ep05 val=0.2422 best=0.2411
+    shared-adapter[dengue] ep06 val=0.2418 best=0.2411
+    shared-adapter[dengue] ep07 val=0.2415 best=0.2411
+    shared-adapter[dengue] ep08 val=0.2386 best=0.2386
+    shared-adapter[dengue] ep09 val=0.2401 best=0.2386
+    shared-adapter[dengue] ep10 val=0.2419 best=0.2386
+    shared-adapter[dengue] ep11 val=0.2408 best=0.2386
+    shared-adapter[dengue] ep12 val=0.2405 best=0.2386
+    shared-adapter[dengue] ep13 val=0.2423 best=0.2386
+    shared-adapter[dengue] ep14 val=0.2401 best=0.2386
+    shared-adapter[dengue] ep15 val=0.2395 best=0.2386
+    shared-adapter[dengue] ep16 val=0.2447 best=0.2386
+    shared-adapter[dengue] ep17 val=0.2426 best=0.2386
+    shared-adapter[dengue] ep18 val=0.2396 best=0.2386
+    shared-adapter[dengue] ep19 val=0.2424 best=0.2386
+    shared-adapter[dengue] ep20 val=0.2421 best=0.2386
+    shared-adapter[dengue] ep21 val=0.2410 best=0.2386
+    shared-adapter[dengue] ep22 val=0.2401 best=0.2386
+    shared-adapter[dengue] ep23 val=0.2424 best=0.2386
+[arm2-in-domain] seed 42 'film+mlp-64' done in 21.3 min
+
+[arm2-in-domain] seed 42 surface 'mlp-256' (21,780 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2423 best=0.2423
+    shared-adapter[dengue] ep01 val=0.2424 best=0.2423
+    shared-adapter[dengue] ep02 val=0.2416 best=0.2416
+    shared-adapter[dengue] ep03 val=0.2402 best=0.2402
+    shared-adapter[dengue] ep04 val=0.2435 best=0.2402
+    shared-adapter[dengue] ep05 val=0.2436 best=0.2402
+    shared-adapter[dengue] ep06 val=0.2430 best=0.2402
+    shared-adapter[dengue] ep07 val=0.2434 best=0.2402
+    shared-adapter[dengue] ep08 val=0.2393 best=0.2393
+    shared-adapter[dengue] ep09 val=0.2412 best=0.2393
+    shared-adapter[dengue] ep10 val=0.2407 best=0.2393
+    shared-adapter[dengue] ep11 val=0.2443 best=0.2393
+    shared-adapter[dengue] ep12 val=0.2405 best=0.2393
+    shared-adapter[dengue] ep13 val=0.2435 best=0.2393
+    shared-adapter[dengue] ep14 val=0.2436 best=0.2393
+    shared-adapter[dengue] ep15 val=0.2394 best=0.2393
+    shared-adapter[dengue] ep16 val=0.2439 best=0.2393
+    shared-adapter[dengue] ep17 val=0.2419 best=0.2393
+    shared-adapter[dengue] ep18 val=0.2390 best=0.2390
+    shared-adapter[dengue] ep19 val=0.2428 best=0.2390
+    shared-adapter[dengue] ep20 val=0.2430 best=0.2390
+    shared-adapter[dengue] ep21 val=0.2399 best=0.2390
+    shared-adapter[dengue] ep22 val=0.2399 best=0.2390
+    shared-adapter[dengue] ep23 val=0.2443 best=0.2390
+    shared-adapter[dengue] ep24 val=0.2408 best=0.2390
+    shared-adapter[dengue] ep25 val=0.2393 best=0.2390
+    shared-adapter[dengue] ep26 val=0.2418 best=0.2390
+    shared-adapter[dengue] ep27 val=0.2411 best=0.2390
+    shared-adapter[dengue] ep28 val=0.2429 best=0.2390
+    shared-adapter[dengue] ep29 val=0.2400 best=0.2390
+    shared-adapter[dengue] ep30 val=0.2414 best=0.2390
+    shared-adapter[dengue] ep31 val=0.2414 best=0.2390
+    shared-adapter[dengue] ep32 val=0.2412 best=0.2390
+    shared-adapter[dengue] ep33 val=0.2388 best=0.2388
+    shared-adapter[dengue] ep34 val=0.2399 best=0.2388
+    shared-adapter[dengue] ep35 val=0.2421 best=0.2388
+    shared-adapter[dengue] ep36 val=0.2437 best=0.2388
+    shared-adapter[dengue] ep37 val=0.2388 best=0.2388
+    shared-adapter[dengue] ep38 val=0.2419 best=0.2388
+    shared-adapter[dengue] ep39 val=0.2412 best=0.2388
+    shared-adapter[dengue] ep40 val=0.2428 best=0.2388
+    shared-adapter[dengue] ep41 val=0.2423 best=0.2388
+    shared-adapter[dengue] ep42 val=0.2420 best=0.2388
+    shared-adapter[dengue] ep43 val=0.2418 best=0.2388
+    shared-adapter[dengue] ep44 val=0.2426 best=0.2388
+    shared-adapter[dengue] ep45 val=0.2422 best=0.2388
+    shared-adapter[dengue] ep46 val=0.2416 best=0.2388
+    shared-adapter[dengue] ep47 val=0.2402 best=0.2388
+    shared-adapter[dengue] ep48 val=0.2403 best=0.2388
+[arm2-in-domain] seed 42 'mlp-256' done in 42.7 min
+[seed 42] cached -> results\misc\capacity_probe__seed42.json
+
+##############################################################################
+# seed 52   (2/5)
+##############################################################################
+[stage1] seed 52: fitting the dengue trunk (~70 min on the 3060)
+    trunk(-52) step  1000 val=0.2537 best=0.2537
+    trunk(-52) step  2000 val=0.2442 best=0.2442
+    trunk(-52) step  3000 val=0.2484 best=0.2442
+    trunk(-52) step  4000 val=0.2508 best=0.2442
+    trunk(-52) step  5000 val=0.2374 best=0.2374
+    trunk(-52) step  6000 val=0.2429 best=0.2374
+    trunk(-52) step  7000 val=0.2385 best=0.2374
+    trunk(-52) step  8000 val=0.2387 best=0.2374
+    trunk(-52) step  9000 val=0.2520 best=0.2374
+    trunk(-52) step 10000 val=0.2387 best=0.2374
+    trunk(-52) step 11000 val=0.2328 best=0.2328
+    trunk(-52) step 12000 val=0.2427 best=0.2328
+    trunk(-52) step 13000 val=0.2364 best=0.2328
+    trunk(-52) step 14000 val=0.2489 best=0.2328
+    trunk(-52) step 15000 val=0.2422 best=0.2328
+    trunk(-52) step 16000 val=0.2426 best=0.2328
+    trunk(-52) step 17000 val=0.2470 best=0.2328
+    trunk(-52) step 18000 val=0.2387 best=0.2328
+    trunk(-52) step 19000 val=0.2376 best=0.2328
+    trunk(-52) step 20000 val=0.2384 best=0.2328
+    trunk(-52) step 21000 val=0.2426 best=0.2328
+    trunk(-52) step 22000 val=0.2439 best=0.2328
+    trunk(-52) step 23000 val=0.2448 best=0.2328
+[stage1] seed 52: done in 38.1 min -> results\lodo\encoder_ldo__dengue2flu-cap__seed52__ckpt.pt
+[trunk] loaded results\lodo\encoder_ldo__dengue2flu-cap__seed52__ckpt.pt (142,305 params, frozen)
+
+[arm1-cross-disease] seed 52 surface 'affine (current)' (1,428 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1943 best=0.1943
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1762 best=0.1762
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1651 best=0.1651
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1604 best=0.1604
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1576 best=0.1576
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1576 best=0.1576
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1610 best=0.1576
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1515 best=0.1515
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1537 best=0.1515
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1588 best=0.1515
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1587 best=0.1515
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1548 best=0.1515
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1572 best=0.1515
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1539 best=0.1515
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1541 best=0.1515
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1521 best=0.1515
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1585 best=0.1515
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1569 best=0.1515
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1510 best=0.1510
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1530 best=0.1510
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1540 best=0.1510
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1493 best=0.1493
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1553 best=0.1493
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1560 best=0.1493
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1550 best=0.1493
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1513 best=0.1493
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1579 best=0.1493
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1536 best=0.1493
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1567 best=0.1493
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1580 best=0.1493
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1550 best=0.1493
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1547 best=0.1493
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1504 best=0.1493
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1503 best=0.1493
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1468 best=0.1468
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1558 best=0.1468
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1515 best=0.1468
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1513 best=0.1468
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1510 best=0.1468
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1506 best=0.1468
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1498 best=0.1468
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1492 best=0.1468
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1515 best=0.1468
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1520 best=0.1468
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1524 best=0.1468
+    shared-adapter[japan+us-regions+us-states] ep45 val=0.1526 best=0.1468
+    shared-adapter[japan+us-regions+us-states] ep46 val=0.1517 best=0.1468
+    shared-adapter[japan+us-regions+us-states] ep47 val=0.1518 best=0.1468
+    shared-adapter[japan+us-regions+us-states] ep48 val=0.1514 best=0.1468
+    shared-adapter[japan+us-regions+us-states] ep49 val=0.1520 best=0.1468
+[arm1-cross-disease] seed 52 'affine (current)' done in 4.2 min
+
+[arm1-cross-disease] seed 52 surface 'mlp-64' (5,460 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1840 best=0.1840
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1769 best=0.1769
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1593 best=0.1593
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1545 best=0.1545
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1568 best=0.1545
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1579 best=0.1545
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1488 best=0.1488
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1457 best=0.1457
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1426 best=0.1426
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1534 best=0.1426
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1441 best=0.1426
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1426 best=0.1426
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1398 best=0.1398
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1384 best=0.1384
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1394 best=0.1384
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1475 best=0.1384
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1404 best=0.1384
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1467 best=0.1384
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1372 best=0.1372
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1423 best=0.1372
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1364 best=0.1364
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1380 best=0.1364
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1352 best=0.1352
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1351 best=0.1351
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1390 best=0.1351
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1406 best=0.1351
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1378 best=0.1351
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1356 best=0.1351
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1393 best=0.1351
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1378 best=0.1351
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1314 best=0.1314
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1327 best=0.1314
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1327 best=0.1314
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1328 best=0.1314
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1299 best=0.1299
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1434 best=0.1299
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1319 best=0.1299
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1300 best=0.1299
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1326 best=0.1299
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1325 best=0.1299
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1292 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1335 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1361 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1297 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1317 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep45 val=0.1331 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep46 val=0.1317 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep47 val=0.1346 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep48 val=0.1291 best=0.1291
+    shared-adapter[japan+us-regions+us-states] ep49 val=0.1324 best=0.1291
+    shared-adapter[japan+us-regions+us-states] ep50 val=0.1282 best=0.1282
+    shared-adapter[japan+us-regions+us-states] ep51 val=0.1365 best=0.1282
+    shared-adapter[japan+us-regions+us-states] ep52 val=0.1321 best=0.1282
+    shared-adapter[japan+us-regions+us-states] ep53 val=0.1314 best=0.1282
+    shared-adapter[japan+us-regions+us-states] ep54 val=0.1313 best=0.1282
+    shared-adapter[japan+us-regions+us-states] ep55 val=0.1330 best=0.1282
+    shared-adapter[japan+us-regions+us-states] ep56 val=0.1326 best=0.1282
+    shared-adapter[japan+us-regions+us-states] ep57 val=0.1296 best=0.1282
+    shared-adapter[japan+us-regions+us-states] ep58 val=0.1317 best=0.1282
+    shared-adapter[japan+us-regions+us-states] ep59 val=0.1322 best=0.1282
+    shared-adapter[japan+us-regions+us-states] ep60 val=0.1336 best=0.1282
+    shared-adapter[japan+us-regions+us-states] ep61 val=0.1319 best=0.1282
+    shared-adapter[japan+us-regions+us-states] ep62 val=0.1307 best=0.1282
+    shared-adapter[japan+us-regions+us-states] ep63 val=0.1302 best=0.1282
+    shared-adapter[japan+us-regions+us-states] ep64 val=0.1325 best=0.1282
+    shared-adapter[japan+us-regions+us-states] ep65 val=0.1328 best=0.1282
+[arm1-cross-disease] seed 52 'mlp-64' done in 5.6 min
+
+[arm1-cross-disease] seed 52 surface 'film+mlp-64' (5,588 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1776 best=0.1776
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1749 best=0.1749
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1535 best=0.1535
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1512 best=0.1512
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1554 best=0.1512
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1542 best=0.1512
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1466 best=0.1466
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1438 best=0.1438
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1407 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1514 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1440 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1414 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1391 best=0.1391
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1382 best=0.1382
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1391 best=0.1382
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1434 best=0.1382
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1393 best=0.1382
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1452 best=0.1382
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1394 best=0.1382
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1405 best=0.1382
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1349 best=0.1349
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1381 best=0.1349
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1347 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1347 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1385 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1407 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1395 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1354 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1410 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1383 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1332 best=0.1332
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1329 best=0.1329
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1334 best=0.1329
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1314 best=0.1314
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1314 best=0.1314
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1443 best=0.1314
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1325 best=0.1314
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1304 best=0.1304
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1331 best=0.1304
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1326 best=0.1304
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1307 best=0.1304
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1326 best=0.1304
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1366 best=0.1304
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1308 best=0.1304
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1307 best=0.1304
+    shared-adapter[japan+us-regions+us-states] ep45 val=0.1338 best=0.1304
+    shared-adapter[japan+us-regions+us-states] ep46 val=0.1329 best=0.1304
+    shared-adapter[japan+us-regions+us-states] ep47 val=0.1349 best=0.1304
+    shared-adapter[japan+us-regions+us-states] ep48 val=0.1297 best=0.1297
+    shared-adapter[japan+us-regions+us-states] ep49 val=0.1334 best=0.1297
+    shared-adapter[japan+us-regions+us-states] ep50 val=0.1293 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep51 val=0.1373 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep52 val=0.1326 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep53 val=0.1322 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep54 val=0.1317 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep55 val=0.1331 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep56 val=0.1334 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep57 val=0.1305 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep58 val=0.1326 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep59 val=0.1327 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep60 val=0.1341 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep61 val=0.1329 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep62 val=0.1316 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep63 val=0.1311 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep64 val=0.1335 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep65 val=0.1332 best=0.1293
+[arm1-cross-disease] seed 52 'film+mlp-64' done in 5.9 min
+
+[arm1-cross-disease] seed 52 surface 'mlp-256' (21,780 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1641 best=0.1641
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1537 best=0.1537
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1457 best=0.1457
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1420 best=0.1420
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1487 best=0.1420
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1549 best=0.1420
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1461 best=0.1420
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1424 best=0.1420
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1344 best=0.1344
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1425 best=0.1344
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1444 best=0.1344
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1378 best=0.1344
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1303 best=0.1303
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1308 best=0.1303
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1299 best=0.1299
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1316 best=0.1299
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1338 best=0.1299
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1399 best=0.1299
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1341 best=0.1299
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1322 best=0.1299
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1293 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1311 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1333 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1287 best=0.1287
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1337 best=0.1287
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1322 best=0.1287
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1300 best=0.1287
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1292 best=0.1287
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1295 best=0.1287
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1294 best=0.1287
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1244 best=0.1244
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1330 best=0.1244
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1326 best=0.1244
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1313 best=0.1244
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1257 best=0.1244
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1320 best=0.1244
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1263 best=0.1244
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1327 best=0.1244
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1299 best=0.1244
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1300 best=0.1244
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1282 best=0.1244
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1327 best=0.1244
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1298 best=0.1244
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1284 best=0.1244
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1318 best=0.1244
+    shared-adapter[japan+us-regions+us-states] ep45 val=0.1274 best=0.1244
+[arm1-cross-disease] seed 52 'mlp-256' done in 4.0 min
+
+[arm2-in-domain] seed 52 surface 'affine (current)' (1,428 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2447 best=0.2447
+    shared-adapter[dengue] ep01 val=0.2415 best=0.2415
+    shared-adapter[dengue] ep02 val=0.2421 best=0.2415
+    shared-adapter[dengue] ep03 val=0.2396 best=0.2396
+    shared-adapter[dengue] ep04 val=0.2411 best=0.2396
+    shared-adapter[dengue] ep05 val=0.2378 best=0.2378
+    shared-adapter[dengue] ep06 val=0.2391 best=0.2378
+    shared-adapter[dengue] ep07 val=0.2414 best=0.2378
+    shared-adapter[dengue] ep08 val=0.2394 best=0.2378
+    shared-adapter[dengue] ep09 val=0.2385 best=0.2378
+    shared-adapter[dengue] ep10 val=0.2402 best=0.2378
+    shared-adapter[dengue] ep11 val=0.2401 best=0.2378
+    shared-adapter[dengue] ep12 val=0.2384 best=0.2378
+    shared-adapter[dengue] ep13 val=0.2380 best=0.2378
+    shared-adapter[dengue] ep14 val=0.2393 best=0.2378
+    shared-adapter[dengue] ep15 val=0.2398 best=0.2378
+    shared-adapter[dengue] ep16 val=0.2408 best=0.2378
+    shared-adapter[dengue] ep17 val=0.2396 best=0.2378
+    shared-adapter[dengue] ep18 val=0.2380 best=0.2378
+    shared-adapter[dengue] ep19 val=0.2378 best=0.2378
+    shared-adapter[dengue] ep20 val=0.2398 best=0.2378
+[arm2-in-domain] seed 52 'affine (current)' done in 18.5 min
+
+[arm2-in-domain] seed 52 surface 'mlp-64' (5,460 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2412 best=0.2412
+    shared-adapter[dengue] ep01 val=0.2389 best=0.2389
+    shared-adapter[dengue] ep02 val=0.2373 best=0.2373
+    shared-adapter[dengue] ep03 val=0.2371 best=0.2371
+    shared-adapter[dengue] ep04 val=0.2398 best=0.2371
+    shared-adapter[dengue] ep05 val=0.2377 best=0.2371
+    shared-adapter[dengue] ep06 val=0.2394 best=0.2371
+    shared-adapter[dengue] ep07 val=0.2416 best=0.2371
+    shared-adapter[dengue] ep08 val=0.2399 best=0.2371
+    shared-adapter[dengue] ep09 val=0.2373 best=0.2371
+    shared-adapter[dengue] ep10 val=0.2386 best=0.2371
+    shared-adapter[dengue] ep11 val=0.2406 best=0.2371
+    shared-adapter[dengue] ep12 val=0.2365 best=0.2365
+    shared-adapter[dengue] ep13 val=0.2376 best=0.2365
+    shared-adapter[dengue] ep14 val=0.2406 best=0.2365
+    shared-adapter[dengue] ep15 val=0.2393 best=0.2365
+    shared-adapter[dengue] ep16 val=0.2397 best=0.2365
+    shared-adapter[dengue] ep17 val=0.2400 best=0.2365
+    shared-adapter[dengue] ep18 val=0.2375 best=0.2365
+    shared-adapter[dengue] ep19 val=0.2372 best=0.2365
+    shared-adapter[dengue] ep20 val=0.2421 best=0.2365
+    shared-adapter[dengue] ep21 val=0.2386 best=0.2365
+    shared-adapter[dengue] ep22 val=0.2387 best=0.2365
+    shared-adapter[dengue] ep23 val=0.2399 best=0.2365
+    shared-adapter[dengue] ep24 val=0.2381 best=0.2365
+    shared-adapter[dengue] ep25 val=0.2390 best=0.2365
+    shared-adapter[dengue] ep26 val=0.2394 best=0.2365
+    shared-adapter[dengue] ep27 val=0.2394 best=0.2365
+[arm2-in-domain] seed 52 'mlp-64' done in 24.6 min
+
+[arm2-in-domain] seed 52 surface 'film+mlp-64' (5,588 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2407 best=0.2407
+    shared-adapter[dengue] ep01 val=0.2396 best=0.2396
+    shared-adapter[dengue] ep02 val=0.2385 best=0.2385
+    shared-adapter[dengue] ep03 val=0.2384 best=0.2384
+    shared-adapter[dengue] ep04 val=0.2398 best=0.2384
+    shared-adapter[dengue] ep05 val=0.2383 best=0.2383
+    shared-adapter[dengue] ep06 val=0.2406 best=0.2383
+    shared-adapter[dengue] ep07 val=0.2420 best=0.2383
+    shared-adapter[dengue] ep08 val=0.2394 best=0.2383
+    shared-adapter[dengue] ep09 val=0.2371 best=0.2371
+    shared-adapter[dengue] ep10 val=0.2385 best=0.2371
+    shared-adapter[dengue] ep11 val=0.2407 best=0.2371
+    shared-adapter[dengue] ep12 val=0.2365 best=0.2365
+    shared-adapter[dengue] ep13 val=0.2374 best=0.2365
+    shared-adapter[dengue] ep14 val=0.2402 best=0.2365
+    shared-adapter[dengue] ep15 val=0.2396 best=0.2365
+    shared-adapter[dengue] ep16 val=0.2396 best=0.2365
+    shared-adapter[dengue] ep17 val=0.2400 best=0.2365
+    shared-adapter[dengue] ep18 val=0.2369 best=0.2365
+    shared-adapter[dengue] ep19 val=0.2377 best=0.2365
+    shared-adapter[dengue] ep20 val=0.2433 best=0.2365
+    shared-adapter[dengue] ep21 val=0.2386 best=0.2365
+    shared-adapter[dengue] ep22 val=0.2383 best=0.2365
+    shared-adapter[dengue] ep23 val=0.2402 best=0.2365
+    shared-adapter[dengue] ep24 val=0.2381 best=0.2365
+    shared-adapter[dengue] ep25 val=0.2392 best=0.2365
+    shared-adapter[dengue] ep26 val=0.2398 best=0.2365
+    shared-adapter[dengue] ep27 val=0.2394 best=0.2365
+[arm2-in-domain] seed 52 'film+mlp-64' done in 24.8 min
+
+[arm2-in-domain] seed 52 surface 'mlp-256' (21,780 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2412 best=0.2412
+    shared-adapter[dengue] ep01 val=0.2388 best=0.2388
+    shared-adapter[dengue] ep02 val=0.2384 best=0.2384
+    shared-adapter[dengue] ep03 val=0.2383 best=0.2383
+    shared-adapter[dengue] ep04 val=0.2387 best=0.2383
+    shared-adapter[dengue] ep05 val=0.2403 best=0.2383
+    shared-adapter[dengue] ep06 val=0.2420 best=0.2383
+    shared-adapter[dengue] ep07 val=0.2414 best=0.2383
+    shared-adapter[dengue] ep08 val=0.2389 best=0.2383
+    shared-adapter[dengue] ep09 val=0.2344 best=0.2344
+    shared-adapter[dengue] ep10 val=0.2365 best=0.2344
+    shared-adapter[dengue] ep11 val=0.2394 best=0.2344
+    shared-adapter[dengue] ep12 val=0.2368 best=0.2344
+    shared-adapter[dengue] ep13 val=0.2369 best=0.2344
+    shared-adapter[dengue] ep14 val=0.2399 best=0.2344
+    shared-adapter[dengue] ep15 val=0.2400 best=0.2344
+    shared-adapter[dengue] ep16 val=0.2396 best=0.2344
+    shared-adapter[dengue] ep17 val=0.2423 best=0.2344
+    shared-adapter[dengue] ep18 val=0.2370 best=0.2344
+    shared-adapter[dengue] ep19 val=0.2381 best=0.2344
+    shared-adapter[dengue] ep20 val=0.2424 best=0.2344
+    shared-adapter[dengue] ep21 val=0.2387 best=0.2344
+    shared-adapter[dengue] ep22 val=0.2379 best=0.2344
+    shared-adapter[dengue] ep23 val=0.2392 best=0.2344
+    shared-adapter[dengue] ep24 val=0.2392 best=0.2344
+[arm2-in-domain] seed 52 'mlp-256' done in 22.1 min
+[seed 52] cached -> results\misc\capacity_probe__seed52.json
+
+##############################################################################
+# seed 62   (3/5)
+##############################################################################
+[stage1] seed 62: fitting the dengue trunk (~70 min on the 3060)
+    trunk(-62) step  1000 val=0.2480 best=0.2480
+    trunk(-62) step  2000 val=0.2387 best=0.2387
+    trunk(-62) step  3000 val=0.2436 best=0.2387
+    trunk(-62) step  4000 val=0.2461 best=0.2387
+    trunk(-62) step  5000 val=0.2396 best=0.2387
+    trunk(-62) step  6000 val=0.2518 best=0.2387
+    trunk(-62) step  7000 val=0.2420 best=0.2387
+    trunk(-62) step  8000 val=0.2452 best=0.2387
+    trunk(-62) step  9000 val=0.2438 best=0.2387
+    trunk(-62) step 10000 val=0.2406 best=0.2387
+    trunk(-62) step 11000 val=0.2422 best=0.2387
+    trunk(-62) step 12000 val=0.2414 best=0.2387
+    trunk(-62) step 13000 val=0.2382 best=0.2382
+    trunk(-62) step 14000 val=0.2358 best=0.2358
+    trunk(-62) step 15000 val=0.2547 best=0.2358
+    trunk(-62) step 16000 val=0.2465 best=0.2358
+    trunk(-62) step 17000 val=0.2436 best=0.2358
+    trunk(-62) step 18000 val=0.2450 best=0.2358
+    trunk(-62) step 19000 val=0.2413 best=0.2358
+    trunk(-62) step 20000 val=0.2486 best=0.2358
+    trunk(-62) step 21000 val=0.2430 best=0.2358
+    trunk(-62) step 22000 val=0.2412 best=0.2358
+    trunk(-62) step 23000 val=0.2370 best=0.2358
+    trunk(-62) step 24000 val=0.2437 best=0.2358
+    trunk(-62) step 25000 val=0.2405 best=0.2358
+    trunk(-62) step 26000 val=0.2413 best=0.2358
+[stage1] seed 62: done in 43.1 min -> results\lodo\encoder_ldo__dengue2flu-cap__seed62__ckpt.pt
+[trunk] loaded results\lodo\encoder_ldo__dengue2flu-cap__seed62__ckpt.pt (142,305 params, frozen)
+
+[arm1-cross-disease] seed 62 surface 'affine (current)' (1,428 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1871 best=0.1871
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1630 best=0.1630
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1536 best=0.1536
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1466 best=0.1466
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1446 best=0.1446
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1450 best=0.1446
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1413 best=0.1413
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1429 best=0.1413
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1418 best=0.1413
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1415 best=0.1413
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1418 best=0.1413
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1394 best=0.1394
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1399 best=0.1394
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1388 best=0.1388
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1417 best=0.1388
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1411 best=0.1388
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1420 best=0.1388
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1413 best=0.1388
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1410 best=0.1388
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1390 best=0.1388
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1395 best=0.1388
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1426 best=0.1388
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1392 best=0.1388
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1409 best=0.1388
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1418 best=0.1388
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1387 best=0.1387
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1407 best=0.1387
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1386 best=0.1386
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1386 best=0.1386
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1411 best=0.1386
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1402 best=0.1386
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1391 best=0.1386
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1368 best=0.1368
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1401 best=0.1368
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1403 best=0.1368
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1390 best=0.1368
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1413 best=0.1368
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1394 best=0.1368
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1433 best=0.1368
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1387 best=0.1368
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1388 best=0.1368
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1396 best=0.1368
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1376 best=0.1368
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1398 best=0.1368
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1402 best=0.1368
+    shared-adapter[japan+us-regions+us-states] ep45 val=0.1378 best=0.1368
+    shared-adapter[japan+us-regions+us-states] ep46 val=0.1384 best=0.1368
+    shared-adapter[japan+us-regions+us-states] ep47 val=0.1398 best=0.1368
+[arm1-cross-disease] seed 62 'affine (current)' done in 4.0 min
+
+[arm1-cross-disease] seed 62 surface 'mlp-64' (5,460 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1671 best=0.1671
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1454 best=0.1454
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1398 best=0.1398
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1372 best=0.1372
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1347 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1415 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1362 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1373 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1363 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1378 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1419 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1386 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1356 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1346 best=0.1346
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1361 best=0.1346
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1366 best=0.1346
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1370 best=0.1346
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1342 best=0.1342
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1390 best=0.1342
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1388 best=0.1342
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1398 best=0.1342
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1374 best=0.1342
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1354 best=0.1342
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1396 best=0.1342
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1358 best=0.1342
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1345 best=0.1342
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1362 best=0.1342
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1333 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1364 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1429 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1338 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1382 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1349 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1346 best=0.1333
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1317 best=0.1317
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1354 best=0.1317
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1362 best=0.1317
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1351 best=0.1317
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1383 best=0.1317
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1317 best=0.1317
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1334 best=0.1317
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1323 best=0.1317
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1339 best=0.1317
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1327 best=0.1317
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1348 best=0.1317
+    shared-adapter[japan+us-regions+us-states] ep45 val=0.1341 best=0.1317
+    shared-adapter[japan+us-regions+us-states] ep46 val=0.1328 best=0.1317
+    shared-adapter[japan+us-regions+us-states] ep47 val=0.1352 best=0.1317
+    shared-adapter[japan+us-regions+us-states] ep48 val=0.1355 best=0.1317
+    shared-adapter[japan+us-regions+us-states] ep49 val=0.1356 best=0.1317
+[arm1-cross-disease] seed 62 'mlp-64' done in 4.3 min
+
+[arm1-cross-disease] seed 62 surface 'film+mlp-64' (5,588 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1682 best=0.1682
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1468 best=0.1468
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1403 best=0.1403
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1389 best=0.1389
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1350 best=0.1350
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1433 best=0.1350
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1366 best=0.1350
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1384 best=0.1350
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1364 best=0.1350
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1380 best=0.1350
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1420 best=0.1350
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1404 best=0.1350
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1357 best=0.1350
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1338 best=0.1338
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1364 best=0.1338
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1363 best=0.1338
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1367 best=0.1338
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1327 best=0.1327
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1385 best=0.1327
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1375 best=0.1327
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1391 best=0.1327
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1371 best=0.1327
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1354 best=0.1327
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1395 best=0.1327
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1378 best=0.1327
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1359 best=0.1327
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1352 best=0.1327
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1336 best=0.1327
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1378 best=0.1327
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1434 best=0.1327
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1345 best=0.1327
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1413 best=0.1327
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1363 best=0.1327
+[arm1-cross-disease] seed 62 'film+mlp-64' done in 3.0 min
+
+[arm1-cross-disease] seed 62 surface 'mlp-256' (21,780 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1491 best=0.1491
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1460 best=0.1460
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1379 best=0.1379
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1367 best=0.1367
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1308 best=0.1308
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1332 best=0.1308
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1361 best=0.1308
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1367 best=0.1308
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1364 best=0.1308
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1403 best=0.1308
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1387 best=0.1308
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1350 best=0.1308
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1335 best=0.1308
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1379 best=0.1308
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1361 best=0.1308
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1381 best=0.1308
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1294 best=0.1294
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1292 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1403 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1349 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1321 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1331 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1341 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1356 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1344 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1361 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1329 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1308 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1328 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1325 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1315 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1391 best=0.1292
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1335 best=0.1292
+[arm1-cross-disease] seed 62 'mlp-256' done in 2.9 min
+
+[arm2-in-domain] seed 62 surface 'affine (current)' (1,428 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2467 best=0.2467
+    shared-adapter[dengue] ep01 val=0.2450 best=0.2450
+    shared-adapter[dengue] ep02 val=0.2424 best=0.2424
+    shared-adapter[dengue] ep03 val=0.2432 best=0.2424
+    shared-adapter[dengue] ep04 val=0.2426 best=0.2424
+    shared-adapter[dengue] ep05 val=0.2436 best=0.2424
+    shared-adapter[dengue] ep06 val=0.2432 best=0.2424
+    shared-adapter[dengue] ep07 val=0.2432 best=0.2424
+    shared-adapter[dengue] ep08 val=0.2420 best=0.2420
+    shared-adapter[dengue] ep09 val=0.2423 best=0.2420
+    shared-adapter[dengue] ep10 val=0.2411 best=0.2411
+    shared-adapter[dengue] ep11 val=0.2417 best=0.2411
+    shared-adapter[dengue] ep12 val=0.2436 best=0.2411
+    shared-adapter[dengue] ep13 val=0.2442 best=0.2411
+    shared-adapter[dengue] ep14 val=0.2417 best=0.2411
+    shared-adapter[dengue] ep15 val=0.2412 best=0.2411
+    shared-adapter[dengue] ep16 val=0.2449 best=0.2411
+    shared-adapter[dengue] ep17 val=0.2424 best=0.2411
+    shared-adapter[dengue] ep18 val=0.2417 best=0.2411
+    shared-adapter[dengue] ep19 val=0.2418 best=0.2411
+    shared-adapter[dengue] ep20 val=0.2410 best=0.2410
+    shared-adapter[dengue] ep21 val=0.2423 best=0.2410
+    shared-adapter[dengue] ep22 val=0.2436 best=0.2410
+    shared-adapter[dengue] ep23 val=0.2427 best=0.2410
+    shared-adapter[dengue] ep24 val=0.2443 best=0.2410
+    shared-adapter[dengue] ep25 val=0.2441 best=0.2410
+    shared-adapter[dengue] ep26 val=0.2430 best=0.2410
+    shared-adapter[dengue] ep27 val=0.2422 best=0.2410
+    shared-adapter[dengue] ep28 val=0.2445 best=0.2410
+    shared-adapter[dengue] ep29 val=0.2418 best=0.2410
+    shared-adapter[dengue] ep30 val=0.2434 best=0.2410
+    shared-adapter[dengue] ep31 val=0.2449 best=0.2410
+    shared-adapter[dengue] ep32 val=0.2423 best=0.2410
+    shared-adapter[dengue] ep33 val=0.2458 best=0.2410
+    shared-adapter[dengue] ep34 val=0.2433 best=0.2410
+    shared-adapter[dengue] ep35 val=0.2445 best=0.2410
+[arm2-in-domain] seed 62 'affine (current)' done in 31.4 min
+
+[arm2-in-domain] seed 62 surface 'mlp-64' (5,460 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2401 best=0.2401
+    shared-adapter[dengue] ep01 val=0.2438 best=0.2401
+    shared-adapter[dengue] ep02 val=0.2401 best=0.2401
+    shared-adapter[dengue] ep03 val=0.2411 best=0.2401
+    shared-adapter[dengue] ep04 val=0.2419 best=0.2401
+    shared-adapter[dengue] ep05 val=0.2427 best=0.2401
+    shared-adapter[dengue] ep06 val=0.2444 best=0.2401
+    shared-adapter[dengue] ep07 val=0.2430 best=0.2401
+    shared-adapter[dengue] ep08 val=0.2427 best=0.2401
+    shared-adapter[dengue] ep09 val=0.2422 best=0.2401
+    shared-adapter[dengue] ep10 val=0.2426 best=0.2401
+    shared-adapter[dengue] ep11 val=0.2430 best=0.2401
+    shared-adapter[dengue] ep12 val=0.2411 best=0.2401
+    shared-adapter[dengue] ep13 val=0.2436 best=0.2401
+    shared-adapter[dengue] ep14 val=0.2435 best=0.2401
+    shared-adapter[dengue] ep15 val=0.2425 best=0.2401
+[arm2-in-domain] seed 62 'mlp-64' done in 14.4 min
+
+[arm2-in-domain] seed 62 surface 'film+mlp-64' (5,588 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2405 best=0.2405
+    shared-adapter[dengue] ep01 val=0.2453 best=0.2405
+    shared-adapter[dengue] ep02 val=0.2401 best=0.2401
+    shared-adapter[dengue] ep03 val=0.2415 best=0.2401
+    shared-adapter[dengue] ep04 val=0.2416 best=0.2401
+    shared-adapter[dengue] ep05 val=0.2434 best=0.2401
+    shared-adapter[dengue] ep06 val=0.2448 best=0.2401
+    shared-adapter[dengue] ep07 val=0.2416 best=0.2401
+    shared-adapter[dengue] ep08 val=0.2428 best=0.2401
+    shared-adapter[dengue] ep09 val=0.2417 best=0.2401
+    shared-adapter[dengue] ep10 val=0.2418 best=0.2401
+    shared-adapter[dengue] ep11 val=0.2432 best=0.2401
+    shared-adapter[dengue] ep12 val=0.2405 best=0.2401
+    shared-adapter[dengue] ep13 val=0.2429 best=0.2401
+    shared-adapter[dengue] ep14 val=0.2444 best=0.2401
+    shared-adapter[dengue] ep15 val=0.2421 best=0.2401
+    shared-adapter[dengue] ep16 val=0.2443 best=0.2401
+    shared-adapter[dengue] ep17 val=0.2441 best=0.2401
+[arm2-in-domain] seed 62 'film+mlp-64' done in 16.2 min
+
+[arm2-in-domain] seed 62 surface 'mlp-256' (21,780 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2380 best=0.2380
+    shared-adapter[dengue] ep01 val=0.2469 best=0.2380
+    shared-adapter[dengue] ep02 val=0.2427 best=0.2380
+    shared-adapter[dengue] ep03 val=0.2422 best=0.2380
+    shared-adapter[dengue] ep04 val=0.2441 best=0.2380
+    shared-adapter[dengue] ep05 val=0.2437 best=0.2380
+    shared-adapter[dengue] ep06 val=0.2461 best=0.2380
+    shared-adapter[dengue] ep07 val=0.2458 best=0.2380
+    shared-adapter[dengue] ep08 val=0.2460 best=0.2380
+    shared-adapter[dengue] ep09 val=0.2421 best=0.2380
+    shared-adapter[dengue] ep10 val=0.2438 best=0.2380
+    shared-adapter[dengue] ep11 val=0.2439 best=0.2380
+    shared-adapter[dengue] ep12 val=0.2414 best=0.2380
+    shared-adapter[dengue] ep13 val=0.2449 best=0.2380
+    shared-adapter[dengue] ep14 val=0.2449 best=0.2380
+    shared-adapter[dengue] ep15 val=0.2443 best=0.2380
+[arm2-in-domain] seed 62 'mlp-256' done in 14.4 min
+[seed 62] cached -> results\misc\capacity_probe__seed62.json
+
+##############################################################################
+# seed 72   (4/5)
+##############################################################################
+[stage1] seed 72: fitting the dengue trunk (~70 min on the 3060)
+    trunk(-72) step  1000 val=0.2504 best=0.2504
+    trunk(-72) step  2000 val=0.2482 best=0.2482
+    trunk(-72) step  3000 val=0.2463 best=0.2463
+    trunk(-72) step  4000 val=0.2404 best=0.2404
+    trunk(-72) step  5000 val=0.2449 best=0.2404
+    trunk(-72) step  6000 val=0.2401 best=0.2401
+    trunk(-72) step  7000 val=0.2520 best=0.2401
+    trunk(-72) step  8000 val=0.2533 best=0.2401
+    trunk(-72) step  9000 val=0.2517 best=0.2401
+    trunk(-72) step 10000 val=0.2471 best=0.2401
+    trunk(-72) step 11000 val=0.2401 best=0.2401
+    trunk(-72) step 12000 val=0.2446 best=0.2401
+    trunk(-72) step 13000 val=0.2415 best=0.2401
+    trunk(-72) step 14000 val=0.2506 best=0.2401
+    trunk(-72) step 15000 val=0.2436 best=0.2401
+    trunk(-72) step 16000 val=0.2436 best=0.2401
+    trunk(-72) step 17000 val=0.2450 best=0.2401
+    trunk(-72) step 18000 val=0.2509 best=0.2401
+    trunk(-72) step 19000 val=0.2454 best=0.2401
+    trunk(-72) step 20000 val=0.2476 best=0.2401
+    trunk(-72) step 21000 val=0.2495 best=0.2401
+    trunk(-72) step 22000 val=0.2457 best=0.2401
+    trunk(-72) step 23000 val=0.2410 best=0.2401
+[stage1] seed 72: done in 38.2 min -> results\lodo\encoder_ldo__dengue2flu-cap__seed72__ckpt.pt
+[trunk] loaded results\lodo\encoder_ldo__dengue2flu-cap__seed72__ckpt.pt (142,305 params, frozen)
+
+[arm1-cross-disease] seed 72 surface 'affine (current)' (1,428 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1937 best=0.1937
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1731 best=0.1731
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1648 best=0.1648
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1570 best=0.1570
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1530 best=0.1530
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1518 best=0.1518
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1482 best=0.1482
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1493 best=0.1482
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1498 best=0.1482
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1472 best=0.1472
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1452 best=0.1452
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1501 best=0.1452
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1427 best=0.1427
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1435 best=0.1427
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1457 best=0.1427
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1444 best=0.1427
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1424 best=0.1424
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1464 best=0.1424
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1469 best=0.1424
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1463 best=0.1424
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1408 best=0.1408
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1407 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1419 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1414 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1442 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1411 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1423 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1411 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1416 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1406 best=0.1406
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1434 best=0.1406
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1418 best=0.1406
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1417 best=0.1406
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1432 best=0.1406
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1416 best=0.1406
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1418 best=0.1406
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1414 best=0.1406
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1408 best=0.1406
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1435 best=0.1406
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1422 best=0.1406
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1418 best=0.1406
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1404 best=0.1404
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1427 best=0.1404
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1421 best=0.1404
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1396 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep45 val=0.1403 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep46 val=0.1443 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep47 val=0.1409 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep48 val=0.1399 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep49 val=0.1401 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep50 val=0.1403 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep51 val=0.1400 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep52 val=0.1396 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep53 val=0.1413 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep54 val=0.1404 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep55 val=0.1404 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep56 val=0.1415 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep57 val=0.1409 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep58 val=0.1405 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep59 val=0.1427 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep60 val=0.1405 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep61 val=0.1418 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep62 val=0.1405 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep63 val=0.1413 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep64 val=0.1410 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep65 val=0.1417 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep66 val=0.1412 best=0.1396
+    shared-adapter[japan+us-regions+us-states] ep67 val=0.1410 best=0.1396
+[arm1-cross-disease] seed 72 'affine (current)' done in 5.6 min
+
+[arm1-cross-disease] seed 72 surface 'mlp-64' (5,460 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1798 best=0.1798
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1564 best=0.1564
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1524 best=0.1524
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1426 best=0.1426
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1381 best=0.1381
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1360 best=0.1360
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1347 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1368 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1370 best=0.1347
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1341 best=0.1341
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1407 best=0.1341
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1355 best=0.1341
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1331 best=0.1331
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1328 best=0.1328
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1355 best=0.1328
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1278 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1326 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1376 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1343 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1335 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1332 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1316 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1283 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1294 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1301 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1283 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1275 best=0.1275
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1347 best=0.1275
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1299 best=0.1275
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1287 best=0.1275
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1333 best=0.1275
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1308 best=0.1275
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1278 best=0.1275
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1273 best=0.1273
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1296 best=0.1273
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1285 best=0.1273
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1292 best=0.1273
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1330 best=0.1273
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1272 best=0.1272
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1269 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1350 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1283 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1272 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1280 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1293 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep45 val=0.1302 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep46 val=0.1357 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep47 val=0.1298 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep48 val=0.1274 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep49 val=0.1275 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep50 val=0.1318 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep51 val=0.1274 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep52 val=0.1346 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep53 val=0.1293 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep54 val=0.1281 best=0.1269
+[arm1-cross-disease] seed 72 'mlp-64' done in 4.7 min
+
+[arm1-cross-disease] seed 72 surface 'film+mlp-64' (5,588 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1724 best=0.1724
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1548 best=0.1548
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1515 best=0.1515
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1400 best=0.1400
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1354 best=0.1354
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1330 best=0.1330
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1328 best=0.1328
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1355 best=0.1328
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1352 best=0.1328
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1328 best=0.1328
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1390 best=0.1328
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1351 best=0.1328
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1324 best=0.1324
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1322 best=0.1322
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1366 best=0.1322
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1281 best=0.1281
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1341 best=0.1281
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1388 best=0.1281
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1327 best=0.1281
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1326 best=0.1281
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1346 best=0.1281
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1351 best=0.1281
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1278 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1288 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1294 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1313 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1284 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1359 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1309 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1310 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1391 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1325 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1292 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1287 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1317 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1294 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1312 best=0.1278
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1342 best=0.1278
+[arm1-cross-disease] seed 72 'film+mlp-64' done in 3.4 min
+
+[arm1-cross-disease] seed 72 surface 'mlp-256' (21,780 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1590 best=0.1590
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1431 best=0.1431
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1511 best=0.1431
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1307 best=0.1307
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1303 best=0.1303
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1291 best=0.1291
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1315 best=0.1291
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1269 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1278 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1276 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1322 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1272 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1317 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1278 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1429 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1271 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1319 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1391 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1323 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1272 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1342 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1311 best=0.1269
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1296 best=0.1269
+[arm1-cross-disease] seed 72 'mlp-256' done in 2.0 min
+
+[arm2-in-domain] seed 72 surface 'affine (current)' (1,428 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2457 best=0.2457
+    shared-adapter[dengue] ep01 val=0.2428 best=0.2428
+    shared-adapter[dengue] ep02 val=0.2417 best=0.2417
+    shared-adapter[dengue] ep03 val=0.2425 best=0.2417
+    shared-adapter[dengue] ep04 val=0.2438 best=0.2417
+    shared-adapter[dengue] ep05 val=0.2440 best=0.2417
+    shared-adapter[dengue] ep06 val=0.2429 best=0.2417
+    shared-adapter[dengue] ep07 val=0.2438 best=0.2417
+    shared-adapter[dengue] ep08 val=0.2447 best=0.2417
+    shared-adapter[dengue] ep09 val=0.2445 best=0.2417
+    shared-adapter[dengue] ep10 val=0.2406 best=0.2406
+    shared-adapter[dengue] ep11 val=0.2444 best=0.2406
+    shared-adapter[dengue] ep12 val=0.2427 best=0.2406
+    shared-adapter[dengue] ep13 val=0.2420 best=0.2406
+    shared-adapter[dengue] ep14 val=0.2423 best=0.2406
+    shared-adapter[dengue] ep15 val=0.2430 best=0.2406
+    shared-adapter[dengue] ep16 val=0.2433 best=0.2406
+    shared-adapter[dengue] ep17 val=0.2428 best=0.2406
+    shared-adapter[dengue] ep18 val=0.2438 best=0.2406
+    shared-adapter[dengue] ep19 val=0.2411 best=0.2406
+    shared-adapter[dengue] ep20 val=0.2423 best=0.2406
+    shared-adapter[dengue] ep21 val=0.2421 best=0.2406
+    shared-adapter[dengue] ep22 val=0.2445 best=0.2406
+    shared-adapter[dengue] ep23 val=0.2417 best=0.2406
+    shared-adapter[dengue] ep24 val=0.2431 best=0.2406
+    shared-adapter[dengue] ep25 val=0.2448 best=0.2406
+[arm2-in-domain] seed 72 'affine (current)' done in 22.6 min
+
+[arm2-in-domain] seed 72 surface 'mlp-64' (5,460 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2420 best=0.2420
+    shared-adapter[dengue] ep01 val=0.2426 best=0.2420
+    shared-adapter[dengue] ep02 val=0.2391 best=0.2391
+    shared-adapter[dengue] ep03 val=0.2437 best=0.2391
+    shared-adapter[dengue] ep04 val=0.2443 best=0.2391
+    shared-adapter[dengue] ep05 val=0.2444 best=0.2391
+    shared-adapter[dengue] ep06 val=0.2442 best=0.2391
+    shared-adapter[dengue] ep07 val=0.2450 best=0.2391
+    shared-adapter[dengue] ep08 val=0.2468 best=0.2391
+    shared-adapter[dengue] ep09 val=0.2445 best=0.2391
+    shared-adapter[dengue] ep10 val=0.2423 best=0.2391
+    shared-adapter[dengue] ep11 val=0.2438 best=0.2391
+    shared-adapter[dengue] ep12 val=0.2419 best=0.2391
+    shared-adapter[dengue] ep13 val=0.2414 best=0.2391
+    shared-adapter[dengue] ep14 val=0.2421 best=0.2391
+    shared-adapter[dengue] ep15 val=0.2405 best=0.2391
+    shared-adapter[dengue] ep16 val=0.2452 best=0.2391
+    shared-adapter[dengue] ep17 val=0.2429 best=0.2391
+[arm2-in-domain] seed 72 'mlp-64' done in 15.9 min
+
+[arm2-in-domain] seed 72 surface 'film+mlp-64' (5,588 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2408 best=0.2408
+    shared-adapter[dengue] ep01 val=0.2425 best=0.2408
+    shared-adapter[dengue] ep02 val=0.2392 best=0.2392
+    shared-adapter[dengue] ep03 val=0.2449 best=0.2392
+    shared-adapter[dengue] ep04 val=0.2447 best=0.2392
+    shared-adapter[dengue] ep05 val=0.2455 best=0.2392
+    shared-adapter[dengue] ep06 val=0.2436 best=0.2392
+    shared-adapter[dengue] ep07 val=0.2441 best=0.2392
+    shared-adapter[dengue] ep08 val=0.2454 best=0.2392
+    shared-adapter[dengue] ep09 val=0.2442 best=0.2392
+    shared-adapter[dengue] ep10 val=0.2407 best=0.2392
+    shared-adapter[dengue] ep11 val=0.2428 best=0.2392
+    shared-adapter[dengue] ep12 val=0.2411 best=0.2392
+    shared-adapter[dengue] ep13 val=0.2405 best=0.2392
+    shared-adapter[dengue] ep14 val=0.2409 best=0.2392
+    shared-adapter[dengue] ep15 val=0.2393 best=0.2392
+    shared-adapter[dengue] ep16 val=0.2445 best=0.2392
+    shared-adapter[dengue] ep17 val=0.2419 best=0.2392
+[arm2-in-domain] seed 72 'film+mlp-64' done in 16.0 min
+
+[arm2-in-domain] seed 72 surface 'mlp-256' (21,780 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2405 best=0.2405
+    shared-adapter[dengue] ep01 val=0.2435 best=0.2405
+    shared-adapter[dengue] ep02 val=0.2400 best=0.2400
+    shared-adapter[dengue] ep03 val=0.2431 best=0.2400
+    shared-adapter[dengue] ep04 val=0.2433 best=0.2400
+    shared-adapter[dengue] ep05 val=0.2438 best=0.2400
+    shared-adapter[dengue] ep06 val=0.2463 best=0.2400
+    shared-adapter[dengue] ep07 val=0.2466 best=0.2400
+    shared-adapter[dengue] ep08 val=0.2482 best=0.2400
+    shared-adapter[dengue] ep09 val=0.2459 best=0.2400
+    shared-adapter[dengue] ep10 val=0.2446 best=0.2400
+    shared-adapter[dengue] ep11 val=0.2443 best=0.2400
+    shared-adapter[dengue] ep12 val=0.2413 best=0.2400
+    shared-adapter[dengue] ep13 val=0.2424 best=0.2400
+    shared-adapter[dengue] ep14 val=0.2434 best=0.2400
+    shared-adapter[dengue] ep15 val=0.2412 best=0.2400
+    shared-adapter[dengue] ep16 val=0.2458 best=0.2400
+    shared-adapter[dengue] ep17 val=0.2428 best=0.2400
+[arm2-in-domain] seed 72 'mlp-256' done in 15.9 min
+[seed 72] cached -> results\misc\capacity_probe__seed72.json
+
+##############################################################################
+# seed 82   (5/5)
+##############################################################################
+[stage1] seed 82: fitting the dengue trunk (~70 min on the 3060)
+    trunk(-82) step  1000 val=0.2536 best=0.2536
+    trunk(-82) step  2000 val=0.2382 best=0.2382
+    trunk(-82) step  3000 val=0.2498 best=0.2382
+    trunk(-82) step  4000 val=0.2453 best=0.2382
+    trunk(-82) step  5000 val=0.2382 best=0.2382
+    trunk(-82) step  6000 val=0.2449 best=0.2382
+    trunk(-82) step  7000 val=0.2490 best=0.2382
+    trunk(-82) step  8000 val=0.2353 best=0.2353
+    trunk(-82) step  9000 val=0.2454 best=0.2353
+    trunk(-82) step 10000 val=0.2425 best=0.2353
+    trunk(-82) step 11000 val=0.2416 best=0.2353
+    trunk(-82) step 12000 val=0.2472 best=0.2353
+    trunk(-82) step 13000 val=0.2433 best=0.2353
+    trunk(-82) step 14000 val=0.2429 best=0.2353
+    trunk(-82) step 15000 val=0.2479 best=0.2353
+    trunk(-82) step 16000 val=0.2459 best=0.2353
+    trunk(-82) step 17000 val=0.2339 best=0.2339
+    trunk(-82) step 18000 val=0.2440 best=0.2339
+    trunk(-82) step 19000 val=0.2415 best=0.2339
+    trunk(-82) step 20000 val=0.2380 best=0.2339
+    trunk(-82) step 21000 val=0.2397 best=0.2339
+    trunk(-82) step 22000 val=0.2377 best=0.2339
+    trunk(-82) step 23000 val=0.2456 best=0.2339
+    trunk(-82) step 24000 val=0.2385 best=0.2339
+    trunk(-82) step 25000 val=0.2433 best=0.2339
+    trunk(-82) step 26000 val=0.2422 best=0.2339
+    trunk(-82) step 27000 val=0.2398 best=0.2339
+    trunk(-82) step 28000 val=0.2457 best=0.2339
+    trunk(-82) step 29000 val=0.2360 best=0.2339
+[stage1] seed 82: done in 47.7 min -> results\lodo\encoder_ldo__dengue2flu-cap__seed82__ckpt.pt
+[trunk] loaded results\lodo\encoder_ldo__dengue2flu-cap__seed82__ckpt.pt (142,305 params, frozen)
+
+[arm1-cross-disease] seed 82 surface 'affine (current)' (1,428 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1897 best=0.1897
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1608 best=0.1608
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1583 best=0.1583
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1579 best=0.1579
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1542 best=0.1542
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1533 best=0.1533
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1488 best=0.1488
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1501 best=0.1488
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1497 best=0.1488
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1499 best=0.1488
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1496 best=0.1488
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1469 best=0.1469
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1482 best=0.1469
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1508 best=0.1469
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1479 best=0.1469
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1501 best=0.1469
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1471 best=0.1469
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1472 best=0.1469
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1445 best=0.1445
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1477 best=0.1445
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1515 best=0.1445
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1446 best=0.1445
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1441 best=0.1441
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1443 best=0.1441
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1430 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1446 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1433 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1435 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1446 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1453 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1422 best=0.1422
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1440 best=0.1422
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1435 best=0.1422
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1455 best=0.1422
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1407 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1455 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1423 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1447 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1454 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1434 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1424 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1429 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1453 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1439 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1429 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep45 val=0.1410 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep46 val=0.1444 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep47 val=0.1449 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep48 val=0.1421 best=0.1407
+    shared-adapter[japan+us-regions+us-states] ep49 val=0.1440 best=0.1407
+[arm1-cross-disease] seed 82 'affine (current)' done in 3.7 min
+
+[arm1-cross-disease] seed 82 surface 'mlp-64' (5,460 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1701 best=0.1701
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1540 best=0.1540
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1486 best=0.1486
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1441 best=0.1441
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1449 best=0.1441
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1384 best=0.1384
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1366 best=0.1366
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1388 best=0.1366
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1351 best=0.1351
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1399 best=0.1351
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1407 best=0.1351
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1319 best=0.1319
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1306 best=0.1306
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1319 best=0.1306
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1328 best=0.1306
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1344 best=0.1306
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1293 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1302 best=0.1293
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1265 best=0.1265
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1360 best=0.1265
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1328 best=0.1265
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1260 best=0.1260
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1308 best=0.1260
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1285 best=0.1260
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1300 best=0.1260
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1259 best=0.1259
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1254 best=0.1254
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1272 best=0.1254
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1268 best=0.1254
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1275 best=0.1254
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1262 best=0.1254
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1258 best=0.1254
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1280 best=0.1254
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1303 best=0.1254
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1257 best=0.1254
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1296 best=0.1254
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1292 best=0.1254
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1275 best=0.1254
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1314 best=0.1254
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1283 best=0.1254
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1332 best=0.1254
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1252 best=0.1252
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1317 best=0.1252
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1273 best=0.1252
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1249 best=0.1249
+    shared-adapter[japan+us-regions+us-states] ep45 val=0.1270 best=0.1249
+    shared-adapter[japan+us-regions+us-states] ep46 val=0.1278 best=0.1249
+    shared-adapter[japan+us-regions+us-states] ep47 val=0.1315 best=0.1249
+    shared-adapter[japan+us-regions+us-states] ep48 val=0.1239 best=0.1239
+    shared-adapter[japan+us-regions+us-states] ep49 val=0.1255 best=0.1239
+    shared-adapter[japan+us-regions+us-states] ep50 val=0.1254 best=0.1239
+    shared-adapter[japan+us-regions+us-states] ep51 val=0.1279 best=0.1239
+    shared-adapter[japan+us-regions+us-states] ep52 val=0.1276 best=0.1239
+    shared-adapter[japan+us-regions+us-states] ep53 val=0.1301 best=0.1239
+    shared-adapter[japan+us-regions+us-states] ep54 val=0.1286 best=0.1239
+    shared-adapter[japan+us-regions+us-states] ep55 val=0.1297 best=0.1239
+    shared-adapter[japan+us-regions+us-states] ep56 val=0.1271 best=0.1239
+    shared-adapter[japan+us-regions+us-states] ep57 val=0.1255 best=0.1239
+    shared-adapter[japan+us-regions+us-states] ep58 val=0.1254 best=0.1239
+    shared-adapter[japan+us-regions+us-states] ep59 val=0.1263 best=0.1239
+    shared-adapter[japan+us-regions+us-states] ep60 val=0.1263 best=0.1239
+    shared-adapter[japan+us-regions+us-states] ep61 val=0.1277 best=0.1239
+    shared-adapter[japan+us-regions+us-states] ep62 val=0.1272 best=0.1239
+    shared-adapter[japan+us-regions+us-states] ep63 val=0.1280 best=0.1239
+[arm1-cross-disease] seed 82 'mlp-64' done in 4.9 min
+
+[arm1-cross-disease] seed 82 surface 'film+mlp-64' (5,588 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1708 best=0.1708
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1508 best=0.1508
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1450 best=0.1450
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1432 best=0.1432
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1428 best=0.1428
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1381 best=0.1381
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1391 best=0.1381
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1370 best=0.1370
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1359 best=0.1359
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1390 best=0.1359
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1411 best=0.1359
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1322 best=0.1322
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1320 best=0.1320
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1331 best=0.1320
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1316 best=0.1316
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1335 best=0.1316
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1283 best=0.1283
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1322 best=0.1283
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1263 best=0.1263
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1348 best=0.1263
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1316 best=0.1263
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1261 best=0.1261
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1302 best=0.1261
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1283 best=0.1261
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1297 best=0.1261
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1250 best=0.1250
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1245 best=0.1245
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1265 best=0.1245
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1255 best=0.1245
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1276 best=0.1245
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1263 best=0.1245
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1255 best=0.1245
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1279 best=0.1245
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1297 best=0.1245
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1250 best=0.1245
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1282 best=0.1245
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1275 best=0.1245
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1256 best=0.1245
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1301 best=0.1245
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1269 best=0.1245
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1307 best=0.1245
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1242 best=0.1242
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1299 best=0.1242
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1255 best=0.1242
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1235 best=0.1235
+    shared-adapter[japan+us-regions+us-states] ep45 val=0.1252 best=0.1235
+    shared-adapter[japan+us-regions+us-states] ep46 val=0.1267 best=0.1235
+    shared-adapter[japan+us-regions+us-states] ep47 val=0.1283 best=0.1235
+    shared-adapter[japan+us-regions+us-states] ep48 val=0.1227 best=0.1227
+    shared-adapter[japan+us-regions+us-states] ep49 val=0.1238 best=0.1227
+    shared-adapter[japan+us-regions+us-states] ep50 val=0.1237 best=0.1227
+    shared-adapter[japan+us-regions+us-states] ep51 val=0.1262 best=0.1227
+    shared-adapter[japan+us-regions+us-states] ep52 val=0.1256 best=0.1227
+    shared-adapter[japan+us-regions+us-states] ep53 val=0.1284 best=0.1227
+    shared-adapter[japan+us-regions+us-states] ep54 val=0.1266 best=0.1227
+    shared-adapter[japan+us-regions+us-states] ep55 val=0.1273 best=0.1227
+    shared-adapter[japan+us-regions+us-states] ep56 val=0.1258 best=0.1227
+    shared-adapter[japan+us-regions+us-states] ep57 val=0.1236 best=0.1227
+    shared-adapter[japan+us-regions+us-states] ep58 val=0.1243 best=0.1227
+    shared-adapter[japan+us-regions+us-states] ep59 val=0.1251 best=0.1227
+    shared-adapter[japan+us-regions+us-states] ep60 val=0.1248 best=0.1227
+    shared-adapter[japan+us-regions+us-states] ep61 val=0.1253 best=0.1227
+    shared-adapter[japan+us-regions+us-states] ep62 val=0.1253 best=0.1227
+    shared-adapter[japan+us-regions+us-states] ep63 val=0.1265 best=0.1227
+[arm1-cross-disease] seed 82 'film+mlp-64' done in 5.2 min
+
+[arm1-cross-disease] seed 82 surface 'mlp-256' (21,780 params) -- fitting on ['influenza_japan', 'influenza_us-regions', 'influenza_us-states']
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1499 best=0.1499
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1480 best=0.1480
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1423 best=0.1423
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1380 best=0.1380
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1391 best=0.1380
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1320 best=0.1320
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1314 best=0.1314
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1359 best=0.1314
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1251 best=0.1251
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1369 best=0.1251
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1338 best=0.1251
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1273 best=0.1251
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1293 best=0.1251
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1282 best=0.1251
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1307 best=0.1251
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1275 best=0.1251
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1254 best=0.1251
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1326 best=0.1251
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1222 best=0.1222
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1252 best=0.1222
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1279 best=0.1222
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1229 best=0.1222
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1232 best=0.1222
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1230 best=0.1222
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1282 best=0.1222
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1270 best=0.1222
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1240 best=0.1222
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1246 best=0.1222
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1226 best=0.1222
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1282 best=0.1222
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1278 best=0.1222
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1235 best=0.1222
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1295 best=0.1222
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1214 best=0.1214
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1252 best=0.1214
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1269 best=0.1214
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1267 best=0.1214
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1231 best=0.1214
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1293 best=0.1214
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1276 best=0.1214
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1298 best=0.1214
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1304 best=0.1214
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1329 best=0.1214
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1260 best=0.1214
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1285 best=0.1214
+    shared-adapter[japan+us-regions+us-states] ep45 val=0.1256 best=0.1214
+    shared-adapter[japan+us-regions+us-states] ep46 val=0.1252 best=0.1214
+    shared-adapter[japan+us-regions+us-states] ep47 val=0.1292 best=0.1214
+    shared-adapter[japan+us-regions+us-states] ep48 val=0.1247 best=0.1214
+[arm1-cross-disease] seed 82 'mlp-256' done in 3.7 min
+
+[arm2-in-domain] seed 82 surface 'affine (current)' (1,428 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2471 best=0.2471
+    shared-adapter[dengue] ep01 val=0.2454 best=0.2454
+    shared-adapter[dengue] ep02 val=0.2466 best=0.2454
+    shared-adapter[dengue] ep03 val=0.2435 best=0.2435
+    shared-adapter[dengue] ep04 val=0.2416 best=0.2416
+    shared-adapter[dengue] ep05 val=0.2421 best=0.2416
+    shared-adapter[dengue] ep06 val=0.2418 best=0.2416
+    shared-adapter[dengue] ep07 val=0.2422 best=0.2416
+    shared-adapter[dengue] ep08 val=0.2404 best=0.2404
+    shared-adapter[dengue] ep09 val=0.2418 best=0.2404
+    shared-adapter[dengue] ep10 val=0.2408 best=0.2404
+    shared-adapter[dengue] ep11 val=0.2419 best=0.2404
+    shared-adapter[dengue] ep12 val=0.2416 best=0.2404
+    shared-adapter[dengue] ep13 val=0.2435 best=0.2404
+    shared-adapter[dengue] ep14 val=0.2412 best=0.2404
+    shared-adapter[dengue] ep15 val=0.2414 best=0.2404
+    shared-adapter[dengue] ep16 val=0.2411 best=0.2404
+    shared-adapter[dengue] ep17 val=0.2399 best=0.2399
+    shared-adapter[dengue] ep18 val=0.2409 best=0.2399
+    shared-adapter[dengue] ep19 val=0.2399 best=0.2399
+    shared-adapter[dengue] ep20 val=0.2411 best=0.2399
+    shared-adapter[dengue] ep21 val=0.2410 best=0.2399
+    shared-adapter[dengue] ep22 val=0.2387 best=0.2387
+    shared-adapter[dengue] ep23 val=0.2404 best=0.2387
+    shared-adapter[dengue] ep24 val=0.2406 best=0.2387
+    shared-adapter[dengue] ep25 val=0.2394 best=0.2387
+    shared-adapter[dengue] ep26 val=0.2415 best=0.2387
+    shared-adapter[dengue] ep27 val=0.2404 best=0.2387
+    shared-adapter[dengue] ep28 val=0.2411 best=0.2387
+    shared-adapter[dengue] ep29 val=0.2391 best=0.2387
+    shared-adapter[dengue] ep30 val=0.2411 best=0.2387
+    shared-adapter[dengue] ep31 val=0.2407 best=0.2387
+    shared-adapter[dengue] ep32 val=0.2416 best=0.2387
+    shared-adapter[dengue] ep33 val=0.2403 best=0.2387
+    shared-adapter[dengue] ep34 val=0.2406 best=0.2387
+    shared-adapter[dengue] ep35 val=0.2412 best=0.2387
+    shared-adapter[dengue] ep36 val=0.2404 best=0.2387
+    shared-adapter[dengue] ep37 val=0.2399 best=0.2387
+[arm2-in-domain] seed 82 'affine (current)' done in 32.7 min
+
+[arm2-in-domain] seed 82 surface 'mlp-64' (5,460 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2418 best=0.2418
+    shared-adapter[dengue] ep01 val=0.2439 best=0.2418
+    shared-adapter[dengue] ep02 val=0.2465 best=0.2418
+    shared-adapter[dengue] ep03 val=0.2447 best=0.2418
+    shared-adapter[dengue] ep04 val=0.2413 best=0.2413
+    shared-adapter[dengue] ep05 val=0.2413 best=0.2413
+    shared-adapter[dengue] ep06 val=0.2420 best=0.2413
+    shared-adapter[dengue] ep07 val=0.2421 best=0.2413
+    shared-adapter[dengue] ep08 val=0.2429 best=0.2413
+    shared-adapter[dengue] ep09 val=0.2419 best=0.2413
+    shared-adapter[dengue] ep10 val=0.2383 best=0.2383
+    shared-adapter[dengue] ep11 val=0.2390 best=0.2383
+    shared-adapter[dengue] ep12 val=0.2442 best=0.2383
+    shared-adapter[dengue] ep13 val=0.2458 best=0.2383
+    shared-adapter[dengue] ep14 val=0.2414 best=0.2383
+    shared-adapter[dengue] ep15 val=0.2384 best=0.2383
+    shared-adapter[dengue] ep16 val=0.2431 best=0.2383
+    shared-adapter[dengue] ep17 val=0.2401 best=0.2383
+    shared-adapter[dengue] ep18 val=0.2427 best=0.2383
+    shared-adapter[dengue] ep19 val=0.2395 best=0.2383
+    shared-adapter[dengue] ep20 val=0.2417 best=0.2383
+    shared-adapter[dengue] ep21 val=0.2429 best=0.2383
+    shared-adapter[dengue] ep22 val=0.2380 best=0.2380
+    shared-adapter[dengue] ep23 val=0.2426 best=0.2380
+    shared-adapter[dengue] ep24 val=0.2408 best=0.2380
+    shared-adapter[dengue] ep25 val=0.2407 best=0.2380
+    shared-adapter[dengue] ep26 val=0.2420 best=0.2380
+    shared-adapter[dengue] ep27 val=0.2427 best=0.2380
+    shared-adapter[dengue] ep28 val=0.2424 best=0.2380
+    shared-adapter[dengue] ep29 val=0.2389 best=0.2380
+    shared-adapter[dengue] ep30 val=0.2419 best=0.2380
+    shared-adapter[dengue] ep31 val=0.2407 best=0.2380
+    shared-adapter[dengue] ep32 val=0.2420 best=0.2380
+    shared-adapter[dengue] ep33 val=0.2414 best=0.2380
+    shared-adapter[dengue] ep34 val=0.2393 best=0.2380
+    shared-adapter[dengue] ep35 val=0.2416 best=0.2380
+    shared-adapter[dengue] ep36 val=0.2415 best=0.2380
+    shared-adapter[dengue] ep37 val=0.2414 best=0.2380
+[arm2-in-domain] seed 82 'mlp-64' done in 32.8 min
+
+[arm2-in-domain] seed 82 surface 'film+mlp-64' (5,588 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2435 best=0.2435
+    shared-adapter[dengue] ep01 val=0.2428 best=0.2428
+    shared-adapter[dengue] ep02 val=0.2459 best=0.2428
+    shared-adapter[dengue] ep03 val=0.2434 best=0.2428
+    shared-adapter[dengue] ep04 val=0.2414 best=0.2414
+    shared-adapter[dengue] ep05 val=0.2399 best=0.2399
+    shared-adapter[dengue] ep06 val=0.2421 best=0.2399
+    shared-adapter[dengue] ep07 val=0.2424 best=0.2399
+    shared-adapter[dengue] ep08 val=0.2426 best=0.2399
+    shared-adapter[dengue] ep09 val=0.2418 best=0.2399
+    shared-adapter[dengue] ep10 val=0.2375 best=0.2375
+    shared-adapter[dengue] ep11 val=0.2383 best=0.2375
+    shared-adapter[dengue] ep12 val=0.2428 best=0.2375
+    shared-adapter[dengue] ep13 val=0.2461 best=0.2375
+    shared-adapter[dengue] ep14 val=0.2399 best=0.2375
+    shared-adapter[dengue] ep15 val=0.2383 best=0.2375
+    shared-adapter[dengue] ep16 val=0.2424 best=0.2375
+    shared-adapter[dengue] ep17 val=0.2393 best=0.2375
+    shared-adapter[dengue] ep18 val=0.2419 best=0.2375
+    shared-adapter[dengue] ep19 val=0.2386 best=0.2375
+    shared-adapter[dengue] ep20 val=0.2409 best=0.2375
+    shared-adapter[dengue] ep21 val=0.2421 best=0.2375
+    shared-adapter[dengue] ep22 val=0.2390 best=0.2375
+    shared-adapter[dengue] ep23 val=0.2424 best=0.2375
+    shared-adapter[dengue] ep24 val=0.2398 best=0.2375
+    shared-adapter[dengue] ep25 val=0.2400 best=0.2375
+[arm2-in-domain] seed 82 'film+mlp-64' done in 22.8 min
+
+[arm2-in-domain] seed 82 surface 'mlp-256' (21,780 params) -- fitting on ['dengue']
+    shared-adapter[dengue] ep00 val=0.2444 best=0.2444
+    shared-adapter[dengue] ep01 val=0.2430 best=0.2430
+    shared-adapter[dengue] ep02 val=0.2450 best=0.2430
+    shared-adapter[dengue] ep03 val=0.2444 best=0.2430
+    shared-adapter[dengue] ep04 val=0.2435 best=0.2430
+    shared-adapter[dengue] ep05 val=0.2401 best=0.2401
+    shared-adapter[dengue] ep06 val=0.2420 best=0.2401
+    shared-adapter[dengue] ep07 val=0.2410 best=0.2401
+    shared-adapter[dengue] ep08 val=0.2445 best=0.2401
+    shared-adapter[dengue] ep09 val=0.2440 best=0.2401
+    shared-adapter[dengue] ep10 val=0.2381 best=0.2381
+    shared-adapter[dengue] ep11 val=0.2395 best=0.2381
+    shared-adapter[dengue] ep12 val=0.2444 best=0.2381
+    shared-adapter[dengue] ep13 val=0.2473 best=0.2381
+    shared-adapter[dengue] ep14 val=0.2424 best=0.2381
+    shared-adapter[dengue] ep15 val=0.2379 best=0.2379
+    shared-adapter[dengue] ep16 val=0.2436 best=0.2379
+    shared-adapter[dengue] ep17 val=0.2389 best=0.2379
+    shared-adapter[dengue] ep18 val=0.2423 best=0.2379
+    shared-adapter[dengue] ep19 val=0.2394 best=0.2379
+    shared-adapter[dengue] ep20 val=0.2431 best=0.2379
+    shared-adapter[dengue] ep21 val=0.2425 best=0.2379
+    shared-adapter[dengue] ep22 val=0.2404 best=0.2379
+    shared-adapter[dengue] ep23 val=0.2432 best=0.2379
+    shared-adapter[dengue] ep24 val=0.2412 best=0.2379
+    shared-adapter[dengue] ep25 val=0.2410 best=0.2379
+    shared-adapter[dengue] ep26 val=0.2420 best=0.2379
+    shared-adapter[dengue] ep27 val=0.2452 best=0.2379
+    shared-adapter[dengue] ep28 val=0.2443 best=0.2379
+    shared-adapter[dengue] ep29 val=0.2387 best=0.2379
+    shared-adapter[dengue] ep30 val=0.2413 best=0.2379
+[arm2-in-domain] seed 82 'mlp-256' done in 26.9 min
+[seed 82] cached -> results\misc\capacity_probe__seed82.json
+
+==============================================================================
+cross-disease: 7 of 36 cells significantly better than affine (best +19.8%); in-domain control: 0 of 12 (best +0.0%)
+==============================================================================
+wrote Reports\Capacity_Probe_5Seed.md and results\misc\capacity_probe_5seed.json
+peak GPU memory 1.39 GB
+total 773.9 min

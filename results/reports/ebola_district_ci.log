@@ -1,0 +1,104 @@
+
+====================================================================================================
+EBOLA RMSE -- paired DISTRICT bootstrap on the node-averaged country-macro (B=10000, stratified by country)
+====================================================================================================
+
+  ebola_L12 (PRIMARY)  few-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  -5.210 CI [ -11.847,   +0.351] n.s.  N=51   | seed-sd rule:        +12.0% DISAGREES
+    h3   vs support_mean  d=  -3.548 CI [  -6.163,   -0.758] WIN   N=51   | seed-sd rule:         +8.5% ok
+    h5   vs persistence   d=  -6.356 CI [ -14.912,   +1.343] n.s.  N=52   | seed-sd rule:        +14.3% DISAGREES
+    h5   vs support_mean  d=  -3.621 CI [  -5.975,   -1.740] WIN   N=52   | seed-sd rule:         +8.7% ok
+    h10  vs persistence   d=  -4.815 CI [ -13.123,   +6.719] n.s.  N=53   | seed-sd rule:  within noise ok
+    h10  vs support_mean  d=  +0.281 CI [  -3.725,  +10.322] n.s.  N=53   | seed-sd rule:  within noise ok
+    h15  vs persistence   d= -22.158 CI [ -44.027,   -5.964] WIN   N=50   | seed-sd rule:        +43.7% ok
+    h15  vs support_mean  d=  -1.101 CI [  -3.412,   +0.605] n.s.  N=50   | seed-sd rule:         +3.7% DISAGREES
+
+  ebola_L12 (PRIMARY)  zero-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  -6.858 CI [ -13.329,   -1.541] WIN   N=51   | seed-sd rule:        +15.8% ok
+    h3   vs support_mean  d=  -5.196 CI [  -7.395,   -3.251] WIN   N=51   | seed-sd rule:        +12.4% ok
+    h5   vs persistence   d=  -6.749 CI [ -15.190,   +0.807] n.s.  N=52   | seed-sd rule:        +15.2% DISAGREES
+    h5   vs support_mean  d=  -4.014 CI [  -5.864,   -2.411] WIN   N=52   | seed-sd rule:         +9.6% ok
+    h10  vs persistence   d=  -7.139 CI [ -13.694,   -2.038] WIN   N=53   | seed-sd rule:        +15.5% ok
+    h10  vs support_mean  d=  -2.043 CI [  -4.052,   -0.496] WIN   N=53   | seed-sd rule:         +5.0% ok
+    h15  vs persistence   d= -22.394 CI [ -44.456,   -6.080] WIN   N=50   | seed-sd rule:        +44.2% ok
+    h15  vs support_mean  d=  -1.338 CI [  -3.517,   +0.286] n.s.  N=50   | seed-sd rule:         +4.5% DISAGREES
+
+  ebola_L20 (secondary)  few-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  +3.630 CI [ -11.071,  +36.875] n.s.  N=51   | seed-sd rule:  within noise ok
+    h3   vs support_mean  d=  +5.432 CI [  -7.705,  +38.124] n.s.  N=51   | seed-sd rule:  within noise ok
+    h5   vs persistence   d=  -5.419 CI [ -13.824,   +2.159] n.s.  N=52   | seed-sd rule:        +12.2% DISAGREES
+    h5   vs support_mean  d=  -3.120 CI [  -8.221,   +0.945] n.s.  N=52   | seed-sd rule:         +7.4% DISAGREES
+    h10  vs persistence   d=  +5.574 CI [ -10.347,  +32.318] n.s.  N=53   | seed-sd rule:  within noise ok
+    h10  vs support_mean  d=  +9.901 CI [  -4.430,  +36.379] n.s.  N=53   | seed-sd rule:  within noise ok
+    h15  vs persistence   d=  -9.832 CI [ -38.231,  +16.790] n.s.  N=50   | seed-sd rule:  within noise ok
+    h15  vs support_mean  d=  +9.906 CI [  -4.440,  +31.249] n.s.  N=50   | seed-sd rule:  within noise ok
+
+  ebola_L20 (secondary)  zero-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  -8.169 CI [ -15.037,   -2.605] WIN   N=51   | seed-sd rule:        +18.8% ok
+    h3   vs support_mean  d=  -6.367 CI [ -11.064,   -2.590] WIN   N=51   | seed-sd rule:        +15.3% ok
+    h5   vs persistence   d=  -7.653 CI [ -16.013,   -0.160] WIN   N=52   | seed-sd rule:        +17.3% ok
+    h5   vs support_mean  d=  -5.354 CI [ -10.324,   -1.550] WIN   N=52   | seed-sd rule:        +12.7% ok
+    h10  vs persistence   d=  -6.633 CI [ -13.405,   -1.413] WIN   N=53   | seed-sd rule:        +14.4% ok
+    h10  vs support_mean  d=  -2.307 CI [  -8.046,   +1.912] n.s.  N=53   | seed-sd rule:         +5.5% DISAGREES
+    h15  vs persistence   d= -21.141 CI [ -43.694,   -4.558] WIN   N=50   | seed-sd rule:        +41.7% ok
+    h15  vs support_mean  d=  -1.404 CI [  -7.556,   +3.424] n.s.  N=50   | seed-sd rule:         +4.5% DISAGREES
+
+  M2 cross-tab: the seed-sd rule and this interval disagree on 9 of 32 cells.
+
+====================================================================================================
+EBOLA MAE -- paired DISTRICT bootstrap on the node-averaged country-macro (B=10000, stratified by country)
+====================================================================================================
+
+  ebola_L12 (PRIMARY)  few-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  -1.212 CI [  -5.448,   +2.393] n.s.  N=51   | seed-sd rule:         +4.7% DISAGREES
+    h3   vs support_mean  d=  -3.342 CI [  -6.417,   -0.478] WIN   N=51   | seed-sd rule:        +11.9% ok
+    h5   vs persistence   d=  -2.793 CI [  -8.511,   +2.373] n.s.  N=52   | seed-sd rule:        +10.2% DISAGREES
+    h5   vs support_mean  d=  -3.208 CI [  -5.784,   -1.164] WIN   N=52   | seed-sd rule:        +11.5% ok
+    h10  vs persistence   d=  -2.477 CI [  -9.424,   +8.289] n.s.  N=53   | seed-sd rule:  within noise ok
+    h10  vs support_mean  d=  +0.851 CI [  -3.326,  +10.579] n.s.  N=53   | seed-sd rule:  within noise ok
+    h15  vs persistence   d= -11.814 CI [ -22.167,   -3.652] WIN   N=50   | seed-sd rule:        +37.0% ok
+    h15  vs support_mean  d=  -1.008 CI [  -3.473,   +0.833] n.s.  N=50   | seed-sd rule:         +4.8% DISAGREES
+
+  ebola_L12 (PRIMARY)  zero-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  -3.053 CI [  -7.078,   +0.229] n.s.  N=51   | seed-sd rule:        +11.8% DISAGREES
+    h3   vs support_mean  d=  -5.184 CI [  -7.781,   -2.934] WIN   N=51   | seed-sd rule:        +18.5% ok
+    h5   vs persistence   d=  -3.402 CI [  -8.983,   +1.555] n.s.  N=52   | seed-sd rule:        +12.4% DISAGREES
+    h5   vs support_mean  d=  -3.817 CI [  -5.864,   -2.034] WIN   N=52   | seed-sd rule:        +13.7% ok
+    h10  vs persistence   d=  -4.981 CI [  -9.798,   -1.254] WIN   N=53   | seed-sd rule:        +17.5% ok
+    h10  vs support_mean  d=  -1.653 CI [  -3.820,   +0.020] n.s.  N=53   | seed-sd rule:         +6.6% DISAGREES
+    h15  vs persistence   d= -11.771 CI [ -22.308,   -3.481] WIN   N=50   | seed-sd rule:        +36.9% ok
+    h15  vs support_mean  d=  -0.965 CI [  -3.229,   +0.727] n.s.  N=50   | seed-sd rule:         +4.6% DISAGREES
+
+  ebola_L20 (secondary)  few-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  +6.037 CI [  -4.734,  +32.633] n.s.  N=51   | seed-sd rule:  within noise ok
+    h3   vs support_mean  d=  +4.173 CI [  -7.298,  +31.130] n.s.  N=51   | seed-sd rule:  within noise ok
+    h5   vs persistence   d=  -1.655 CI [  -7.251,   +3.363] n.s.  N=52   | seed-sd rule:         +6.0% DISAGREES
+    h5   vs support_mean  d=  -2.548 CI [  -7.881,   +1.683] n.s.  N=52   | seed-sd rule:         +9.0% DISAGREES
+    h10  vs persistence   d=  +6.618 CI [  -7.556,  +30.534] n.s.  N=53   | seed-sd rule:  within noise ok
+    h10  vs support_mean  d=  +9.095 CI [  -4.269,  +33.445] n.s.  N=53   | seed-sd rule:  within noise ok
+    h15  vs persistence   d=  -0.375 CI [ -17.629,  +17.994] n.s.  N=50   | seed-sd rule:  within noise ok
+    h15  vs support_mean  d=  +8.636 CI [  -4.320,  +26.704] n.s.  N=50   | seed-sd rule:  within noise ok
+
+  ebola_L20 (secondary)  zero-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  -4.239 CI [  -8.333,   -0.850] WIN   N=51   | seed-sd rule:        +16.4% ok
+    h3   vs support_mean  d=  -6.103 CI [ -11.051,   -2.147] WIN   N=51   | seed-sd rule:        +22.0% ok
+    h5   vs persistence   d=  -4.168 CI [  -9.491,   +0.495] n.s.  N=52   | seed-sd rule:        +15.2% DISAGREES
+    h5   vs support_mean  d=  -5.061 CI [ -10.290,   -1.079] WIN   N=52   | seed-sd rule:        +17.9% ok
+    h10  vs persistence   d=  -4.123 CI [  -9.528,   -0.039] WIN   N=53   | seed-sd rule:        +14.5% ok
+    h10  vs support_mean  d=  -1.646 CI [  -7.638,   +2.819] n.s.  N=53   | seed-sd rule:         +6.3% DISAGREES
+    h15  vs persistence   d= -10.126 CI [ -21.276,   -1.521] WIN   N=50   | seed-sd rule:        +31.7% ok
+    h15  vs support_mean  d=  -1.115 CI [  -7.340,   +3.821] n.s.  N=50   | seed-sd rule:         +4.9% DISAGREES
+
+  M2 cross-tab: the seed-sd rule and this interval disagree on 12 of 32 cells.
+
+====================================================================================================
+PRE-REGISTERED CRITERION, on the reported statistic and E6's district axis
+====================================================================================================
+  h3 RMSE  d=  -5.210 CI [ -11.847,   +0.351]  spans zero
+  h5 RMSE  d=  -6.356 CI [ -14.912,   +1.343]  spans zero
+  h3 MAE   d=  -1.212 CI [  -5.448,   +2.393]  spans zero
+  h5 MAE   d=  -2.793 CI [  -8.511,   +2.373]  spans zero
+
+  VERDICT: the pre-registered positive result is NOT met, now adjudicable because point and interval share an estimand.
+
+NOTE: this interval resamples DISTRICTS. The origin axis needs per-(origin,node) sufficient stats, which the archives do not carry; E6 names both and this delivers one.

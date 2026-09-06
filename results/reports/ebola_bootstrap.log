@@ -1,0 +1,156 @@
+
+
+############################################################################################
+#  ebola_L12 (PRIMARY)  --  few-shot
+############################################################################################
+
+============================================================================================
+encoder_ebola :: ebola_L12  paired bootstrap over origins (B=10000, cell-pooled country-macro)
+============================================================================================
+  h3  RMSE encoder    74.503  95% CI [  38.349,  104.537]
+        vs persistence d(enc-naive) [ -42.260,    6.951] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -6.246,   -3.283] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h3  MAE  encoder    23.768  95% CI [  18.638,   31.400]
+        vs persistence d(enc-naive) [  -5.794,    4.136] n.s.   wilcoxon p=0.438 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -3.925,   -2.484] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h5  RMSE encoder    74.830  95% CI [  37.880,  104.708]
+        vs persistence d(enc-naive) [ -36.180,    8.569] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -4.787,   -2.806] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h5  MAE  encoder    23.061  95% CI [  17.578,   30.798]
+        vs persistence d(enc-naive) [  -7.464,    2.723] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -3.850,   -2.596] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h10 RMSE encoder    73.603  95% CI [  27.647,  106.358]
+        vs persistence d(enc-naive) [ -49.327,    2.034] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -3.684,   -0.812] WIN    wilcoxon p=0.125 (n=5, supporting)
+  h10 MAE  encoder    23.311  95% CI [  17.298,   32.053]
+        vs persistence d(enc-naive) [  -8.501,    0.547] n.s.   wilcoxon p=0.125 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -0.952,    2.670] n.s.   wilcoxon p=0.625 (n=5, supporting)
+  h15 RMSE encoder    43.096  95% CI [  22.138,   60.854]
+        vs persistence d(enc-naive) [ -74.039,   -6.784] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -1.335,   -0.523] WIN    wilcoxon p=0.125 (n=5, supporting)
+  h15 MAE  encoder    14.781  95% CI [  10.778,   19.563]
+        vs persistence d(enc-naive) [ -24.165,   -6.188] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -1.212,   -0.676] WIN    wilcoxon p=0.062 (n=5, supporting)
+
+
+############################################################################################
+#  ebola_L12 (PRIMARY)  --  zero-shot
+############################################################################################
+
+============================================================================================
+encoder_ebola_zeroshot :: ebola_L12  paired bootstrap over origins (B=10000, cell-pooled country-macro)
+============================================================================================
+  h3  RMSE encoder    73.741  95% CI [  37.542,  103.562]
+        vs persistence d(enc-naive) [ -42.984,    6.036] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -7.132,   -4.052] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h3  MAE  encoder    21.771  95% CI [  16.684,   29.339]
+        vs persistence d(enc-naive) [  -7.748,    2.070] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -5.852,   -4.500] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h5  RMSE encoder    74.677  95% CI [  37.883,  104.438]
+        vs persistence d(enc-naive) [ -36.093,    8.261] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -4.883,   -2.969] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h5  MAE  encoder    22.430  95% CI [  16.920,   30.132]
+        vs persistence d(enc-naive) [  -8.053,    2.057] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -4.555,   -3.233] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h10 RMSE encoder    73.494  95% CI [  27.929,  106.470]
+        vs persistence d(enc-naive) [ -49.058,    2.159] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -2.990,   -1.463] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h10 MAE  encoder    20.706  95% CI [  14.180,   29.885]
+        vs persistence d(enc-naive) [ -11.123,   -2.232] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -2.412,   -1.113] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h15 RMSE encoder    42.366  95% CI [  21.384,   60.141]
+        vs persistence d(enc-naive) [ -74.719,   -7.516] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -2.151,   -1.088] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h15 MAE  encoder    14.843  95% CI [  11.049,   19.434]
+        vs persistence d(enc-naive) [ -23.924,   -6.257] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -1.404,   -0.344] WIN    wilcoxon p=0.062 (n=5, supporting)
+
+
+############################################################################################
+#  ebola_L20 (secondary)  --  few-shot
+############################################################################################
+
+============================================================================================
+encoder_ebola :: ebola_L20  paired bootstrap over origins (B=10000, cell-pooled country-macro)
+============================================================================================
+  h3  RMSE encoder    80.884  95% CI [  48.441,  109.746]
+        vs persistence d(enc-naive) [ -33.066,   13.473] n.s.   wilcoxon p=0.625 (n=5, supporting)
+        vs support_mean d(enc-naive) [   1.956,    9.200] lose   wilcoxon p=0.625 (n=5, supporting)
+  h3  MAE  encoder    31.041  95% CI [  25.884,   38.472]
+        vs persistence d(enc-naive) [   1.454,   11.386] lose   wilcoxon p=0.312 (n=5, supporting)
+        vs support_mean d(enc-naive) [   3.084,    5.916] lose   wilcoxon p=0.812 (n=5, supporting)
+  h5  RMSE encoder    74.360  95% CI [  37.078,  104.189]
+        vs persistence d(enc-naive) [ -36.867,    7.981] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -3.609,   -0.350] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h5  MAE  encoder    24.045  95% CI [  18.601,   31.733]
+        vs persistence d(enc-naive) [  -6.599,    3.674] n.s.   wilcoxon p=0.188 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -3.329,   -1.347] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h10 RMSE encoder    80.288  95% CI [  40.727,  111.358]
+        vs persistence d(enc-naive) [ -38.523,    9.565] n.s.   wilcoxon p=0.188 (n=5, supporting)
+        vs support_mean d(enc-naive) [   3.466,   13.528] lose   wilcoxon p=0.312 (n=5, supporting)
+  h10 MAE  encoder    32.749  95% CI [  26.921,   40.879]
+        vs persistence d(enc-naive) [   0.827,   11.115] lose   wilcoxon p=0.625 (n=5, supporting)
+        vs support_mean d(enc-naive) [   5.943,   13.000] lose   wilcoxon p=0.312 (n=5, supporting)
+  h15 RMSE encoder    52.480  95% CI [  35.932,   68.286]
+        vs persistence d(enc-naive) [ -64.063,    2.536] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [   7.758,   13.636] lose   wilcoxon p=0.125 (n=5, supporting)
+  h15 MAE  encoder    26.577  95% CI [  23.844,   30.279]
+        vs persistence d(enc-naive) [ -11.428,    5.594] n.s.   wilcoxon p=1.000 (n=5, supporting)
+        vs support_mean d(enc-naive) [   6.236,   11.513] lose   wilcoxon p=0.125 (n=5, supporting)
+
+
+############################################################################################
+#  ebola_L20 (secondary)  --  zero-shot
+############################################################################################
+
+============================================================================================
+encoder_ebola_zeroshot :: ebola_L20  paired bootstrap over origins (B=10000, cell-pooled country-macro)
+============================================================================================
+  h3  RMSE encoder    71.201  95% CI [  34.049,  100.858]
+        vs persistence d(enc-naive) [ -45.747,    3.203] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -8.131,   -3.239] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h3  MAE  encoder    20.531  95% CI [  15.402,   28.047]
+        vs persistence d(enc-naive) [  -8.897,    0.786] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -7.237,   -4.593] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h5  RMSE encoder    72.567  95% CI [  35.126,  102.120]
+        vs persistence d(enc-naive) [ -38.596,    5.799] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -5.761,   -1.918] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h5  MAE  encoder    21.571  95% CI [  16.145,   29.181]
+        vs persistence d(enc-naive) [  -9.041,    1.271] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -5.885,   -3.825] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h10 RMSE encoder    72.965  95% CI [  26.729,  105.956]
+        vs persistence d(enc-naive) [ -49.803,    1.393] n.s.   wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -3.067,    0.187] n.s.   wilcoxon p=0.062 (n=5, supporting)
+  h10 MAE  encoder    21.557  95% CI [  15.332,   30.510]
+        vs persistence d(enc-naive) [ -10.268,   -1.335] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -2.696,   -0.880] WIN    wilcoxon p=0.062 (n=5, supporting)
+  h15 RMSE encoder    42.270  95% CI [  21.417,   59.957]
+        vs persistence d(enc-naive) [ -74.650,   -7.655] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -3.025,    1.392] n.s.   wilcoxon p=0.062 (n=5, supporting)
+  h15 MAE  encoder    16.561  95% CI [  13.118,   20.864]
+        vs persistence d(enc-naive) [ -22.049,   -4.646] WIN    wilcoxon p=0.062 (n=5, supporting)
+        vs support_mean d(enc-naive) [  -1.901,   -0.339] WIN    wilcoxon p=0.062 (n=5, supporting)
+
+
+============================================================================================
+THE PRE-REGISTERED CRITERION: few-shot vs persistence, h3 or h5, PRIMARY arm
+============================================================================================
+  h3   RMSE  diff CI [ -42.260,    6.951]  does not clear zero
+  h3   MAE   diff CI [  -5.794,    4.136]  does not clear zero
+  h5   RMSE  diff CI [ -36.180,    8.569]  does not clear zero
+  h5   MAE   diff CI [  -7.464,    2.723]  does not clear zero
+
+  VERDICT: the pre-registered positive result is NOT met.
+  (E3 predicted few-shot would not beat persistence at any horizon on the primary arm.)
+
+============================================================================================
+EVERY CELL WHERE THE CI CLEARS ZERO AGAINST PERSISTENCE
+============================================================================================
+  ebola_L12   few-shot   h15  RMSE  [ -74.039,   -6.784]
+  ebola_L12   few-shot   h15  MAE   [ -24.165,   -6.188]
+  ebola_L12   zero-shot  h10  MAE   [ -11.123,   -2.232]
+  ebola_L12   zero-shot  h15  RMSE  [ -74.719,   -7.516]
+  ebola_L12   zero-shot  h15  MAE   [ -23.924,   -6.257]
+  ebola_L20   zero-shot  h10  MAE   [ -10.268,   -1.335]
+  ebola_L20   zero-shot  h15  RMSE  [ -74.650,   -7.655]
+  ebola_L20   zero-shot  h15  MAE   [ -22.049,   -4.646]

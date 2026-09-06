@@ -1,0 +1,31 @@
+[2026-08-12 16:37:12] ==============================================================================
+[2026-08-12 16:37:12] LDO3 FULL-BUDGET QUEUE: seed 42, prefix encoder_ldo3full, patience 999 (91000 steps, stop disabled)
+[2026-08-12 16:37:12] to run: ['dengue', 'covid']   (~3.5 h each)
+[2026-08-12 16:37:12] DRY dengue: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.lodo --ldo3 dengue --seed 42 --trunk-steps 91000 --trunk-patience 999 --prefix encoder_ldo3full
+[2026-08-12 16:37:12] DRY covid: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u -m train.lodo --ldo3 covid --seed 42 --trunk-steps 91000 --trunk-patience 999 --prefix encoder_ldo3full
+[2026-08-12 16:48:26] ==============================================================================
+[2026-08-12 16:48:26] LDO3 FULL-BUDGET QUEUE: seed 42, prefix encoder_ldo3full, patience 999 (91000 steps, stop disabled)
+[2026-08-12 16:48:26] to run: ['dengue', 'covid']   (~3.5 h each)
+[2026-08-12 16:49:04] ==============================================================================
+[2026-08-12 16:49:04] LDO3 FULL-BUDGET QUEUE: seed 42, prefix encoder_ldo3full, patience 999 (91000 steps, stop disabled)
+[2026-08-12 16:49:04] to run: ['dengue', 'covid']   (~3.5 h each)
+[2026-08-12 16:49:04] --skip-wait: starting immediately
+[2026-08-12 20:41:41] folds done: ['dengue', 'covid']   failed: none
+
+===== ldo3full_check :: 2026-08-12 20:41:41 =====
+record                                                     | verdict
+------------------------------------------------------------------------------------------
+encoder_ldo3full__covid_us-states__seed42.json             | IDENTICAL to truncated run
+encoder_ldo3full__dengue__seed42.json                      | IDENTICAL to truncated run
+encoder_ldo3full__influenza_japan__seed42.json             | IDENTICAL to truncated run
+encoder_ldo3full__influenza_us-regions__seed42.json        | IDENTICAL to truncated run
+encoder_ldo3full__influenza_us-states__seed42.json         | IDENTICAL to truncated run
+encoder_ldo3full_zeroshot__covid_us-states__seed42.json    | IDENTICAL to truncated run
+encoder_ldo3full_zeroshot__dengue__seed42.json             | IDENTICAL to truncated run
+encoder_ldo3full_zeroshot__influenza_japan__seed42.json    | IDENTICAL to truncated run
+encoder_ldo3full_zeroshot__influenza_us-regions__seed42.json | IDENTICAL to truncated run
+encoder_ldo3full_zeroshot__influenza_us-states__seed42.json | IDENTICAL to truncated run
+
+10/10 records identical.  Trunk convergence: grep 'best=' results/reports/ldo3full_*.log
+[2026-08-12 20:41:41] QUEUE FINISHED, check exit 0 (0 = every full-budget record identical to its truncated twin)
+[2026-08-12 20:41:41] then: D20 in progress/decisions/decisions.md, and the scope line in Reports/Week4_Results_Brief.md

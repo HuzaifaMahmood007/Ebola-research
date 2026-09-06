@@ -1,0 +1,207 @@
+[2026-08-12 20:25:14] ==============================================================================
+[2026-08-12 20:25:14] EPI NIGHT: waits out run_ldo3full, then bounds [0.99, 0.9] x 4 panels x 5 seeds  (~2.6 h)
+[2026-08-12 20:25:14] panels: ['influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states']   dengue deliberately excluded (~30 h for both bounds)
+[2026-08-12 20:25:14] DRY: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u ablation/run_epi_ablation.py --datasets influenza_japan influenza_us-regions influenza_us-states covid_us-states --quantile 0.99 --aggregator max
+[2026-08-12 20:25:14] DRY: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u ablation/run_epi_ablation.py --datasets influenza_japan influenza_us-regions influenza_us-states covid_us-states --quantile 0.9 --aggregator max
+[2026-08-12 20:25:14] handoff policy: clean at 3 idle polls with LDO3 done, rescue at 15 without
+[2026-08-12 20:39:20] ==============================================================================
+[2026-08-12 20:39:20] EPI NIGHT: waits out run_ldo3full, then bounds [0.99, 0.9] x 4 panels x 5 seeds  (~2.6 h)
+[2026-08-12 20:39:20] panels: ['influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states']   dengue deliberately excluded (~30 h for both bounds)
+[2026-08-12 20:39:21] WAIT: LDO3 still running (0/15 idle polls toward rescue) (gpu 3061 MB)
+[2026-08-12 20:42:21] WAIT: folds complete, waiting for the GPU to settle (0/3) (gpu 1288 MB)
+[2026-08-12 20:50:17] ==============================================================================
+[2026-08-12 20:50:17] EPI NIGHT: waits out run_ldo3full, then bounds [0.99, 0.9] x 4 panels x 5 seeds  (~2.6 h)
+[2026-08-12 20:50:17] panels: ['influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states']   dengue deliberately excluded (~30 h for both bounds)
+[2026-08-12 20:50:17] WAIT: folds complete, waiting for the GPU to settle (1/3) (gpu 1300 MB)
+[2026-08-12 20:51:17] WAIT: folds complete, waiting for the GPU to settle (2/3) (gpu 1274 MB)
+[2026-08-12 20:53:33] ==============================================================================
+[2026-08-12 20:53:33] EPI NIGHT: waits out run_ldo3full, then bounds [0.99, 0.9] x 4 panels x 5 seeds  (~2.6 h), then the lookback sweep w=[12, 32] (~2.5 h)
+[2026-08-12 20:53:33] panels: ['influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states']   dengue deliberately excluded (~30 h for both bounds)
+[2026-08-12 20:53:33] DRY: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u ablation/run_epi_ablation.py --datasets influenza_japan influenza_us-regions influenza_us-states covid_us-states --quantile 0.99 --aggregator max
+[2026-08-12 20:53:33] DRY: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u ablation/run_epi_ablation.py --datasets influenza_japan influenza_us-regions influenza_us-states covid_us-states --quantile 0.9 --aggregator max
+[2026-08-12 20:53:33] DRY: C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe -u ablation/window_sensitivity.py --run --panels influenza_japan influenza_us-regions influenza_us-states covid_us-states --windows 12 32
+[2026-08-12 20:53:33] handoff policy: clean at 3 idle polls with LDO3 done, rescue at 15 without
+[2026-08-12 20:55:15] ==============================================================================
+[2026-08-12 20:55:15] EPI NIGHT: waits out run_ldo3full, then bounds [0.99, 0.9] x 4 panels x 5 seeds  (~2.6 h), then the lookback sweep w=[12, 32] (~2.5 h)
+[2026-08-12 20:55:15] panels: ['influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states']   dengue deliberately excluded (~30 h for both bounds)
+[2026-08-12 20:55:15] --skip-wait: starting immediately
+
+===== epi report p0.99 :: 2026-08-12 23:52:36 =====
+
+====================================================================================================
+EPI-INFORMED ABLATION :: bound epi_p99max   reference = single-disease encoder, SAME seed (paired)
+====================================================================================================
+
+  influenza_japan   field=node_mean
+    RMSE (lower=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |   666.249 +-73.188 |   663.367 +-73.086 |    -2.882 +- 3.040 | within noise (n=5)
+        5 |   765.404 +-18.834 |   777.564 +-23.374 |   +12.160 +-20.585 | within noise (n=5)
+       10 |  1062.794 +-20.882 |  1061.423 +-22.546 |    -1.371 +- 3.264 | within noise (n=5)
+       15 |  1034.971 +-31.196 |  1029.583 +-23.275 |    -5.388 +-14.750 | within noise (n=5)
+    MAE (lower=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |   242.624 +-32.962 |   241.685 +-32.639 |    -0.939 +- 1.138 | within noise (n=5)
+        5 |   294.732 +- 7.275 |   299.030 +- 6.404 |    +4.298 +- 7.110 | within noise (n=5)
+       10 |   444.117 +- 8.789 |   443.432 +- 9.346 |    -0.685 +- 1.609 | within noise (n=5)
+       15 |   444.600 +-13.253 |   443.253 +-10.588 |    -1.347 +- 3.494 | within noise (n=5)
+    PCC (higher=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |     0.872 +- 0.040 |     0.873 +- 0.039 |    +0.001 +- 0.002 | within noise (n=5)
+        5 |     0.899 +- 0.022 |     0.900 +- 0.023 |    +0.001 +- 0.001 | within noise (n=5)
+       10 |     0.844 +- 0.006 |     0.844 +- 0.006 |    +0.000 +- 0.001 | within noise (n=5)
+       15 |     0.837 +- 0.020 |     0.837 +- 0.022 |    -0.000 +- 0.002 | within noise (n=5)
+
+  influenza_us-regions   field=node_mean
+    RMSE (lower=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |   573.580 +-45.785 |   573.580 +-45.785 |    +0.000 +- 0.000 | within noise (n=5)
+        5 |   682.047 +-63.250 |   682.047 +-63.250 |    +0.000 +- 0.000 | within noise (n=5)
+       10 |   761.432 +-72.811 |   761.432 +-72.811 |    +0.000 +- 0.000 | within noise (n=5)
+       15 |   774.423 +-92.829 |   774.423 +-92.829 |    +0.000 +- 0.000 | within noise (n=5)
+    MAE (lower=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |   358.316 +-40.833 |   358.316 +-40.833 |    +0.000 +- 0.000 | within noise (n=5)
+        5 |   432.156 +-58.893 |   432.156 +-58.893 |    +0.000 +- 0.000 | within noise (n=5)
+       10 |   494.178 +-59.813 |   494.178 +-59.813 |    +0.000 +- 0.000 | within noise (n=5)
+       15 |   509.962 +-74.054 |   509.962 +-74.054 |    +0.000 +- 0.000 | within noise (n=5)
+    PCC (higher=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |     0.824 +- 0.032 |     0.824 +- 0.032 |    +0.000 +- 0.000 | within noise (n=5)
+        5 |     0.743 +- 0.044 |     0.743 +- 0.044 |    +0.000 +- 0.000 | within noise (n=5)
+       10 |     0.702 +- 0.059 |     0.702 +- 0.059 |    +0.000 +- 0.000 | within noise (n=5)
+       15 |     0.662 +- 0.110 |     0.662 +- 0.110 |    +0.000 +- 0.000 | within noise (n=5)
+
+  influenza_us-states   field=node_mean
+    RMSE (lower=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |   108.725 +- 3.172 |   108.725 +- 3.172 |    +0.000 +- 0.000 | within noise (n=5)
+        5 |   134.351 +- 3.346 |   134.351 +- 3.346 |    +0.000 +- 0.000 | within noise (n=5)
+       10 |   161.086 +- 4.225 |   161.086 +- 4.225 |    +0.000 +- 0.000 | within noise (n=5)
+       15 |   162.303 +- 5.077 |   162.303 +- 5.077 |    +0.000 +- 0.000 | within noise (n=5)
+    MAE (lower=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |    69.844 +- 2.391 |    69.844 +- 2.391 |    +0.000 +- 0.000 | within noise (n=5)
+        5 |    87.075 +- 1.812 |    87.075 +- 1.812 |    +0.000 +- 0.000 | within noise (n=5)
+       10 |   108.916 +- 1.911 |   108.916 +- 1.911 |    +0.000 +- 0.000 | within noise (n=5)
+       15 |   110.581 +- 3.517 |   110.581 +- 3.517 |    +0.000 +- 0.000 | within noise (n=5)
+    PCC (higher=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |     0.808 +- 0.012 |     0.808 +- 0.012 |    +0.000 +- 0.000 | within noise (n=5)
+        5 |     0.707 +- 0.015 |     0.707 +- 0.015 |    +0.000 +- 0.000 | within noise (n=5)
+       10 |     0.641 +- 0.010 |     0.641 +- 0.010 |    +0.000 +- 0.000 | within noise (n=5)
+       15 |     0.640 +- 0.026 |     0.640 +- 0.026 |    +0.000 +- 0.000 | within noise (n=5)
+
+  covid_us-states   field=node_mean
+    RMSE (lower=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |  6058.111 +-483.616 |  5803.690 +-496.041 |  -254.421 +-513.670 | within noise (n=5)
+        5 | 10683.311 +-1428.631 | 10863.698 +-1110.868 |  +180.387 +-409.815 | within noise (n=5)
+       10 | 18059.034 +-4213.425 | 17754.620 +-3776.656 |  -304.413 +-803.281 | within noise (n=5)
+       15 | 14451.019 +-479.635 | 14412.669 +-733.213 |   -38.350 +-606.321 | within noise (n=5)
+    MAE (lower=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |  4843.402 +-528.696 |  4584.515 +-492.420 |  -258.887 +-450.865 | within noise (n=5)
+        5 |  8378.659 +-935.794 |  8537.380 +-744.121 |  +158.721 +-298.694 | within noise (n=5)
+       10 | 13707.492 +-2899.506 | 13512.615 +-2687.246 |  -194.877 +-475.009 | within noise (n=5)
+       15 | 12218.222 +-510.169 | 12180.706 +-709.399 |   -37.516 +-449.350 | within noise (n=5)
+    PCC (higher=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |     0.425 +- 0.128 |     0.417 +- 0.130 |    -0.009 +- 0.031 | within noise (n=5)
+        5 |    -0.176 +- 0.091 |    -0.176 +- 0.097 |    -0.000 +- 0.012 | within noise (n=5)
+       10 |    -0.357 +- 0.033 |    -0.352 +- 0.046 |    +0.005 +- 0.013 | within noise (n=5)
+       15 |    -0.324 +- 0.087 |    -0.311 +- 0.105 |    +0.013 +- 0.020 | within noise (n=5)
+
+  Paired: each delta is (epi - baseline) at the SAME seed, then averaged. Both mean columns cover ONLY the seeds present in both arms, so epi - baseline reproduces the delta column exactly. 'within noise' = |mean| < sd across seeds.
+
+
+===== epi report p0.9 :: 2026-08-12 23:52:40 =====
+
+====================================================================================================
+EPI-INFORMED ABLATION :: bound epi_p90max   reference = single-disease encoder, SAME seed (paired)
+====================================================================================================
+
+  influenza_japan   field=node_mean
+    RMSE (lower=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |   666.249 +-73.188 |   657.058 +-84.004 |    -9.190 +-24.950 | within noise (n=5)
+        5 |   765.404 +-18.834 |   759.539 +-29.404 |    -5.865 +-40.630 | within noise (n=5)
+       10 |  1062.794 +-20.882 |  1033.537 +-19.415 |   -29.257 +-24.713 | epi BETTER (n=5)
+       15 |  1034.971 +-31.196 |  1022.893 +-17.583 |   -12.078 +-19.751 | within noise (n=5)
+    MAE (lower=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |   242.624 +-32.962 |   238.633 +-37.696 |    -3.990 +- 9.059 | within noise (n=5)
+        5 |   294.732 +- 7.275 |   294.410 +-10.028 |    -0.322 +-15.620 | within noise (n=5)
+       10 |   444.117 +- 8.789 |   432.892 +-10.089 |   -11.225 +- 9.432 | epi BETTER (n=5)
+       15 |   444.600 +-13.253 |   441.597 +- 8.404 |    -3.003 +- 7.648 | within noise (n=5)
+    PCC (higher=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |     0.872 +- 0.040 |     0.876 +- 0.042 |    +0.003 +- 0.016 | within noise (n=5)
+        5 |     0.899 +- 0.022 |     0.900 +- 0.022 |    +0.001 +- 0.005 | within noise (n=5)
+       10 |     0.844 +- 0.006 |     0.840 +- 0.009 |    -0.004 +- 0.010 | within noise (n=5)
+       15 |     0.837 +- 0.020 |     0.832 +- 0.018 |    -0.005 +- 0.012 | within noise (n=5)
+
+  influenza_us-regions   field=node_mean
+    RMSE (lower=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |   573.580 +-45.785 |   561.230 +-33.851 |   -12.350 +-20.299 | within noise (n=5)
+        5 |   682.047 +-63.250 |   675.935 +-53.453 |    -6.113 +-16.846 | within noise (n=5)
+       10 |   761.432 +-72.811 |   744.603 +-59.345 |   -16.829 +-15.128 | epi BETTER (n=5)
+       15 |   774.423 +-92.829 |   768.363 +-86.177 |    -6.060 +- 9.204 | within noise (n=5)
+    MAE (lower=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |   358.316 +-40.833 |   345.717 +-32.429 |   -12.599 +-17.641 | within noise (n=5)
+        5 |   432.156 +-58.893 |   427.363 +-50.583 |    -4.793 +-11.864 | within noise (n=5)
+       10 |   494.178 +-59.813 |   484.400 +-46.052 |    -9.778 +-14.716 | within noise (n=5)
+       15 |   509.962 +-74.054 |   504.472 +-68.189 |    -5.491 +- 7.364 | within noise (n=5)
+    PCC (higher=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |     0.824 +- 0.032 |     0.832 +- 0.021 |    +0.008 +- 0.014 | within noise (n=5)
+        5 |     0.743 +- 0.044 |     0.747 +- 0.037 |    +0.004 +- 0.013 | within noise (n=5)
+       10 |     0.702 +- 0.059 |     0.708 +- 0.054 |    +0.006 +- 0.008 | within noise (n=5)
+       15 |     0.662 +- 0.110 |     0.667 +- 0.104 |    +0.005 +- 0.012 | within noise (n=5)
+
+  influenza_us-states   field=node_mean
+    RMSE (lower=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |   108.725 +- 3.172 |   106.971 +- 2.084 |    -1.754 +- 3.721 | within noise (n=5)
+        5 |   134.351 +- 3.346 |   132.519 +- 5.132 |    -1.832 +- 4.426 | within noise (n=5)
+       10 |   161.086 +- 4.225 |   160.043 +- 5.925 |    -1.043 +- 2.281 | within noise (n=5)
+       15 |   162.303 +- 5.077 |   162.048 +- 4.507 |    -0.255 +- 1.589 | within noise (n=5)
+    MAE (lower=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |    69.844 +- 2.391 |    68.272 +- 2.092 |    -1.572 +- 2.828 | within noise (n=5)
+        5 |    87.075 +- 1.812 |    85.172 +- 3.350 |    -1.903 +- 4.263 | within noise (n=5)
+       10 |   108.916 +- 1.911 |   108.583 +- 2.342 |    -0.332 +- 0.619 | within noise (n=5)
+       15 |   110.581 +- 3.517 |   110.311 +- 3.048 |    -0.270 +- 1.132 | within noise (n=5)
+    PCC (higher=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |     0.808 +- 0.012 |     0.809 +- 0.011 |    +0.002 +- 0.001 | epi BETTER (n=5)
+        5 |     0.707 +- 0.015 |     0.708 +- 0.016 |    +0.001 +- 0.004 | within noise (n=5)
+       10 |     0.641 +- 0.010 |     0.639 +- 0.012 |    -0.002 +- 0.004 | within noise (n=5)
+       15 |     0.640 +- 0.026 |     0.644 +- 0.021 |    +0.004 +- 0.012 | within noise (n=5)
+
+  covid_us-states   field=node_mean
+    RMSE (lower=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |  6058.111 +-483.616 |  6302.571 +-1036.630 |  +244.460 +-1126.481 | within noise (n=5)
+        5 | 10683.311 +-1428.631 | 11245.996 +-1138.838 |  +562.686 +-1394.394 | within noise (n=5)
+       10 | 18059.034 +-4213.425 | 18525.168 +-3290.888 |  +466.135 +-2174.839 | within noise (n=5)
+       15 | 14451.019 +-479.635 | 15056.371 +-736.346 |  +605.352 +-1049.080 | within noise (n=5)
+    MAE (lower=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |  4843.402 +-528.696 |  4875.021 +-950.936 |   +31.618 +-1029.116 | within noise (n=5)
+        5 |  8378.659 +-935.794 |  8704.903 +-721.663 |  +326.244 +-1057.067 | within noise (n=5)
+       10 | 13707.492 +-2899.506 | 14066.211 +-2332.962 |  +358.719 +-1365.626 | within noise (n=5)
+       15 | 12218.222 +-510.169 | 12642.406 +-797.543 |  +424.185 +-785.295 | within noise (n=5)
+    PCC (higher=better)
+        h |           baseline |                epi |           paired d | verdict
+        3 |     0.425 +- 0.128 |     0.433 +- 0.129 |    +0.008 +- 0.053 | within noise (n=5)
+        5 |    -0.176 +- 0.091 |    -0.184 +- 0.063 |    -0.008 +- 0.066 | within noise (n=5)
+       10 |    -0.357 +- 0.033 |    -0.373 +- 0.029 |    -0.017 +- 0.005 | epi WORSE (n=5)
+       15 |    -0.324 +- 0.087 |    -0.329 +- 0.095 |    -0.006 +- 0.048 | within noise (n=5)
+
+  Paired: each delta is (epi - baseline) at the SAME seed, then averaged. Both mean columns cover ONLY the seeds present in both arms, so epi - baseline reproduces the delta column exactly. 'within noise' = |mean| < sd across seeds.
+
+[2026-08-13 02:21:49] EPI NIGHT FINISHED, failed: none
+[2026-08-13 02:21:49] then: the ablation row and the w-sensitivity row in the Week-4 brief, and the dengue decision (~30 h) once these read

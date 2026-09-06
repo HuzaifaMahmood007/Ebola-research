@@ -1,0 +1,27 @@
+frozen wrapper results/misc/conformal_config.json  alpha_1=0.1  gamma=0.05
+
+arm                          h     T |   a_min   a_end |  lam_0  lam_max   max x |    mean w    p05 w    min w    w<1
+ebola_L12 few-shot           3    90 |  0.0247  0.0646 |  0.195    1.838   4.68x |      24.8     8.97     3.43   0.0%
+ebola_L12 few-shot           5    90 |  0.0355  0.0531 |  0.181    1.338   3.68x |      22.2    10.87     4.47   0.0%
+ebola_L12 few-shot          10    90 |  0.0933  0.1375 |  0.414    0.481   1.96x |      44.5    13.46     6.27   0.0%
+ebola_L12 few-shot          15    90 |  0.0096  0.0300 |  0.458   10.212  21.42x |       6.5     2.51     0.80   0.1%
+ebola_L12 zero-shot          3    90 |  0.0549  0.0672 |  0.195    0.711   2.42x |      20.5     5.16     3.04   0.0%
+ebola_L12 zero-shot          5    90 |  0.0585  0.0718 |  0.181    0.620   2.24x |      20.0     6.01     3.64   0.0%
+ebola_L12 zero-shot         10    90 |  0.0772  0.1039 |  0.414    0.682   2.36x |      22.1    10.90     6.77   0.0%
+ebola_L12 zero-shot         15    90 |  0.0914  0.1180 |  0.458    0.548   2.10x |      23.1    15.57    11.02   0.0%
+ebola_L20 few-shot           3    90 |  0.0809  0.1383 |  0.195    0.339   1.68x |     107.9    27.33    12.17   0.0%
+ebola_L20 few-shot           5    90 |  0.0696  0.1026 |  0.181    0.441   1.88x |      98.1    24.12     8.50   0.0%
+ebola_L20 few-shot          10    90 |  0.1000  0.1698 |  0.414    0.414   1.83x |     139.4    40.15    14.99   0.0%
+ebola_L20 few-shot          15    90 |  0.1000  0.1680 |  0.458    0.458   1.92x |     108.2    38.39    14.44   0.0%
+ebola_L20 zero-shot          3    90 |  0.0971  0.1224 |  0.195    0.212   1.42x |      36.9     8.62     4.57   0.0%
+ebola_L20 zero-shot          5    90 |  0.0897  0.1152 |  0.181    0.246   1.49x |      38.9    10.43     6.07   0.0%
+ebola_L20 zero-shot         10    90 |  0.0969  0.1529 |  0.414    0.445   1.89x |      50.5    21.79    12.59   0.0%
+ebola_L20 zero-shot         15    90 |  0.1000  0.1568 |  0.458    0.458   1.92x |      55.9    36.29    27.98   0.0%
+
+highest sub-unit-width share: ebola_L12 few-shot h15 at 0.1% of cells
+dengue, for reference, sits at 11.0-11.7% and inflates 45-85x.
+
+READ AS: w<1 near 0% and a_min near alpha_1=0.1 means Ebola is clean and the defect is a
+dengue-panel problem that never touched the case study. w<1 in the double digits with a_min
+an order of magnitude under 0.1 means the --apply coverage figures carry the same inflation
+and must be refitted before anything quotes them.

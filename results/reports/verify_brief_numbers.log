@@ -1,0 +1,92 @@
+
+================================================================================================
+A. EBOLA SKILL vs PERSISTENCE  (zero-shot arm, RMSE, country_macro)
+================================================================================================
+  ebola_L12 few-shot   h3   mean=   38.20  seedCV= 1.30%  skill vs persistence = +12.0%
+  ebola_L12 few-shot   h5   mean=   37.98  seedCV= 1.56%  skill vs persistence = +14.3%
+  ebola_L12 few-shot   h10  mean=   41.19  seedCV=10.52%  skill vs persistence = within noise
+  ebola_L12 few-shot   h15  mean=   28.52  seedCV= 1.67%  skill vs persistence = +43.7%
+  ebola_L12 zero-shot  h3   mean=   36.55  seedCV= 1.26%  skill vs persistence = +15.8%
+  ebola_L12 zero-shot  h5   mean=   37.59  seedCV= 0.48%  skill vs persistence = +15.2%
+  ebola_L12 zero-shot  h10  mean=   38.87  seedCV= 0.35%  skill vs persistence = +15.5%
+  ebola_L12 zero-shot  h15  mean=   28.28  seedCV= 0.37%  skill vs persistence = +44.2%
+  ebola_L20 few-shot   h3   mean=   47.03  seedCV=32.39%  skill vs persistence = within noise
+  ebola_L20 few-shot   h5   mean=   38.92  seedCV= 1.91%  skill vs persistence = +12.2%
+  ebola_L20 few-shot   h10  mean=   51.58  seedCV=25.69%  skill vs persistence = within noise
+  ebola_L20 few-shot   h15  mean=   40.85  seedCV=26.19%  skill vs persistence = within noise
+  ebola_L20 zero-shot  h3   mean=   35.24  seedCV= 1.45%  skill vs persistence = +18.8%
+  ebola_L20 zero-shot  h5   mean=   36.69  seedCV= 0.61%  skill vs persistence = +17.3%
+  ebola_L20 zero-shot  h10  mean=   39.37  seedCV= 1.00%  skill vs persistence = +14.4%
+  ebola_L20 zero-shot  h15  mean=   29.54  seedCV= 1.06%  skill vs persistence = +41.7%
+
+================================================================================================
+A2. WORST few-shot seed instability (the 'up to a third' claim)
+================================================================================================
+  max few-shot seed CV over both arms, RMSE: 32.4%
+  zero-shot seed CV range: 0.35% .. 1.45%
+
+================================================================================================
+B. BOOTSTRAP: cells whose CI vs persistence clears zero
+================================================================================================
+  cells clearing zero: 8
+  horizons represented: [10, 15]
+     ebola_L12   few-shot   h15  RMSE
+     ebola_L12   few-shot   h15  MAE
+     ebola_L12   zero-shot  h10  MAE
+     ebola_L12   zero-shot  h15  RMSE
+     ebola_L12   zero-shot  h15  MAE
+     ebola_L20   zero-shot  h10  MAE
+     ebola_L20   zero-shot  h15  RMSE
+     ebola_L20   zero-shot  h15  MAE
+
+  PRE-REGISTERED CRITERION (primary arm, few-shot, h3/h5):
+     h3 RMSE  CI [ -42.260,   6.951]  spans zero
+     h3 MAE   CI [  -5.794,   4.136]  spans zero
+     h5 RMSE  CI [ -36.180,   8.569]  spans zero
+     h5 MAE   CI [  -7.464,   2.723]  spans zero
+     -> criterion NOT MET
+
+================================================================================================
+C. ADAPTER CAPACITY, 5 seeds
+================================================================================================
+  seeds in file: [42, 52, 62, 72, 82]
+  cross_disease      cells= 36  better=  7  worse=  3  max=+19.8%
+                     horizons of the wins: h15
+                     largest: mlp-256 influenza_us-regions|h15 +19.8% CI [+5.8, +33.9]
+  in_domain_control  cells= 12  better=  0  worse=  1  max=n/a
+  control seed CV across the 36 cross-disease cells: 1.5% .. 9.7% (median 4.4%)
+
+================================================================================================
+D. CONFORMAL on EBOLA (recomputed from the archives, frozen wrapper)
+================================================================================================
+  cells=80   raw mean=0.498  ACI mean=0.912  ACI range 0.794..0.992   T={18}
+
+================================================================================================
+E. CONFORMAL across the five DEV panels: in-sample vs LOPO vs ceiling
+================================================================================================
+  IN-SAMPLE  raw 0.492..0.918   +ACI 0.887..0.927  meanabsdev 0.012
+  LOPO       +ACI 0.889..0.931  meanabsdev 0.012
+  CEILING own intervals (unwrapped) 0.426..0.977
+
+================================================================================================
+F. DENGUE vanishing-width defect
+================================================================================================
+  dengue h3   cells w<1:  11.7%   a_min=0.0026   lam 0.195 -> 22.2   max widen 45.3x
+  dengue h15  cells w<1:  11.2%   a_min=0.0027   lam 0.458 -> 42.2   max widen 85.3x
+
+================================================================================================
+G. COUNTS QUOTED IN PROSE
+================================================================================================
+  ebola nodes across records: [50, 51, 52, 53]
+  dengue             nodes = 7165
+  influenza_japan    nodes = 47
+  mislabelled calibration rows (h10,h15 x primary arm x 5 seeds) = 10
+  wilcoxon floor at n=5 seeds = 0.062
+
+================================================================================================
+H. D17 / D18 re-read from their own logs
+================================================================================================
+  ldo3full log: 136 val mentions; best values seen: ['0.1365', '0.1381', '0.1386', '0.1393', '0.1400', '0.1415']; max step seen: 91000
+  (D17 claim: best 0.1768 at step 7,000, no improvement through 91,000, records bit-identical)
+  (D18 claim: 25/25 ceilings early-stopped, 18-77 of 80 epochs)
+  -> these two are RECORDED measurements; the brief cites them as such.

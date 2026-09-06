@@ -1,0 +1,2214 @@
+==============================================================================
+OVERNIGHT RUN  started 2026-08-03 22:11:49  log -> results\reports\overnight.log
+==============================================================================
+python      C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe
+torch       2.6.0+cu124  cuda=True  NVIDIA GeForce RTX 3060
+numpy       2.4.6  (BLAS ok)
+LOCF_INPUT  False  (False is the validated default)
+bundles     6 present: ['dengue', 'influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states', 'ebola']
+
+[2/2] pair: 2 folds x 1 seeds = 2 runs  (0 already on disk, 2 to run)
+      trunk_steps=1  epochs=1  seeds=[42]
+
+----- [1/2] pair fold=covid seed=42 (22:11:52) -----
+
+=== encoder_pair fold: held-out DISEASE=covid (['covid_us-states'])
+    trunk on ['influenza_us-states'] = ['influenza_us-states']  adapter_groups=[0]  seed=42 ===
+==============================================================================
+OVERNIGHT RUN  started 2026-08-03 22:13:21  log -> results\reports\overnight.log
+==============================================================================
+python      C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe
+torch       2.6.0+cu124  cuda=True  NVIDIA GeForce RTX 3060
+numpy       2.4.6  (BLAS ok)
+LOCF_INPUT  False  (False is the validated default)
+bundles     6 present: ['dengue', 'influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states', 'ebola']
+
+[1/2] COVID baselines: 5 seeds + naive floors (have 0/5 seeds, floors=False)
+  naive floors scored (covid_us-states); seasonal fallback rate 0.0%
+    covid_us-states seed42 ep00 val_pinball=0.1416 best=0.1416
+    covid_us-states seed42 ep01 val_pinball=0.1362 best=0.1362
+    covid_us-states seed42 ep02 val_pinball=0.1305 best=0.1305
+    covid_us-states seed42 ep03 val_pinball=0.1224 best=0.1224
+    covid_us-states seed42 ep04 val_pinball=0.1273 best=0.1224
+    covid_us-states seed42 ep05 val_pinball=0.1253 best=0.1224
+    covid_us-states seed42 ep06 val_pinball=0.1249 best=0.1224
+    covid_us-states seed42 ep07 val_pinball=0.1290 best=0.1224
+    covid_us-states seed42 ep08 val_pinball=0.1229 best=0.1224
+    covid_us-states seed42 ep09 val_pinball=0.1244 best=0.1224
+    covid_us-states seed42 ep10 val_pinball=0.1265 best=0.1224
+    covid_us-states seed42 ep11 val_pinball=0.1235 best=0.1224
+    covid_us-states seed42 ep12 val_pinball=0.1234 best=0.1224
+    covid_us-states seed42 ep13 val_pinball=0.1227 best=0.1224
+    covid_us-states seed42 ep14 val_pinball=0.1243 best=0.1224
+    covid_us-states seed42 ep15 val_pinball=0.1244 best=0.1224
+    covid_us-states seed42 ep16 val_pinball=0.1256 best=0.1224
+    covid_us-states seed42 ep17 val_pinball=0.1220 best=0.1220
+    covid_us-states seed42 ep18 val_pinball=0.1247 best=0.1220
+    covid_us-states seed42 ep19 val_pinball=0.1260 best=0.1220
+    covid_us-states seed42 ep20 val_pinball=0.1228 best=0.1220
+    covid_us-states seed42 ep21 val_pinball=0.1234 best=0.1220
+    covid_us-states seed42 ep22 val_pinball=0.1252 best=0.1220
+    covid_us-states seed42 ep23 val_pinball=0.1231 best=0.1220
+    covid_us-states seed42 ep24 val_pinball=0.1249 best=0.1220
+    covid_us-states seed42 ep25 val_pinball=0.1227 best=0.1220
+    covid_us-states seed42 ep26 val_pinball=0.1271 best=0.1220
+    covid_us-states seed42 ep27 val_pinball=0.1251 best=0.1220
+    covid_us-states seed42 ep28 val_pinball=0.1253 best=0.1220
+    covid_us-states seed42 ep29 val_pinball=0.1252 best=0.1220
+    covid_us-states seed42 ep30 val_pinball=0.1251 best=0.1220
+    covid_us-states seed42 ep31 val_pinball=0.1273 best=0.1220
+    covid_us-states seed42 ep32 val_pinball=0.1229 best=0.1220
+  encoder scored (covid_us-states seed42); bias_c={3: 0.0, 5: 0.05, 10: 0.1, 15: 0.1}
+    covid_us-states seed52 ep00 val_pinball=0.1641 best=0.1641
+    covid_us-states seed52 ep01 val_pinball=0.1363 best=0.1363
+    covid_us-states seed52 ep02 val_pinball=0.1282 best=0.1282
+    covid_us-states seed52 ep03 val_pinball=0.1272 best=0.1272
+    covid_us-states seed52 ep04 val_pinball=0.1205 best=0.1205
+    covid_us-states seed52 ep05 val_pinball=0.1243 best=0.1205
+    covid_us-states seed52 ep06 val_pinball=0.1228 best=0.1205
+    covid_us-states seed52 ep07 val_pinball=0.1259 best=0.1205
+    covid_us-states seed52 ep08 val_pinball=0.1174 best=0.1174
+    covid_us-states seed52 ep09 val_pinball=0.1187 best=0.1174
+    covid_us-states seed52 ep10 val_pinball=0.1190 best=0.1174
+    covid_us-states seed52 ep11 val_pinball=0.1250 best=0.1174
+    covid_us-states seed52 ep12 val_pinball=0.1223 best=0.1174
+    covid_us-states seed52 ep13 val_pinball=0.1185 best=0.1174
+    covid_us-states seed52 ep14 val_pinball=0.1238 best=0.1174
+    covid_us-states seed52 ep15 val_pinball=0.1241 best=0.1174
+    covid_us-states seed52 ep16 val_pinball=0.1224 best=0.1174
+    covid_us-states seed52 ep17 val_pinball=0.1210 best=0.1174
+    covid_us-states seed52 ep18 val_pinball=0.1234 best=0.1174
+    covid_us-states seed52 ep19 val_pinball=0.1264 best=0.1174
+    covid_us-states seed52 ep20 val_pinball=0.1255 best=0.1174
+    covid_us-states seed52 ep21 val_pinball=0.1224 best=0.1174
+    covid_us-states seed52 ep22 val_pinball=0.1258 best=0.1174
+    covid_us-states seed52 ep23 val_pinball=0.1239 best=0.1174
+  encoder scored (covid_us-states seed52); bias_c={3: -0.1, 5: 0.05, 10: 0.25, 15: 0.05}
+    covid_us-states seed62 ep00 val_pinball=0.1453 best=0.1453
+    covid_us-states seed62 ep01 val_pinball=0.1364 best=0.1364
+    covid_us-states seed62 ep02 val_pinball=0.1293 best=0.1293
+    covid_us-states seed62 ep03 val_pinball=0.1326 best=0.1293
+    covid_us-states seed62 ep04 val_pinball=0.1260 best=0.1260
+    covid_us-states seed62 ep05 val_pinball=0.1271 best=0.1260
+    covid_us-states seed62 ep06 val_pinball=0.1225 best=0.1225
+    covid_us-states seed62 ep07 val_pinball=0.1237 best=0.1225
+    covid_us-states seed62 ep08 val_pinball=0.1201 best=0.1201
+    covid_us-states seed62 ep09 val_pinball=0.1171 best=0.1171
+    covid_us-states seed62 ep10 val_pinball=0.1164 best=0.1164
+    covid_us-states seed62 ep11 val_pinball=0.1154 best=0.1154
+    covid_us-states seed62 ep12 val_pinball=0.1175 best=0.1154
+    covid_us-states seed62 ep13 val_pinball=0.1195 best=0.1154
+    covid_us-states seed62 ep14 val_pinball=0.1175 best=0.1154
+    covid_us-states seed62 ep15 val_pinball=0.1178 best=0.1154
+    covid_us-states seed62 ep16 val_pinball=0.1208 best=0.1154
+    covid_us-states seed62 ep17 val_pinball=0.1198 best=0.1154
+    covid_us-states seed62 ep18 val_pinball=0.1224 best=0.1154
+    covid_us-states seed62 ep19 val_pinball=0.1239 best=0.1154
+    covid_us-states seed62 ep20 val_pinball=0.1224 best=0.1154
+    covid_us-states seed62 ep21 val_pinball=0.1237 best=0.1154
+    covid_us-states seed62 ep22 val_pinball=0.1233 best=0.1154
+    covid_us-states seed62 ep23 val_pinball=0.1240 best=0.1154
+    covid_us-states seed62 ep24 val_pinball=0.1252 best=0.1154
+    covid_us-states seed62 ep25 val_pinball=0.1247 best=0.1154
+    covid_us-states seed62 ep26 val_pinball=0.1252 best=0.1154
+  encoder scored (covid_us-states seed62); bias_c={3: 0.1, 5: 0.2, 10: 0.2, 15: 0.15}
+    covid_us-states seed72 ep00 val_pinball=0.1534 best=0.1534
+    covid_us-states seed72 ep01 val_pinball=0.1416 best=0.1416
+    covid_us-states seed72 ep02 val_pinball=0.1340 best=0.1340
+    covid_us-states seed72 ep03 val_pinball=0.1262 best=0.1262
+    covid_us-states seed72 ep04 val_pinball=0.1252 best=0.1252
+    covid_us-states seed72 ep05 val_pinball=0.1230 best=0.1230
+    covid_us-states seed72 ep06 val_pinball=0.1233 best=0.1230
+    covid_us-states seed72 ep07 val_pinball=0.1256 best=0.1230
+    covid_us-states seed72 ep08 val_pinball=0.1237 best=0.1230
+    covid_us-states seed72 ep09 val_pinball=0.1225 best=0.1225
+    covid_us-states seed72 ep10 val_pinball=0.1235 best=0.1225
+    covid_us-states seed72 ep11 val_pinball=0.1239 best=0.1225
+    covid_us-states seed72 ep12 val_pinball=0.1229 best=0.1225
+    covid_us-states seed72 ep13 val_pinball=0.1232 best=0.1225
+    covid_us-states seed72 ep14 val_pinball=0.1197 best=0.1197
+    covid_us-states seed72 ep15 val_pinball=0.1241 best=0.1197
+    covid_us-states seed72 ep16 val_pinball=0.1250 best=0.1197
+    covid_us-states seed72 ep17 val_pinball=0.1246 best=0.1197
+    covid_us-states seed72 ep18 val_pinball=0.1247 best=0.1197
+    covid_us-states seed72 ep19 val_pinball=0.1251 best=0.1197
+    covid_us-states seed72 ep20 val_pinball=0.1262 best=0.1197
+    covid_us-states seed72 ep21 val_pinball=0.1289 best=0.1197
+    covid_us-states seed72 ep22 val_pinball=0.1259 best=0.1197
+    covid_us-states seed72 ep23 val_pinball=0.1271 best=0.1197
+    covid_us-states seed72 ep24 val_pinball=0.1292 best=0.1197
+    covid_us-states seed72 ep25 val_pinball=0.1296 best=0.1197
+    covid_us-states seed72 ep26 val_pinball=0.1241 best=0.1197
+    covid_us-states seed72 ep27 val_pinball=0.1280 best=0.1197
+    covid_us-states seed72 ep28 val_pinball=0.1256 best=0.1197
+    covid_us-states seed72 ep29 val_pinball=0.1284 best=0.1197
+  encoder scored (covid_us-states seed72); bias_c={3: 0.15, 5: 0.2, 10: 0.1, 15: 0.05}
+    covid_us-states seed82 ep00 val_pinball=0.1793 best=0.1793
+    covid_us-states seed82 ep01 val_pinball=0.1456 best=0.1456
+    covid_us-states seed82 ep02 val_pinball=0.1347 best=0.1347
+    covid_us-states seed82 ep03 val_pinball=0.1360 best=0.1347
+    covid_us-states seed82 ep04 val_pinball=0.1313 best=0.1313
+    covid_us-states seed82 ep05 val_pinball=0.1305 best=0.1305
+    covid_us-states seed82 ep06 val_pinball=0.1229 best=0.1229
+    covid_us-states seed82 ep07 val_pinball=0.1248 best=0.1229
+    covid_us-states seed82 ep08 val_pinball=0.1253 best=0.1229
+    covid_us-states seed82 ep09 val_pinball=0.1219 best=0.1219
+    covid_us-states seed82 ep10 val_pinball=0.1250 best=0.1219
+    covid_us-states seed82 ep11 val_pinball=0.1192 best=0.1192
+    covid_us-states seed82 ep12 val_pinball=0.1238 best=0.1192
+    covid_us-states seed82 ep13 val_pinball=0.1270 best=0.1192
+    covid_us-states seed82 ep14 val_pinball=0.1239 best=0.1192
+    covid_us-states seed82 ep15 val_pinball=0.1294 best=0.1192
+    covid_us-states seed82 ep16 val_pinball=0.1268 best=0.1192
+    covid_us-states seed82 ep17 val_pinball=0.1289 best=0.1192
+    covid_us-states seed82 ep18 val_pinball=0.1305 best=0.1192
+    covid_us-states seed82 ep19 val_pinball=0.1252 best=0.1192
+    covid_us-states seed82 ep20 val_pinball=0.1318 best=0.1192
+    covid_us-states seed82 ep21 val_pinball=0.1293 best=0.1192
+    covid_us-states seed82 ep22 val_pinball=0.1269 best=0.1192
+    covid_us-states seed82 ep23 val_pinball=0.1303 best=0.1192
+    covid_us-states seed82 ep24 val_pinball=0.1312 best=0.1192
+    covid_us-states seed82 ep25 val_pinball=0.1282 best=0.1192
+    covid_us-states seed82 ep26 val_pinball=0.1282 best=0.1192
+  encoder scored (covid_us-states seed82); bias_c={3: 0.15, 5: 0.15, 10: 0.15, 15: 0.2}
+[1/2] done in 2.5 min
+
+[2/2] pair: 2 folds x 5 seeds = 10 runs  (0 already on disk, 10 to run)
+      trunk_steps=91000  epochs=80  seeds=[42, 52, 62, 72, 82]
+
+----- [1/10] pair fold=covid seed=42 (22:15:50) -----
+
+=== encoder_pair fold: held-out DISEASE=covid (['covid_us-states'])
+    trunk on ['influenza_us-states'] = ['influenza_us-states']  adapter_groups=[0]  seed=42 ===
+    trunk(-42) step  1000 val=0.1584 best=0.1584
+    trunk(-42) step  2000 val=0.1650 best=0.1584
+    trunk(-42) step  3000 val=0.1621 best=0.1584
+    trunk(-42) step  4000 val=0.1634 best=0.1584
+    trunk(-42) step  5000 val=0.1604 best=0.1584
+    trunk(-42) step  6000 val=0.1639 best=0.1584
+    trunk(-42) step  7000 val=0.1707 best=0.1584
+    trunk(-42) step  8000 val=0.1770 best=0.1584
+    trunk(-42) step  9000 val=0.1708 best=0.1584
+    trunk(-42) step 10000 val=0.1829 best=0.1584
+    trunk(-42) step 11000 val=0.1886 best=0.1584
+    trunk(-42) step 12000 val=0.1856 best=0.1584
+    trunk(-42) step 13000 val=0.1901 best=0.1584
+    shared-adapter[us-states] ep00 val=0.2975 best=0.2975
+    shared-adapter[us-states] ep01 val=0.1847 best=0.1847
+    shared-adapter[us-states] ep02 val=0.1383 best=0.1383
+    shared-adapter[us-states] ep03 val=0.1343 best=0.1343
+    shared-adapter[us-states] ep04 val=0.1319 best=0.1319
+    shared-adapter[us-states] ep05 val=0.1253 best=0.1253
+    shared-adapter[us-states] ep06 val=0.1234 best=0.1234
+    shared-adapter[us-states] ep07 val=0.1242 best=0.1234
+    shared-adapter[us-states] ep08 val=0.1229 best=0.1229
+    shared-adapter[us-states] ep09 val=0.1216 best=0.1216
+    shared-adapter[us-states] ep10 val=0.1214 best=0.1214
+    shared-adapter[us-states] ep11 val=0.1218 best=0.1214
+    shared-adapter[us-states] ep12 val=0.1184 best=0.1184
+    shared-adapter[us-states] ep13 val=0.1199 best=0.1184
+    shared-adapter[us-states] ep14 val=0.1191 best=0.1184
+    shared-adapter[us-states] ep15 val=0.1190 best=0.1184
+    shared-adapter[us-states] ep16 val=0.1181 best=0.1181
+    shared-adapter[us-states] ep17 val=0.1190 best=0.1181
+    shared-adapter[us-states] ep18 val=0.1179 best=0.1179
+    shared-adapter[us-states] ep19 val=0.1180 best=0.1179
+    shared-adapter[us-states] ep20 val=0.1197 best=0.1179
+    shared-adapter[us-states] ep21 val=0.1173 best=0.1173
+    shared-adapter[us-states] ep22 val=0.1168 best=0.1168
+    shared-adapter[us-states] ep23 val=0.1163 best=0.1163
+    shared-adapter[us-states] ep24 val=0.1180 best=0.1163
+    shared-adapter[us-states] ep25 val=0.1177 best=0.1163
+    shared-adapter[us-states] ep26 val=0.1186 best=0.1163
+    shared-adapter[us-states] ep27 val=0.1170 best=0.1163
+    shared-adapter[us-states] ep28 val=0.1176 best=0.1163
+    shared-adapter[us-states] ep29 val=0.1186 best=0.1163
+    shared-adapter[us-states] ep30 val=0.1162 best=0.1162
+    shared-adapter[us-states] ep31 val=0.1175 best=0.1162
+    shared-adapter[us-states] ep32 val=0.1174 best=0.1162
+    shared-adapter[us-states] ep33 val=0.1162 best=0.1162
+    shared-adapter[us-states] ep34 val=0.1172 best=0.1162
+    shared-adapter[us-states] ep35 val=0.1170 best=0.1162
+    shared-adapter[us-states] ep36 val=0.1160 best=0.1160
+    shared-adapter[us-states] ep37 val=0.1166 best=0.1160
+    shared-adapter[us-states] ep38 val=0.1180 best=0.1160
+    shared-adapter[us-states] ep39 val=0.1172 best=0.1160
+    shared-adapter[us-states] ep40 val=0.1170 best=0.1160
+    shared-adapter[us-states] ep41 val=0.1171 best=0.1160
+    shared-adapter[us-states] ep42 val=0.1174 best=0.1160
+    shared-adapter[us-states] ep43 val=0.1170 best=0.1160
+    shared-adapter[us-states] ep44 val=0.1176 best=0.1160
+    shared-adapter[us-states] ep45 val=0.1167 best=0.1160
+    shared-adapter[us-states] ep46 val=0.1170 best=0.1160
+    shared-adapter[us-states] ep47 val=0.1167 best=0.1160
+    shared-adapter[us-states] ep48 val=0.1164 best=0.1160
+    shared-adapter[us-states] ep49 val=0.1163 best=0.1160
+    shared-adapter[us-states] ep50 val=0.1165 best=0.1160
+    shared-adapter[us-states] ep51 val=0.1169 best=0.1160
+----- fold done in 3.7 min | elapsed 3.7 min | projected total 37.3 min -----
+
+----- [2/10] pair fold=influenza_us-states seed=42 (22:19:34) -----
+
+=== encoder_pair fold: held-out DISEASE=influenza_us-states (['influenza_us-states'])
+    trunk on ['covid'] = ['covid_us-states']  adapter_groups=[0]  seed=42 ===
+    trunk(-42) step  1000 val=0.1133 best=0.1133
+    trunk(-42) step  2000 val=0.1163 best=0.1133
+    trunk(-42) step  3000 val=0.1145 best=0.1133
+    trunk(-42) step  4000 val=0.1143 best=0.1133
+    trunk(-42) step  5000 val=0.1206 best=0.1133
+    trunk(-42) step  6000 val=0.1281 best=0.1133
+    trunk(-42) step  7000 val=0.1303 best=0.1133
+    trunk(-42) step  8000 val=0.1252 best=0.1133
+    trunk(-42) step  9000 val=0.1297 best=0.1133
+    trunk(-42) step 10000 val=0.1351 best=0.1133
+    trunk(-42) step 11000 val=0.1323 best=0.1133
+    trunk(-42) step 12000 val=0.1306 best=0.1133
+    trunk(-42) step 13000 val=0.1336 best=0.1133
+    shared-adapter[us-states] ep00 val=0.3089 best=0.3089
+    shared-adapter[us-states] ep01 val=0.2400 best=0.2400
+    shared-adapter[us-states] ep02 val=0.2111 best=0.2111
+    shared-adapter[us-states] ep03 val=0.1984 best=0.1984
+    shared-adapter[us-states] ep04 val=0.1905 best=0.1905
+    shared-adapter[us-states] ep05 val=0.1875 best=0.1875
+    shared-adapter[us-states] ep06 val=0.1863 best=0.1863
+    shared-adapter[us-states] ep07 val=0.1847 best=0.1847
+    shared-adapter[us-states] ep08 val=0.1825 best=0.1825
+    shared-adapter[us-states] ep09 val=0.1802 best=0.1802
+    shared-adapter[us-states] ep10 val=0.1812 best=0.1802
+    shared-adapter[us-states] ep11 val=0.1814 best=0.1802
+    shared-adapter[us-states] ep12 val=0.1805 best=0.1802
+    shared-adapter[us-states] ep13 val=0.1782 best=0.1782
+    shared-adapter[us-states] ep14 val=0.1792 best=0.1782
+    shared-adapter[us-states] ep15 val=0.1779 best=0.1779
+    shared-adapter[us-states] ep16 val=0.1773 best=0.1773
+    shared-adapter[us-states] ep17 val=0.1771 best=0.1771
+    shared-adapter[us-states] ep18 val=0.1771 best=0.1771
+    shared-adapter[us-states] ep19 val=0.1773 best=0.1771
+    shared-adapter[us-states] ep20 val=0.1763 best=0.1763
+    shared-adapter[us-states] ep21 val=0.1793 best=0.1763
+    shared-adapter[us-states] ep22 val=0.1759 best=0.1759
+    shared-adapter[us-states] ep23 val=0.1769 best=0.1759
+    shared-adapter[us-states] ep24 val=0.1767 best=0.1759
+    shared-adapter[us-states] ep25 val=0.1753 best=0.1753
+    shared-adapter[us-states] ep26 val=0.1750 best=0.1750
+    shared-adapter[us-states] ep27 val=0.1757 best=0.1750
+    shared-adapter[us-states] ep28 val=0.1756 best=0.1750
+    shared-adapter[us-states] ep29 val=0.1762 best=0.1750
+    shared-adapter[us-states] ep30 val=0.1747 best=0.1747
+    shared-adapter[us-states] ep31 val=0.1756 best=0.1747
+    shared-adapter[us-states] ep32 val=0.1748 best=0.1747
+    shared-adapter[us-states] ep33 val=0.1751 best=0.1747
+    shared-adapter[us-states] ep34 val=0.1765 best=0.1747
+    shared-adapter[us-states] ep35 val=0.1744 best=0.1744
+    shared-adapter[us-states] ep36 val=0.1751 best=0.1744
+    shared-adapter[us-states] ep37 val=0.1754 best=0.1744
+    shared-adapter[us-states] ep38 val=0.1752 best=0.1744
+    shared-adapter[us-states] ep39 val=0.1741 best=0.1741
+    shared-adapter[us-states] ep40 val=0.1750 best=0.1741
+    shared-adapter[us-states] ep41 val=0.1741 best=0.1741
+    shared-adapter[us-states] ep42 val=0.1757 best=0.1741
+    shared-adapter[us-states] ep43 val=0.1746 best=0.1741
+    shared-adapter[us-states] ep44 val=0.1742 best=0.1741
+    shared-adapter[us-states] ep45 val=0.1747 best=0.1741
+    shared-adapter[us-states] ep46 val=0.1739 best=0.1739
+    shared-adapter[us-states] ep47 val=0.1740 best=0.1739
+    shared-adapter[us-states] ep48 val=0.1743 best=0.1739
+    shared-adapter[us-states] ep49 val=0.1740 best=0.1739
+    shared-adapter[us-states] ep50 val=0.1738 best=0.1738
+    shared-adapter[us-states] ep51 val=0.1743 best=0.1738
+    shared-adapter[us-states] ep52 val=0.1739 best=0.1738
+    shared-adapter[us-states] ep53 val=0.1741 best=0.1738
+    shared-adapter[us-states] ep54 val=0.1744 best=0.1738
+    shared-adapter[us-states] ep55 val=0.1738 best=0.1738
+    shared-adapter[us-states] ep56 val=0.1743 best=0.1738
+    shared-adapter[us-states] ep57 val=0.1739 best=0.1738
+    shared-adapter[us-states] ep58 val=0.1741 best=0.1738
+    shared-adapter[us-states] ep59 val=0.1738 best=0.1738
+    shared-adapter[us-states] ep60 val=0.1746 best=0.1738
+    shared-adapter[us-states] ep61 val=0.1741 best=0.1738
+    shared-adapter[us-states] ep62 val=0.1738 best=0.1738
+    shared-adapter[us-states] ep63 val=0.1742 best=0.1738
+    shared-adapter[us-states] ep64 val=0.1740 best=0.1738
+    shared-adapter[us-states] ep65 val=0.1739 best=0.1738
+    shared-adapter[us-states] ep66 val=0.1738 best=0.1738
+    shared-adapter[us-states] ep67 val=0.1738 best=0.1738
+    shared-adapter[us-states] ep68 val=0.1739 best=0.1738
+    shared-adapter[us-states] ep69 val=0.1740 best=0.1738
+    shared-adapter[us-states] ep70 val=0.1738 best=0.1738
+----- fold done in 4.9 min | elapsed 8.6 min | projected total 42.9 min -----
+
+----- [3/10] pair fold=covid seed=52 (22:24:26) -----
+
+=== encoder_pair fold: held-out DISEASE=covid (['covid_us-states'])
+    trunk on ['influenza_us-states'] = ['influenza_us-states']  adapter_groups=[0]  seed=52 ===
+    trunk(-52) step  1000 val=0.1696 best=0.1696
+    trunk(-52) step  2000 val=0.1548 best=0.1548
+    trunk(-52) step  3000 val=0.1628 best=0.1548
+    trunk(-52) step  4000 val=0.1573 best=0.1548
+    trunk(-52) step  5000 val=0.1661 best=0.1548
+    trunk(-52) step  6000 val=0.1614 best=0.1548
+    trunk(-52) step  7000 val=0.1729 best=0.1548
+    trunk(-52) step  8000 val=0.1706 best=0.1548
+    trunk(-52) step  9000 val=0.1855 best=0.1548
+    trunk(-52) step 10000 val=0.1777 best=0.1548
+    trunk(-52) step 11000 val=0.1848 best=0.1548
+    trunk(-52) step 12000 val=0.1865 best=0.1548
+    trunk(-52) step 13000 val=0.1815 best=0.1548
+    trunk(-52) step 14000 val=0.1955 best=0.1548
+    shared-adapter[us-states] ep00 val=0.4290 best=0.4290
+    shared-adapter[us-states] ep01 val=0.3102 best=0.3102
+    shared-adapter[us-states] ep02 val=0.2251 best=0.2251
+    shared-adapter[us-states] ep03 val=0.1752 best=0.1752
+    shared-adapter[us-states] ep04 val=0.1474 best=0.1474
+    shared-adapter[us-states] ep05 val=0.1394 best=0.1394
+    shared-adapter[us-states] ep06 val=0.1322 best=0.1322
+    shared-adapter[us-states] ep07 val=0.1289 best=0.1289
+    shared-adapter[us-states] ep08 val=0.1276 best=0.1276
+    shared-adapter[us-states] ep09 val=0.1268 best=0.1268
+    shared-adapter[us-states] ep10 val=0.1248 best=0.1248
+    shared-adapter[us-states] ep11 val=0.1223 best=0.1223
+    shared-adapter[us-states] ep12 val=0.1238 best=0.1223
+    shared-adapter[us-states] ep13 val=0.1196 best=0.1196
+    shared-adapter[us-states] ep14 val=0.1218 best=0.1196
+    shared-adapter[us-states] ep15 val=0.1187 best=0.1187
+    shared-adapter[us-states] ep16 val=0.1182 best=0.1182
+    shared-adapter[us-states] ep17 val=0.1192 best=0.1182
+    shared-adapter[us-states] ep18 val=0.1196 best=0.1182
+    shared-adapter[us-states] ep19 val=0.1173 best=0.1173
+    shared-adapter[us-states] ep20 val=0.1198 best=0.1173
+    shared-adapter[us-states] ep21 val=0.1173 best=0.1173
+    shared-adapter[us-states] ep22 val=0.1158 best=0.1158
+    shared-adapter[us-states] ep23 val=0.1169 best=0.1158
+    shared-adapter[us-states] ep24 val=0.1179 best=0.1158
+    shared-adapter[us-states] ep25 val=0.1168 best=0.1158
+    shared-adapter[us-states] ep26 val=0.1171 best=0.1158
+    shared-adapter[us-states] ep27 val=0.1161 best=0.1158
+    shared-adapter[us-states] ep28 val=0.1174 best=0.1158
+    shared-adapter[us-states] ep29 val=0.1172 best=0.1158
+    shared-adapter[us-states] ep30 val=0.1149 best=0.1149
+    shared-adapter[us-states] ep31 val=0.1155 best=0.1149
+    shared-adapter[us-states] ep32 val=0.1169 best=0.1149
+    shared-adapter[us-states] ep33 val=0.1146 best=0.1146
+    shared-adapter[us-states] ep34 val=0.1170 best=0.1146
+    shared-adapter[us-states] ep35 val=0.1166 best=0.1146
+    shared-adapter[us-states] ep36 val=0.1140 best=0.1140
+    shared-adapter[us-states] ep37 val=0.1164 best=0.1140
+    shared-adapter[us-states] ep38 val=0.1167 best=0.1140
+    shared-adapter[us-states] ep39 val=0.1150 best=0.1140
+    shared-adapter[us-states] ep40 val=0.1155 best=0.1140
+    shared-adapter[us-states] ep41 val=0.1160 best=0.1140
+    shared-adapter[us-states] ep42 val=0.1156 best=0.1140
+    shared-adapter[us-states] ep43 val=0.1151 best=0.1140
+    shared-adapter[us-states] ep44 val=0.1146 best=0.1140
+    shared-adapter[us-states] ep45 val=0.1158 best=0.1140
+    shared-adapter[us-states] ep46 val=0.1155 best=0.1140
+    shared-adapter[us-states] ep47 val=0.1150 best=0.1140
+    shared-adapter[us-states] ep48 val=0.1155 best=0.1140
+    shared-adapter[us-states] ep49 val=0.1152 best=0.1140
+    shared-adapter[us-states] ep50 val=0.1151 best=0.1140
+    shared-adapter[us-states] ep51 val=0.1154 best=0.1140
+----- fold done in 4.0 min | elapsed 12.6 min | projected total 41.9 min -----
+
+----- [4/10] pair fold=influenza_us-states seed=52 (22:28:24) -----
+
+=== encoder_pair fold: held-out DISEASE=influenza_us-states (['influenza_us-states'])
+    trunk on ['covid'] = ['covid_us-states']  adapter_groups=[0]  seed=52 ===
+    trunk(-52) step  1000 val=0.1190 best=0.1190
+    trunk(-52) step  2000 val=0.1177 best=0.1177
+    trunk(-52) step  3000 val=0.1165 best=0.1165
+    trunk(-52) step  4000 val=0.1180 best=0.1165
+    trunk(-52) step  5000 val=0.1243 best=0.1165
+    trunk(-52) step  6000 val=0.1329 best=0.1165
+    trunk(-52) step  7000 val=0.1271 best=0.1165
+    trunk(-52) step  8000 val=0.1254 best=0.1165
+    trunk(-52) step  9000 val=0.1325 best=0.1165
+    trunk(-52) step 10000 val=0.1343 best=0.1165
+    trunk(-52) step 11000 val=0.1374 best=0.1165
+    trunk(-52) step 12000 val=0.1344 best=0.1165
+    trunk(-52) step 13000 val=0.1362 best=0.1165
+    trunk(-52) step 14000 val=0.1365 best=0.1165
+    trunk(-52) step 15000 val=0.1355 best=0.1165
+    shared-adapter[us-states] ep00 val=0.3261 best=0.3261
+    shared-adapter[us-states] ep01 val=0.2459 best=0.2459
+    shared-adapter[us-states] ep02 val=0.2204 best=0.2204
+    shared-adapter[us-states] ep03 val=0.2100 best=0.2100
+    shared-adapter[us-states] ep04 val=0.2024 best=0.2024
+    shared-adapter[us-states] ep05 val=0.1979 best=0.1979
+    shared-adapter[us-states] ep06 val=0.1986 best=0.1979
+    shared-adapter[us-states] ep07 val=0.1919 best=0.1919
+    shared-adapter[us-states] ep08 val=0.1928 best=0.1919
+    shared-adapter[us-states] ep09 val=0.1907 best=0.1907
+    shared-adapter[us-states] ep10 val=0.1888 best=0.1888
+    shared-adapter[us-states] ep11 val=0.1894 best=0.1888
+    shared-adapter[us-states] ep12 val=0.1872 best=0.1872
+    shared-adapter[us-states] ep13 val=0.1862 best=0.1862
+    shared-adapter[us-states] ep14 val=0.1863 best=0.1862
+    shared-adapter[us-states] ep15 val=0.1860 best=0.1860
+    shared-adapter[us-states] ep16 val=0.1851 best=0.1851
+    shared-adapter[us-states] ep17 val=0.1835 best=0.1835
+    shared-adapter[us-states] ep18 val=0.1833 best=0.1833
+    shared-adapter[us-states] ep19 val=0.1832 best=0.1832
+    shared-adapter[us-states] ep20 val=0.1834 best=0.1832
+    shared-adapter[us-states] ep21 val=0.1817 best=0.1817
+    shared-adapter[us-states] ep22 val=0.1819 best=0.1817
+    shared-adapter[us-states] ep23 val=0.1824 best=0.1817
+    shared-adapter[us-states] ep24 val=0.1813 best=0.1813
+    shared-adapter[us-states] ep25 val=0.1829 best=0.1813
+    shared-adapter[us-states] ep26 val=0.1821 best=0.1813
+    shared-adapter[us-states] ep27 val=0.1810 best=0.1810
+    shared-adapter[us-states] ep28 val=0.1809 best=0.1809
+    shared-adapter[us-states] ep29 val=0.1799 best=0.1799
+    shared-adapter[us-states] ep30 val=0.1797 best=0.1797
+    shared-adapter[us-states] ep31 val=0.1809 best=0.1797
+    shared-adapter[us-states] ep32 val=0.1807 best=0.1797
+    shared-adapter[us-states] ep33 val=0.1807 best=0.1797
+    shared-adapter[us-states] ep34 val=0.1791 best=0.1791
+    shared-adapter[us-states] ep35 val=0.1797 best=0.1791
+    shared-adapter[us-states] ep36 val=0.1798 best=0.1791
+    shared-adapter[us-states] ep37 val=0.1807 best=0.1791
+    shared-adapter[us-states] ep38 val=0.1785 best=0.1785
+    shared-adapter[us-states] ep39 val=0.1787 best=0.1785
+    shared-adapter[us-states] ep40 val=0.1789 best=0.1785
+    shared-adapter[us-states] ep41 val=0.1792 best=0.1785
+    shared-adapter[us-states] ep42 val=0.1785 best=0.1785
+    shared-adapter[us-states] ep43 val=0.1789 best=0.1785
+    shared-adapter[us-states] ep44 val=0.1788 best=0.1785
+    shared-adapter[us-states] ep45 val=0.1784 best=0.1784
+    shared-adapter[us-states] ep46 val=0.1784 best=0.1784
+    shared-adapter[us-states] ep47 val=0.1782 best=0.1782
+    shared-adapter[us-states] ep48 val=0.1787 best=0.1782
+    shared-adapter[us-states] ep49 val=0.1785 best=0.1782
+    shared-adapter[us-states] ep50 val=0.1784 best=0.1782
+    shared-adapter[us-states] ep51 val=0.1789 best=0.1782
+    shared-adapter[us-states] ep52 val=0.1779 best=0.1779
+    shared-adapter[us-states] ep53 val=0.1779 best=0.1779
+    shared-adapter[us-states] ep54 val=0.1781 best=0.1779
+    shared-adapter[us-states] ep55 val=0.1782 best=0.1779
+    shared-adapter[us-states] ep56 val=0.1782 best=0.1779
+    shared-adapter[us-states] ep57 val=0.1779 best=0.1779
+    shared-adapter[us-states] ep58 val=0.1786 best=0.1779
+    shared-adapter[us-states] ep59 val=0.1777 best=0.1777
+    shared-adapter[us-states] ep60 val=0.1781 best=0.1777
+    shared-adapter[us-states] ep61 val=0.1780 best=0.1777
+    shared-adapter[us-states] ep62 val=0.1779 best=0.1777
+    shared-adapter[us-states] ep63 val=0.1780 best=0.1777
+    shared-adapter[us-states] ep64 val=0.1777 best=0.1777
+    shared-adapter[us-states] ep65 val=0.1782 best=0.1777
+    shared-adapter[us-states] ep66 val=0.1781 best=0.1777
+    shared-adapter[us-states] ep67 val=0.1780 best=0.1777
+    shared-adapter[us-states] ep68 val=0.1780 best=0.1777
+    shared-adapter[us-states] ep69 val=0.1780 best=0.1777
+    shared-adapter[us-states] ep70 val=0.1780 best=0.1777
+    shared-adapter[us-states] ep71 val=0.1780 best=0.1777
+    shared-adapter[us-states] ep72 val=0.1779 best=0.1777
+    shared-adapter[us-states] ep73 val=0.1778 best=0.1777
+    shared-adapter[us-states] ep74 val=0.1779 best=0.1777
+    shared-adapter[us-states] ep75 val=0.1779 best=0.1777
+    shared-adapter[us-states] ep76 val=0.1779 best=0.1777
+    shared-adapter[us-states] ep77 val=0.1779 best=0.1777
+    shared-adapter[us-states] ep78 val=0.1779 best=0.1777
+    shared-adapter[us-states] ep79 val=0.1779 best=0.1777
+----- fold done in 5.5 min | elapsed 18.1 min | projected total 45.3 min -----
+
+----- [5/10] pair fold=covid seed=62 (22:33:57) -----
+
+=== encoder_pair fold: held-out DISEASE=covid (['covid_us-states'])
+    trunk on ['influenza_us-states'] = ['influenza_us-states']  adapter_groups=[0]  seed=62 ===
+    trunk(-62) step  1000 val=0.1606 best=0.1606
+    trunk(-62) step  2000 val=0.1580 best=0.1580
+    trunk(-62) step  3000 val=0.1525 best=0.1525
+    trunk(-62) step  4000 val=0.1571 best=0.1525
+    trunk(-62) step  5000 val=0.1597 best=0.1525
+    trunk(-62) step  6000 val=0.1570 best=0.1525
+    trunk(-62) step  7000 val=0.1639 best=0.1525
+    trunk(-62) step  8000 val=0.1657 best=0.1525
+    trunk(-62) step  9000 val=0.1679 best=0.1525
+    trunk(-62) step 10000 val=0.1758 best=0.1525
+    trunk(-62) step 11000 val=0.1812 best=0.1525
+    trunk(-62) step 12000 val=0.1839 best=0.1525
+    trunk(-62) step 13000 val=0.1850 best=0.1525
+    trunk(-62) step 14000 val=0.1862 best=0.1525
+    trunk(-62) step 15000 val=0.1854 best=0.1525
+    shared-adapter[us-states] ep00 val=0.2536 best=0.2536
+    shared-adapter[us-states] ep01 val=0.1898 best=0.1898
+    shared-adapter[us-states] ep02 val=0.1558 best=0.1558
+    shared-adapter[us-states] ep03 val=0.1378 best=0.1378
+    shared-adapter[us-states] ep04 val=0.1259 best=0.1259
+    shared-adapter[us-states] ep05 val=0.1237 best=0.1237
+    shared-adapter[us-states] ep06 val=0.1208 best=0.1208
+    shared-adapter[us-states] ep07 val=0.1215 best=0.1208
+    shared-adapter[us-states] ep08 val=0.1200 best=0.1200
+    shared-adapter[us-states] ep09 val=0.1198 best=0.1198
+    shared-adapter[us-states] ep10 val=0.1193 best=0.1193
+    shared-adapter[us-states] ep11 val=0.1183 best=0.1183
+    shared-adapter[us-states] ep12 val=0.1176 best=0.1176
+    shared-adapter[us-states] ep13 val=0.1188 best=0.1176
+    shared-adapter[us-states] ep14 val=0.1176 best=0.1176
+    shared-adapter[us-states] ep15 val=0.1178 best=0.1176
+    shared-adapter[us-states] ep16 val=0.1167 best=0.1167
+    shared-adapter[us-states] ep17 val=0.1169 best=0.1167
+    shared-adapter[us-states] ep18 val=0.1182 best=0.1167
+    shared-adapter[us-states] ep19 val=0.1168 best=0.1167
+    shared-adapter[us-states] ep20 val=0.1164 best=0.1164
+    shared-adapter[us-states] ep21 val=0.1163 best=0.1163
+    shared-adapter[us-states] ep22 val=0.1160 best=0.1160
+    shared-adapter[us-states] ep23 val=0.1163 best=0.1160
+    shared-adapter[us-states] ep24 val=0.1167 best=0.1160
+    shared-adapter[us-states] ep25 val=0.1155 best=0.1155
+    shared-adapter[us-states] ep26 val=0.1155 best=0.1155
+    shared-adapter[us-states] ep27 val=0.1155 best=0.1155
+    shared-adapter[us-states] ep28 val=0.1164 best=0.1155
+    shared-adapter[us-states] ep29 val=0.1148 best=0.1148
+    shared-adapter[us-states] ep30 val=0.1161 best=0.1148
+    shared-adapter[us-states] ep31 val=0.1153 best=0.1148
+    shared-adapter[us-states] ep32 val=0.1159 best=0.1148
+    shared-adapter[us-states] ep33 val=0.1154 best=0.1148
+    shared-adapter[us-states] ep34 val=0.1147 best=0.1147
+    shared-adapter[us-states] ep35 val=0.1152 best=0.1147
+    shared-adapter[us-states] ep36 val=0.1154 best=0.1147
+    shared-adapter[us-states] ep37 val=0.1146 best=0.1146
+    shared-adapter[us-states] ep38 val=0.1155 best=0.1146
+    shared-adapter[us-states] ep39 val=0.1157 best=0.1146
+    shared-adapter[us-states] ep40 val=0.1149 best=0.1146
+    shared-adapter[us-states] ep41 val=0.1152 best=0.1146
+    shared-adapter[us-states] ep42 val=0.1157 best=0.1146
+    shared-adapter[us-states] ep43 val=0.1149 best=0.1146
+    shared-adapter[us-states] ep44 val=0.1155 best=0.1146
+    shared-adapter[us-states] ep45 val=0.1151 best=0.1146
+    shared-adapter[us-states] ep46 val=0.1145 best=0.1145
+    shared-adapter[us-states] ep47 val=0.1148 best=0.1145
+    shared-adapter[us-states] ep48 val=0.1150 best=0.1145
+    shared-adapter[us-states] ep49 val=0.1153 best=0.1145
+    shared-adapter[us-states] ep50 val=0.1152 best=0.1145
+    shared-adapter[us-states] ep51 val=0.1148 best=0.1145
+    shared-adapter[us-states] ep52 val=0.1147 best=0.1145
+    shared-adapter[us-states] ep53 val=0.1148 best=0.1145
+    shared-adapter[us-states] ep54 val=0.1148 best=0.1145
+    shared-adapter[us-states] ep55 val=0.1145 best=0.1145
+    shared-adapter[us-states] ep56 val=0.1148 best=0.1145
+    shared-adapter[us-states] ep57 val=0.1150 best=0.1145
+    shared-adapter[us-states] ep58 val=0.1148 best=0.1145
+    shared-adapter[us-states] ep59 val=0.1147 best=0.1145
+    shared-adapter[us-states] ep60 val=0.1146 best=0.1145
+    shared-adapter[us-states] ep61 val=0.1145 best=0.1145
+----- fold done in 4.3 min | elapsed 22.4 min | projected total 44.8 min -----
+
+----- [6/10] pair fold=influenza_us-states seed=62 (22:38:14) -----
+
+=== encoder_pair fold: held-out DISEASE=influenza_us-states (['influenza_us-states'])
+    trunk on ['covid'] = ['covid_us-states']  adapter_groups=[0]  seed=62 ===
+    trunk(-62) step  1000 val=0.1213 best=0.1213
+    trunk(-62) step  2000 val=0.1207 best=0.1207
+    trunk(-62) step  3000 val=0.1276 best=0.1207
+    trunk(-62) step  4000 val=0.1299 best=0.1207
+    trunk(-62) step  5000 val=0.1290 best=0.1207
+    trunk(-62) step  6000 val=0.1330 best=0.1207
+    trunk(-62) step  7000 val=0.1364 best=0.1207
+    trunk(-62) step  8000 val=0.1367 best=0.1207
+    trunk(-62) step  9000 val=0.1300 best=0.1207
+    trunk(-62) step 10000 val=0.1306 best=0.1207
+    trunk(-62) step 11000 val=0.1344 best=0.1207
+    trunk(-62) step 12000 val=0.1330 best=0.1207
+    trunk(-62) step 13000 val=0.1340 best=0.1207
+    trunk(-62) step 14000 val=0.1351 best=0.1207
+    shared-adapter[us-states] ep00 val=0.3034 best=0.3034
+    shared-adapter[us-states] ep01 val=0.2436 best=0.2436
+    shared-adapter[us-states] ep02 val=0.2195 best=0.2195
+    shared-adapter[us-states] ep03 val=0.2076 best=0.2076
+    shared-adapter[us-states] ep04 val=0.1983 best=0.1983
+    shared-adapter[us-states] ep05 val=0.1966 best=0.1966
+    shared-adapter[us-states] ep06 val=0.1914 best=0.1914
+    shared-adapter[us-states] ep07 val=0.1876 best=0.1876
+    shared-adapter[us-states] ep08 val=0.1893 best=0.1876
+    shared-adapter[us-states] ep09 val=0.1857 best=0.1857
+    shared-adapter[us-states] ep10 val=0.1842 best=0.1842
+    shared-adapter[us-states] ep11 val=0.1838 best=0.1838
+    shared-adapter[us-states] ep12 val=0.1836 best=0.1836
+    shared-adapter[us-states] ep13 val=0.1839 best=0.1836
+    shared-adapter[us-states] ep14 val=0.1834 best=0.1834
+    shared-adapter[us-states] ep15 val=0.1806 best=0.1806
+    shared-adapter[us-states] ep16 val=0.1816 best=0.1806
+    shared-adapter[us-states] ep17 val=0.1796 best=0.1796
+    shared-adapter[us-states] ep18 val=0.1803 best=0.1796
+    shared-adapter[us-states] ep19 val=0.1785 best=0.1785
+    shared-adapter[us-states] ep20 val=0.1787 best=0.1785
+    shared-adapter[us-states] ep21 val=0.1797 best=0.1785
+    shared-adapter[us-states] ep22 val=0.1768 best=0.1768
+    shared-adapter[us-states] ep23 val=0.1780 best=0.1768
+    shared-adapter[us-states] ep24 val=0.1775 best=0.1768
+    shared-adapter[us-states] ep25 val=0.1773 best=0.1768
+    shared-adapter[us-states] ep26 val=0.1779 best=0.1768
+    shared-adapter[us-states] ep27 val=0.1758 best=0.1758
+    shared-adapter[us-states] ep28 val=0.1757 best=0.1757
+    shared-adapter[us-states] ep29 val=0.1767 best=0.1757
+    shared-adapter[us-states] ep30 val=0.1756 best=0.1756
+    shared-adapter[us-states] ep31 val=0.1762 best=0.1756
+    shared-adapter[us-states] ep32 val=0.1760 best=0.1756
+    shared-adapter[us-states] ep33 val=0.1752 best=0.1752
+    shared-adapter[us-states] ep34 val=0.1759 best=0.1752
+    shared-adapter[us-states] ep35 val=0.1741 best=0.1741
+    shared-adapter[us-states] ep36 val=0.1755 best=0.1741
+    shared-adapter[us-states] ep37 val=0.1751 best=0.1741
+    shared-adapter[us-states] ep38 val=0.1754 best=0.1741
+    shared-adapter[us-states] ep39 val=0.1741 best=0.1741
+    shared-adapter[us-states] ep40 val=0.1746 best=0.1741
+    shared-adapter[us-states] ep41 val=0.1741 best=0.1741
+    shared-adapter[us-states] ep42 val=0.1746 best=0.1741
+    shared-adapter[us-states] ep43 val=0.1745 best=0.1741
+    shared-adapter[us-states] ep44 val=0.1737 best=0.1737
+    shared-adapter[us-states] ep45 val=0.1745 best=0.1737
+    shared-adapter[us-states] ep46 val=0.1740 best=0.1737
+    shared-adapter[us-states] ep47 val=0.1743 best=0.1737
+    shared-adapter[us-states] ep48 val=0.1737 best=0.1737
+    shared-adapter[us-states] ep49 val=0.1738 best=0.1737
+    shared-adapter[us-states] ep50 val=0.1738 best=0.1737
+    shared-adapter[us-states] ep51 val=0.1743 best=0.1737
+    shared-adapter[us-states] ep52 val=0.1735 best=0.1735
+    shared-adapter[us-states] ep53 val=0.1742 best=0.1735
+    shared-adapter[us-states] ep54 val=0.1739 best=0.1735
+    shared-adapter[us-states] ep55 val=0.1734 best=0.1734
+    shared-adapter[us-states] ep56 val=0.1736 best=0.1734
+    shared-adapter[us-states] ep57 val=0.1736 best=0.1734
+    shared-adapter[us-states] ep58 val=0.1736 best=0.1734
+    shared-adapter[us-states] ep59 val=0.1733 best=0.1733
+    shared-adapter[us-states] ep60 val=0.1735 best=0.1733
+    shared-adapter[us-states] ep61 val=0.1741 best=0.1733
+    shared-adapter[us-states] ep62 val=0.1734 best=0.1733
+    shared-adapter[us-states] ep63 val=0.1734 best=0.1733
+    shared-adapter[us-states] ep64 val=0.1736 best=0.1733
+    shared-adapter[us-states] ep65 val=0.1733 best=0.1733
+    shared-adapter[us-states] ep66 val=0.1735 best=0.1733
+    shared-adapter[us-states] ep67 val=0.1735 best=0.1733
+    shared-adapter[us-states] ep68 val=0.1736 best=0.1733
+    shared-adapter[us-states] ep69 val=0.1736 best=0.1733
+    shared-adapter[us-states] ep70 val=0.1735 best=0.1733
+    shared-adapter[us-states] ep71 val=0.1734 best=0.1733
+    shared-adapter[us-states] ep72 val=0.1735 best=0.1733
+    shared-adapter[us-states] ep73 val=0.1735 best=0.1733
+    shared-adapter[us-states] ep74 val=0.1735 best=0.1733
+    shared-adapter[us-states] ep75 val=0.1735 best=0.1733
+    shared-adapter[us-states] ep76 val=0.1735 best=0.1733
+    shared-adapter[us-states] ep77 val=0.1735 best=0.1733
+    shared-adapter[us-states] ep78 val=0.1735 best=0.1733
+    shared-adapter[us-states] ep79 val=0.1735 best=0.1733
+----- fold done in 5.3 min | elapsed 27.7 min | projected total 46.2 min -----
+
+----- [7/10] pair fold=covid seed=72 (22:43:33) -----
+
+=== encoder_pair fold: held-out DISEASE=covid (['covid_us-states'])
+    trunk on ['influenza_us-states'] = ['influenza_us-states']  adapter_groups=[0]  seed=72 ===
+    trunk(-72) step  1000 val=0.1622 best=0.1622
+    trunk(-72) step  2000 val=0.1574 best=0.1574
+    trunk(-72) step  3000 val=0.1601 best=0.1574
+    trunk(-72) step  4000 val=0.1589 best=0.1574
+    trunk(-72) step  5000 val=0.1605 best=0.1574
+    trunk(-72) step  6000 val=0.1639 best=0.1574
+    trunk(-72) step  7000 val=0.1729 best=0.1574
+    trunk(-72) step  8000 val=0.1730 best=0.1574
+    trunk(-72) step  9000 val=0.1819 best=0.1574
+    trunk(-72) step 10000 val=0.1736 best=0.1574
+    trunk(-72) step 11000 val=0.1828 best=0.1574
+    trunk(-72) step 12000 val=0.1809 best=0.1574
+    trunk(-72) step 13000 val=0.1876 best=0.1574
+    trunk(-72) step 14000 val=0.1891 best=0.1574
+    shared-adapter[us-states] ep00 val=0.2957 best=0.2957
+    shared-adapter[us-states] ep01 val=0.1994 best=0.1994
+    shared-adapter[us-states] ep02 val=0.1533 best=0.1533
+    shared-adapter[us-states] ep03 val=0.1360 best=0.1360
+    shared-adapter[us-states] ep04 val=0.1319 best=0.1319
+    shared-adapter[us-states] ep05 val=0.1267 best=0.1267
+    shared-adapter[us-states] ep06 val=0.1262 best=0.1262
+    shared-adapter[us-states] ep07 val=0.1244 best=0.1244
+    shared-adapter[us-states] ep08 val=0.1219 best=0.1219
+    shared-adapter[us-states] ep09 val=0.1220 best=0.1219
+    shared-adapter[us-states] ep10 val=0.1213 best=0.1213
+    shared-adapter[us-states] ep11 val=0.1207 best=0.1207
+    shared-adapter[us-states] ep12 val=0.1195 best=0.1195
+    shared-adapter[us-states] ep13 val=0.1198 best=0.1195
+    shared-adapter[us-states] ep14 val=0.1192 best=0.1192
+    shared-adapter[us-states] ep15 val=0.1188 best=0.1188
+    shared-adapter[us-states] ep16 val=0.1180 best=0.1180
+    shared-adapter[us-states] ep17 val=0.1195 best=0.1180
+    shared-adapter[us-states] ep18 val=0.1187 best=0.1180
+    shared-adapter[us-states] ep19 val=0.1187 best=0.1180
+    shared-adapter[us-states] ep20 val=0.1182 best=0.1180
+    shared-adapter[us-states] ep21 val=0.1186 best=0.1180
+    shared-adapter[us-states] ep22 val=0.1188 best=0.1180
+    shared-adapter[us-states] ep23 val=0.1198 best=0.1180
+    shared-adapter[us-states] ep24 val=0.1182 best=0.1180
+    shared-adapter[us-states] ep25 val=0.1176 best=0.1176
+    shared-adapter[us-states] ep26 val=0.1179 best=0.1176
+    shared-adapter[us-states] ep27 val=0.1175 best=0.1175
+    shared-adapter[us-states] ep28 val=0.1182 best=0.1175
+    shared-adapter[us-states] ep29 val=0.1178 best=0.1175
+    shared-adapter[us-states] ep30 val=0.1175 best=0.1175
+    shared-adapter[us-states] ep31 val=0.1185 best=0.1175
+    shared-adapter[us-states] ep32 val=0.1180 best=0.1175
+    shared-adapter[us-states] ep33 val=0.1185 best=0.1175
+    shared-adapter[us-states] ep34 val=0.1189 best=0.1175
+    shared-adapter[us-states] ep35 val=0.1191 best=0.1175
+    shared-adapter[us-states] ep36 val=0.1184 best=0.1175
+    shared-adapter[us-states] ep37 val=0.1177 best=0.1175
+    shared-adapter[us-states] ep38 val=0.1185 best=0.1175
+    shared-adapter[us-states] ep39 val=0.1182 best=0.1175
+    shared-adapter[us-states] ep40 val=0.1186 best=0.1175
+    shared-adapter[us-states] ep41 val=0.1181 best=0.1175
+    shared-adapter[us-states] ep42 val=0.1193 best=0.1175
+----- fold done in 3.9 min | elapsed 31.6 min | projected total 45.1 min -----
+
+----- [8/10] pair fold=influenza_us-states seed=72 (22:47:25) -----
+
+=== encoder_pair fold: held-out DISEASE=influenza_us-states (['influenza_us-states'])
+    trunk on ['covid'] = ['covid_us-states']  adapter_groups=[0]  seed=72 ===
+    trunk(-72) step  1000 val=0.1207 best=0.1207
+    trunk(-72) step  2000 val=0.1188 best=0.1188
+    trunk(-72) step  3000 val=0.1196 best=0.1188
+    trunk(-72) step  4000 val=0.1270 best=0.1188
+    trunk(-72) step  5000 val=0.1226 best=0.1188
+    trunk(-72) step  6000 val=0.1316 best=0.1188
+    trunk(-72) step  7000 val=0.1291 best=0.1188
+    trunk(-72) step  8000 val=0.1302 best=0.1188
+    trunk(-72) step  9000 val=0.1321 best=0.1188
+    trunk(-72) step 10000 val=0.1324 best=0.1188
+    trunk(-72) step 11000 val=0.1399 best=0.1188
+    trunk(-72) step 12000 val=0.1262 best=0.1188
+    trunk(-72) step 13000 val=0.1353 best=0.1188
+    trunk(-72) step 14000 val=0.1331 best=0.1188
+    shared-adapter[us-states] ep00 val=0.3028 best=0.3028
+    shared-adapter[us-states] ep01 val=0.2431 best=0.2431
+    shared-adapter[us-states] ep02 val=0.2223 best=0.2223
+    shared-adapter[us-states] ep03 val=0.2105 best=0.2105
+    shared-adapter[us-states] ep04 val=0.2042 best=0.2042
+    shared-adapter[us-states] ep05 val=0.2003 best=0.2003
+    shared-adapter[us-states] ep06 val=0.1976 best=0.1976
+    shared-adapter[us-states] ep07 val=0.1951 best=0.1951
+    shared-adapter[us-states] ep08 val=0.1919 best=0.1919
+    shared-adapter[us-states] ep09 val=0.1906 best=0.1906
+    shared-adapter[us-states] ep10 val=0.1891 best=0.1891
+    shared-adapter[us-states] ep11 val=0.1865 best=0.1865
+    shared-adapter[us-states] ep12 val=0.1871 best=0.1865
+    shared-adapter[us-states] ep13 val=0.1858 best=0.1858
+    shared-adapter[us-states] ep14 val=0.1876 best=0.1858
+    shared-adapter[us-states] ep15 val=0.1869 best=0.1858
+    shared-adapter[us-states] ep16 val=0.1827 best=0.1827
+    shared-adapter[us-states] ep17 val=0.1835 best=0.1827
+    shared-adapter[us-states] ep18 val=0.1829 best=0.1827
+    shared-adapter[us-states] ep19 val=0.1839 best=0.1827
+    shared-adapter[us-states] ep20 val=0.1833 best=0.1827
+    shared-adapter[us-states] ep21 val=0.1814 best=0.1814
+    shared-adapter[us-states] ep22 val=0.1820 best=0.1814
+    shared-adapter[us-states] ep23 val=0.1814 best=0.1814
+    shared-adapter[us-states] ep24 val=0.1815 best=0.1814
+    shared-adapter[us-states] ep25 val=0.1801 best=0.1801
+    shared-adapter[us-states] ep26 val=0.1832 best=0.1801
+    shared-adapter[us-states] ep27 val=0.1802 best=0.1801
+    shared-adapter[us-states] ep28 val=0.1810 best=0.1801
+    shared-adapter[us-states] ep29 val=0.1816 best=0.1801
+    shared-adapter[us-states] ep30 val=0.1808 best=0.1801
+    shared-adapter[us-states] ep31 val=0.1802 best=0.1801
+    shared-adapter[us-states] ep32 val=0.1815 best=0.1801
+    shared-adapter[us-states] ep33 val=0.1809 best=0.1801
+    shared-adapter[us-states] ep34 val=0.1804 best=0.1801
+    shared-adapter[us-states] ep35 val=0.1797 best=0.1797
+    shared-adapter[us-states] ep36 val=0.1794 best=0.1794
+    shared-adapter[us-states] ep37 val=0.1813 best=0.1794
+    shared-adapter[us-states] ep38 val=0.1794 best=0.1794
+    shared-adapter[us-states] ep39 val=0.1812 best=0.1794
+    shared-adapter[us-states] ep40 val=0.1795 best=0.1794
+    shared-adapter[us-states] ep41 val=0.1798 best=0.1794
+    shared-adapter[us-states] ep42 val=0.1792 best=0.1792
+    shared-adapter[us-states] ep43 val=0.1792 best=0.1792
+    shared-adapter[us-states] ep44 val=0.1795 best=0.1792
+    shared-adapter[us-states] ep45 val=0.1783 best=0.1783
+    shared-adapter[us-states] ep46 val=0.1787 best=0.1783
+    shared-adapter[us-states] ep47 val=0.1792 best=0.1783
+    shared-adapter[us-states] ep48 val=0.1783 best=0.1783
+    shared-adapter[us-states] ep49 val=0.1791 best=0.1783
+    shared-adapter[us-states] ep50 val=0.1787 best=0.1783
+    shared-adapter[us-states] ep51 val=0.1788 best=0.1783
+    shared-adapter[us-states] ep52 val=0.1793 best=0.1783
+    shared-adapter[us-states] ep53 val=0.1785 best=0.1783
+    shared-adapter[us-states] ep54 val=0.1785 best=0.1783
+    shared-adapter[us-states] ep55 val=0.1783 best=0.1783
+    shared-adapter[us-states] ep56 val=0.1784 best=0.1783
+    shared-adapter[us-states] ep57 val=0.1787 best=0.1783
+    shared-adapter[us-states] ep58 val=0.1784 best=0.1783
+    shared-adapter[us-states] ep59 val=0.1787 best=0.1783
+    shared-adapter[us-states] ep60 val=0.1784 best=0.1783
+----- fold done in 4.9 min | elapsed 36.4 min | projected total 45.5 min -----
+
+----- [9/10] pair fold=covid seed=82 (22:52:16) -----
+
+=== encoder_pair fold: held-out DISEASE=covid (['covid_us-states'])
+    trunk on ['influenza_us-states'] = ['influenza_us-states']  adapter_groups=[0]  seed=82 ===
+    trunk(-82) step  1000 val=0.1638 best=0.1638
+    trunk(-82) step  2000 val=0.1577 best=0.1577
+    trunk(-82) step  3000 val=0.1555 best=0.1555
+    trunk(-82) step  4000 val=0.1591 best=0.1555
+    trunk(-82) step  5000 val=0.1640 best=0.1555
+    trunk(-82) step  6000 val=0.1625 best=0.1555
+    trunk(-82) step  7000 val=0.1721 best=0.1555
+    trunk(-82) step  8000 val=0.1630 best=0.1555
+    trunk(-82) step  9000 val=0.1699 best=0.1555
+    trunk(-82) step 10000 val=0.1783 best=0.1555
+    trunk(-82) step 11000 val=0.1780 best=0.1555
+    trunk(-82) step 12000 val=0.1798 best=0.1555
+    trunk(-82) step 13000 val=0.1852 best=0.1555
+    trunk(-82) step 14000 val=0.1845 best=0.1555
+    trunk(-82) step 15000 val=0.1836 best=0.1555
+    shared-adapter[us-states] ep00 val=0.3565 best=0.3565
+    shared-adapter[us-states] ep01 val=0.2680 best=0.2680
+    shared-adapter[us-states] ep02 val=0.2016 best=0.2016
+    shared-adapter[us-states] ep03 val=0.1606 best=0.1606
+    shared-adapter[us-states] ep04 val=0.1418 best=0.1418
+    shared-adapter[us-states] ep05 val=0.1354 best=0.1354
+    shared-adapter[us-states] ep06 val=0.1301 best=0.1301
+    shared-adapter[us-states] ep07 val=0.1258 best=0.1258
+    shared-adapter[us-states] ep08 val=0.1235 best=0.1235
+    shared-adapter[us-states] ep09 val=0.1231 best=0.1231
+    shared-adapter[us-states] ep10 val=0.1218 best=0.1218
+    shared-adapter[us-states] ep11 val=0.1223 best=0.1218
+    shared-adapter[us-states] ep12 val=0.1215 best=0.1215
+    shared-adapter[us-states] ep13 val=0.1199 best=0.1199
+    shared-adapter[us-states] ep14 val=0.1203 best=0.1199
+    shared-adapter[us-states] ep15 val=0.1205 best=0.1199
+    shared-adapter[us-states] ep16 val=0.1171 best=0.1171
+    shared-adapter[us-states] ep17 val=0.1194 best=0.1171
+    shared-adapter[us-states] ep18 val=0.1180 best=0.1171
+    shared-adapter[us-states] ep19 val=0.1185 best=0.1171
+    shared-adapter[us-states] ep20 val=0.1176 best=0.1171
+    shared-adapter[us-states] ep21 val=0.1173 best=0.1171
+    shared-adapter[us-states] ep22 val=0.1171 best=0.1171
+    shared-adapter[us-states] ep23 val=0.1173 best=0.1171
+    shared-adapter[us-states] ep24 val=0.1181 best=0.1171
+    shared-adapter[us-states] ep25 val=0.1179 best=0.1171
+    shared-adapter[us-states] ep26 val=0.1174 best=0.1171
+    shared-adapter[us-states] ep27 val=0.1176 best=0.1171
+    shared-adapter[us-states] ep28 val=0.1179 best=0.1171
+    shared-adapter[us-states] ep29 val=0.1169 best=0.1169
+    shared-adapter[us-states] ep30 val=0.1169 best=0.1169
+    shared-adapter[us-states] ep31 val=0.1172 best=0.1169
+    shared-adapter[us-states] ep32 val=0.1171 best=0.1169
+    shared-adapter[us-states] ep33 val=0.1178 best=0.1169
+    shared-adapter[us-states] ep34 val=0.1165 best=0.1165
+    shared-adapter[us-states] ep35 val=0.1174 best=0.1165
+    shared-adapter[us-states] ep36 val=0.1175 best=0.1165
+    shared-adapter[us-states] ep37 val=0.1169 best=0.1165
+    shared-adapter[us-states] ep38 val=0.1167 best=0.1165
+    shared-adapter[us-states] ep39 val=0.1168 best=0.1165
+    shared-adapter[us-states] ep40 val=0.1169 best=0.1165
+    shared-adapter[us-states] ep41 val=0.1172 best=0.1165
+    shared-adapter[us-states] ep42 val=0.1166 best=0.1165
+    shared-adapter[us-states] ep43 val=0.1167 best=0.1165
+    shared-adapter[us-states] ep44 val=0.1169 best=0.1165
+    shared-adapter[us-states] ep45 val=0.1173 best=0.1165
+    shared-adapter[us-states] ep46 val=0.1164 best=0.1164
+    shared-adapter[us-states] ep47 val=0.1161 best=0.1161
+    shared-adapter[us-states] ep48 val=0.1173 best=0.1161
+    shared-adapter[us-states] ep49 val=0.1168 best=0.1161
+    shared-adapter[us-states] ep50 val=0.1165 best=0.1161
+    shared-adapter[us-states] ep51 val=0.1168 best=0.1161
+    shared-adapter[us-states] ep52 val=0.1167 best=0.1161
+    shared-adapter[us-states] ep53 val=0.1168 best=0.1161
+    shared-adapter[us-states] ep54 val=0.1166 best=0.1161
+    shared-adapter[us-states] ep55 val=0.1165 best=0.1161
+    shared-adapter[us-states] ep56 val=0.1166 best=0.1161
+    shared-adapter[us-states] ep57 val=0.1169 best=0.1161
+    shared-adapter[us-states] ep58 val=0.1169 best=0.1161
+    shared-adapter[us-states] ep59 val=0.1170 best=0.1161
+    shared-adapter[us-states] ep60 val=0.1168 best=0.1161
+    shared-adapter[us-states] ep61 val=0.1170 best=0.1161
+    shared-adapter[us-states] ep62 val=0.1168 best=0.1161
+----- fold done in 4.3 min | elapsed 40.7 min | projected total 45.3 min -----
+
+----- [10/10] pair fold=influenza_us-states seed=82 (22:56:34) -----
+
+=== encoder_pair fold: held-out DISEASE=influenza_us-states (['influenza_us-states'])
+    trunk on ['covid'] = ['covid_us-states']  adapter_groups=[0]  seed=82 ===
+    trunk(-82) step  1000 val=0.1202 best=0.1202
+    trunk(-82) step  2000 val=0.1181 best=0.1181
+    trunk(-82) step  3000 val=0.1189 best=0.1181
+    trunk(-82) step  4000 val=0.1220 best=0.1181
+    trunk(-82) step  5000 val=0.1251 best=0.1181
+    trunk(-82) step  6000 val=0.1293 best=0.1181
+    trunk(-82) step  7000 val=0.1307 best=0.1181
+    trunk(-82) step  8000 val=0.1349 best=0.1181
+    trunk(-82) step  9000 val=0.1303 best=0.1181
+    trunk(-82) step 10000 val=0.1327 best=0.1181
+    trunk(-82) step 11000 val=0.1315 best=0.1181
+    trunk(-82) step 12000 val=0.1357 best=0.1181
+    trunk(-82) step 13000 val=0.1358 best=0.1181
+    trunk(-82) step 14000 val=0.1360 best=0.1181
+    shared-adapter[us-states] ep00 val=0.3348 best=0.3348
+    shared-adapter[us-states] ep01 val=0.2523 best=0.2523
+    shared-adapter[us-states] ep02 val=0.2216 best=0.2216
+    shared-adapter[us-states] ep03 val=0.2060 best=0.2060
+    shared-adapter[us-states] ep04 val=0.1995 best=0.1995
+    shared-adapter[us-states] ep05 val=0.1972 best=0.1972
+    shared-adapter[us-states] ep06 val=0.1937 best=0.1937
+    shared-adapter[us-states] ep07 val=0.1903 best=0.1903
+    shared-adapter[us-states] ep08 val=0.1896 best=0.1896
+    shared-adapter[us-states] ep09 val=0.1876 best=0.1876
+    shared-adapter[us-states] ep10 val=0.1874 best=0.1874
+    shared-adapter[us-states] ep11 val=0.1842 best=0.1842
+    shared-adapter[us-states] ep12 val=0.1865 best=0.1842
+    shared-adapter[us-states] ep13 val=0.1833 best=0.1833
+    shared-adapter[us-states] ep14 val=0.1824 best=0.1824
+    shared-adapter[us-states] ep15 val=0.1831 best=0.1824
+    shared-adapter[us-states] ep16 val=0.1823 best=0.1823
+    shared-adapter[us-states] ep17 val=0.1820 best=0.1820
+    shared-adapter[us-states] ep18 val=0.1807 best=0.1807
+    shared-adapter[us-states] ep19 val=0.1813 best=0.1807
+    shared-adapter[us-states] ep20 val=0.1803 best=0.1803
+    shared-adapter[us-states] ep21 val=0.1792 best=0.1792
+    shared-adapter[us-states] ep22 val=0.1814 best=0.1792
+    shared-adapter[us-states] ep23 val=0.1781 best=0.1781
+    shared-adapter[us-states] ep24 val=0.1788 best=0.1781
+    shared-adapter[us-states] ep25 val=0.1783 best=0.1781
+    shared-adapter[us-states] ep26 val=0.1798 best=0.1781
+    shared-adapter[us-states] ep27 val=0.1778 best=0.1778
+    shared-adapter[us-states] ep28 val=0.1782 best=0.1778
+    shared-adapter[us-states] ep29 val=0.1766 best=0.1766
+    shared-adapter[us-states] ep30 val=0.1783 best=0.1766
+    shared-adapter[us-states] ep31 val=0.1780 best=0.1766
+    shared-adapter[us-states] ep32 val=0.1789 best=0.1766
+    shared-adapter[us-states] ep33 val=0.1765 best=0.1765
+    shared-adapter[us-states] ep34 val=0.1776 best=0.1765
+    shared-adapter[us-states] ep35 val=0.1757 best=0.1757
+    shared-adapter[us-states] ep36 val=0.1774 best=0.1757
+    shared-adapter[us-states] ep37 val=0.1771 best=0.1757
+    shared-adapter[us-states] ep38 val=0.1756 best=0.1756
+    shared-adapter[us-states] ep39 val=0.1762 best=0.1756
+    shared-adapter[us-states] ep40 val=0.1756 best=0.1756
+    shared-adapter[us-states] ep41 val=0.1762 best=0.1756
+    shared-adapter[us-states] ep42 val=0.1761 best=0.1756
+    shared-adapter[us-states] ep43 val=0.1762 best=0.1756
+    shared-adapter[us-states] ep44 val=0.1760 best=0.1756
+    shared-adapter[us-states] ep45 val=0.1755 best=0.1755
+    shared-adapter[us-states] ep46 val=0.1763 best=0.1755
+    shared-adapter[us-states] ep47 val=0.1762 best=0.1755
+    shared-adapter[us-states] ep48 val=0.1754 best=0.1754
+    shared-adapter[us-states] ep49 val=0.1758 best=0.1754
+    shared-adapter[us-states] ep50 val=0.1758 best=0.1754
+    shared-adapter[us-states] ep51 val=0.1753 best=0.1753
+    shared-adapter[us-states] ep52 val=0.1758 best=0.1753
+    shared-adapter[us-states] ep53 val=0.1756 best=0.1753
+    shared-adapter[us-states] ep54 val=0.1751 best=0.1751
+    shared-adapter[us-states] ep55 val=0.1758 best=0.1751
+    shared-adapter[us-states] ep56 val=0.1754 best=0.1751
+    shared-adapter[us-states] ep57 val=0.1752 best=0.1751
+    shared-adapter[us-states] ep58 val=0.1755 best=0.1751
+    shared-adapter[us-states] ep59 val=0.1754 best=0.1751
+    shared-adapter[us-states] ep60 val=0.1754 best=0.1751
+    shared-adapter[us-states] ep61 val=0.1754 best=0.1751
+    shared-adapter[us-states] ep62 val=0.1753 best=0.1751
+    shared-adapter[us-states] ep63 val=0.1755 best=0.1751
+    shared-adapter[us-states] ep64 val=0.1752 best=0.1751
+    shared-adapter[us-states] ep65 val=0.1752 best=0.1751
+    shared-adapter[us-states] ep66 val=0.1752 best=0.1751
+    shared-adapter[us-states] ep67 val=0.1754 best=0.1751
+    shared-adapter[us-states] ep68 val=0.1753 best=0.1751
+    shared-adapter[us-states] ep69 val=0.1754 best=0.1751
+----- fold done in 5.0 min | elapsed 45.8 min | projected total 45.8 min -----
+[2/2] done in 45.8 min
+
+==============================================================================
+ALL DONE  baselines 2.5 min | pair 45.8 min | total 48.3 min
+finished 2026-08-03 23:01:36
+next: python results_matrix.py -o Results_Matrix.md
+==============================================================================
+==============================================================================
+OVERNIGHT RUN  started 2026-08-04 12:28:47  log -> results\reports\overnight.log
+==============================================================================
+python      C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe
+torch       2.6.0+cu124  cuda=True  NVIDIA GeForce RTX 3060
+numpy       2.4.6  (BLAS ok)
+LOCF_INPUT  False  (False is the validated default)
+bundles     6 present: ['dengue', 'influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states', 'ebola']
+
+MODE: ldo3  (three-disease leave-one-disease-out: hold out dengue, influenza, covid in turn;
+      each fold emits an ADAPTED arm and a NO-ADAPTER zero-shot arm)
+
+[2/2] ldo3: 3 folds x 5 seeds = 15 runs  (0 already on disk, 15 to run)
+      trunk_steps=91000  epochs=80  seeds=[42, 52, 62, 72, 82]
+
+----- [1/15] ldo3 fold=dengue seed=42 (12:28:49) -----
+
+=== encoder_ldo3 fold: held-out DISEASE=dengue (['dengue'])
+    trunk on ['influenza', 'covid'] = ['influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states']  adapter_groups=[0, 0, 0, 1]  seed=42 ===
+    trunk loss rebalanced per DISEASE (2 groups): [0.167, 0.167, 0.167, 0.5]
+    trunk(-42) step  1000 val=0.1241 best=0.1241
+==============================================================================
+OVERNIGHT RUN  started 2026-08-04 12:30:18  log -> results\reports\overnight.log
+==============================================================================
+python      C:\Users\Administrator\AppData\Local\Programs\Python\Python311\python.exe
+==============================================================================
+OVERNIGHT RUN  started 2026-08-04 12:30:57  log -> results\reports\overnight.log
+==============================================================================
+python      C:\Users\Administrator\miniconda3\envs\ebola-train\python.exe
+torch       2.6.0+cu124  cuda=True  NVIDIA GeForce RTX 3060
+numpy       2.4.6  (BLAS ok)
+LOCF_INPUT  False  (False is the validated default)
+bundles     6 present: ['dengue', 'influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states', 'ebola']
+
+MODE: ldo3  (three-disease leave-one-disease-out: hold out dengue, influenza, covid in turn;
+      each fold emits an ADAPTED arm and a NO-ADAPTER zero-shot arm)
+
+[2/2] ldo3: 3 folds x 5 seeds = 15 runs  (0 already on disk, 15 to run)
+      trunk_steps=91000  epochs=80  seeds=[42, 52, 62, 72, 82]
+
+----- [1/15] ldo3 fold=dengue seed=42 (12:31:00) -----
+
+=== encoder_ldo3 fold: held-out DISEASE=dengue (['dengue'])
+    trunk on ['influenza', 'covid'] = ['influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states']  adapter_groups=[0, 0, 0, 1]  seed=42 ===
+    trunk loss rebalanced per DISEASE (2 groups): [0.167, 0.167, 0.167, 0.5]
+    trunk(-42) step  1000 val=0.1241 best=0.1241
+    trunk(-42) step  2000 val=0.1205 best=0.1205
+    trunk(-42) step  3000 val=0.1198 best=0.1198
+    trunk(-42) step  4000 val=0.1183 best=0.1183
+    trunk(-42) step  5000 val=0.1228 best=0.1183
+    trunk(-42) step  6000 val=0.1267 best=0.1183
+    trunk(-42) step  7000 val=0.1214 best=0.1183
+    trunk(-42) step  8000 val=0.1247 best=0.1183
+    trunk(-42) step  9000 val=0.1254 best=0.1183
+    trunk(-42) step 10000 val=0.1297 best=0.1183
+    trunk(-42) step 11000 val=0.1277 best=0.1183
+    trunk(-42) step 12000 val=0.1320 best=0.1183
+    trunk(-42) step 13000 val=0.1308 best=0.1183
+    trunk(-42) step 14000 val=0.1323 best=0.1183
+    trunk(-42) step 15000 val=0.1339 best=0.1183
+    trunk(-42) step 16000 val=0.1377 best=0.1183
+    shared-adapter[dengue] ep00 val=0.2764 best=0.2764
+    shared-adapter[dengue] ep01 val=0.2663 best=0.2663
+    shared-adapter[dengue] ep02 val=0.2640 best=0.2640
+    shared-adapter[dengue] ep03 val=0.2631 best=0.2631
+    shared-adapter[dengue] ep04 val=0.2619 best=0.2619
+    shared-adapter[dengue] ep05 val=0.2615 best=0.2615
+    shared-adapter[dengue] ep06 val=0.2620 best=0.2615
+    shared-adapter[dengue] ep07 val=0.2607 best=0.2607
+    shared-adapter[dengue] ep08 val=0.2602 best=0.2602
+    shared-adapter[dengue] ep09 val=0.2595 best=0.2595
+    shared-adapter[dengue] ep10 val=0.2614 best=0.2595
+    shared-adapter[dengue] ep11 val=0.2583 best=0.2583
+    shared-adapter[dengue] ep12 val=0.2604 best=0.2583
+    shared-adapter[dengue] ep13 val=0.2603 best=0.2583
+    shared-adapter[dengue] ep14 val=0.2608 best=0.2583
+    shared-adapter[dengue] ep15 val=0.2593 best=0.2583
+    shared-adapter[dengue] ep16 val=0.2586 best=0.2583
+    shared-adapter[dengue] ep17 val=0.2589 best=0.2583
+    shared-adapter[dengue] ep18 val=0.2587 best=0.2583
+    shared-adapter[dengue] ep19 val=0.2582 best=0.2582
+    shared-adapter[dengue] ep20 val=0.2611 best=0.2582
+    shared-adapter[dengue] ep21 val=0.2592 best=0.2582
+    shared-adapter[dengue] ep22 val=0.2599 best=0.2582
+    shared-adapter[dengue] ep23 val=0.2605 best=0.2582
+    shared-adapter[dengue] ep24 val=0.2595 best=0.2582
+    shared-adapter[dengue] ep25 val=0.2585 best=0.2582
+    shared-adapter[dengue] ep26 val=0.2594 best=0.2582
+    shared-adapter[dengue] ep27 val=0.2599 best=0.2582
+    shared-adapter[dengue] ep28 val=0.2603 best=0.2582
+    shared-adapter[dengue] ep29 val=0.2573 best=0.2573
+    shared-adapter[dengue] ep30 val=0.2588 best=0.2573
+    shared-adapter[dengue] ep31 val=0.2590 best=0.2573
+    shared-adapter[dengue] ep32 val=0.2590 best=0.2573
+    shared-adapter[dengue] ep33 val=0.2581 best=0.2573
+    shared-adapter[dengue] ep34 val=0.2573 best=0.2573
+    shared-adapter[dengue] ep35 val=0.2580 best=0.2573
+    shared-adapter[dengue] ep36 val=0.2587 best=0.2573
+    shared-adapter[dengue] ep37 val=0.2588 best=0.2573
+    shared-adapter[dengue] ep38 val=0.2589 best=0.2573
+    shared-adapter[dengue] ep39 val=0.2592 best=0.2573
+    shared-adapter[dengue] ep40 val=0.2577 best=0.2573
+    shared-adapter[dengue] ep41 val=0.2583 best=0.2573
+    shared-adapter[dengue] ep42 val=0.2594 best=0.2573
+    shared-adapter[dengue] ep43 val=0.2583 best=0.2573
+    shared-adapter[dengue] ep44 val=0.2584 best=0.2573
+----- fold done in 45.4 min | elapsed 45.4 min | projected total 11.35 h -----
+
+----- [2/15] ldo3 fold=influenza seed=42 (13:16:23) -----
+
+=== encoder_ldo3 fold: held-out DISEASE=influenza (['influenza_japan', 'influenza_us-regions', 'influenza_us-states'])
+    trunk on ['dengue', 'covid'] = ['dengue', 'covid_us-states']  adapter_groups=[0, 1]  seed=42 ===
+    trunk(-42) step  1000 val=0.1810 best=0.1810
+    trunk(-42) step  2000 val=0.1820 best=0.1810
+    trunk(-42) step  3000 val=0.1792 best=0.1792
+    trunk(-42) step  4000 val=0.1822 best=0.1792
+    trunk(-42) step  5000 val=0.1779 best=0.1779
+    trunk(-42) step  6000 val=0.1806 best=0.1779
+    trunk(-42) step  7000 val=0.1768 best=0.1768
+    trunk(-42) step  8000 val=0.1791 best=0.1768
+    trunk(-42) step  9000 val=0.1798 best=0.1768
+    trunk(-42) step 10000 val=0.1820 best=0.1768
+    trunk(-42) step 11000 val=0.1818 best=0.1768
+    trunk(-42) step 12000 val=0.1821 best=0.1768
+    trunk(-42) step 13000 val=0.1827 best=0.1768
+    trunk(-42) step 14000 val=0.1840 best=0.1768
+    trunk(-42) step 15000 val=0.1844 best=0.1768
+    trunk(-42) step 16000 val=0.1847 best=0.1768
+    trunk(-42) step 17000 val=0.1849 best=0.1768
+    trunk(-42) step 18000 val=0.1831 best=0.1768
+    trunk(-42) step 19000 val=0.1889 best=0.1768
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1940 best=0.1940
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1706 best=0.1706
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1631 best=0.1631
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1568 best=0.1568
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1483 best=0.1483
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1480 best=0.1480
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1485 best=0.1480
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1443 best=0.1443
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1427 best=0.1427
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1434 best=0.1427
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1432 best=0.1427
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1448 best=0.1427
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1459 best=0.1427
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1444 best=0.1427
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1416 best=0.1416
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1415 best=0.1415
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1400 best=0.1400
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1452 best=0.1400
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1404 best=0.1400
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1412 best=0.1400
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1393 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1397 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1407 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1418 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1407 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1386 best=0.1386
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1415 best=0.1386
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1405 best=0.1386
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1381 best=0.1381
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1365 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1395 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1386 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1389 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1402 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1376 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1405 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1412 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1392 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1401 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1404 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1402 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1403 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1383 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1405 best=0.1365
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1401 best=0.1365
+----- fold done in 35.6 min | elapsed 1.35 h | projected total 10.12 h -----
+
+----- [3/15] ldo3 fold=covid seed=42 (13:51:56) -----
+
+=== encoder_ldo3 fold: held-out DISEASE=covid (['covid_us-states'])
+    trunk on ['dengue', 'influenza'] = ['dengue', 'influenza_japan', 'influenza_us-regions', 'influenza_us-states']  adapter_groups=[0, 1, 1, 1]  seed=42 ===
+    trunk loss rebalanced per DISEASE (2 groups): [0.5, 0.167, 0.167, 0.167]
+    trunk(-42) step  1000 val=0.1902 best=0.1902
+    trunk(-42) step  2000 val=0.1896 best=0.1896
+    trunk(-42) step  3000 val=0.1811 best=0.1811
+    trunk(-42) step  4000 val=0.2006 best=0.1811
+    trunk(-42) step  5000 val=0.1821 best=0.1811
+    trunk(-42) step  6000 val=0.1875 best=0.1811
+    trunk(-42) step  7000 val=0.1870 best=0.1811
+    trunk(-42) step  8000 val=0.1840 best=0.1811
+    trunk(-42) step  9000 val=0.1851 best=0.1811
+    trunk(-42) step 10000 val=0.1898 best=0.1811
+    trunk(-42) step 11000 val=0.1851 best=0.1811
+    trunk(-42) step 12000 val=0.1865 best=0.1811
+    trunk(-42) step 13000 val=0.1889 best=0.1811
+    trunk(-42) step 14000 val=0.1864 best=0.1811
+    trunk(-42) step 15000 val=0.1851 best=0.1811
+    shared-adapter[us-states] ep00 val=0.3611 best=0.3611
+    shared-adapter[us-states] ep01 val=0.2763 best=0.2763
+    shared-adapter[us-states] ep02 val=0.2161 best=0.2161
+    shared-adapter[us-states] ep03 val=0.1802 best=0.1802
+    shared-adapter[us-states] ep04 val=0.1599 best=0.1599
+    shared-adapter[us-states] ep05 val=0.1455 best=0.1455
+    shared-adapter[us-states] ep06 val=0.1384 best=0.1384
+    shared-adapter[us-states] ep07 val=0.1342 best=0.1342
+    shared-adapter[us-states] ep08 val=0.1304 best=0.1304
+    shared-adapter[us-states] ep09 val=0.1257 best=0.1257
+    shared-adapter[us-states] ep10 val=0.1233 best=0.1233
+    shared-adapter[us-states] ep11 val=0.1215 best=0.1215
+    shared-adapter[us-states] ep12 val=0.1198 best=0.1198
+    shared-adapter[us-states] ep13 val=0.1184 best=0.1184
+    shared-adapter[us-states] ep14 val=0.1170 best=0.1170
+    shared-adapter[us-states] ep15 val=0.1169 best=0.1169
+    shared-adapter[us-states] ep16 val=0.1160 best=0.1160
+    shared-adapter[us-states] ep17 val=0.1151 best=0.1151
+    shared-adapter[us-states] ep18 val=0.1155 best=0.1151
+    shared-adapter[us-states] ep19 val=0.1151 best=0.1151
+    shared-adapter[us-states] ep20 val=0.1145 best=0.1145
+    shared-adapter[us-states] ep21 val=0.1141 best=0.1141
+    shared-adapter[us-states] ep22 val=0.1130 best=0.1130
+    shared-adapter[us-states] ep23 val=0.1128 best=0.1128
+    shared-adapter[us-states] ep24 val=0.1135 best=0.1128
+    shared-adapter[us-states] ep25 val=0.1132 best=0.1128
+    shared-adapter[us-states] ep26 val=0.1135 best=0.1128
+    shared-adapter[us-states] ep27 val=0.1125 best=0.1125
+    shared-adapter[us-states] ep28 val=0.1127 best=0.1125
+    shared-adapter[us-states] ep29 val=0.1129 best=0.1125
+    shared-adapter[us-states] ep30 val=0.1113 best=0.1113
+    shared-adapter[us-states] ep31 val=0.1123 best=0.1113
+    shared-adapter[us-states] ep32 val=0.1122 best=0.1113
+    shared-adapter[us-states] ep33 val=0.1112 best=0.1112
+    shared-adapter[us-states] ep34 val=0.1118 best=0.1112
+    shared-adapter[us-states] ep35 val=0.1115 best=0.1112
+    shared-adapter[us-states] ep36 val=0.1114 best=0.1112
+    shared-adapter[us-states] ep37 val=0.1112 best=0.1112
+    shared-adapter[us-states] ep38 val=0.1113 best=0.1112
+    shared-adapter[us-states] ep39 val=0.1119 best=0.1112
+    shared-adapter[us-states] ep40 val=0.1113 best=0.1112
+    shared-adapter[us-states] ep41 val=0.1112 best=0.1112
+    shared-adapter[us-states] ep42 val=0.1111 best=0.1111
+    shared-adapter[us-states] ep43 val=0.1112 best=0.1111
+    shared-adapter[us-states] ep44 val=0.1113 best=0.1111
+    shared-adapter[us-states] ep45 val=0.1111 best=0.1111
+    shared-adapter[us-states] ep46 val=0.1111 best=0.1111
+    shared-adapter[us-states] ep47 val=0.1108 best=0.1108
+    shared-adapter[us-states] ep48 val=0.1106 best=0.1106
+    shared-adapter[us-states] ep49 val=0.1109 best=0.1106
+    shared-adapter[us-states] ep50 val=0.1110 best=0.1106
+    shared-adapter[us-states] ep51 val=0.1109 best=0.1106
+    shared-adapter[us-states] ep52 val=0.1107 best=0.1106
+    shared-adapter[us-states] ep53 val=0.1109 best=0.1106
+    shared-adapter[us-states] ep54 val=0.1107 best=0.1106
+    shared-adapter[us-states] ep55 val=0.1107 best=0.1106
+    shared-adapter[us-states] ep56 val=0.1108 best=0.1106
+    shared-adapter[us-states] ep57 val=0.1107 best=0.1106
+    shared-adapter[us-states] ep58 val=0.1107 best=0.1106
+    shared-adapter[us-states] ep59 val=0.1105 best=0.1105
+    shared-adapter[us-states] ep60 val=0.1105 best=0.1105
+    shared-adapter[us-states] ep61 val=0.1106 best=0.1105
+    shared-adapter[us-states] ep62 val=0.1106 best=0.1105
+    shared-adapter[us-states] ep63 val=0.1106 best=0.1105
+    shared-adapter[us-states] ep64 val=0.1106 best=0.1105
+    shared-adapter[us-states] ep65 val=0.1107 best=0.1105
+    shared-adapter[us-states] ep66 val=0.1106 best=0.1105
+    shared-adapter[us-states] ep67 val=0.1106 best=0.1105
+    shared-adapter[us-states] ep68 val=0.1105 best=0.1105
+    shared-adapter[us-states] ep69 val=0.1105 best=0.1105
+    shared-adapter[us-states] ep70 val=0.1105 best=0.1105
+    shared-adapter[us-states] ep71 val=0.1105 best=0.1105
+    shared-adapter[us-states] ep72 val=0.1105 best=0.1105
+    shared-adapter[us-states] ep73 val=0.1105 best=0.1105
+    shared-adapter[us-states] ep74 val=0.1105 best=0.1105
+----- fold done in 26.8 min | elapsed 1.80 h | projected total 8.98 h -----
+
+----- [4/15] ldo3 fold=dengue seed=52 (14:18:46) -----
+
+=== encoder_ldo3 fold: held-out DISEASE=dengue (['dengue'])
+    trunk on ['influenza', 'covid'] = ['influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states']  adapter_groups=[0, 0, 0, 1]  seed=52 ===
+    trunk loss rebalanced per DISEASE (2 groups): [0.167, 0.167, 0.167, 0.5]
+    trunk(-52) step  1000 val=0.1234 best=0.1234
+    trunk(-52) step  2000 val=0.1204 best=0.1204
+    trunk(-52) step  3000 val=0.1188 best=0.1188
+    trunk(-52) step  4000 val=0.1184 best=0.1184
+    trunk(-52) step  5000 val=0.1231 best=0.1184
+    trunk(-52) step  6000 val=0.1240 best=0.1184
+    trunk(-52) step  7000 val=0.1249 best=0.1184
+    trunk(-52) step  8000 val=0.1272 best=0.1184
+    trunk(-52) step  9000 val=0.1310 best=0.1184
+    trunk(-52) step 10000 val=0.1310 best=0.1184
+    trunk(-52) step 11000 val=0.1261 best=0.1184
+    trunk(-52) step 12000 val=0.1317 best=0.1184
+    trunk(-52) step 13000 val=0.1351 best=0.1184
+    trunk(-52) step 14000 val=0.1332 best=0.1184
+    trunk(-52) step 15000 val=0.1375 best=0.1184
+    trunk(-52) step 16000 val=0.1352 best=0.1184
+    shared-adapter[dengue] ep00 val=0.2687 best=0.2687
+    shared-adapter[dengue] ep01 val=0.2605 best=0.2605
+    shared-adapter[dengue] ep02 val=0.2608 best=0.2605
+    shared-adapter[dengue] ep03 val=0.2577 best=0.2577
+    shared-adapter[dengue] ep04 val=0.2600 best=0.2577
+    shared-adapter[dengue] ep05 val=0.2561 best=0.2561
+    shared-adapter[dengue] ep06 val=0.2582 best=0.2561
+    shared-adapter[dengue] ep07 val=0.2594 best=0.2561
+    shared-adapter[dengue] ep08 val=0.2582 best=0.2561
+    shared-adapter[dengue] ep09 val=0.2570 best=0.2561
+    shared-adapter[dengue] ep10 val=0.2575 best=0.2561
+    shared-adapter[dengue] ep11 val=0.2566 best=0.2561
+    shared-adapter[dengue] ep12 val=0.2558 best=0.2558
+    shared-adapter[dengue] ep13 val=0.2563 best=0.2558
+    shared-adapter[dengue] ep14 val=0.2575 best=0.2558
+    shared-adapter[dengue] ep15 val=0.2561 best=0.2558
+    shared-adapter[dengue] ep16 val=0.2566 best=0.2558
+    shared-adapter[dengue] ep17 val=0.2552 best=0.2552
+    shared-adapter[dengue] ep18 val=0.2554 best=0.2552
+    shared-adapter[dengue] ep19 val=0.2540 best=0.2540
+    shared-adapter[dengue] ep20 val=0.2533 best=0.2533
+    shared-adapter[dengue] ep21 val=0.2547 best=0.2533
+    shared-adapter[dengue] ep22 val=0.2543 best=0.2533
+    shared-adapter[dengue] ep23 val=0.2533 best=0.2533
+    shared-adapter[dengue] ep24 val=0.2547 best=0.2533
+    shared-adapter[dengue] ep25 val=0.2536 best=0.2533
+    shared-adapter[dengue] ep26 val=0.2537 best=0.2533
+    shared-adapter[dengue] ep27 val=0.2534 best=0.2533
+    shared-adapter[dengue] ep28 val=0.2542 best=0.2533
+    shared-adapter[dengue] ep29 val=0.2530 best=0.2530
+    shared-adapter[dengue] ep30 val=0.2531 best=0.2530
+    shared-adapter[dengue] ep31 val=0.2537 best=0.2530
+    shared-adapter[dengue] ep32 val=0.2532 best=0.2530
+    shared-adapter[dengue] ep33 val=0.2532 best=0.2530
+    shared-adapter[dengue] ep34 val=0.2542 best=0.2530
+    shared-adapter[dengue] ep35 val=0.2542 best=0.2530
+    shared-adapter[dengue] ep36 val=0.2544 best=0.2530
+    shared-adapter[dengue] ep37 val=0.2528 best=0.2528
+    shared-adapter[dengue] ep38 val=0.2525 best=0.2525
+    shared-adapter[dengue] ep39 val=0.2540 best=0.2525
+    shared-adapter[dengue] ep40 val=0.2535 best=0.2525
+    shared-adapter[dengue] ep41 val=0.2529 best=0.2525
+    shared-adapter[dengue] ep42 val=0.2531 best=0.2525
+    shared-adapter[dengue] ep43 val=0.2526 best=0.2525
+    shared-adapter[dengue] ep44 val=0.2530 best=0.2525
+    shared-adapter[dengue] ep45 val=0.2529 best=0.2525
+    shared-adapter[dengue] ep46 val=0.2529 best=0.2525
+    shared-adapter[dengue] ep47 val=0.2529 best=0.2525
+    shared-adapter[dengue] ep48 val=0.2527 best=0.2525
+    shared-adapter[dengue] ep49 val=0.2529 best=0.2525
+    shared-adapter[dengue] ep50 val=0.2531 best=0.2525
+    shared-adapter[dengue] ep51 val=0.2533 best=0.2525
+    shared-adapter[dengue] ep52 val=0.2537 best=0.2525
+    shared-adapter[dengue] ep53 val=0.2544 best=0.2525
+----- fold done in 57.7 min | elapsed 2.76 h | projected total 10.34 h -----
+
+----- [5/15] ldo3 fold=influenza seed=52 (15:16:29) -----
+
+=== encoder_ldo3 fold: held-out DISEASE=influenza (['influenza_japan', 'influenza_us-regions', 'influenza_us-states'])
+    trunk on ['dengue', 'covid'] = ['dengue', 'covid_us-states']  adapter_groups=[0, 1]  seed=52 ===
+    trunk(-52) step  1000 val=0.1868 best=0.1868
+    trunk(-52) step  2000 val=0.1821 best=0.1821
+    trunk(-52) step  3000 val=0.1848 best=0.1821
+    trunk(-52) step  4000 val=0.1794 best=0.1794
+    trunk(-52) step  5000 val=0.1790 best=0.1790
+    trunk(-52) step  6000 val=0.1818 best=0.1790
+    trunk(-52) step  7000 val=0.1811 best=0.1790
+    trunk(-52) step  8000 val=0.1823 best=0.1790
+    trunk(-52) step  9000 val=0.1871 best=0.1790
+    trunk(-52) step 10000 val=0.1833 best=0.1790
+    trunk(-52) step 11000 val=0.1840 best=0.1790
+    trunk(-52) step 12000 val=0.1859 best=0.1790
+    trunk(-52) step 13000 val=0.1844 best=0.1790
+    trunk(-52) step 14000 val=0.1875 best=0.1790
+    trunk(-52) step 15000 val=0.1857 best=0.1790
+    trunk(-52) step 16000 val=0.1886 best=0.1790
+    trunk(-52) step 17000 val=0.1900 best=0.1790
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.2030 best=0.2030
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1712 best=0.1712
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1614 best=0.1614
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1520 best=0.1520
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1479 best=0.1479
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1465 best=0.1465
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1467 best=0.1465
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1391 best=0.1391
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1408 best=0.1391
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1415 best=0.1391
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1412 best=0.1391
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1371 best=0.1371
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1382 best=0.1371
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1384 best=0.1371
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1378 best=0.1371
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1351 best=0.1351
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1394 best=0.1351
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1369 best=0.1351
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1342 best=0.1342
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1339 best=0.1339
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1353 best=0.1339
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1324 best=0.1324
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1359 best=0.1324
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1344 best=0.1324
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1355 best=0.1324
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1316 best=0.1316
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1364 best=0.1316
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1344 best=0.1316
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1347 best=0.1316
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1356 best=0.1316
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1343 best=0.1316
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1346 best=0.1316
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1321 best=0.1316
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1325 best=0.1316
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1305 best=0.1305
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1338 best=0.1305
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1335 best=0.1305
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1317 best=0.1305
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1334 best=0.1305
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1320 best=0.1305
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1307 best=0.1305
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1315 best=0.1305
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1326 best=0.1305
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1321 best=0.1305
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1328 best=0.1305
+    shared-adapter[japan+us-regions+us-states] ep45 val=0.1322 best=0.1305
+    shared-adapter[japan+us-regions+us-states] ep46 val=0.1322 best=0.1305
+    shared-adapter[japan+us-regions+us-states] ep47 val=0.1311 best=0.1305
+    shared-adapter[japan+us-regions+us-states] ep48 val=0.1315 best=0.1305
+    shared-adapter[japan+us-regions+us-states] ep49 val=0.1320 best=0.1305
+----- fold done in 36.3 min | elapsed 3.36 h | projected total 10.09 h -----
+
+----- [6/15] ldo3 fold=covid seed=52 (15:52:45) -----
+
+=== encoder_ldo3 fold: held-out DISEASE=covid (['covid_us-states'])
+    trunk on ['dengue', 'influenza'] = ['dengue', 'influenza_japan', 'influenza_us-regions', 'influenza_us-states']  adapter_groups=[0, 1, 1, 1]  seed=52 ===
+    trunk loss rebalanced per DISEASE (2 groups): [0.5, 0.167, 0.167, 0.167]
+    trunk(-52) step  1000 val=0.1998 best=0.1998
+    trunk(-52) step  2000 val=0.1881 best=0.1881
+    trunk(-52) step  3000 val=0.1927 best=0.1881
+    trunk(-52) step  4000 val=0.1870 best=0.1870
+    trunk(-52) step  5000 val=0.1810 best=0.1810
+    trunk(-52) step  6000 val=0.1845 best=0.1810
+    trunk(-52) step  7000 val=0.1822 best=0.1810
+    trunk(-52) step  8000 val=0.1877 best=0.1810
+    trunk(-52) step  9000 val=0.1836 best=0.1810
+    trunk(-52) step 10000 val=0.1850 best=0.1810
+    trunk(-52) step 11000 val=0.1842 best=0.1810
+    trunk(-52) step 12000 val=0.1898 best=0.1810
+    trunk(-52) step 13000 val=0.1849 best=0.1810
+    trunk(-52) step 14000 val=0.1932 best=0.1810
+    trunk(-52) step 15000 val=0.1854 best=0.1810
+    trunk(-52) step 16000 val=0.1914 best=0.1810
+    trunk(-52) step 17000 val=0.1906 best=0.1810
+    shared-adapter[us-states] ep00 val=0.3530 best=0.3530
+    shared-adapter[us-states] ep01 val=0.2680 best=0.2680
+    shared-adapter[us-states] ep02 val=0.2097 best=0.2097
+    shared-adapter[us-states] ep03 val=0.1741 best=0.1741
+    shared-adapter[us-states] ep04 val=0.1543 best=0.1543
+    shared-adapter[us-states] ep05 val=0.1458 best=0.1458
+    shared-adapter[us-states] ep06 val=0.1426 best=0.1426
+    shared-adapter[us-states] ep07 val=0.1398 best=0.1398
+    shared-adapter[us-states] ep08 val=0.1343 best=0.1343
+    shared-adapter[us-states] ep09 val=0.1324 best=0.1324
+    shared-adapter[us-states] ep10 val=0.1309 best=0.1309
+    shared-adapter[us-states] ep11 val=0.1279 best=0.1279
+    shared-adapter[us-states] ep12 val=0.1271 best=0.1271
+    shared-adapter[us-states] ep13 val=0.1255 best=0.1255
+    shared-adapter[us-states] ep14 val=0.1256 best=0.1255
+    shared-adapter[us-states] ep15 val=0.1246 best=0.1246
+    shared-adapter[us-states] ep16 val=0.1237 best=0.1237
+    shared-adapter[us-states] ep17 val=0.1238 best=0.1237
+    shared-adapter[us-states] ep18 val=0.1237 best=0.1237
+    shared-adapter[us-states] ep19 val=0.1230 best=0.1230
+    shared-adapter[us-states] ep20 val=0.1240 best=0.1230
+    shared-adapter[us-states] ep21 val=0.1237 best=0.1230
+    shared-adapter[us-states] ep22 val=0.1231 best=0.1230
+    shared-adapter[us-states] ep23 val=0.1230 best=0.1230
+    shared-adapter[us-states] ep24 val=0.1232 best=0.1230
+    shared-adapter[us-states] ep25 val=0.1238 best=0.1230
+    shared-adapter[us-states] ep26 val=0.1237 best=0.1230
+    shared-adapter[us-states] ep27 val=0.1231 best=0.1230
+    shared-adapter[us-states] ep28 val=0.1229 best=0.1229
+    shared-adapter[us-states] ep29 val=0.1236 best=0.1229
+    shared-adapter[us-states] ep30 val=0.1232 best=0.1229
+    shared-adapter[us-states] ep31 val=0.1224 best=0.1224
+    shared-adapter[us-states] ep32 val=0.1232 best=0.1224
+    shared-adapter[us-states] ep33 val=0.1230 best=0.1224
+    shared-adapter[us-states] ep34 val=0.1237 best=0.1224
+    shared-adapter[us-states] ep35 val=0.1233 best=0.1224
+    shared-adapter[us-states] ep36 val=0.1228 best=0.1224
+    shared-adapter[us-states] ep37 val=0.1233 best=0.1224
+    shared-adapter[us-states] ep38 val=0.1237 best=0.1224
+    shared-adapter[us-states] ep39 val=0.1232 best=0.1224
+    shared-adapter[us-states] ep40 val=0.1236 best=0.1224
+    shared-adapter[us-states] ep41 val=0.1231 best=0.1224
+    shared-adapter[us-states] ep42 val=0.1231 best=0.1224
+    shared-adapter[us-states] ep43 val=0.1231 best=0.1224
+    shared-adapter[us-states] ep44 val=0.1226 best=0.1224
+    shared-adapter[us-states] ep45 val=0.1230 best=0.1224
+    shared-adapter[us-states] ep46 val=0.1234 best=0.1224
+----- fold done in 30.6 min | elapsed 3.87 h | projected total 9.68 h -----
+
+----- [7/15] ldo3 fold=dengue seed=62 (16:23:22) -----
+
+=== encoder_ldo3 fold: held-out DISEASE=dengue (['dengue'])
+    trunk on ['influenza', 'covid'] = ['influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states']  adapter_groups=[0, 0, 0, 1]  seed=62 ===
+    trunk loss rebalanced per DISEASE (2 groups): [0.167, 0.167, 0.167, 0.5]
+    trunk(-62) step  1000 val=0.1189 best=0.1189
+    trunk(-62) step  2000 val=0.1204 best=0.1189
+    trunk(-62) step  3000 val=0.1239 best=0.1189
+    trunk(-62) step  4000 val=0.1229 best=0.1189
+    trunk(-62) step  5000 val=0.1255 best=0.1189
+    trunk(-62) step  6000 val=0.1236 best=0.1189
+    trunk(-62) step  7000 val=0.1262 best=0.1189
+    trunk(-62) step  8000 val=0.1296 best=0.1189
+    trunk(-62) step  9000 val=0.1250 best=0.1189
+    trunk(-62) step 10000 val=0.1289 best=0.1189
+    trunk(-62) step 11000 val=0.1321 best=0.1189
+    trunk(-62) step 12000 val=0.1318 best=0.1189
+    trunk(-62) step 13000 val=0.1310 best=0.1189
+    shared-adapter[dengue] ep00 val=0.2765 best=0.2765
+    shared-adapter[dengue] ep01 val=0.2707 best=0.2707
+    shared-adapter[dengue] ep02 val=0.2692 best=0.2692
+    shared-adapter[dengue] ep03 val=0.2706 best=0.2692
+    shared-adapter[dengue] ep04 val=0.2670 best=0.2670
+    shared-adapter[dengue] ep05 val=0.2692 best=0.2670
+    shared-adapter[dengue] ep06 val=0.2688 best=0.2670
+    shared-adapter[dengue] ep07 val=0.2729 best=0.2670
+    shared-adapter[dengue] ep08 val=0.2683 best=0.2670
+    shared-adapter[dengue] ep09 val=0.2695 best=0.2670
+    shared-adapter[dengue] ep10 val=0.2673 best=0.2670
+    shared-adapter[dengue] ep11 val=0.2659 best=0.2659
+    shared-adapter[dengue] ep12 val=0.2672 best=0.2659
+    shared-adapter[dengue] ep13 val=0.2659 best=0.2659
+    shared-adapter[dengue] ep14 val=0.2628 best=0.2628
+    shared-adapter[dengue] ep15 val=0.2641 best=0.2628
+    shared-adapter[dengue] ep16 val=0.2676 best=0.2628
+    shared-adapter[dengue] ep17 val=0.2651 best=0.2628
+    shared-adapter[dengue] ep18 val=0.2662 best=0.2628
+    shared-adapter[dengue] ep19 val=0.2644 best=0.2628
+    shared-adapter[dengue] ep20 val=0.2621 best=0.2621
+    shared-adapter[dengue] ep21 val=0.2648 best=0.2621
+    shared-adapter[dengue] ep22 val=0.2681 best=0.2621
+    shared-adapter[dengue] ep23 val=0.2645 best=0.2621
+    shared-adapter[dengue] ep24 val=0.2667 best=0.2621
+    shared-adapter[dengue] ep25 val=0.2670 best=0.2621
+    shared-adapter[dengue] ep26 val=0.2643 best=0.2621
+    shared-adapter[dengue] ep27 val=0.2647 best=0.2621
+    shared-adapter[dengue] ep28 val=0.2664 best=0.2621
+    shared-adapter[dengue] ep29 val=0.2648 best=0.2621
+    shared-adapter[dengue] ep30 val=0.2658 best=0.2621
+    shared-adapter[dengue] ep31 val=0.2652 best=0.2621
+    shared-adapter[dengue] ep32 val=0.2655 best=0.2621
+    shared-adapter[dengue] ep33 val=0.2667 best=0.2621
+    shared-adapter[dengue] ep34 val=0.2627 best=0.2621
+    shared-adapter[dengue] ep35 val=0.2679 best=0.2621
+----- fold done in 36.0 min | elapsed 4.47 h | projected total 9.58 h -----
+
+----- [8/15] ldo3 fold=influenza seed=62 (16:59:20) -----
+
+=== encoder_ldo3 fold: held-out DISEASE=influenza (['influenza_japan', 'influenza_us-regions', 'influenza_us-states'])
+    trunk on ['dengue', 'covid'] = ['dengue', 'covid_us-states']  adapter_groups=[0, 1]  seed=62 ===
+    trunk(-62) step  1000 val=0.1891 best=0.1891
+    trunk(-62) step  2000 val=0.1766 best=0.1766
+    trunk(-62) step  3000 val=0.1819 best=0.1766
+    trunk(-62) step  4000 val=0.1833 best=0.1766
+    trunk(-62) step  5000 val=0.1815 best=0.1766
+    trunk(-62) step  6000 val=0.1854 best=0.1766
+    trunk(-62) step  7000 val=0.1843 best=0.1766
+    trunk(-62) step  8000 val=0.1867 best=0.1766
+    trunk(-62) step  9000 val=0.1857 best=0.1766
+    trunk(-62) step 10000 val=0.1879 best=0.1766
+    trunk(-62) step 11000 val=0.1851 best=0.1766
+    trunk(-62) step 12000 val=0.1863 best=0.1766
+    trunk(-62) step 13000 val=0.1852 best=0.1766
+    trunk(-62) step 14000 val=0.1837 best=0.1766
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1838 best=0.1838
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1598 best=0.1598
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1529 best=0.1529
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1450 best=0.1450
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1420 best=0.1420
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1470 best=0.1420
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1413 best=0.1413
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1441 best=0.1413
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1448 best=0.1413
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1428 best=0.1413
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1434 best=0.1413
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1393 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1400 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1402 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1419 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1412 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1433 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1424 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1412 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1394 best=0.1393
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1383 best=0.1383
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1423 best=0.1383
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1399 best=0.1383
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1424 best=0.1383
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1412 best=0.1383
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1374 best=0.1374
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1436 best=0.1374
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1395 best=0.1374
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1386 best=0.1374
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1401 best=0.1374
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1406 best=0.1374
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1398 best=0.1374
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1352 best=0.1352
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1386 best=0.1352
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1390 best=0.1352
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1393 best=0.1352
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1388 best=0.1352
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1384 best=0.1352
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1407 best=0.1352
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1365 best=0.1352
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1388 best=0.1352
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1384 best=0.1352
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1371 best=0.1352
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1381 best=0.1352
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1382 best=0.1352
+    shared-adapter[japan+us-regions+us-states] ep45 val=0.1360 best=0.1352
+    shared-adapter[japan+us-regions+us-states] ep46 val=0.1365 best=0.1352
+    shared-adapter[japan+us-regions+us-states] ep47 val=0.1383 best=0.1352
+----- fold done in 27.3 min | elapsed 4.93 h | projected total 9.24 h -----
+
+----- [9/15] ldo3 fold=covid seed=62 (17:26:40) -----
+
+=== encoder_ldo3 fold: held-out DISEASE=covid (['covid_us-states'])
+    trunk on ['dengue', 'influenza'] = ['dengue', 'influenza_japan', 'influenza_us-regions', 'influenza_us-states']  adapter_groups=[0, 1, 1, 1]  seed=62 ===
+    trunk loss rebalanced per DISEASE (2 groups): [0.5, 0.167, 0.167, 0.167]
+    trunk(-62) step  1000 val=0.1966 best=0.1966
+    trunk(-62) step  2000 val=0.1858 best=0.1858
+    trunk(-62) step  3000 val=0.1856 best=0.1856
+    trunk(-62) step  4000 val=0.1853 best=0.1853
+    trunk(-62) step  5000 val=0.1817 best=0.1817
+    trunk(-62) step  6000 val=0.1888 best=0.1817
+    trunk(-62) step  7000 val=0.1884 best=0.1817
+    trunk(-62) step  8000 val=0.1858 best=0.1817
+    trunk(-62) step  9000 val=0.1848 best=0.1817
+    trunk(-62) step 10000 val=0.1857 best=0.1817
+    trunk(-62) step 11000 val=0.1886 best=0.1817
+    trunk(-62) step 12000 val=0.1832 best=0.1817
+    trunk(-62) step 13000 val=0.1838 best=0.1817
+    trunk(-62) step 14000 val=0.1837 best=0.1817
+    trunk(-62) step 15000 val=0.1888 best=0.1817
+    trunk(-62) step 16000 val=0.1902 best=0.1817
+    trunk(-62) step 17000 val=0.1868 best=0.1817
+    shared-adapter[us-states] ep00 val=0.3058 best=0.3058
+    shared-adapter[us-states] ep01 val=0.2165 best=0.2165
+    shared-adapter[us-states] ep02 val=0.1652 best=0.1652
+    shared-adapter[us-states] ep03 val=0.1434 best=0.1434
+    shared-adapter[us-states] ep04 val=0.1318 best=0.1318
+    shared-adapter[us-states] ep05 val=0.1262 best=0.1262
+    shared-adapter[us-states] ep06 val=0.1230 best=0.1230
+    shared-adapter[us-states] ep07 val=0.1208 best=0.1208
+    shared-adapter[us-states] ep08 val=0.1192 best=0.1192
+    shared-adapter[us-states] ep09 val=0.1169 best=0.1169
+    shared-adapter[us-states] ep10 val=0.1171 best=0.1169
+    shared-adapter[us-states] ep11 val=0.1157 best=0.1157
+    shared-adapter[us-states] ep12 val=0.1147 best=0.1147
+    shared-adapter[us-states] ep13 val=0.1143 best=0.1143
+    shared-adapter[us-states] ep14 val=0.1136 best=0.1136
+    shared-adapter[us-states] ep15 val=0.1130 best=0.1130
+    shared-adapter[us-states] ep16 val=0.1126 best=0.1126
+    shared-adapter[us-states] ep17 val=0.1119 best=0.1119
+    shared-adapter[us-states] ep18 val=0.1124 best=0.1119
+    shared-adapter[us-states] ep19 val=0.1122 best=0.1119
+    shared-adapter[us-states] ep20 val=0.1117 best=0.1117
+    shared-adapter[us-states] ep21 val=0.1114 best=0.1114
+    shared-adapter[us-states] ep22 val=0.1109 best=0.1109
+    shared-adapter[us-states] ep23 val=0.1116 best=0.1109
+    shared-adapter[us-states] ep24 val=0.1109 best=0.1109
+    shared-adapter[us-states] ep25 val=0.1117 best=0.1109
+    shared-adapter[us-states] ep26 val=0.1111 best=0.1109
+    shared-adapter[us-states] ep27 val=0.1107 best=0.1107
+    shared-adapter[us-states] ep28 val=0.1111 best=0.1107
+    shared-adapter[us-states] ep29 val=0.1107 best=0.1107
+    shared-adapter[us-states] ep30 val=0.1112 best=0.1107
+    shared-adapter[us-states] ep31 val=0.1108 best=0.1107
+    shared-adapter[us-states] ep32 val=0.1104 best=0.1104
+    shared-adapter[us-states] ep33 val=0.1112 best=0.1104
+    shared-adapter[us-states] ep34 val=0.1105 best=0.1104
+    shared-adapter[us-states] ep35 val=0.1109 best=0.1104
+    shared-adapter[us-states] ep36 val=0.1112 best=0.1104
+    shared-adapter[us-states] ep37 val=0.1101 best=0.1101
+    shared-adapter[us-states] ep38 val=0.1104 best=0.1101
+    shared-adapter[us-states] ep39 val=0.1107 best=0.1101
+    shared-adapter[us-states] ep40 val=0.1105 best=0.1101
+    shared-adapter[us-states] ep41 val=0.1105 best=0.1101
+    shared-adapter[us-states] ep42 val=0.1105 best=0.1101
+    shared-adapter[us-states] ep43 val=0.1108 best=0.1101
+    shared-adapter[us-states] ep44 val=0.1106 best=0.1101
+    shared-adapter[us-states] ep45 val=0.1104 best=0.1101
+    shared-adapter[us-states] ep46 val=0.1107 best=0.1101
+    shared-adapter[us-states] ep47 val=0.1102 best=0.1101
+    shared-adapter[us-states] ep48 val=0.1102 best=0.1101
+    shared-adapter[us-states] ep49 val=0.1103 best=0.1101
+    shared-adapter[us-states] ep50 val=0.1104 best=0.1101
+    shared-adapter[us-states] ep51 val=0.1103 best=0.1101
+    shared-adapter[us-states] ep52 val=0.1104 best=0.1101
+----- fold done in 30.1 min | elapsed 5.43 h | projected total 9.05 h -----
+
+----- [10/15] ldo3 fold=dengue seed=72 (17:56:44) -----
+
+=== encoder_ldo3 fold: held-out DISEASE=dengue (['dengue'])
+    trunk on ['influenza', 'covid'] = ['influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states']  adapter_groups=[0, 0, 0, 1]  seed=72 ===
+    trunk loss rebalanced per DISEASE (2 groups): [0.167, 0.167, 0.167, 0.5]
+    trunk(-72) step  1000 val=0.1179 best=0.1179
+    trunk(-72) step  2000 val=0.1174 best=0.1174
+    trunk(-72) step  3000 val=0.1170 best=0.1170
+    trunk(-72) step  4000 val=0.1156 best=0.1156
+    trunk(-72) step  5000 val=0.1201 best=0.1156
+    trunk(-72) step  6000 val=0.1183 best=0.1156
+    trunk(-72) step  7000 val=0.1228 best=0.1156
+    trunk(-72) step  8000 val=0.1211 best=0.1156
+    trunk(-72) step  9000 val=0.1249 best=0.1156
+    trunk(-72) step 10000 val=0.1259 best=0.1156
+    trunk(-72) step 11000 val=0.1275 best=0.1156
+    trunk(-72) step 12000 val=0.1285 best=0.1156
+    trunk(-72) step 13000 val=0.1321 best=0.1156
+    trunk(-72) step 14000 val=0.1323 best=0.1156
+    trunk(-72) step 15000 val=0.1271 best=0.1156
+    trunk(-72) step 16000 val=0.1356 best=0.1156
+    shared-adapter[dengue] ep00 val=0.2701 best=0.2701
+    shared-adapter[dengue] ep01 val=0.2636 best=0.2636
+    shared-adapter[dengue] ep02 val=0.2605 best=0.2605
+    shared-adapter[dengue] ep03 val=0.2596 best=0.2596
+    shared-adapter[dengue] ep04 val=0.2590 best=0.2590
+    shared-adapter[dengue] ep05 val=0.2595 best=0.2590
+    shared-adapter[dengue] ep06 val=0.2586 best=0.2586
+    shared-adapter[dengue] ep07 val=0.2580 best=0.2580
+    shared-adapter[dengue] ep08 val=0.2589 best=0.2580
+    shared-adapter[dengue] ep09 val=0.2589 best=0.2580
+    shared-adapter[dengue] ep10 val=0.2561 best=0.2561
+    shared-adapter[dengue] ep11 val=0.2584 best=0.2561
+    shared-adapter[dengue] ep12 val=0.2567 best=0.2561
+    shared-adapter[dengue] ep13 val=0.2560 best=0.2560
+    shared-adapter[dengue] ep14 val=0.2562 best=0.2560
+    shared-adapter[dengue] ep15 val=0.2558 best=0.2558
+    shared-adapter[dengue] ep16 val=0.2576 best=0.2558
+    shared-adapter[dengue] ep17 val=0.2577 best=0.2558
+    shared-adapter[dengue] ep18 val=0.2581 best=0.2558
+    shared-adapter[dengue] ep19 val=0.2552 best=0.2552
+    shared-adapter[dengue] ep20 val=0.2558 best=0.2552
+    shared-adapter[dengue] ep21 val=0.2563 best=0.2552
+    shared-adapter[dengue] ep22 val=0.2581 best=0.2552
+    shared-adapter[dengue] ep23 val=0.2550 best=0.2550
+    shared-adapter[dengue] ep24 val=0.2558 best=0.2550
+    shared-adapter[dengue] ep25 val=0.2584 best=0.2550
+    shared-adapter[dengue] ep26 val=0.2564 best=0.2550
+    shared-adapter[dengue] ep27 val=0.2553 best=0.2550
+    shared-adapter[dengue] ep28 val=0.2560 best=0.2550
+    shared-adapter[dengue] ep29 val=0.2562 best=0.2550
+    shared-adapter[dengue] ep30 val=0.2544 best=0.2544
+    shared-adapter[dengue] ep31 val=0.2571 best=0.2544
+    shared-adapter[dengue] ep32 val=0.2557 best=0.2544
+    shared-adapter[dengue] ep33 val=0.2570 best=0.2544
+    shared-adapter[dengue] ep34 val=0.2571 best=0.2544
+    shared-adapter[dengue] ep35 val=0.2549 best=0.2544
+    shared-adapter[dengue] ep36 val=0.2557 best=0.2544
+    shared-adapter[dengue] ep37 val=0.2557 best=0.2544
+    shared-adapter[dengue] ep38 val=0.2553 best=0.2544
+    shared-adapter[dengue] ep39 val=0.2556 best=0.2544
+    shared-adapter[dengue] ep40 val=0.2553 best=0.2544
+    shared-adapter[dengue] ep41 val=0.2540 best=0.2540
+    shared-adapter[dengue] ep42 val=0.2546 best=0.2540
+    shared-adapter[dengue] ep43 val=0.2555 best=0.2540
+    shared-adapter[dengue] ep44 val=0.2551 best=0.2540
+    shared-adapter[dengue] ep45 val=0.2553 best=0.2540
+    shared-adapter[dengue] ep46 val=0.2565 best=0.2540
+    shared-adapter[dengue] ep47 val=0.2551 best=0.2540
+    shared-adapter[dengue] ep48 val=0.2553 best=0.2540
+    shared-adapter[dengue] ep49 val=0.2549 best=0.2540
+    shared-adapter[dengue] ep50 val=0.2548 best=0.2540
+    shared-adapter[dengue] ep51 val=0.2548 best=0.2540
+    shared-adapter[dengue] ep52 val=0.2552 best=0.2540
+    shared-adapter[dengue] ep53 val=0.2561 best=0.2540
+    shared-adapter[dengue] ep54 val=0.2551 best=0.2540
+    shared-adapter[dengue] ep55 val=0.2545 best=0.2540
+    shared-adapter[dengue] ep56 val=0.2555 best=0.2540
+----- fold done in 54.8 min | elapsed 6.34 h | projected total 9.51 h -----
+
+----- [11/15] ldo3 fold=influenza seed=72 (18:51:29) -----
+
+=== encoder_ldo3 fold: held-out DISEASE=influenza (['influenza_japan', 'influenza_us-regions', 'influenza_us-states'])
+    trunk on ['dengue', 'covid'] = ['dengue', 'covid_us-states']  adapter_groups=[0, 1]  seed=72 ===
+    trunk(-72) step  1000 val=0.1877 best=0.1877
+    trunk(-72) step  2000 val=0.1844 best=0.1844
+    trunk(-72) step  3000 val=0.1844 best=0.1844
+    trunk(-72) step  4000 val=0.1841 best=0.1841
+    trunk(-72) step  5000 val=0.1808 best=0.1808
+    trunk(-72) step  6000 val=0.1826 best=0.1808
+    trunk(-72) step  7000 val=0.1864 best=0.1808
+    trunk(-72) step  8000 val=0.1875 best=0.1808
+    trunk(-72) step  9000 val=0.1897 best=0.1808
+    trunk(-72) step 10000 val=0.1859 best=0.1808
+    trunk(-72) step 11000 val=0.1819 best=0.1808
+    trunk(-72) step 12000 val=0.1884 best=0.1808
+    trunk(-72) step 13000 val=0.1887 best=0.1808
+    trunk(-72) step 14000 val=0.1894 best=0.1808
+    trunk(-72) step 15000 val=0.1855 best=0.1808
+    trunk(-72) step 16000 val=0.1911 best=0.1808
+    trunk(-72) step 17000 val=0.1896 best=0.1808
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.1995 best=0.1995
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1808 best=0.1808
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1713 best=0.1713
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1614 best=0.1614
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1603 best=0.1603
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1535 best=0.1535
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1520 best=0.1520
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1503 best=0.1503
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1493 best=0.1493
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1482 best=0.1482
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1440 best=0.1440
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1477 best=0.1440
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1420 best=0.1420
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1429 best=0.1420
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1438 best=0.1420
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1404 best=0.1404
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1398 best=0.1398
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1423 best=0.1398
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1408 best=0.1398
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1406 best=0.1398
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1377 best=0.1377
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1373 best=0.1373
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1386 best=0.1373
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1359 best=0.1359
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1396 best=0.1359
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1377 best=0.1359
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1358 best=0.1358
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1357 best=0.1357
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1370 best=0.1357
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1355 best=0.1355
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1377 best=0.1355
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1355 best=0.1355
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1360 best=0.1355
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1364 best=0.1355
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1361 best=0.1355
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1360 best=0.1355
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1359 best=0.1355
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1348 best=0.1348
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1372 best=0.1348
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1369 best=0.1348
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1348 best=0.1348
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1332 best=0.1332
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1356 best=0.1332
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1360 best=0.1332
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1342 best=0.1332
+    shared-adapter[japan+us-regions+us-states] ep45 val=0.1341 best=0.1332
+    shared-adapter[japan+us-regions+us-states] ep46 val=0.1363 best=0.1332
+    shared-adapter[japan+us-regions+us-states] ep47 val=0.1338 best=0.1332
+    shared-adapter[japan+us-regions+us-states] ep48 val=0.1341 best=0.1332
+    shared-adapter[japan+us-regions+us-states] ep49 val=0.1335 best=0.1332
+    shared-adapter[japan+us-regions+us-states] ep50 val=0.1336 best=0.1332
+    shared-adapter[japan+us-regions+us-states] ep51 val=0.1346 best=0.1332
+    shared-adapter[japan+us-regions+us-states] ep52 val=0.1341 best=0.1332
+    shared-adapter[japan+us-regions+us-states] ep53 val=0.1344 best=0.1332
+    shared-adapter[japan+us-regions+us-states] ep54 val=0.1340 best=0.1332
+    shared-adapter[japan+us-regions+us-states] ep55 val=0.1338 best=0.1332
+    shared-adapter[japan+us-regions+us-states] ep56 val=0.1341 best=0.1332
+----- fold done in 33.3 min | elapsed 6.90 h | projected total 9.40 h -----
+
+----- [12/15] ldo3 fold=covid seed=72 (19:24:45) -----
+
+=== encoder_ldo3 fold: held-out DISEASE=covid (['covid_us-states'])
+    trunk on ['dengue', 'influenza'] = ['dengue', 'influenza_japan', 'influenza_us-regions', 'influenza_us-states']  adapter_groups=[0, 1, 1, 1]  seed=72 ===
+    trunk loss rebalanced per DISEASE (2 groups): [0.5, 0.167, 0.167, 0.167]
+    trunk(-72) step  1000 val=0.1917 best=0.1917
+    trunk(-72) step  2000 val=0.1881 best=0.1881
+    trunk(-72) step  3000 val=0.1938 best=0.1881
+    trunk(-72) step  4000 val=0.1868 best=0.1868
+    trunk(-72) step  5000 val=0.1868 best=0.1868
+    trunk(-72) step  6000 val=0.1856 best=0.1856
+    trunk(-72) step  7000 val=0.1867 best=0.1856
+    trunk(-72) step  8000 val=0.1866 best=0.1856
+    trunk(-72) step  9000 val=0.1827 best=0.1827
+    trunk(-72) step 10000 val=0.1842 best=0.1827
+    trunk(-72) step 11000 val=0.1831 best=0.1827
+    trunk(-72) step 12000 val=0.1875 best=0.1827
+    trunk(-72) step 13000 val=0.1840 best=0.1827
+    trunk(-72) step 14000 val=0.1879 best=0.1827
+    trunk(-72) step 15000 val=0.1825 best=0.1825
+    trunk(-72) step 16000 val=0.1871 best=0.1825
+    trunk(-72) step 17000 val=0.1908 best=0.1825
+    trunk(-72) step 18000 val=0.1891 best=0.1825
+    trunk(-72) step 19000 val=0.1923 best=0.1825
+    trunk(-72) step 20000 val=0.1892 best=0.1825
+    trunk(-72) step 21000 val=0.1886 best=0.1825
+    trunk(-72) step 22000 val=0.1888 best=0.1825
+    trunk(-72) step 23000 val=0.1903 best=0.1825
+    trunk(-72) step 24000 val=0.1894 best=0.1825
+    trunk(-72) step 25000 val=0.1887 best=0.1825
+    trunk(-72) step 26000 val=0.1895 best=0.1825
+    trunk(-72) step 27000 val=0.1909 best=0.1825
+    shared-adapter[us-states] ep00 val=0.3199 best=0.3199
+    shared-adapter[us-states] ep01 val=0.2514 best=0.2514
+    shared-adapter[us-states] ep02 val=0.2049 best=0.2049
+    shared-adapter[us-states] ep03 val=0.1799 best=0.1799
+    shared-adapter[us-states] ep04 val=0.1672 best=0.1672
+    shared-adapter[us-states] ep05 val=0.1582 best=0.1582
+    shared-adapter[us-states] ep06 val=0.1517 best=0.1517
+    shared-adapter[us-states] ep07 val=0.1473 best=0.1473
+    shared-adapter[us-states] ep08 val=0.1439 best=0.1439
+    shared-adapter[us-states] ep09 val=0.1422 best=0.1422
+    shared-adapter[us-states] ep10 val=0.1416 best=0.1416
+    shared-adapter[us-states] ep11 val=0.1415 best=0.1415
+    shared-adapter[us-states] ep12 val=0.1408 best=0.1408
+    shared-adapter[us-states] ep13 val=0.1411 best=0.1408
+    shared-adapter[us-states] ep14 val=0.1399 best=0.1399
+    shared-adapter[us-states] ep15 val=0.1393 best=0.1393
+    shared-adapter[us-states] ep16 val=0.1394 best=0.1393
+    shared-adapter[us-states] ep17 val=0.1390 best=0.1390
+    shared-adapter[us-states] ep18 val=0.1392 best=0.1390
+    shared-adapter[us-states] ep19 val=0.1392 best=0.1390
+    shared-adapter[us-states] ep20 val=0.1387 best=0.1387
+    shared-adapter[us-states] ep21 val=0.1390 best=0.1387
+    shared-adapter[us-states] ep22 val=0.1389 best=0.1387
+    shared-adapter[us-states] ep23 val=0.1390 best=0.1387
+    shared-adapter[us-states] ep24 val=0.1390 best=0.1387
+    shared-adapter[us-states] ep25 val=0.1389 best=0.1387
+    shared-adapter[us-states] ep26 val=0.1387 best=0.1387
+    shared-adapter[us-states] ep27 val=0.1386 best=0.1386
+    shared-adapter[us-states] ep28 val=0.1387 best=0.1386
+    shared-adapter[us-states] ep29 val=0.1383 best=0.1383
+    shared-adapter[us-states] ep30 val=0.1383 best=0.1383
+    shared-adapter[us-states] ep31 val=0.1388 best=0.1383
+    shared-adapter[us-states] ep32 val=0.1386 best=0.1383
+    shared-adapter[us-states] ep33 val=0.1384 best=0.1383
+    shared-adapter[us-states] ep34 val=0.1385 best=0.1383
+    shared-adapter[us-states] ep35 val=0.1386 best=0.1383
+    shared-adapter[us-states] ep36 val=0.1383 best=0.1383
+    shared-adapter[us-states] ep37 val=0.1384 best=0.1383
+    shared-adapter[us-states] ep38 val=0.1381 best=0.1381
+    shared-adapter[us-states] ep39 val=0.1380 best=0.1380
+    shared-adapter[us-states] ep40 val=0.1385 best=0.1380
+    shared-adapter[us-states] ep41 val=0.1381 best=0.1380
+    shared-adapter[us-states] ep42 val=0.1384 best=0.1380
+    shared-adapter[us-states] ep43 val=0.1387 best=0.1380
+    shared-adapter[us-states] ep44 val=0.1385 best=0.1380
+    shared-adapter[us-states] ep45 val=0.1381 best=0.1380
+    shared-adapter[us-states] ep46 val=0.1384 best=0.1380
+    shared-adapter[us-states] ep47 val=0.1383 best=0.1380
+    shared-adapter[us-states] ep48 val=0.1380 best=0.1380
+    shared-adapter[us-states] ep49 val=0.1381 best=0.1380
+    shared-adapter[us-states] ep50 val=0.1383 best=0.1380
+    shared-adapter[us-states] ep51 val=0.1383 best=0.1380
+    shared-adapter[us-states] ep52 val=0.1381 best=0.1380
+    shared-adapter[us-states] ep53 val=0.1379 best=0.1379
+    shared-adapter[us-states] ep54 val=0.1381 best=0.1379
+    shared-adapter[us-states] ep55 val=0.1382 best=0.1379
+    shared-adapter[us-states] ep56 val=0.1381 best=0.1379
+    shared-adapter[us-states] ep57 val=0.1382 best=0.1379
+    shared-adapter[us-states] ep58 val=0.1380 best=0.1379
+    shared-adapter[us-states] ep59 val=0.1380 best=0.1379
+    shared-adapter[us-states] ep60 val=0.1381 best=0.1379
+    shared-adapter[us-states] ep61 val=0.1381 best=0.1379
+    shared-adapter[us-states] ep62 val=0.1381 best=0.1379
+    shared-adapter[us-states] ep63 val=0.1381 best=0.1379
+    shared-adapter[us-states] ep64 val=0.1381 best=0.1379
+    shared-adapter[us-states] ep65 val=0.1380 best=0.1379
+    shared-adapter[us-states] ep66 val=0.1380 best=0.1379
+    shared-adapter[us-states] ep67 val=0.1381 best=0.1379
+    shared-adapter[us-states] ep68 val=0.1381 best=0.1379
+----- fold done in 48.4 min | elapsed 7.70 h | projected total 9.63 h -----
+
+----- [13/15] ldo3 fold=dengue seed=82 (20:13:07) -----
+
+=== encoder_ldo3 fold: held-out DISEASE=dengue (['dengue'])
+    trunk on ['influenza', 'covid'] = ['influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states']  adapter_groups=[0, 0, 0, 1]  seed=82 ===
+    trunk loss rebalanced per DISEASE (2 groups): [0.167, 0.167, 0.167, 0.5]
+    trunk(-82) step  1000 val=0.1271 best=0.1271
+    trunk(-82) step  2000 val=0.1201 best=0.1201
+    trunk(-82) step  3000 val=0.1240 best=0.1201
+    trunk(-82) step  4000 val=0.1253 best=0.1201
+    trunk(-82) step  5000 val=0.1184 best=0.1184
+    trunk(-82) step  6000 val=0.1231 best=0.1184
+    trunk(-82) step  7000 val=0.1262 best=0.1184
+    trunk(-82) step  8000 val=0.1255 best=0.1184
+    trunk(-82) step  9000 val=0.1269 best=0.1184
+    trunk(-82) step 10000 val=0.1290 best=0.1184
+    trunk(-82) step 11000 val=0.1328 best=0.1184
+    trunk(-82) step 12000 val=0.1350 best=0.1184
+    trunk(-82) step 13000 val=0.1327 best=0.1184
+    trunk(-82) step 14000 val=0.1310 best=0.1184
+    trunk(-82) step 15000 val=0.1359 best=0.1184
+    trunk(-82) step 16000 val=0.1383 best=0.1184
+    trunk(-82) step 17000 val=0.1406 best=0.1184
+    shared-adapter[dengue] ep00 val=0.2674 best=0.2674
+    shared-adapter[dengue] ep01 val=0.2635 best=0.2635
+    shared-adapter[dengue] ep02 val=0.2632 best=0.2632
+    shared-adapter[dengue] ep03 val=0.2612 best=0.2612
+    shared-adapter[dengue] ep04 val=0.2589 best=0.2589
+    shared-adapter[dengue] ep05 val=0.2596 best=0.2589
+    shared-adapter[dengue] ep06 val=0.2578 best=0.2578
+    shared-adapter[dengue] ep07 val=0.2576 best=0.2576
+    shared-adapter[dengue] ep08 val=0.2588 best=0.2576
+    shared-adapter[dengue] ep09 val=0.2573 best=0.2573
+    shared-adapter[dengue] ep10 val=0.2548 best=0.2548
+    shared-adapter[dengue] ep11 val=0.2582 best=0.2548
+    shared-adapter[dengue] ep12 val=0.2559 best=0.2548
+    shared-adapter[dengue] ep13 val=0.2586 best=0.2548
+    shared-adapter[dengue] ep14 val=0.2563 best=0.2548
+    shared-adapter[dengue] ep15 val=0.2552 best=0.2548
+    shared-adapter[dengue] ep16 val=0.2560 best=0.2548
+    shared-adapter[dengue] ep17 val=0.2539 best=0.2539
+    shared-adapter[dengue] ep18 val=0.2582 best=0.2539
+    shared-adapter[dengue] ep19 val=0.2574 best=0.2539
+    shared-adapter[dengue] ep20 val=0.2583 best=0.2539
+    shared-adapter[dengue] ep21 val=0.2550 best=0.2539
+    shared-adapter[dengue] ep22 val=0.2558 best=0.2539
+    shared-adapter[dengue] ep23 val=0.2555 best=0.2539
+    shared-adapter[dengue] ep24 val=0.2566 best=0.2539
+    shared-adapter[dengue] ep25 val=0.2563 best=0.2539
+    shared-adapter[dengue] ep26 val=0.2566 best=0.2539
+    shared-adapter[dengue] ep27 val=0.2573 best=0.2539
+    shared-adapter[dengue] ep28 val=0.2567 best=0.2539
+    shared-adapter[dengue] ep29 val=0.2545 best=0.2539
+    shared-adapter[dengue] ep30 val=0.2555 best=0.2539
+    shared-adapter[dengue] ep31 val=0.2572 best=0.2539
+    shared-adapter[dengue] ep32 val=0.2564 best=0.2539
+----- fold done in 1.77 h | elapsed 9.47 h | projected total 10.93 h -----
+
+----- [14/15] ldo3 fold=influenza seed=82 (21:59:12) -----
+
+=== encoder_ldo3 fold: held-out DISEASE=influenza (['influenza_japan', 'influenza_us-regions', 'influenza_us-states'])
+    trunk on ['dengue', 'covid'] = ['dengue', 'covid_us-states']  adapter_groups=[0, 1]  seed=82 ===
+    trunk(-82) step  1000 val=0.1809 best=0.1809
+    trunk(-82) step  2000 val=0.1777 best=0.1777
+    trunk(-82) step  3000 val=0.1815 best=0.1777
+    trunk(-82) step  4000 val=0.1797 best=0.1777
+    trunk(-82) step  5000 val=0.1782 best=0.1777
+    trunk(-82) step  6000 val=0.1817 best=0.1777
+    trunk(-82) step  7000 val=0.1838 best=0.1777
+    trunk(-82) step  8000 val=0.1768 best=0.1768
+    trunk(-82) step  9000 val=0.1820 best=0.1768
+    trunk(-82) step 10000 val=0.1809 best=0.1768
+    trunk(-82) step 11000 val=0.1904 best=0.1768
+    trunk(-82) step 12000 val=0.1844 best=0.1768
+    trunk(-82) step 13000 val=0.1865 best=0.1768
+    trunk(-82) step 14000 val=0.1852 best=0.1768
+    trunk(-82) step 15000 val=0.1874 best=0.1768
+    trunk(-82) step 16000 val=0.1863 best=0.1768
+    trunk(-82) step 17000 val=0.1790 best=0.1768
+    trunk(-82) step 18000 val=0.1895 best=0.1768
+    trunk(-82) step 19000 val=0.1872 best=0.1768
+    trunk(-82) step 20000 val=0.1848 best=0.1768
+    shared-adapter[japan+us-regions+us-states] ep00 val=0.2001 best=0.2001
+    shared-adapter[japan+us-regions+us-states] ep01 val=0.1718 best=0.1718
+    shared-adapter[japan+us-regions+us-states] ep02 val=0.1650 best=0.1650
+    shared-adapter[japan+us-regions+us-states] ep03 val=0.1643 best=0.1643
+    shared-adapter[japan+us-regions+us-states] ep04 val=0.1587 best=0.1587
+    shared-adapter[japan+us-regions+us-states] ep05 val=0.1593 best=0.1587
+    shared-adapter[japan+us-regions+us-states] ep06 val=0.1529 best=0.1529
+    shared-adapter[japan+us-regions+us-states] ep07 val=0.1530 best=0.1529
+    shared-adapter[japan+us-regions+us-states] ep08 val=0.1526 best=0.1526
+    shared-adapter[japan+us-regions+us-states] ep09 val=0.1514 best=0.1514
+    shared-adapter[japan+us-regions+us-states] ep10 val=0.1515 best=0.1514
+    shared-adapter[japan+us-regions+us-states] ep11 val=0.1479 best=0.1479
+    shared-adapter[japan+us-regions+us-states] ep12 val=0.1512 best=0.1479
+    shared-adapter[japan+us-regions+us-states] ep13 val=0.1480 best=0.1479
+    shared-adapter[japan+us-regions+us-states] ep14 val=0.1476 best=0.1476
+    shared-adapter[japan+us-regions+us-states] ep15 val=0.1479 best=0.1476
+    shared-adapter[japan+us-regions+us-states] ep16 val=0.1489 best=0.1476
+    shared-adapter[japan+us-regions+us-states] ep17 val=0.1504 best=0.1476
+    shared-adapter[japan+us-regions+us-states] ep18 val=0.1458 best=0.1458
+    shared-adapter[japan+us-regions+us-states] ep19 val=0.1491 best=0.1458
+    shared-adapter[japan+us-regions+us-states] ep20 val=0.1508 best=0.1458
+    shared-adapter[japan+us-regions+us-states] ep21 val=0.1454 best=0.1454
+    shared-adapter[japan+us-regions+us-states] ep22 val=0.1447 best=0.1447
+    shared-adapter[japan+us-regions+us-states] ep23 val=0.1437 best=0.1437
+    shared-adapter[japan+us-regions+us-states] ep24 val=0.1454 best=0.1437
+    shared-adapter[japan+us-regions+us-states] ep25 val=0.1452 best=0.1437
+    shared-adapter[japan+us-regions+us-states] ep26 val=0.1455 best=0.1437
+    shared-adapter[japan+us-regions+us-states] ep27 val=0.1440 best=0.1437
+    shared-adapter[japan+us-regions+us-states] ep28 val=0.1452 best=0.1437
+    shared-adapter[japan+us-regions+us-states] ep29 val=0.1459 best=0.1437
+    shared-adapter[japan+us-regions+us-states] ep30 val=0.1444 best=0.1437
+    shared-adapter[japan+us-regions+us-states] ep31 val=0.1449 best=0.1437
+    shared-adapter[japan+us-regions+us-states] ep32 val=0.1443 best=0.1437
+    shared-adapter[japan+us-regions+us-states] ep33 val=0.1458 best=0.1437
+    shared-adapter[japan+us-regions+us-states] ep34 val=0.1436 best=0.1436
+    shared-adapter[japan+us-regions+us-states] ep35 val=0.1457 best=0.1436
+    shared-adapter[japan+us-regions+us-states] ep36 val=0.1436 best=0.1436
+    shared-adapter[japan+us-regions+us-states] ep37 val=0.1444 best=0.1436
+    shared-adapter[japan+us-regions+us-states] ep38 val=0.1444 best=0.1436
+    shared-adapter[japan+us-regions+us-states] ep39 val=0.1445 best=0.1436
+    shared-adapter[japan+us-regions+us-states] ep40 val=0.1444 best=0.1436
+    shared-adapter[japan+us-regions+us-states] ep41 val=0.1442 best=0.1436
+    shared-adapter[japan+us-regions+us-states] ep42 val=0.1464 best=0.1436
+    shared-adapter[japan+us-regions+us-states] ep43 val=0.1459 best=0.1436
+    shared-adapter[japan+us-regions+us-states] ep44 val=0.1430 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep45 val=0.1431 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep46 val=0.1438 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep47 val=0.1442 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep48 val=0.1442 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep49 val=0.1443 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep50 val=0.1443 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep51 val=0.1443 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep52 val=0.1432 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep53 val=0.1444 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep54 val=0.1441 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep55 val=0.1430 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep56 val=0.1442 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep57 val=0.1437 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep58 val=0.1438 best=0.1430
+    shared-adapter[japan+us-regions+us-states] ep59 val=0.1445 best=0.1430
+----- fold done in 40.4 min | elapsed 10.14 h | projected total 10.87 h -----
+
+----- [15/15] ldo3 fold=covid seed=82 (22:39:35) -----
+
+=== encoder_ldo3 fold: held-out DISEASE=covid (['covid_us-states'])
+    trunk on ['dengue', 'influenza'] = ['dengue', 'influenza_japan', 'influenza_us-regions', 'influenza_us-states']  adapter_groups=[0, 1, 1, 1]  seed=82 ===
+    trunk loss rebalanced per DISEASE (2 groups): [0.5, 0.167, 0.167, 0.167]
+    trunk(-82) step  1000 val=0.2012 best=0.2012
+    trunk(-82) step  2000 val=0.1842 best=0.1842
+    trunk(-82) step  3000 val=0.1853 best=0.1842
+    trunk(-82) step  4000 val=0.1834 best=0.1834
+    trunk(-82) step  5000 val=0.1815 best=0.1815
+    trunk(-82) step  6000 val=0.1828 best=0.1815
+    trunk(-82) step  7000 val=0.1833 best=0.1815
+    trunk(-82) step  8000 val=0.1800 best=0.1800
+    trunk(-82) step  9000 val=0.1851 best=0.1800
+    trunk(-82) step 10000 val=0.1807 best=0.1800
+    trunk(-82) step 11000 val=0.1886 best=0.1800
+    trunk(-82) step 12000 val=0.1863 best=0.1800
+    trunk(-82) step 13000 val=0.1880 best=0.1800
+    trunk(-82) step 14000 val=0.1866 best=0.1800
+    trunk(-82) step 15000 val=0.1906 best=0.1800
+    trunk(-82) step 16000 val=0.1871 best=0.1800
+    trunk(-82) step 17000 val=0.1840 best=0.1800
+    trunk(-82) step 18000 val=0.1894 best=0.1800
+    trunk(-82) step 19000 val=0.1901 best=0.1800
+    trunk(-82) step 20000 val=0.1845 best=0.1800
+    shared-adapter[us-states] ep00 val=0.3044 best=0.3044
+    shared-adapter[us-states] ep01 val=0.2294 best=0.2294
+    shared-adapter[us-states] ep02 val=0.1864 best=0.1864
+    shared-adapter[us-states] ep03 val=0.1641 best=0.1641
+    shared-adapter[us-states] ep04 val=0.1517 best=0.1517
+    shared-adapter[us-states] ep05 val=0.1455 best=0.1455
+    shared-adapter[us-states] ep06 val=0.1408 best=0.1408
+    shared-adapter[us-states] ep07 val=0.1376 best=0.1376
+    shared-adapter[us-states] ep08 val=0.1340 best=0.1340
+    shared-adapter[us-states] ep09 val=0.1315 best=0.1315
+    shared-adapter[us-states] ep10 val=0.1295 best=0.1295
+    shared-adapter[us-states] ep11 val=0.1287 best=0.1287
+    shared-adapter[us-states] ep12 val=0.1285 best=0.1285
+    shared-adapter[us-states] ep13 val=0.1264 best=0.1264
+    shared-adapter[us-states] ep14 val=0.1255 best=0.1255
+    shared-adapter[us-states] ep15 val=0.1255 best=0.1255
+    shared-adapter[us-states] ep16 val=0.1239 best=0.1239
+    shared-adapter[us-states] ep17 val=0.1236 best=0.1236
+    shared-adapter[us-states] ep18 val=0.1230 best=0.1230
+    shared-adapter[us-states] ep19 val=0.1229 best=0.1229
+    shared-adapter[us-states] ep20 val=0.1224 best=0.1224
+    shared-adapter[us-states] ep21 val=0.1218 best=0.1218
+    shared-adapter[us-states] ep22 val=0.1217 best=0.1217
+    shared-adapter[us-states] ep23 val=0.1209 best=0.1209
+    shared-adapter[us-states] ep24 val=0.1209 best=0.1209
+    shared-adapter[us-states] ep25 val=0.1206 best=0.1206
+    shared-adapter[us-states] ep26 val=0.1204 best=0.1204
+    shared-adapter[us-states] ep27 val=0.1202 best=0.1202
+    shared-adapter[us-states] ep28 val=0.1204 best=0.1202
+    shared-adapter[us-states] ep29 val=0.1200 best=0.1200
+    shared-adapter[us-states] ep30 val=0.1198 best=0.1198
+    shared-adapter[us-states] ep31 val=0.1194 best=0.1194
+    shared-adapter[us-states] ep32 val=0.1196 best=0.1194
+    shared-adapter[us-states] ep33 val=0.1198 best=0.1194
+    shared-adapter[us-states] ep34 val=0.1195 best=0.1194
+    shared-adapter[us-states] ep35 val=0.1193 best=0.1193
+    shared-adapter[us-states] ep36 val=0.1192 best=0.1192
+    shared-adapter[us-states] ep37 val=0.1194 best=0.1192
+    shared-adapter[us-states] ep38 val=0.1189 best=0.1189
+    shared-adapter[us-states] ep39 val=0.1191 best=0.1189
+    shared-adapter[us-states] ep40 val=0.1192 best=0.1189
+    shared-adapter[us-states] ep41 val=0.1191 best=0.1189
+    shared-adapter[us-states] ep42 val=0.1188 best=0.1188
+    shared-adapter[us-states] ep43 val=0.1186 best=0.1186
+    shared-adapter[us-states] ep44 val=0.1188 best=0.1186
+    shared-adapter[us-states] ep45 val=0.1189 best=0.1186
+    shared-adapter[us-states] ep46 val=0.1189 best=0.1186
+    shared-adapter[us-states] ep47 val=0.1188 best=0.1186
+    shared-adapter[us-states] ep48 val=0.1191 best=0.1186
+    shared-adapter[us-states] ep49 val=0.1188 best=0.1186
+    shared-adapter[us-states] ep50 val=0.1187 best=0.1186
+    shared-adapter[us-states] ep51 val=0.1189 best=0.1186
+    shared-adapter[us-states] ep52 val=0.1187 best=0.1186
+    shared-adapter[us-states] ep53 val=0.1188 best=0.1186
+    shared-adapter[us-states] ep54 val=0.1189 best=0.1186
+    shared-adapter[us-states] ep55 val=0.1188 best=0.1186
+    shared-adapter[us-states] ep56 val=0.1188 best=0.1186
+    shared-adapter[us-states] ep57 val=0.1187 best=0.1186
+    shared-adapter[us-states] ep58 val=0.1187 best=0.1186
+----- fold done in 38.3 min | elapsed 10.78 h | projected total 10.78 h -----
+[2/2] done in 10.78 h
+
+==============================================================================
+ALL DONE  baselines 0.0 min | ldo3 10.78 h | total 10.78 h
+finished 2026-08-04 23:17:55
+next: python results_matrix.py -o Results_Matrix.md
+==============================================================================

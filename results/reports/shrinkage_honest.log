@@ -1,0 +1,29 @@
+lam fitted on the EARLY half of test, scored on the LATE half. lam=1 is the shipped model.
+
+panel                    h   nE/nL |      lam=1 lam_fit     fitted    gain |  oracle headroom
+dengue                   3 315/315 |      45.15    1.70      59.92  -32.7% |    0.75    +2.8%
+dengue                   5 315/315 |      53.95    1.55      65.05  -20.6% |    0.59    +5.8%
+dengue                  10 315/315 |      61.01    0.87      60.42   +1.0% |    0.53    +2.1%
+dengue                  15 315/315 |      62.37    0.08      61.68   +1.1% |    0.40    +1.5%
+influenza_japan          3  52/52  |     945.11    0.75    1071.27  -13.3% |    1.51   +12.2%
+influenza_japan          5  52/52  |    1007.73    1.06     979.66   +2.8% |    1.67   +17.3%
+influenza_japan         10  52/52  |     856.73    1.69     883.14   -3.1% |    1.29    +4.9%
+influenza_japan         15  52/52  |     833.90    1.61     866.69   -3.9% |    1.24    +3.6%
+influenza_us-regions     3 117/118 |     569.30    1.09     549.40   +3.5% |    1.23    +5.6%
+influenza_us-regions     5 117/118 |     684.80    1.12     664.73   +2.9% |    1.28    +4.4%
+influenza_us-regions    10 117/118 |     777.78    1.05     776.89   +0.1% |    1.05    +0.1%
+influenza_us-regions    15 117/118 |     766.80    0.96     769.58   -0.4% |    1.07    +0.2%
+influenza_us-states      3  54/54  |     127.33    1.05     124.68   +2.1% |    1.32    +7.1%
+influenza_us-states      5  54/54  |     152.52    0.92     156.35   -2.5% |    1.33    +4.5%
+influenza_us-states     10  54/54  |     170.44    0.74     181.09   -6.2% |    1.26    +2.1%
+influenza_us-states     15  54/54  |     178.05    0.76     185.95   -4.4% |    1.22    +1.3%
+covid_us-states          3  24/25  |    5219.99    0.64    4530.89  +13.2% |    0.42   +15.8%
+covid_us-states          5  24/25  |    7788.74    0.00    4536.33  +41.8% |    0.00   +41.8%
+covid_us-states         10  24/25  |   12952.28    0.00    3693.78  +71.5% |    0.00   +71.5%
+covid_us-states         15  24/25  |   12683.96    0.00    4025.37  +68.3% |    0.00   +68.3%
+
+fitted lam HELPS in 10 cells, HURTS in 8, flat in 2  (of 20)
+mean honest gain: +6.0%   median +0.5%   worst -32.7%   best +71.5%
+
+fitted beats lam=1 -> real and exploitable, a no-retrain patch.
+fitted ~ lam=1     -> hindsight only; a diagnostic, not a fix.

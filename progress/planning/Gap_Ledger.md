@@ -134,7 +134,7 @@ Notes carried out of B3:
 | C1 | Amend B5 to admit COVID as a labelled development panel | `progress/decisions/client_decisions.md:192-211`, amendment block under the original, which is kept as the returned record | **DONE** |
 | C2 | MTGNN "better in 12 of 16" and "HeatGNN one dataset, two horizons" both false | `Reports/Week4_Experiments_Stakeholder_Brief.md`, corrected in place with a dated note, `.docx` re-rendered | **DONE** |
 | C3 | Status table stale: "Phase 3 not yet started", G5 as SHAP, MTGNN as a passing control | `PROJECT.md` §2 goal table, §7 baseline table, §Week-5 list, §9 outputs row | **DONE** |
-| C4 | Two navigation docs claim `Reports/` and `results/` are gitignored; they are not. `*.log` is | `CLAUDE.md` §7, `Resume.md` | HALF DONE: `CLAUDE.md` §3, §7, §9 corrected 2026-09-06 (local only, file is gitignored). `Resume.md:46` still wrong *(verified)* |
+| C4 | Two navigation docs claim `Reports/` and `results/` are gitignored; they are not. `*.log` is | `CLAUDE.md` §7, `Resume.md` §2 and §8, `.gitignore` | **DONE**, and audit M4's live half is now half-closed |
 | C5 | "Run the shrinkage test" still listed as next action #1 | `CLAUDE.md:219`, `Resume.md:212` | OPEN, depends on A2 *(verified)* |
 | C6 | M8: three sites still deny COVID enters the schema | `data_audit.md:864-870`, `:1414-1423`, `:1569` | OPEN *(audit)* |
 | C7 | M7: Ebola cumulative envelope discards cells on a premise false for 69% of them | `to_schema.py:226-233`; no per-district masked-week table in `data_audit.md` §3.5 | OPEN *(audit)* |
@@ -182,6 +182,15 @@ Notes carried out of Group C:
   and the graph-controlled `encoder_pair` arm 20. Whatever 158 counted, it is not the directory.
 - **C3 closed audit finding M13** in the same edit: the baseline table now reads two usable
   comparators on influenza and one on dengue, with each exclusion named.
+- **C4 recounted the tracked files**, since the figures in the ledger were themselves stale: git
+  tracks **47** files in `Reports/` (not 45, my two new reports landed) and **1,650** under
+  `results/`, of which 919 are `results/lodo/`.
+- **C4 took the M4 decision rather than deferring it again.** `results/reports/*.log` is now carved
+  out of the `*.log` rule and the 32 decision-bearing logs are committed. They total about 1.1 MB,
+  which is nothing, and the shrinkage sweep nearly being lost is the argument. `*.log` elsewhere
+  stays ignored, so M4 is half-closed, not closed.
+- `Resume.md` also had two other stale rows fixed in passing: the manuscript word count (13,516 to
+  13,628) and the MTGNN row, which C2 had already closed.
 
 ---
 

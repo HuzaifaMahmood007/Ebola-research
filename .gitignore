@@ -24,5 +24,8 @@ __pycache__/
 /ablation/*.npz
 /figs/
 *.log
+# ...except the decision-bearing run logs. These are the ONLY record of several verdicts
+# (the shrinkage sweep was nearly lost this way) and all 32 come to about 1.1 MB. Audit M4.
+!/results/reports/*.log
 env_train_snapshot*.txt
 /ablation

@@ -1,0 +1,144 @@
+
+===== ldo3full dengue seed42 :: 2026-08-12 16:49:04 =====
+LDO3: 1 fold(s) x 1 seed(s) = 1 runs | trunk_steps=91000 epochs=80 trunk_patience=999 prefix=encoder_ldo3full
+
+=== encoder_ldo3full fold: held-out DISEASE=dengue (['dengue'])
+    trunk on ['influenza', 'covid'] = ['influenza_japan', 'influenza_us-regions', 'influenza_us-states', 'covid_us-states']  adapter_groups=[0, 0, 0, 1]  seed=42 ===
+    trunk loss rebalanced per DISEASE (2 groups): [0.167, 0.167, 0.167, 0.5]
+    trunk(-42) step  1000 val=0.1241 best=0.1241
+    trunk(-42) step  2000 val=0.1205 best=0.1205
+    trunk(-42) step  3000 val=0.1198 best=0.1198
+    trunk(-42) step  4000 val=0.1183 best=0.1183
+    trunk(-42) step  5000 val=0.1228 best=0.1183
+    trunk(-42) step  6000 val=0.1267 best=0.1183
+    trunk(-42) step  7000 val=0.1214 best=0.1183
+    trunk(-42) step  8000 val=0.1247 best=0.1183
+    trunk(-42) step  9000 val=0.1254 best=0.1183
+    trunk(-42) step 10000 val=0.1297 best=0.1183
+    trunk(-42) step 11000 val=0.1277 best=0.1183
+    trunk(-42) step 12000 val=0.1320 best=0.1183
+    trunk(-42) step 13000 val=0.1308 best=0.1183
+    trunk(-42) step 14000 val=0.1323 best=0.1183
+    trunk(-42) step 15000 val=0.1339 best=0.1183
+    trunk(-42) step 16000 val=0.1377 best=0.1183
+    trunk(-42) step 17000 val=0.1347 best=0.1183
+    trunk(-42) step 18000 val=0.1354 best=0.1183
+    trunk(-42) step 19000 val=0.1385 best=0.1183
+    trunk(-42) step 20000 val=0.1381 best=0.1183
+    trunk(-42) step 21000 val=0.1363 best=0.1183
+    trunk(-42) step 22000 val=0.1382 best=0.1183
+    trunk(-42) step 23000 val=0.1384 best=0.1183
+    trunk(-42) step 24000 val=0.1401 best=0.1183
+    trunk(-42) step 25000 val=0.1410 best=0.1183
+    trunk(-42) step 26000 val=0.1392 best=0.1183
+    trunk(-42) step 27000 val=0.1361 best=0.1183
+    trunk(-42) step 28000 val=0.1400 best=0.1183
+    trunk(-42) step 29000 val=0.1438 best=0.1183
+    trunk(-42) step 30000 val=0.1422 best=0.1183
+    trunk(-42) step 31000 val=0.1407 best=0.1183
+    trunk(-42) step 32000 val=0.1427 best=0.1183
+    trunk(-42) step 33000 val=0.1427 best=0.1183
+    trunk(-42) step 34000 val=0.1456 best=0.1183
+    trunk(-42) step 35000 val=0.1432 best=0.1183
+    trunk(-42) step 36000 val=0.1436 best=0.1183
+    trunk(-42) step 37000 val=0.1453 best=0.1183
+    trunk(-42) step 38000 val=0.1472 best=0.1183
+    trunk(-42) step 39000 val=0.1438 best=0.1183
+    trunk(-42) step 40000 val=0.1452 best=0.1183
+    trunk(-42) step 41000 val=0.1462 best=0.1183
+    trunk(-42) step 42000 val=0.1449 best=0.1183
+    trunk(-42) step 43000 val=0.1459 best=0.1183
+    trunk(-42) step 44000 val=0.1453 best=0.1183
+    trunk(-42) step 45000 val=0.1467 best=0.1183
+    trunk(-42) step 46000 val=0.1449 best=0.1183
+    trunk(-42) step 47000 val=0.1468 best=0.1183
+    trunk(-42) step 48000 val=0.1463 best=0.1183
+    trunk(-42) step 49000 val=0.1479 best=0.1183
+    trunk(-42) step 50000 val=0.1460 best=0.1183
+    trunk(-42) step 51000 val=0.1464 best=0.1183
+    trunk(-42) step 52000 val=0.1494 best=0.1183
+    trunk(-42) step 53000 val=0.1472 best=0.1183
+    trunk(-42) step 54000 val=0.1482 best=0.1183
+    trunk(-42) step 55000 val=0.1482 best=0.1183
+    trunk(-42) step 56000 val=0.1486 best=0.1183
+    trunk(-42) step 57000 val=0.1484 best=0.1183
+    trunk(-42) step 58000 val=0.1475 best=0.1183
+    trunk(-42) step 59000 val=0.1482 best=0.1183
+    trunk(-42) step 60000 val=0.1499 best=0.1183
+    trunk(-42) step 61000 val=0.1483 best=0.1183
+    trunk(-42) step 62000 val=0.1495 best=0.1183
+    trunk(-42) step 63000 val=0.1491 best=0.1183
+    trunk(-42) step 64000 val=0.1484 best=0.1183
+    trunk(-42) step 65000 val=0.1491 best=0.1183
+    trunk(-42) step 66000 val=0.1488 best=0.1183
+    trunk(-42) step 67000 val=0.1500 best=0.1183
+    trunk(-42) step 68000 val=0.1508 best=0.1183
+    trunk(-42) step 69000 val=0.1499 best=0.1183
+    trunk(-42) step 70000 val=0.1491 best=0.1183
+    trunk(-42) step 71000 val=0.1506 best=0.1183
+    trunk(-42) step 72000 val=0.1498 best=0.1183
+    trunk(-42) step 73000 val=0.1505 best=0.1183
+    trunk(-42) step 74000 val=0.1500 best=0.1183
+    trunk(-42) step 75000 val=0.1500 best=0.1183
+    trunk(-42) step 76000 val=0.1504 best=0.1183
+    trunk(-42) step 77000 val=0.1505 best=0.1183
+    trunk(-42) step 78000 val=0.1506 best=0.1183
+    trunk(-42) step 79000 val=0.1498 best=0.1183
+    trunk(-42) step 80000 val=0.1504 best=0.1183
+    trunk(-42) step 81000 val=0.1504 best=0.1183
+    trunk(-42) step 82000 val=0.1506 best=0.1183
+    trunk(-42) step 83000 val=0.1504 best=0.1183
+    trunk(-42) step 84000 val=0.1503 best=0.1183
+    trunk(-42) step 85000 val=0.1505 best=0.1183
+    trunk(-42) step 86000 val=0.1505 best=0.1183
+    trunk(-42) step 87000 val=0.1505 best=0.1183
+    trunk(-42) step 88000 val=0.1506 best=0.1183
+    trunk(-42) step 89000 val=0.1505 best=0.1183
+    trunk(-42) step 90000 val=0.1506 best=0.1183
+    trunk(-42) step 91000 val=0.1506 best=0.1183
+    shared-adapter[dengue] ep00 val=0.2764 best=0.2764
+    shared-adapter[dengue] ep01 val=0.2663 best=0.2663
+    shared-adapter[dengue] ep02 val=0.2640 best=0.2640
+    shared-adapter[dengue] ep03 val=0.2631 best=0.2631
+    shared-adapter[dengue] ep04 val=0.2619 best=0.2619
+    shared-adapter[dengue] ep05 val=0.2615 best=0.2615
+    shared-adapter[dengue] ep06 val=0.2620 best=0.2615
+    shared-adapter[dengue] ep07 val=0.2607 best=0.2607
+    shared-adapter[dengue] ep08 val=0.2602 best=0.2602
+    shared-adapter[dengue] ep09 val=0.2595 best=0.2595
+    shared-adapter[dengue] ep10 val=0.2614 best=0.2595
+    shared-adapter[dengue] ep11 val=0.2583 best=0.2583
+    shared-adapter[dengue] ep12 val=0.2604 best=0.2583
+    shared-adapter[dengue] ep13 val=0.2603 best=0.2583
+    shared-adapter[dengue] ep14 val=0.2608 best=0.2583
+    shared-adapter[dengue] ep15 val=0.2593 best=0.2583
+    shared-adapter[dengue] ep16 val=0.2586 best=0.2583
+    shared-adapter[dengue] ep17 val=0.2589 best=0.2583
+    shared-adapter[dengue] ep18 val=0.2587 best=0.2583
+    shared-adapter[dengue] ep19 val=0.2582 best=0.2582
+    shared-adapter[dengue] ep20 val=0.2611 best=0.2582
+    shared-adapter[dengue] ep21 val=0.2592 best=0.2582
+    shared-adapter[dengue] ep22 val=0.2599 best=0.2582
+    shared-adapter[dengue] ep23 val=0.2605 best=0.2582
+    shared-adapter[dengue] ep24 val=0.2595 best=0.2582
+    shared-adapter[dengue] ep25 val=0.2585 best=0.2582
+    shared-adapter[dengue] ep26 val=0.2594 best=0.2582
+    shared-adapter[dengue] ep27 val=0.2599 best=0.2582
+    shared-adapter[dengue] ep28 val=0.2603 best=0.2582
+    shared-adapter[dengue] ep29 val=0.2573 best=0.2573
+    shared-adapter[dengue] ep30 val=0.2588 best=0.2573
+    shared-adapter[dengue] ep31 val=0.2590 best=0.2573
+    shared-adapter[dengue] ep32 val=0.2590 best=0.2573
+    shared-adapter[dengue] ep33 val=0.2581 best=0.2573
+    shared-adapter[dengue] ep34 val=0.2573 best=0.2573
+    shared-adapter[dengue] ep35 val=0.2580 best=0.2573
+    shared-adapter[dengue] ep36 val=0.2587 best=0.2573
+    shared-adapter[dengue] ep37 val=0.2588 best=0.2573
+    shared-adapter[dengue] ep38 val=0.2589 best=0.2573
+    shared-adapter[dengue] ep39 val=0.2592 best=0.2573
+    shared-adapter[dengue] ep40 val=0.2577 best=0.2573
+    shared-adapter[dengue] ep41 val=0.2583 best=0.2573
+    shared-adapter[dengue] ep42 val=0.2594 best=0.2573
+    shared-adapter[dengue] ep43 val=0.2583 best=0.2573
+    shared-adapter[dengue] ep44 val=0.2584 best=0.2573
+LDO3 done in 71.2 min

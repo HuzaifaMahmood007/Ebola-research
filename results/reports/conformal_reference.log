@@ -1,0 +1,43 @@
+loading TRANSFER arm (LDO3 adapted)
+  loaded dengue                   2885 origin-steps over 5 seeds
+  loaded influenza_japan          460 origin-steps over 5 seeds
+  loaded influenza_us-regions     1115 origin-steps over 5 seeds
+  loaded influenza_us-states      480 origin-steps over 5 seeds
+  loaded covid_us-states          185 origin-steps over 5 seeds
+
+loading CEILING arm (single-disease)
+  dengue                   4/4 horizons
+  influenza_japan          4/4 horizons
+  influenza_us-regions     4/4 horizons
+  influenza_us-states      4/4 horizons
+  covid_us-states          4/4 horizons
+
+=== CEILING vs CALIBRATED TRANSFER, 90% intervals, 5 seeds ===
+panel                    h |        ceiling     ceil w | transf raw  +lam+ACI      cal w | gap to ceil
+dengue                   3 |    0.756Â±0.007       52.0 |      0.749     0.887      944.7 |      +0.131
+dengue                   5 |    0.729Â±0.010       57.4 |      0.741     0.889      973.0 |      +0.159
+dengue                  10 |    0.662Â±0.008       43.6 |      0.710     0.888      736.1 |      +0.226
+dengue                  15 |    0.624Â±0.012       32.7 |      0.678     0.892      510.1 |      +0.268
+influenza_japan          3 |    0.759Â±0.045      660.9 |      0.899     0.922     1810.7 |      +0.163
+influenza_japan          5 |    0.732Â±0.039      756.4 |      0.900     0.921     1895.6 |      +0.189
+influenza_japan         10 |    0.687Â±0.062      853.1 |      0.882     0.920     2018.1 |      +0.233
+influenza_japan         15 |    0.742Â±0.031     1113.3 |      0.887     0.927     2013.4 |      +0.185
+influenza_us-regions     3 |    0.926Â±0.058     2118.4 |      0.918     0.907     1887.0 |      -0.019
+influenza_us-regions     5 |    0.904Â±0.060     2251.8 |      0.904     0.906     2252.8 |      +0.002
+influenza_us-regions    10 |    0.912Â±0.044     2670.0 |      0.862     0.905     2798.8 |      -0.008
+influenza_us-regions    15 |    0.934Â±0.027     3169.3 |      0.838     0.902     3207.7 |      -0.033
+influenza_us-states      3 |    0.835Â±0.015      245.6 |      0.815     0.901      300.5 |      +0.066
+influenza_us-states      5 |    0.803Â±0.034      281.3 |      0.810     0.901      373.2 |      +0.098
+influenza_us-states     10 |    0.770Â±0.014      283.0 |      0.790     0.908      458.6 |      +0.137
+influenza_us-states     15 |    0.759Â±0.015      270.4 |      0.783     0.910      473.7 |      +0.151
+covid_us-states          3 |    0.721Â±0.073    18916.2 |      0.658     0.912    51339.0 |      +0.191
+covid_us-states          5 |    0.651Â±0.065    21674.0 |      0.712     0.915    44967.3 |      +0.264
+covid_us-states         10 |    0.552Â±0.065    25394.1 |      0.535     0.917    78288.1 |      +0.365
+covid_us-states         15 |    0.531Â±0.119    36117.2 |      0.492     0.918    85749.8 |      +0.388
+
+  ceiling  coverage range 0.531 .. 0.934   mean abs dev from 0.90 0.158
+  calibrated transfer      0.887 .. 0.927   mean abs dev from 0.90 0.012
+
+  READ THIS AS: the ceiling is the reference, NOT a target to beat. Calibrated transfer
+  landing closer to 0.90 than the ceiling does means the ceiling is itself miscalibrated,
+  which is a finding about the quantile head, not evidence that transfer forecasts better.
