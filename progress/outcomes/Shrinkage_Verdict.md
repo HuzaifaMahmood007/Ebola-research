@@ -9,8 +9,10 @@ regenerable without rewriting it.
 
 That is why the tables below are reproduced **in full** rather than cited. The source logs
 (`Reports/shrinkage_test.log` and `Reports/shrinkage_honest.log`, duplicated under
-`results/reports/`) match `*.log` in `.gitignore` and so have no version history either; if they are
-deleted, this document is the only surviving record of the experiment.
+`results/reports/`) matched `*.log` in `.gitignore` and so had no version history either, which is
+why they are reproduced here in full. **Fixed 2026-09-06:** `results/reports/*.log` is now carved out
+of that rule, so both copies are committed and this document is no longer the only surviving record.
+The `Reports/` copies are still ignored.
 
 Rebuilding the probe is a small job and worth doing only if someone wants to extend it: it needs the
 archived count-space quantiles at `results/single/encoder__{panel}__seed{S}__quantiles.npz` (median

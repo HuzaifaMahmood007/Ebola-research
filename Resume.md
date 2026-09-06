@@ -221,11 +221,23 @@ From `Reports/Phase0_to_Now_Audit.md` (71 agents, 45 findings survived adversari
 
 ## 9. Suggested next actions, ordered
 
-1. **Run the shrinkage test (§6).** Free, post-hoc, decides whether the standing diagnosis is real,
-   and is a no-retrain accuracy patch if it is.
-2. **Wire the median-to-mean correction into the transfer path.** Built and tested already; absent
-   from Ebola and LDO3 scoring. Directly attacks the `train_mean` losses.
-3. **Write the Threats paragraph on normalisation** using the §6 numbers, before a reviewer does.
-4. **Decide G5.** It is REQUIRED and has no code. Either build attribution or renegotiate the goal.
-5. **Fix the manuscript word count and get it under version control.**
-6. **Correct the MTGNN sentence** (ledger C2). The COVID B5 contradiction is resolved, see §2.
+1. **Decide G5.** It is REQUIRED and has no code. The scope is settled in
+   `progress/decisions/G5_Explainability_Scope.md` (integrated gradients, not SHAP) and three
+   decisions sit with the client, including retracting the SHAP row from a table they already hold.
+2. **Write the Threats paragraph on normalisation** using the §6 numbers, before a reviewer does.
+3. **Get the manuscript under the word limit.** ~13,628 against 12,000. It is already tracked.
+4. **Disclose that US-States is our weak panel** (ledger C9). We lose to EpiGNN at all four horizons
+   there and no document says so.
+5. **Finish the remaining ledger items**, `progress/planning/Gap_Ledger.md` Groups C to E.
+
+**Struck.** *Run the shrinkage test* was action #1 in both of these documents for days after it had
+already run. Verdict in `progress/outcomes/Shrinkage_Verdict.md`: the over-commitment diagnosis is
+**refuted as a general claim**. Under the honest split it helps 10 cells and hurts 8, median gain
++0.5%, the +6.0% mean is entirely COVID, and dengue h3 fits a lambda of 1.70, meaning dengue wants
+*more* variance rather than less. Do not re-open it without new evidence.
+
+**Also struck.** *Wire the median-to-mean correction into the transfer path* was action #2. It is a
+decided no, recorded as ledger D3: the pre-registration's amendment log is closed and the correction
+is 8.8% to 47.3% worse on COVID, the most-shifted panel and the closest analogue to Ebola. Adopt the
+documentation fix instead, that the Ebola point forecast is the count-space median, and lead with
+MAE.

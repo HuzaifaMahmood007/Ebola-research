@@ -135,7 +135,7 @@ Notes carried out of B3:
 | C2 | MTGNN "better in 12 of 16" and "HeatGNN one dataset, two horizons" both false | `Reports/Week4_Experiments_Stakeholder_Brief.md`, corrected in place with a dated note, `.docx` re-rendered | **DONE** |
 | C3 | Status table stale: "Phase 3 not yet started", G5 as SHAP, MTGNN as a passing control | `PROJECT.md` §2 goal table, §7 baseline table, §Week-5 list, §9 outputs row | **DONE** |
 | C4 | Two navigation docs claim `Reports/` and `results/` are gitignored; they are not. `*.log` is | `CLAUDE.md` §7, `Resume.md` §2 and §8, `.gitignore` | **DONE**, and audit M4's live half is now half-closed |
-| C5 | "Run the shrinkage test" still listed as next action #1 | `CLAUDE.md:219`, `Resume.md:212` | OPEN, depends on A2 *(verified)* |
+| C5 | "Run the shrinkage test" still listed as next action #1 | `CLAUDE.md` §9, `Resume.md` §9, both replaced | **DONE** |
 | C6 | M8: three sites still deny COVID enters the schema | `data_audit.md:864-870`, `:1414-1423`, `:1569` | OPEN *(audit)* |
 | C7 | M7: Ebola cumulative envelope discards cells on a premise false for 69% of them | `to_schema.py:226-233`; no per-district masked-week table in `data_audit.md` §3.5 | OPEN *(audit)* |
 | C8 | Run the audit's "unsafe to claim" list over every Ebola sentence in the manuscript | `Reports/Phase0_to_Now_Audit.md:246-265` | OPEN *(audit)* |
@@ -191,6 +191,16 @@ Notes carried out of Group C:
   stays ignored, so M4 is half-closed, not closed.
 - `Resume.md` also had two other stale rows fixed in passing: the manuscript word count (13,516 to
   13,628) and the MTGNN row, which C2 had already closed.
+- **C5 struck two dead actions, not one.** The shrinkage test was #1 and had already run; its
+  verdict, re-read from `Shrinkage_Verdict.md` rather than memory, is that the over-commitment
+  diagnosis is refuted as a general claim (helps 10, hurts 8, flat 2 of 20; mean +6.0% but median
+  +0.5%; dengue h3 fits lambda 1.70, wanting *more* variance). Wiring the median-to-mean correction
+  into the transfer path was #2 and is decided against as D3. Both are now recorded as struck, with
+  the reason, so they stop resurfacing.
+- Both lists were rewritten around what is actually open, and C9 was promoted into them.
+- **C4 retro-fixed a warning in `Shrinkage_Verdict.md`.** It said its two source logs had no version
+  history and that the document was the only surviving record. Both are now committed under
+  `results/reports/`, and the note says so.
 
 ---
 
