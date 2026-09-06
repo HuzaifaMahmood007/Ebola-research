@@ -132,7 +132,7 @@ Notes carried out of B3:
 | id | what | where | status |
 |---|---|---|---|
 | C1 | Amend B5 to admit COVID as a labelled development panel | `progress/decisions/client_decisions.md:192-211`, amendment block under the original, which is kept as the returned record | **DONE** |
-| C2 | MTGNN "better in 12 of 16" and "HeatGNN one dataset, two horizons" both false | `Reports/Week4_Experiments_Stakeholder_Brief.md:171-175` | OPEN *(verified)* |
+| C2 | MTGNN "better in 12 of 16" and "HeatGNN one dataset, two horizons" both false | `Reports/Week4_Experiments_Stakeholder_Brief.md`, corrected in place with a dated note, `.docx` re-rendered | **DONE** |
 | C3 | Status table stale: "Phase 3 not yet started", G5 as SHAP, MTGNN as a passing control | `PROJECT.md:36-44`, `PROJECT.md:166` | OPEN *(verified)* |
 | C4 | Two navigation docs claim `Reports/` and `results/` are gitignored; they are not. `*.log` is | `CLAUDE.md` §7, `Resume.md` | HALF DONE: `CLAUDE.md` §3, §7, §9 corrected 2026-09-06 (local only, file is gitignored). `Resume.md:46` still wrong *(verified)* |
 | C5 | "Run the shrinkage test" still listed as next action #1 | `CLAUDE.md:219`, `Resume.md:212` | OPEN, depends on A2 *(verified)* |
@@ -158,6 +158,20 @@ Notes carried out of Group C:
 - **C1 turned up an off-by-one inside the manuscript.** Table 2 lists five development panels and
   the paragraph three lines below called COVID "a fourth training panel". Corrected to "a fifth
   training panel and a third training disease", which is what the table says.
+- **C2.** Both flagged sentences were false. MTGNN is now excluded from the head-to-head rather than
+  counted, with the constant-output diagnostic given in plain terms, and the naive-floor paragraph
+  drops its MTGNN figure for the same reason. HeatGNN has finished on all three influenza panels at
+  all four horizons: **better in 3 of 12, worse in none, 9 too close to call**, against the brief's
+  "one dataset and two horizons".
+- **C2: I reproduced the brief's own conventions before changing anything.** Its head-to-head rule is
+  RMSE on `country_macro`, five seeds, level when |mean delta| < sd; that reproduces its EpiGNN
+  "9 of 16, worse in 1" and Cola-GNN "4 of 12, worse in none" exactly. Its naive-floor rule is
+  **sign only**, which reproduces "ours 6 of 16, EpiGNN 5, Cola-GNN 5 of 12, MTGNN 2" exactly. So the
+  document uses two different rules in adjacent paragraphs. Both counts stand; the inconsistency is
+  noted, not fixed, since fixing it would change numbers the client already has for no gain in truth.
+- **C2: the correction note claims only what I checked.** First draft said every other figure in the
+  document had been rechecked. That was untrue: I checked the head-to-head and naive-floor tallies,
+  not the transfer or run-count figures. The note now says so.
 
 ---
 

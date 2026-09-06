@@ -6,6 +6,16 @@ An account of every training setup we ran this week and what each one returned. 
 background assumed. Every figure below was recomputed directly from the run outputs before this
 document was written; nothing is carried forward from an earlier draft.
 
+> **Corrected 2026-09-06.** Two sentences in "Against published models" were wrong when this was
+> issued and are now replaced. **We claimed to beat MTGNN in 12 of 16 comparisons.** That count was
+> arithmetically right and meaningless: 47 of MTGNN's 80 prediction files hold a single repeated
+> number, so we were beating a constant. MTGNN is now excluded rather than counted. **We also said
+> HeatGNN ran on one dataset and two horizons.** It has since finished on all three influenza panels
+> at all four horizons, where we are better in 3 of 12 and worse in none. The other counts in that
+> section, the head-to-head tallies against EpiGNN and Cola-GNN and the naive-baseline tallies for
+> every arm, were recomputed from the run outputs on the same date and stand unchanged. Figures
+> elsewhere in this document were not re-verified as part of this correction.
+
 ---
 
 ## The short version
@@ -25,8 +35,9 @@ diseases is roughly level with one trained on the disease directly. At ten and f
 worse everywhere we can measure, by up to half again the error.
 
 **Three. Our model is the strongest in the comparison, and the whole field loses to simple
-baselines on this data.** Against EpiGNN, Cola-GNN and MTGNN, all re-run on our own pipeline, ours
-is ahead far more often than behind. But ours beats a plain "next week resembles this week"
+baselines on this data.** Against EpiGNN, Cola-GNN and HeatGNN, all re-run on our own pipeline, ours
+is ahead far more often than behind. MTGNN was re-run too but is excluded, for the reasons set out
+below. But ours beats a plain "next week resembles this week"
 baseline in only 6 of 16 cases, and every published model we tested does the same or worse. That is
 a property of these datasets and these forecast horizons, not a fault unique to our model.
 
@@ -170,13 +181,27 @@ times each — 229 runs. Running them identically is what makes the comparison f
 condition we set before looking at any result.
 
 **Our model is the strongest of the group.** Against EpiGNN it is better in 9 of 16 comparisons and
-worse in 1. Against Cola-GNN it is better in 4 of 12 and worse in none. Against MTGNN it is better
-in 12 of 16. HeatGNN currently runs on only one dataset and two horizons, where the two are level.
+worse in 1. Against Cola-GNN it is better in 4 of 12 and worse in none. Against HeatGNN it is better
+in 3 of 12 and worse in none, with the other 9 too close to call.
+
+**MTGNN is excluded from this comparison and should not have been in it.** Two independent reasons,
+either sufficient on its own. First, 47 of its 80 prediction files contain a single number repeated
+for every district at every week, and the seed-to-seed spread is exactly zero wherever that happens.
+It has collapsed to something like a global mean rather than learning. Second, MTGNN's own paper
+reports on traffic, electricity and solar data and contains no epidemic dataset at all, so there is
+no published figure to check our re-run against, which is the condition we agreed to before running
+any of this.
+
+Beating a model that predicts one number is not evidence of anything, and the naive baselines below
+already measure that honestly. The full diagnostic is in `reproduction_failure_log.md` and the
+published-versus-ours comparison is in `baseline_reproduction_table.md`.
 
 **And every model in the group, including ours, loses to simple baselines more often than it wins.**
 Ours beats the best naive baseline in 6 of 16 dataset-and-horizon combinations; EpiGNN in 5, Cola-GNN
-in 5 of 12, MTGNN in 2. We state this alongside the head-to-head result rather than separately,
-because reporting only the head-to-head would leave a misleading impression.
+in 5 of 12. MTGNN's figure is omitted for the same reason as above: a model that emits one number
+has a naive-baseline record too, and quoting it would suggest the number means something. We state
+this alongside the head-to-head result rather than separately, because reporting only the
+head-to-head would leave a misleading impression.
 
 ---
 
