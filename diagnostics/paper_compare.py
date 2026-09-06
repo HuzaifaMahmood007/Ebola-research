@@ -31,6 +31,8 @@ the two sides would be pooling different cells.
 from __future__ import annotations
 
 import collections
+import io
+import pathlib
 import sys
 
 import numpy as np
@@ -96,11 +98,36 @@ def pooled(path):
     return model, dataset, h, seed, rmse, pcc, int(m.sum()), degenerate
 
 
-def encoder_pooled():
-    """{(dataset, h): [rmse_per_seed]} -- pooled RMSE from the per-origin sufficient stats.
+_SUB_ROWS: dict[str, np.ndarray] = {}
 
-    sqrt(sum(sse)/sum(n)) over every (origin, country) cell IS the cell-pooled RMSE. Verified per
-    run against the cell count in the matching __pernode.npz; a mismatch skips the run loudly.
+
+def subsample_rows(dataset: str) -> np.ndarray | None:
+    """Bundle row indices the baselines actually saw, or None if the whole panel was exported.
+
+    Only dengue is subsampled (7,165 nodes will not fit repos built for <=49), and the encoder is
+    scored on the whole bundle. Pooling the two sides over different node sets makes the
+    'encoder vs reproduced' column measure the node set: the encoder's own dengue RMSE is about 50%
+    higher on the subsample than on the full panel, so the uncorrected gap is roughly twice the real
+    one. Reuses export_baseline's own selector so the table cannot drift from the export.
+    """
+    import export_baseline
+
+    if dataset not in export_baseline.SUBSAMPLE_DATASETS:
+        return None
+    if dataset not in _SUB_ROWS:
+        import bundles
+        _SUB_ROWS[dataset] = export_baseline._kept_indices(bundles.load(dataset))[0]
+    return _SUB_ROWS[dataset]
+
+
+def encoder_pooled():
+    """{(dataset, h): [rmse_per_seed]} -- cell-pooled encoder RMSE, on the baselines' node set.
+
+    sqrt(sum(sse)/sum(n)) over every (origin, country) cell IS the cell-pooled RMSE, and the
+    per-origin sufficient stats give it directly. They cannot be restricted by node, so a subsampled
+    dataset is pooled from the per-node archive instead as sqrt(sum(n_i * rmse_i^2)/sum(n_i)), which
+    is the same quantity node-side. The two routes agree to the printed precision on the full panel;
+    the cell-count check below is what holds them together.
     """
     out = collections.defaultdict(list)
     for po in sorted((RESULTS / "single").glob("encoder__*__perorigin.npz")):
@@ -110,6 +137,7 @@ def encoder_pooled():
             print(f"  ! {stem}: no __pernode.npz to verify against, skipped", file=sys.stderr)
             continue
         dataset = stem.split("__")[1]
+        keep_rows = subsample_rows(dataset)
         zo, zn = np.load(po, allow_pickle=True), np.load(pn, allow_pickle=True)
         for h in (3, 5, 10, 15):
             n = zo[f"h{h}__n"].astype(np.int64)
@@ -120,7 +148,18 @@ def encoder_pooled():
                 print(f"  ! {stem} h{h}: per-origin cells {got} != per-node cells {want}, skipped",
                       file=sys.stderr)
                 continue
-            out[(dataset, h)].append(float(np.sqrt(sse.sum() / max(got, 1))))
+            if keep_rows is None:
+                out[(dataset, h)].append(float(np.sqrt(sse.sum() / max(got, 1))))
+                continue
+            idx = zn[f"h{h}__node_idx"].astype(np.int64)
+            nc = zn[f"h{h}__n_cells"].astype(np.float64)
+            r = zn[f"h{h}__rmse"].astype(np.float64)
+            m = np.isfinite(r) & (nc > 0) & np.isin(idx, keep_rows)
+            if not m.any():
+                print(f"  ! {stem} h{h}: no scored node survives the subsample, skipped",
+                      file=sys.stderr)
+                continue
+            out[(dataset, h)].append(float(np.sqrt((nc[m] * r[m] ** 2).sum() / nc[m].sum())))
     return out
 
 
@@ -163,7 +202,12 @@ def main(as_md=False):
               "| 3. our encoder | encoder vs reproduced | seeds | flag |")
         print("|---|---|---|---|---|---|---|---|---|---|")
         for x in rows:
-            flag = f"**{x['degen']}/{x['n_seeds']} constant**" if x["degen"] else ""
+            flags = []
+            if x["degen"]:
+                flags.append(f"**{x['degen']}/{x['n_seeds']} constant**")
+            if subsample_rows(x["dataset"]) is not None:
+                flags.append("both sides on the 2,392-node subsample")
+            flag = "; ".join(flags)
             print(f"| {x['model']} | {x['dataset']} | {x['h']} | {f(x['pub'], '.0f', '—')} | "
                   f"{f(x['repro'])} ± {f(x['repro_sd'])} | "
                   f"{f(x['d_pub'], '+.1f', '—')}{'%' if x['d_pub'] is not None else ''} | "
@@ -183,4 +227,17 @@ def main(as_md=False):
 
 
 if __name__ == "__main__":
-    main(as_md="--md" in sys.argv)
+    # -o writes UTF-8 itself: the table carries em dash and +- and the Windows console mangles both.
+    out = None
+    if "-o" in sys.argv:
+        out = sys.argv[sys.argv.index("-o") + 1]
+        buf = io.StringIO()
+        real, sys.stdout = sys.stdout, buf
+        try:
+            main(as_md=True)
+        finally:
+            sys.stdout = real
+        pathlib.Path(out).write_text(buf.getvalue(), encoding="utf-8")
+        print(f"wrote {out}")
+    else:
+        main(as_md="--md" in sys.argv)

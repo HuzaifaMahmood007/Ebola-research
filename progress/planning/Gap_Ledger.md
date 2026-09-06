@@ -46,7 +46,7 @@ Notes carried out of Group A:
 | id | what | where | status |
 |---|---|---|---|
 | B1 | `reproduction_failure_log.md` did not exist anywhere in the repo | `Reports/reproduction_failure_log.md`, verified by `diagnostics/verify_repro_log.py` | **DONE** |
-| B2 | Published-versus-ours reproduction table never written up | `diagnostics/paper_compare.py` computes it (degeneracy flag at line 95); no output saved anywhere | OPEN *(verified)* |
+| B2 | Published-versus-ours reproduction table never written up | `Reports/baseline_reproduction_table.md`, verified by `diagnostics/verify_paper_table.py` | **DONE** |
 | B3 | Explainability scoping note (work order §8d) never written | recorded outstanding in three docs | OPEN *(audit)* |
 
 Notes carried out of B1:
@@ -70,6 +70,30 @@ Notes carried out of B1:
   mutation-tests itself over 9 mutations, all caught. It exits 2 rather than 1 when `baselines/` is
   absent, since that directory is gitignored and "cannot check" is not "wrong".
 
+Notes carried out of B2:
+
+- **The generator had a population bug and it was load-bearing.** `paper_compare.py` pooled the
+  encoder over the full dengue bundle (6,161 non-constant nodes of 7,165) while pooling the
+  baselines over the 2,392-node subsample they actually ran on. The encoder's own dengue RMSE is
+  about **50 percent higher** on the subsample, so the printed margin was roughly twice the real
+  one. Corrected margins against EpiGNN are **-28.9 / -26.2 / -11.2 / -6.0 percent** at h3/h5/h10/h15,
+  against -53.5 / -51.7 / -41.6 / -37.5 as first generated. Direction unchanged, magnitude halved,
+  and h15 is now 6.0 percent against seed dispersion of ±1.9 and ±11.5.
+- The fix restricts the encoder column to `export_baseline._kept_indices` for any subsampled dataset,
+  so the table cannot drift from the export. The table also gained a `-o` flag, because the Windows
+  console mangles the em dash and plus-minus on the way to a file.
+- **No published document carried the uncorrected numbers.** I checked every tracked markdown for
+  the four wrong margins and found none, so this never escaped the generator.
+- **New finding, undisclosed anywhere: US-States is our weak panel.** Against EpiGNN the encoder is
+  worse at all four horizons (+2.8 to +13.1 percent) and against HeatGNN at three of four. Over the
+  40 non-MTGNN cells the encoder is better in 28 and worse in 12. This belongs in the manuscript
+  results section, not only in the table. Tracked as **C9** below.
+- MTGNN fails the client's condition twice over, and either reason alone is sufficient: its paper
+  has no epidemic dataset, so all 16 cells have an empty `Δ% vs published` column, and 47 of 80 of
+  its runs are constant.
+- `diagnostics/verify_paper_table.py` re-runs the generator to prove the filed table is current, then
+  re-derives every prose tally from the filed table text. 11 mutations, all caught.
+
 ---
 
 ## Group C: documents contradicting the disk or the client record
@@ -84,6 +108,7 @@ Notes carried out of B1:
 | C6 | M8: three sites still deny COVID enters the schema | `data_audit.md:864-870`, `:1414-1423`, `:1569` | OPEN *(audit)* |
 | C7 | M7: Ebola cumulative envelope discards cells on a premise false for 69% of them | `to_schema.py:226-233`; no per-district masked-week table in `data_audit.md` §3.5 | OPEN *(audit)* |
 | C8 | Run the audit's "unsafe to claim" list over every Ebola sentence in the manuscript | `Reports/Phase0_to_Now_Audit.md:246-265` | OPEN *(audit)* |
+| C9 | US-States losses to EpiGNN and HeatGNN appear in no document | found in B2; `Reports/baseline_reproduction_table.md` has the cells, the manuscript results section does not | OPEN *(verified)* |
 
 **C7 carries a warning.** Re-basing would change `data/processed/ebola_L12.npz`, which is a
 hash-frozen arm. The *disclosure* half is safe; the *fix* half engages the pre-registration and must
