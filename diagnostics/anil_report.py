@@ -442,7 +442,7 @@ def build_markdown(data, verify_out, surface=SURFACE):
     for fold in FOLDS:
         meta, test, _d = data[fold]["plan"]
         b, w, n = tally(data[fold]["primary"])
-        A(f"### Fold `{fold}` — meta-train {', '.join(meta)} → meta-test {', '.join(test)}")
+        A(f"### Fold `{fold}`: meta-train {', '.join(meta)}, meta-test {', '.join(test)}")
         A("")
         A("| dataset | h | delta vs control | significant |")
         A("|---|---|---|---|")

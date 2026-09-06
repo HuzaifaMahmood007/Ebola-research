@@ -51,7 +51,7 @@ Every LDO3 fold has a multi-bundle meta-train side, so each outer step draws a p
 
 Positive means ANIL is better. Percent of the control's RMSE, country-macro, count space. The interval is a two-sided 95% *t* at the number of seeds each cell actually paired on, and a cell counts only if that interval excludes zero.
 
-### Fold `dengue2flu` — meta-train dengue → meta-test influenza_japan, influenza_us-regions, influenza_us-states
+### Fold `dengue2flu`: meta-train dengue, meta-test influenza_japan, influenza_us-regions, influenza_us-states
 
 | dataset | h | delta vs control | significant |
 |---|---|---|---|
@@ -72,7 +72,7 @@ Tally: **0 better, 1 worse, 11 within noise.**
 
 Held-out meta-objective (best validation loss, lower is better, sign flipped so positive still means ANIL better): within noise (-0.8 ± 3.1%, n=5), within noise.
 
-### Fold `dengue` — meta-train influenza_japan, influenza_us-regions, influenza_us-states, covid_us-states → meta-test dengue
+### Fold `dengue`: meta-train influenza_japan, influenza_us-regions, influenza_us-states, covid_us-states, meta-test dengue
 
 | dataset | h | delta vs control | significant |
 |---|---|---|---|
@@ -85,7 +85,7 @@ Tally: **0 better, 0 worse, 4 within noise.**
 
 Held-out meta-objective (best validation loss, lower is better, sign flipped so positive still means ANIL better): **+1.2%** ± 1.2 (n=5), yes.
 
-### Fold `influenza` — meta-train dengue, covid_us-states → meta-test influenza_japan, influenza_us-regions, influenza_us-states
+### Fold `influenza`: meta-train dengue, covid_us-states, meta-test influenza_japan, influenza_us-regions, influenza_us-states
 
 | dataset | h | delta vs control | significant |
 |---|---|---|---|
@@ -106,7 +106,7 @@ Tally: **0 better, 0 worse, 12 within noise.**
 
 Held-out meta-objective (best validation loss, lower is better, sign flipped so positive still means ANIL better): within noise (+0.3 ± 3.2%, n=5), within noise.
 
-### Fold `covid` — meta-train dengue, influenza_japan, influenza_us-regions, influenza_us-states → meta-test covid_us-states
+### Fold `covid`: meta-train dengue, influenza_japan, influenza_us-regions, influenza_us-states, meta-test covid_us-states
 
 | dataset | h | delta vs control | significant |
 |---|---|---|---|
