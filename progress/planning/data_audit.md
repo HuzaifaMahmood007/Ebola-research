@@ -1161,6 +1161,97 @@ are the weeks whose cumulative report fell below the running maximum: corrupt re
 scored and normalised on as though they were observed zeros. This is a genuine reduction in Ebola
 evaluation data and is the honest count.
 
+#### 3.5.1 Where the 368 removed cells fall, and where the stated premise does not hold
+
+**Added 2026-09-06**, closing the disclosure half of audit finding M7. This section reports; it
+changes nothing. `data/processed/ebola_L12.npz` is a hash-frozen pre-registered arm and re-basing it
+would engage the pre-registration, so the envelope logic at `to_schema.py:227-231` is untouched.
+
+Every figure below was recomputed from the pinned source, `data-ebola-public.xlsx`, sha256
+`2d679a31...` verified against `build_datasets.RAW_SHA256` before reading, restricted to the 61
+districts that reach the released bundle (61 of 61 matched after applying `EBOLA_NAME_ALIASES`).
+
+**The premise.** The envelope masks any week whose cumulative report sits below the running maximum,
+on the stated grounds that such a fall is *"a single-week data-entry dropout, not a downward
+revision"*. A dropout returns to the prior high-water mark almost immediately. A revision does not,
+and instead continues on a sustained, internally consistent lower branch.
+
+**Measured: of the 368 removed cells, only 115 return to the prior high-water mark within three
+weeks. The stated premise therefore holds for 31 percent of them and fails for 69 percent.**
+
+**Thirteen districts terminate in four or more consecutive masked weeks**, which is the signature of
+a revision rather than a dropout: the series does not recover because there was nothing wrong with
+it. `liberia|lofa` ends in a 17-week masked run and `liberia|grand kru` likewise;
+`guinea|dalaba` 15, `guinea|pita` and `sierra leone|western area rural` 13 each.
+
+**The cost lands inside the scored window.** Over the 30 scored target weeks (columns 22 to 51),
+only **10 of 61 districts retain all 30**, and **17 retain fewer than half**. `liberia|lofa` retains
+**7 of 30** and `guinea|gueckedou` **17 of 30**. Those are two of the three endpoints that
+`loaders/ebola_load.py:27-29` names as the outbreak's critical transmission pathway.
+
+**What is and is not wrong.** No released number is arithmetically incorrect, and case mass is
+conserved by construction: the increments sum to `max(C) - C_first`, which
+`cumulative_reference_mass()` checks independently. The loss is also not silent in aggregate; it is
+the 1,667 to 1,299 reduction stated above. What was undisclosed until now is the per-district
+distribution, the fact that the justification holds for under a third of the discarded cells, and
+that a re-basing treatment of level shifts, foreclosed by the premise and never evaluated, would
+restore most of Lofa's scored weeks.
+
+One structural point worth stating plainly: the mass gate (`to_schema.py:256`,
+`tests/test_leakage.py:246`) bounds released mass only from above, `got > want + 0.5`, so
+**suppression of this kind is invisible to it by construction**. A gate that fails on a long trailing
+masked run would make the loss loud. That is a build change and is not made here.
+
+The ten districts with the most masked weeks hold 196 of the 368, so the loss is concentrated in a
+minority of districts by count while still touching 42 of 61.
+
+| district | masked weeks | of which recover within 3 wk | trailing masked run |
+|---|---|---|---|
+| kissidougou | 29 | 8 | **4** |
+| telimele | 24 | 3 | **7** |
+| pita | 21 | 6 | **13** |
+| lofa | 20 | 1 | **17** |
+| boke | 19 | 3 | **6** |
+| dabola | 19 | 4 | 0 |
+| macenta | 19 | 7 | 1 |
+| grand kru | 17 | 0 | **17** |
+| dalaba | 15 | 0 | **15** |
+| boffa | 13 | 6 | 0 |
+| margibi | 13 | 6 | 0 |
+| western area rural | 13 | 0 | **13** |
+| nimba | 11 | 3 | 0 |
+| bong | 10 | 4 | 0 |
+| conakry | 10 | 6 | 0 |
+| gueckedou | 10 | 1 | **9** |
+| mamou | 10 | 1 | **9** |
+| western area urban | 10 | 8 | 0 |
+| gbarpolu | 9 | 0 | **9** |
+| koinadugu | 9 | 3 | 0 |
+| nzerekore | 7 | 5 | 2 |
+| dubreka | 6 | 5 | 0 |
+| grand gedeh | 6 | 5 | 0 |
+| kankan | 6 | 2 | **4** |
+| rivercess | 6 | 3 | 0 |
+| bomi | 4 | 3 | 0 |
+| grand bassa | 4 | 3 | 0 |
+| lola | 4 | 0 | **4** |
+| faranah | 3 | 3 | 0 |
+| forecariah | 3 | 3 | 0 |
+| labe | 3 | 0 | 3 |
+| river gee | 3 | 3 | 0 |
+| coyah | 2 | 2 | 0 |
+| kerouane | 2 | 2 | 0 |
+| beyla | 1 | 1 | 0 |
+| kindia | 1 | 1 | 0 |
+| koundara | 1 | 0 | 1 |
+| mali | 1 | 1 | 0 |
+| montserrado | 1 | 0 | 0 |
+| port loko | 1 | 1 | 0 |
+| siguiri | 1 | 1 | 0 |
+| sinoe | 1 | 1 | 0 |
+
+Bold trailing runs are four weeks or longer. Districts with no downward step at all are omitted.
+
 ### 3.6 Few-shot protocol
 
 > **Superseded for scoring, 2026-08-07 (decision D16).** The cutoff of 2014-05-24 described below is

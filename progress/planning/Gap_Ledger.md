@@ -137,7 +137,7 @@ Notes carried out of B3:
 | C4 | Two navigation docs claim `Reports/` and `results/` are gitignored; they are not. `*.log` is | `CLAUDE.md` §7, `Resume.md` §2 and §8, `.gitignore` | **DONE**, and audit M4's live half is now half-closed |
 | C5 | "Run the shrinkage test" still listed as next action #1 | `CLAUDE.md` §9, `Resume.md` §9, both replaced | **DONE** |
 | C6 | M8: three sites still denied COVID enters the schema | `data_audit.md` §2.9, §4.1 table, decision register row | **DONE**, M8 closed |
-| C7 | M7: Ebola cumulative envelope discards cells on a premise false for 69% of them | `to_schema.py:226-233`; no per-district masked-week table in `data_audit.md` §3.5 | OPEN *(audit)* |
+| C7 | M7: Ebola cumulative envelope discards cells on a premise false for 69% of them | `data_audit.md` §3.5.1, generated and checked by `diagnostics/ebola_masking_audit.py` | **DONE (disclosure half only)**, the fix half is deliberately not done |
 | C8 | Run the audit's "unsafe to claim" list over every Ebola sentence in the manuscript | `Reports/Phase0_to_Now_Audit.md:246-265` | OPEN *(audit)* |
 | C9 | US-States losses to EpiGNN and HeatGNN appear in no document | found in B2; `Reports/baseline_reproduction_table.md` has the cells, the manuscript results section does not | OPEN *(verified)* |
 
@@ -210,6 +210,23 @@ Notes carried out of Group C:
 - **It also carried a stale Ebola mask density of 0.5255 against a measured 0.4095**, which is one of
   the audit long-tail items. Fixed in the table and in the prose bullet at §4. The document's own
   §5 correction table already recorded 1,299 cells at 0.4095, so it had been contradicting itself.
+- **C7 is disclosure only, by design.** `to_schema.py:227-231` is untouched. Re-basing the envelope
+  would change `data/processed/ebola_L12.npz`, a hash-frozen pre-registered arm, so the fix half of
+  M7 stays open and is the client's call, not mine.
+- **I reproduced M7's numbers independently from the pinned source** (sha256 checked against
+  `RAW_SHA256` before reading, 61 of 61 bundle districts matched): **368 removed cells, 115 recover
+  within three weeks (31%), 13 districts ending in 4 or more consecutive masked weeks.** All three
+  match the audit exactly, as do its two named cases, `liberia|lofa` retaining 7 of 30 scored weeks
+  and `guinea|gueckedou` 17 of 30.
+- **New, and worse than the audit stated:** over the 30 scored target weeks only **10 of 61 districts
+  retain all 30**, and **17 retain fewer than half**.
+- One trap I walked into: matching raw district names to bundle names needs `EBOLA_NAME_ALIASES`
+  first. Without it "lofa county" never matches "lofa" and the total came out 289, not 368. The
+  probe now prints how many of the 61 it matched so a silent undercount cannot recur.
+- The audit's "top-10 hold 77 of 368" is top ten **by district size**; sorted by masked weeks the top
+  ten hold 196. Both are true and they are different statements.
+- `diagnostics/ebola_masking_audit.py --check` re-derives the filed table and prose from the source
+  and fails on a mismatch; mutation-tested by corrupting one row.
 
 ---
 
