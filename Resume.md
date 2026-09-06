@@ -33,8 +33,10 @@ Four experiments, and almost every file belongs to one:
 - Single-disease ceilings: 25 records + 25 quantile archives, all five panels.
 - LDO3 transfer: 158 records.
 - Baselines: EpiGNN 80, MTGNN 80, Cola-GNN 60, HeatGNN 60.
-- ANIL: ran 2026-08-18, both arms. **Clean null, 0 of 12 cells clear zero in either arm.** The
-  progress doc still says it never started; the doc is stale, the disk is right.
+- ANIL: ran 2026-08-18 (`dengue2flu`) and 2026-09-04 (the three LDO3 disease-out folds), both arms,
+  five seeds each. **Four folds, 32 cells, 3 held-out diseases, and the null holds.** Written up in
+  `progress/outcomes/ANIL_Results.md`, generated and independently verified by
+  `diagnostics/anil_report.py` and `diagnostics/verify_anil_doc.py`.
 
 **Open / unfinished:**
 
@@ -68,7 +70,11 @@ over 36 cells. Verdict survived making the opponent stronger.
 helps in **0 of 40** and hurts in 8. It only helps correlation (6 of 20 PCC cells). Negative result
 for the component the architecture was chosen for.
 
-**Meta-learning does not help.** ANIL 0/12, its control 0/12.
+**Meta-learning does not help, across four folds.** Against its own seed-matched control ANIL is
+better in 0 of 32 cells, worse in 1, within noise in 31. The one significant cell sits in the
+original `dengue2flu` fold; all three LDO3 folds are entirely within noise. The standing objection
+that episodes varied population and origin rather than disease is retired for the three LDO3 folds,
+whose meta-train sides span two diseases, and the answer did not change.
 
 **Calibration transfers, and that is the strong result.** The frozen cross-disease correction, which
 reads no Ebola outcome whatsoever, lifts coverage from 0.28-0.70 up to 0.65-0.98. Online adaptation

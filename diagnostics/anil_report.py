@@ -304,9 +304,13 @@ def collect(surface=SURFACE):
             rows=rows,
             primary=compare_cells(anil_c, ctrl_c),                 # ANIL vs its own control
             vs_ref={a: compare_cells(rmse_by_seed(rows[a]), ref) for a in ARMS},
-            best_val=paired_delta({s: -r["best_val"] for s, r in rows["anil"].items()
+            # best_val is a LOSS, so lower is better -- exactly like rmse. paired_delta already
+            # encodes that (it returns ref - new, positive when `new` is the smaller/better one), so
+            # the values go in as they are. Negating them first double-flips and reports every fold
+            # backwards, which is the defect this comment exists to stop coming back.
+            best_val=paired_delta({s: r["best_val"] for s, r in rows["anil"].items()
                                    if r.get("best_val") is not None},
-                                  {s: -r["best_val"] for s, r in rows["control"].items()
+                                  {s: r["best_val"] for s, r in rows["control"].items()
                                    if r.get("best_val") is not None}, "rmse"),
             plan=fold_plan(fold),
         )
@@ -454,8 +458,8 @@ def build_markdown(data, verify_out, surface=SURFACE):
         A(f"Tally: **{b} better, {w} worse, {n} within noise.**")
         bv_text, _bm, bv_clears = data[fold]["best_val"]
         A("")
-        A(f"Held-out meta-objective (best validation loss, lower is better, sign flipped so "
-          f"positive still means ANIL better): {bv_text}, {_sig(bv_clears)}.")
+        A(f"Held-out meta-objective (best validation loss; positive means ANIL reached a lower "
+          f"loss than its control): {bv_text}, {_sig(bv_clears)}.")
         A("")
 
     A("## 4. Secondary: each arm against its fold's freeze-then-adapt reference")
@@ -584,7 +588,16 @@ def _selfcheck():
                             {"c": {s: 100.0 for s in SEEDS}})
     assert "n=3" in partial["c"][0], "delta must report the pair count it actually used"
 
-    # 5. cell keys carry a literal '|'. It must never reach a table body, or the row silently
+    # 5. DIRECTION. best_val is a loss, so a LOWER ANIL loss must read as a POSITIVE delta. This
+    #    was wrong once: the values were negated before paired_delta, which already encodes
+    #    lower-is-better, so every fold's meta-objective printed with the sign reversed. The control
+    #    is the opposite case, which must come out negative.
+    lower = paired_delta({s: 0.10 for s in SEEDS}, {s: 0.20 for s in SEEDS}, "rmse")
+    assert lower[1] > 0, "a LOWER anil loss must be a positive delta (lower is better)"
+    higher = paired_delta({s: 0.20 for s in SEEDS}, {s: 0.10 for s in SEEDS}, "rmse")
+    assert higher[1] < 0, "a HIGHER anil loss must be a negative delta"
+
+    # 6. cell keys carry a literal '|'. It must never reach a table body, or the row silently
     #    gains a column and both GFM and md_to_docx's pipe parser mis-render it. Control: the raw
     #    key really does contain the delimiter, so this check is not vacuous.
     assert "|" in "influenza_japan|h3", "the control case must actually contain a pipe"
@@ -594,7 +607,7 @@ def _selfcheck():
     assert [_split(c)[1] for c in sorted(["d|h3", "d|h15", "d|h5", "d|h10"], key=_cell_sort)] == \
         ["h3", "h5", "h10", "h15"], "horizons must sort numerically, not lexically"
 
-    # 6. records_rmse must read country_macro, not value. Reading `value` would silently report the
+    # 7. records_rmse must read country_macro, not value. Reading `value` would silently report the
     #    node mean on dengue, which is a different statistic.
     recs = [dict(dataset="dengue", horizon=3, metric="rmse", country_macro=1.0, value=99.0),
             dict(dataset="dengue", horizon=5, metric="mae", country_macro=7.0, value=99.0)]
