@@ -30,18 +30,23 @@ on an unseen pathogen. **Occupying that intersection is the contribution.**
 
 ## 2. Goals and current status (G1–G7, from the brief)
 
+**Updated 2026-09-06 against the artifacts on disk.** The table below previously described Phase 3
+as not yet started; every Phase 3 experiment has in fact finished. Record counts are directory
+counts, recounted on that date.
+
 | Goal | State | Where it stands |
 |---|---|---|
-| **G1** Disease-agnostic encoder on a standardized schema | Schema ✅ / encoder ⏳ | Schema built & frozen (Phase 1–2); encoder is Phase 3 |
-| **G2** Transferable representations across data-rich diseases | Data ✅ / training ⏳ | Dengue + influenza harmonized; transfer training is Phase 3 |
-| **G3** Few-shot generalisation to Ebola | Dataset + protocol ✅ / results ⏳ | Calendar-prefix few-shot set built; adaptation + results are Phase 3 |
-| **G4** Calibrated uncertainty | Protocol ✅ / impl ⏳ | Conformal (ACI) chosen; CRPS/PICP/width scaffolded; Week 5 |
-| **G5** Explainability | Planned ⏳ | SHAP (global + local); Week 5 |
-| **G6** Competitive-or-better vs SOTA, re-run identically | Baselines reproduced ✅ / head-to-head ⏳ | 4/8 clean; reruns + STOEP + MSGNN pending; comparison is Phase 3 |
-| **G7** Reproducible, submission-ready contribution | Foundations ✅ / full paper ⏳ | Pipeline + audit + Phase-1 manuscript done; results + final draft Week 6 |
+| **G1** Disease-agnostic encoder on a standardized schema | ✅ **built and run** | Schema frozen in Phase 1-2; encoder trained on all five panels, 25 single-disease records in `results/single/` |
+| **G2** Transferable representations across data-rich diseases | ✅ **answered, negatively** | 208 records in `results/lodo/`. Symmetric seed-ensembled LDO3: 1 better, 10 within noise, **25 worse** of 36 cells. Transfer costs accuracy; that is the finding, not a gap |
+| **G3** Few-shot generalisation to Ebola | ✅ **scored once, under pre-registration** | 20 records in `results/ebola/`, both arms x both regimes x 5 seeds. Beats persistence at every horizon; **the pre-registered criterion was not met**, because it required the *adapted* model to win at h3 or h5 and all four of those intervals span zero |
+| **G4** Calibrated uncertainty | ✅ **delivered, and it is the strong result** | Frozen cross-disease conformal correction, reading no Ebola outcome, lifts coverage from 0.28-0.70 to 0.65-0.98. Online adaptation adds about 0.03 at short horizons and nothing at long ones |
+| **G5** Explainability | ⏳ **scoped, not built** | **No attribution code exists.** The only REQUIRED goal with nothing written. Scope decided in `progress/decisions/G5_Explainability_Scope.md`: **integrated gradients, not SHAP**. Three decisions sit with the client, including retracting the SHAP row from the comparison table already in their hands |
+| **G6** Competitive-or-better vs SOTA, re-run identically | ✅ **run**, with two usable comparators | 280 records in `results/baselines/`. See section 7 for what survives and what does not |
+| **G7** Reproducible, submission-ready contribution | Package ✅ / paper ⏳ | `REPRODUCIBILITY.md` covers every experiment family. `Reports/Manuscript_v2.md` is drafted and over its word limit |
 
 **Phase map.** Phase 1 (Week 1) = foundations ✅. Phase 2 (Week 2) = data engineering ✅.
-**Phase 3 = the modelling contribution (Weeks 3–6), not yet started.**
+**Phase 3 = the modelling contribution ✅ complete. All expensive compute is finished and nothing is
+queued.** What remains is writing, the G5 build, and the decisions listed above.
 
 ---
 
@@ -144,7 +149,7 @@ paper and is much of the reason the paper will survive review.
 | Five datasets + `data_audit.md` | §6.3 Datasets + a Data-Availability / reproducibility appendix (the audit *is* a data-descriptor) |
 | Leakage suite + negative controls | §6.4 Leakage Control + a validity/methods statement reviewers will probe |
 | `score.py`, `japan_calendar_pin.py` | Provenance / metric-definition footnotes; the country-macro is the dengue headline |
-| **Phase 3 outputs** (encoder, transfer, few-shot, UQ, SHAP) | §9 + the currently-empty **results** sections — the head-to-head, the Ebola case study, calibration, and explanation |
+| **Phase 3 outputs** (encoder, transfer, few-shot, UQ, attribution) | §9 + the currently-empty **results** sections — the head-to-head, the Ebola case study, calibration, and explanation |
 
 The manuscript today is a **foundations paper** (it explicitly reports no comparative results).
 Phase 3 produces the results that convert it into the full contribution. The one debt to clear
@@ -159,16 +164,22 @@ Reproduced on their own shipped data (Phase-1 report; [[baseline-reproduction-st
 Only models that reproduce faithfully can be trusted as comparators once run under our common
 pipeline.
 
-| Model | Outcome | Note for Phase 3 |
+**Updated 2026-09-06.** The reruns are done and the dispositions have changed. Full detail in
+`Reports/reproduction_failure_log.md` and `Reports/baseline_reproduction_table.md`.
+
+| Model | Outcome | Usable as a comparator? |
 |---|---|---|
-| EpiGNN | ✅ Pass (~1%, better) | load-bearing comparator |
-| MepoGNN (Dynamic) | ✅ Pass (in/better than std bands) | comparator; mobility/SIR family |
-| MTGNN | ✅ Pass (control) | non-epidemic floor |
-| LTGCN-GTGCN | first-party (own Brazil/Spain data) | in-house results, no external claim |
-| Cola-GNN | ⚠️ **rerun** at h∈{2,3,5,10,15} | ran h=1; horizon mismatch |
-| HeatGNN | ⚠️ **rerun** at h∈{2,5,7,12} | ran h=1; compare in ×10³ units |
-| STOEP | ❌ **discrepancy** | paper table ≠ shipped dataset/metric; clarify |
-| MSGNN | ⛔ not run | CUDA 10.1 / Linux-only; needs WSL/Linux |
+| EpiGNN | ✅ reproduces, 12 of 12 cells within +0.6% to +23.5% of published | **Yes**, and the only one that runs on dengue |
+| Cola-GNN | ✅ reproduces, 12 of 12 cells within +1.7% to +15.0% | **Yes**, influenza only, CPU too slow for the dengue subsample |
+| HeatGNN | ✅ reproduces on the 3 cells comparable at all | **Yes**, influenza only; its paper uses a different split and only h5 overlaps, and our runs are patched with self-loops to stop NaN on isolated nodes |
+| MTGNN | ❌ **collapsed.** 47 of 80 prediction files hold a single repeated value | **No.** Also its paper has no epidemic dataset, so there is no published figure to validate against. Either reason alone disqualifies it |
+| MepoGNN | ⛔ cannot run | **No.** Needs a mobility / OD matrix; our schema ships `A_mob = None` |
+| STOEP | ⛔ cannot run | **No**, and the previously recorded reason was wrong. It is an 8.2% reproduction, not a threefold failure; it is blocked by the same missing OD tensor as MepoGNN |
+| MSGNN | ⛔ not run | **No.** Needs Ubuntu + CUDA 10.1; and its Forecast-Hub evaluation does not map onto our pipeline anyway |
+| LTGCN-GTGCN | first-party (own Brazil/Spain data) | Not a target. The published number and our number are the same number |
+
+**Two usable comparators on influenza, one on dengue.** Any statement of four clean baselines is
+wrong, and that was audit finding M13.
 
 **Carried into Phase 3:** standardise horizons and metric definitions across all epidemic models
 before any comparison table; resolve the Cola-GNN/HeatGNN reruns, STOEP provenance, and MSGNN
@@ -203,7 +214,8 @@ The foundation is complete and unblocked. Phase 3 is the modelling contribution.
   genuine emerging-outbreak regime).
 - Calibrated uncertainty via **adaptive conformal inference** (online; no held-out calibration
   set) + CRPS/PICP/width coverage diagnostics.
-- SHAP global + local explanations.
+- Explainability. **Superseded 2026-09-06:** this is integrated gradients over the `[N, 20, 4]`
+  input, not SHAP. Reasoning in `progress/decisions/G5_Explainability_Scope.md`.
 
 **Week 6 — Ablations, robustness, writing (G7).**
 - Ablations: with/without epidemiology-informed component; standard vs meta-learning; **uniform vs

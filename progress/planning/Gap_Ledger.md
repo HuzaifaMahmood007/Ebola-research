@@ -133,7 +133,7 @@ Notes carried out of B3:
 |---|---|---|---|
 | C1 | Amend B5 to admit COVID as a labelled development panel | `progress/decisions/client_decisions.md:192-211`, amendment block under the original, which is kept as the returned record | **DONE** |
 | C2 | MTGNN "better in 12 of 16" and "HeatGNN one dataset, two horizons" both false | `Reports/Week4_Experiments_Stakeholder_Brief.md`, corrected in place with a dated note, `.docx` re-rendered | **DONE** |
-| C3 | Status table stale: "Phase 3 not yet started", G5 as SHAP, MTGNN as a passing control | `PROJECT.md:36-44`, `PROJECT.md:166` | OPEN *(verified)* |
+| C3 | Status table stale: "Phase 3 not yet started", G5 as SHAP, MTGNN as a passing control | `PROJECT.md` §2 goal table, §7 baseline table, §Week-5 list, §9 outputs row | **DONE** |
 | C4 | Two navigation docs claim `Reports/` and `results/` are gitignored; they are not. `*.log` is | `CLAUDE.md` §7, `Resume.md` | HALF DONE: `CLAUDE.md` §3, §7, §9 corrected 2026-09-06 (local only, file is gitignored). `Resume.md:46` still wrong *(verified)* |
 | C5 | "Run the shrinkage test" still listed as next action #1 | `CLAUDE.md:219`, `Resume.md:212` | OPEN, depends on A2 *(verified)* |
 | C6 | M8: three sites still deny COVID enters the schema | `data_audit.md:864-870`, `:1414-1423`, `:1569` | OPEN *(audit)* |
@@ -172,6 +172,16 @@ Notes carried out of Group C:
 - **C2: the correction note claims only what I checked.** First draft said every other figure in the
   document had been rechecked. That was untrue: I checked the head-to-head and naive-floor tallies,
   not the transfer or run-count figures. The note now says so.
+- **C3.** Four sites fixed in `PROJECT.md`: the G1-G7 status table, the Phase-1 baseline outcome
+  table, the Week-5 plan line promising SHAP, and the §9 outputs row. Phase 3 is now recorded as
+  complete rather than not started, and G5 as scoped-not-built with a pointer to its decision.
+- **C3 record counts are directory counts, recounted 2026-09-06 and checked back out of the file:**
+  `results/single/` 25, `results/lodo/` **208**, `results/ebola/` 20, `results/baselines/` 280.
+  Note 208, not the 158 that `CLAUDE.md` and `Resume.md` still carry. The 208 breaks down as
+  LDO3 proper 60 (25 adapted, 25 zero-shot, 5 + 5 full-budget), two-way LDO 120, population LODO 8,
+  and the graph-controlled `encoder_pair` arm 20. Whatever 158 counted, it is not the directory.
+- **C3 closed audit finding M13** in the same edit: the baseline table now reads two usable
+  comparators on influenza and one on dengue, with each exclusion named.
 
 ---
 
