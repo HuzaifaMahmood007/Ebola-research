@@ -493,6 +493,86 @@ trunk-only, under a distinct `dengue2flu-cap` checkpoint family.
 
 ---
 
+## D20 · LDO3 zero-shot quantiles will not be run — the arm is uniformly behind its ceiling
+
+**Decided 2026-09-07. Cost avoided: about 10 GPU-hours.**
+
+`results/lodo/` holds 25 `encoder_ldo3_zeroshot__*.json` records and **0 matching
+`__quantiles.npz`**, against 25 present for the adapted `encoder_ldo3` arm. Calibrating the zero-shot
+arm therefore needs a full retrain with archiving on, not a post-hoc pass.
+
+**Why not.** The arm is behind its own single-disease ceiling in **36 of 36 cells**, significantly in
+34, at costs from 1.4% to 138.8% (`Manuscript_v2.md` §9.3). Calibrating a comparator that loses
+everywhere buys no claim. Coverage on an arm nobody would deploy is a number, not a finding, and the
+calibration story the paper actually makes is the Ebola one, where the archives exist and the
+transferred correction is the result.
+
+**What this costs us.** One honest gap: we report LDO3 accuracy without LDO3 zero-shot calibration,
+so we cannot say whether the calibration transfer seen on Ebola also holds on the development folds'
+zero-shot arm. That is a real limitation and it belongs in Threats. **It is not currently written
+there** — Threats discloses the shuffled-adjacency gap and the explainability gap but not this one.
+Flagged for whoever next edits the paper; not drafted here.
+
+**Reversible.** If a reviewer asks for it, it is a 10-hour rerun with archiving enabled and nothing
+else changed.
+
+---
+
+## D21 · The shuffled-adjacency control will not be run — the gate-off ablation already answered it
+
+**Decided 2026-09-07. Cost avoided: about 6 GPU-hours.**
+
+The control would separate "graph structure helps" from "any adjacency helps" by re-running with the
+edges permuted.
+
+**Why not.** The gate-off ablation already bounds the answer from the other side. Over 60 cells the
+spatial channel helps **0 of 40** error cells and hurts 8; it helps 6 of 20 correlation cells
+(`Reports/gate_ablation.log`). There is no accuracy effect for a shuffled control to attribute. The
+control would sharpen a correlation-only result that the paper already declines to state as an
+accuracy claim.
+
+**Already disclosed, so this changes nothing in the paper.** `Manuscript_v2.md` §10 says it outright:
+*"We did not run a shuffled-adjacency arm, which would separate 'structure helps' from 'any adjacency
+helps'."* The decision is recorded here so the item stops being re-proposed as pending work.
+
+**One caveat travels with the reasoning.** Setting *g* = 0 removes neighbour mixing but keeps the LTR
+degree feature, so the ablation bounds the value of *neighbour information*, not of the graph in
+total. That is stated in §9.2 and is why this is a judgement about value for money rather than a
+proof that the control would find nothing.
+
+---
+
+## D22 · The median-to-mean correction will NOT be wired into the Ebola or transfer path — **closes M14 by documentation**
+
+**Decided 2026-09-07.** This reverses nothing; it settles an item that had been sitting as next
+action #2 in two navigation documents.
+
+**The defect is real.** `train/loop.py:84-116` documents it: the model's point forecast is the
+count-space median, which is right for MAE and sits low for RMSE, while `persistence` and
+`support_mean` are raw count predictions carrying no transform bias. The comparison is handicapped on
+our side only.
+
+**Three reasons not to apply the correction.**
+
+1. **The pre-registration forbids it.** `train/loop.py`'s own docstring requires the offset to be
+   inherited from the development diseases and registered *before* scoring. `Ebola_Prereg.md` never
+   registers it, and §5.1 scores each arm exactly once. The amendment log is closed. Applying it now
+   would void a pre-registration the paper presents as a methodological contribution.
+2. **It is not established to help under shift, and Ebola is the most shifted panel we have.**
+   Measured on COVID, our closest analogue, `encoder_mc` is **8.8 / 21.4 / 47.3 / 27.4 percent worse**
+   than `encoder` at h3/h5/h10/h15 (`progress/outcomes/Report_Covid.md:103-104`). The correction makes
+   the most-shifted development panel worse at every horizon.
+3. **The direction is conservative.** The bias understates our own performance, so leaving it in place
+   cannot inflate a claim. A correction that might help and might hurt, applied outside its
+   registration, could.
+
+**What we do instead, and it is free.** State plainly that the Ebola point forecast is the count-space
+median, and lead with MAE, which the median does optimise. **Already done:**
+`Manuscript_v2.md` §9.5.2 carries it in those words, ending *"The direction is conservative, so we
+lead with MAE for this case study."* M14 is closed by documentation rather than by compute.
+
+---
+
 ## Reversed or superseded
 
 | was | now | why |

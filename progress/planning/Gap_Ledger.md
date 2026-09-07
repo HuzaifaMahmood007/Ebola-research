@@ -272,9 +272,9 @@ Notes carried out of Group C:
 
 | id | what | decision | status |
 |---|---|---|---|
-| D1 | LDO3 zero-shot quantiles, 0 of 25 present, ~10 h | **Do not run.** Zero-shot is behind its ceiling in 36 of 36 cells; calibrating a uniformly losing arm buys no claim | decision recorded, needs writing into the limitation |
-| D2 | Shuffled-adjacency control, ~6 h | **Do not run.** Gate-off already shows 0 of 40 error cells helped; absence already disclosed in Threats | decision recorded |
-| D3 | Median-to-mean correction into the Ebola path | **Do not.** Prereg amendment log is closed; correction is 8.8–47.3% worse on the most-shifted panel. Adopt M14's documentation fix instead: point forecast is the count-space median, lead with MAE | OPEN as a doc task |
+| D1 | LDO3 zero-shot quantiles, 0 of 25 present, ~10 h | **Do not run.** Zero-shot is behind its ceiling in 36 of 36 cells; calibrating a uniformly losing arm buys no claim | **DONE**, recorded as decision-log D20 |
+| D2 | Shuffled-adjacency control, ~6 h | **Do not run.** Gate-off already shows 0 of 40 error cells helped; absence already disclosed in Threats | **DONE**, recorded as decision-log D21 |
+| D3 | Median-to-mean correction into the Ebola path | **Do not.** Prereg amendment log is closed; correction is 8.8-47.3% worse on the most-shifted panel. The documentation fix is already in the manuscript | **DONE**, recorded as decision-log D22, closes M14 |
 | D4 | Baselines | **Nothing pending.** EpiGNN 80/80, MTGNN 80/80, ColaGNN 60/60, HeatGNN 60/60, all scored | closed *(verified)* |
 
 ---
