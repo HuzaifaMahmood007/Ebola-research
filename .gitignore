@@ -29,3 +29,10 @@ __pycache__/
 !/results/reports/*.log
 env_train_snapshot*.txt
 /ablation
+# Run artifacts: quantile archives and model checkpoints. 891 .npz + 118 .pt = 6.3 GB, and 21 of
+# them are over GitHub's 100 MB per-file hard limit, so a push could never have succeeded with
+# these in. They are regenerable from the code plus the frozen bundles. The scored JSON records
+# and the decision-bearing logs beside them stay tracked (about 10 MB) because they are the
+# evidence base every diagnostics/verify_*.py reads. Audit M4, and commit 09b8311.
+/results/**/*.npz
+/results/**/*.pt
