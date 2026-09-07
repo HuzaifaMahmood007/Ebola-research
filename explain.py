@@ -4,10 +4,16 @@ Three reads, all inference-only against saved checkpoints. No training, no re-sc
 results record is written or touched.
 
   1. Integrated gradients over the [N, 20, 4] trunk input (4 channels x 20 lags), per panel.
-     Global reads are the share of |attribution| per channel and per lag, per horizon.
+     Global reads are the share of |attribution| per channel and per lag BAND, per horizon. The
+     20-lag array is archived but not reported: it combs with period 4 and an untrained encoder
+     reproduces the comb, so single-lag resolution reads the TCN's dilations rather than
+     epidemiology. report() runs that random-weight control and prints the correlation.
   2. Occlusion as the faithfulness cross-check: zero one channel or one lag and measure the
      change in the median forecast over the scored cells. IG and occlusion must agree on the
      top channel and the top lag band, or the disagreement is reported as a disagreement.
+  2b. The Ebola local map targets that ONE district's own median forecast, not the sum over every
+     scored node. The encoder mixes across neighbours, so a sum target says how a district's inputs
+     move the national total, which is a different question and was the one the map used to answer.
   3. Neighbour edge ablation on Ebola: drop one edge, hold every node's degree fixed so only the
      message changes, and measure the change in each endpoint's forecast in cases/week. Answers
      "where does a forecast for a district we never observed draw from". It is framed as where
@@ -68,6 +74,17 @@ LAG_OF_INDEX = np.arange(W, 0, -1)
 BANDS = ((1, 5), (6, 10), (11, 15), (16, 20))             # lag bands, most recent first
 BAND_OF_INDEX = np.array([next(b for b, (lo, hi) in enumerate(BANDS) if lo <= lag <= hi)
                           for lag in LAG_OF_INDEX])
+# The per-lag profile combs with period 4 on every panel. These are its teeth, and the random-weight
+# control below measures how much of them is architecture rather than epidemiology.
+COMB_SPIKES, COMB_TROUGHS = (1, 5, 9, 13, 17), (4, 8, 12, 16, 20)
+# ponytail: the control is hard-wired to one panel-arm so it can run inside --report in about ten
+# seconds. Ceiling: it bounds the fingerprint on ebola_L12 only, and a reviewer who wants the other
+# six panel-arms has to change these constants and rerun.
+# Five draws, not one: a single draw's r ranged 0.87 to 0.96 across torch seeds when I probed it, so
+# one draw would let anyone quote the top of the range as if it were the number. The seeds are an
+# arithmetic rule fixed before the run rather than seeds picked from the results.
+RANDCTL_PANEL, RANDCTL_ORIGINS, RANDCTL_STEPS = "ebola_L12", 3, 8
+RANDCTL_SEEDS = (1000, 2000, 3000, 4000, 5000)
 
 # dataviz house tokens, light surface (same as gate_figure.py)
 SURFACE, INK, INK2, MUTED, GRID, AXIS = "#fcfcfb", "#0b0b0b", "#52514e", "#898781", "#e1e0d9", "#c3c2b7"
@@ -285,11 +302,23 @@ def run_panel(panel, seed, device=DEVICE, max_origins=MAX_ORIGINS, steps=IG_STEP
             eout["iso_delta"][:, k] = iso.cpu().numpy()
             eout["f_count"][:, k] = full.cpu().numpy()
             if t == t_case:
+                # One extra IG pass, target one-hot on this district. The main pass targets the SUM
+                # over every scored node, so attr[:, d_case] is how this district's inputs move the
+                # NATIONAL total, not its own forecast: the encoder mixes across neighbours, so the
+                # two are different quantities. The old map is kept beside the new one as evidence.
+                # ponytail: hard-wired to the one case-study district. Ceiling: no general per-node
+                # attribution API, and no second district gets a local map without editing this.
+                tmask_local = torch.zeros_like(tmask)
+                tmask_local[d_case] = 1.0
+                attr_loc, _, _ = integrated_gradients(enc, ad, Zt, A, Mt_t, tmask_local, steps)
                 local = dict(origin=t, district=d_case, name=b.meta["node_ids"][d_case], peak_week=peak,
                              peak_date=str(b.meta["dates"][peak])[:10],
-                             ig_map=attr[:, d_case].cpu().numpy(),          # [H, W, 4], signed
+                             ig_map=attr_loc[:, d_case].cpu().numpy(),      # [H, W, 4], signed, OWN target
+                             ig_map_pooled=attr[:, d_case].cpu().numpy(),   # the old national-sum target
+                             ig_target="own median forecast of this district, per horizon",
                              edge_delta=ed.cpu().numpy(), edges=edges.astype(np.int32),
-                             f_count=full[d_case].cpu().numpy())
+                             f_count=full[d_case].cpu().numpy(),
+                             truth_count=float(b.raw[d_case, peak]))
         if verbose and (k % 8 == 0 or k == K - 1):
             print(f"  {panel} seed {seed}: origin {k + 1}/{K}  IG err max {out['err'][:k + 1].max():.5f}"
                   f"  (gap max {out['gap'][:k + 1].max():.4f})  {time.time() - t0:.0f}s", flush=True)
@@ -347,6 +376,9 @@ def summarise(panel):
            for k in ("ig_chan", "ig_lag", "occ_chan", "occ_lag")}
     agg["ig_band"] = np.array([band_shares(x) for x in s["ig_lag"]])
     agg["occ_band"] = np.array([band_shares(x) for x in s["occ_lag"]])
+    # per-seed shares [S, H, m], kept so the report can print T1 and the agreement tally per
+    # (seed, horizon) as well as on the seed mean. A seed-mean PASS can hide per-cell failures.
+    agg["ig_chan_ps"], agg["occ_chan_ps"] = s["ig_chan"], s["occ_chan"]
     agg["gap_max"], agg["err_max"] = float(s["gap"].max()), float(s["err"].max())
     agg["cells"] = int(s["cells"].max())
     # the settings the numbers were produced at. A 6-origin/8-step smoke and a full 24/32 run write
@@ -362,6 +394,70 @@ def agreement(agg):
     ic, oc = agg["ig_chan"][0], agg["occ_chan"][0]
     ib, ob = agg["ig_band"].mean(0), agg["occ_band"].mean(0)
     return [(ic[j].argmax(), oc[j].argmax(), ib[j].argmax(), ob[j].argmax()) for j in range(H)]
+
+
+def agreement_per_seed(agg):
+    """The same two comparisons as agreement(), judged on each seed's own shares rather than the
+    seed mean. Returns a bool array [S, H, 2] over (channel, band)."""
+    return np.stack([agg["ig_chan_ps"].argmax(2) == agg["occ_chan_ps"].argmax(2),
+                     agg["ig_band"].argmax(2) == agg["occ_band"].argmax(2)], -1)
+
+
+def randctl_verdict(rs, null95):
+    """(active, sentence) for the random-weight control. The whole point of the control is that an
+    untrained encoder tracks the trained lag profile, so the report may only call the comb
+    architectural when EVERY draw clears the shuffle ceiling. This is a function and not inline
+    prose so the selfcheck can hand it a failing draw and watch the wording flip: as prose it would
+    print "well above chance" whatever the numbers did, which is the exact mistake that let a TCN
+    fingerprint be published as a memory finding."""
+    if min(rs) > null95:
+        return True, "Every draw clears that ceiling, so the comb is architectural, not learned."
+    return False, (f"NOT every draw clears it (lowest r = {min(rs):.3f}), so the comb is NOT shown "
+                   f"to be architectural.")
+
+
+def random_control(panel=RANDCTL_PANEL, n_origins=RANDCTL_ORIGINS, steps=RANDCTL_STEPS,
+                   seeds=RANDCTL_SEEDS, device=DEVICE):
+    """Is the per-lag profile a property of the trained model, or of the architecture? Run IG with
+    UNTRAINED SharedEncoder + Adapter weights at each of `seeds` and correlate each lag profile with
+    the trained one. Needs the bundle but no checkpoint. Returns None if the archives are missing.
+
+    Also returns a chance baseline: the 95th percentile of |r| between the trained profile and 200
+    shuffles of itself. Without it a reader cannot tell whether r = 0.9 on a 20-point vector is
+    large, and on this fixture it is not small (about 0.6)."""
+    runs = _load(f"explain__{panel}__seed*.npz", only_main=True)
+    if not runs:
+        return None
+    bname = "ebola_L12" if panel == "ebola_L12_zeroshot" else panel
+    b = bundles.load(bname)
+    phase = "query" if bname.startswith("ebola") else "test"
+    Z, Mt, A = tensors(b, device)
+    origins = pick_origins([int(t) for t in runs[0]["origins"]], n_origins)
+    # index order -> lag order (lag 1 first) is a plain reverse, since LAG_OF_INDEX descends.
+    trained = np.mean([shares(r["ig_lag"]).mean(0) for r in runs], 0)[::-1]
+    teeth = lambda v: (float(np.mean([v[l - 1] for l in COMB_SPIKES])),
+                       float(np.mean([v[l - 1] for l in COMB_TROUGHS])))
+    rs, tr, rnd = [], [], None
+    for sd in seeds:
+        torch.manual_seed(sd)
+        enc, ad = SharedEncoder(gate_mode="learned").to(device).eval(), Adapter().to(device).eval()
+        for m in (enc, ad):
+            for p in m.parameters():
+                p.requires_grad_(False)
+        lag = np.zeros((len(origins), H, W))
+        for k, t in enumerate(origins):
+            Zt, Mt_t = window_slice(Z, t), Mt[:, t]
+            attr, _, _ = integrated_gradients(enc, ad, Zt, A, Mt_t, target_mask(b, phase, t, device), steps)
+            lag[k] = attr.abs().sum((1, 3)).cpu().numpy()
+        rnd = shares(lag).mean(0)[::-1]
+        rs.append(float(np.corrcoef(trained, rnd)[0, 1]))
+        tr.append(teeth(rnd))
+    rng = np.random.default_rng(0)
+    null = np.abs([np.corrcoef(rng.permutation(trained), rnd)[0, 1] for _ in range(200)])
+    return dict(panel=panel, seeds=tuple(seeds), n_origins=len(origins), steps=steps,
+                n_seeds=len(runs), r=rs, trained=trained,
+                teeth_trained=teeth(trained), teeth_rnd=tuple(np.mean(tr, 0)),
+                null95=float(np.percentile(null, 95)))
 
 
 def ebola_neighbours(panel):
@@ -392,7 +488,7 @@ def ebola_neighbours(panel):
     return dict(rows=rows, n_seeds=len(runs), zero_shot=zs)
 
 
-def report(out_txt="explain_report.txt", fig_out="figures/explain"):
+def report(out_txt="explain_report.txt", fig_out="figures/explain", randctl=True):
     lines = []
     P = lines.append
     P("G5 explainability: integrated gradients, occlusion cross-check, Ebola neighbour ablation")
@@ -421,30 +517,100 @@ def report(out_txt="explain_report.txt", fig_out="figures/explain"):
         ib, ob = a["ig_band"].mean(0).mean(0), a["occ_band"].mean(0).mean(0)
         P(f"{p:22}  " + "  ".join(f"{ib[k]:6.3f} [{ob[k]:6.3f}]" for k in range(len(BANDS))))
 
+    P("\nrandom-weight control on the per-lag read, and why lags are reported at band level")
+    rc = random_control() if randctl else None
+    if rc is None:
+        P("  NOT RUN" + (" (--no-randctl)" if not randctl else
+                         f" (no {RANDCTL_PANEL} archive to compare against)") +
+          ". The band-level reporting below does not depend on it.")
+    else:
+        tt, st = rc["teeth_trained"], rc["teeth_rnd"]
+        P(f"  IG on UNTRAINED SharedEncoder + Adapter weights (no checkpoint), {rc['panel']}, "
+          f"{rc['n_origins']} origins, {rc['steps']} IG steps,")
+        P(f"  torch seeds {', '.join(map(str, rc['seeds']))}, against the trained "
+          f"{rc['n_seeds']}-seed profile on the same panel-arm.")
+        P("  pearson r(trained lag profile, untrained lag profile) over the 20 lags, one per draw:")
+        P("    " + ", ".join(f"{v:.3f}" for v in rc["r"]))
+        P(f"  For scale, shuffling the trained profile against the same untrained one gives |r| below")
+        P(f"  {rc['null95']:.2f} in 95 of 200 shuffles. {randctl_verdict(rc['r'], rc['null95'])[1]}")
+        P("  The null on a 20-point vector is not small, which is why the ceiling is printed at all.")
+        P(f"  comb teeth, mean share at lags {', '.join(map(str, COMB_SPIKES))} vs lags "
+          f"{', '.join(map(str, COMB_TROUGHS))}:")
+        P(f"    trained    {tt[0]:.3f} vs {tt[1]:.3f}   ({tt[0] / max(tt[1], 1e-9):.1f}x)")
+        P(f"    untrained  {st[0]:.3f} vs {st[1]:.3f}   ({st[0] / max(st[1], 1e-9):.1f}x, "
+          f"mean over {len(rc['seeds'])} draws)")
+    rtxt = (f", and untrained encoders reproduce it at r = {min(rc['r']):.2f} to {max(rc['r']):.2f} "
+            f"over {len(rc['seeds'])} draws" if rc else "")
+    P("  Every panel's per-lag share combs with period 4, spiking at lags 1, 5, 9, 13 and 17 and")
+    P(f"  collapsing at 4, 8, 12, 16 and 20{rtxt}.")
+    # The conclusion follows the control's own verdict. Printed unconditionally it would say the comb
+    # is architectural even on a run where the untrained encoder looked nothing like the trained one.
+    if rc is None or randctl_verdict(rc["r"], rc["null95"])[0]:
+        P("  Single-lag resolution therefore reads the dilated TCN's receptive field, not epidemiology,")
+        P("  so the figure and the table above report lag BANDS only; the 20-lag arrays stay in")
+        P("  results/explain/*.npz as the evidence. Band 16-20 exceeding band 11-15 is the dilation-16")
+        P("  tap of DILATIONS = (1, 2, 4, 8, 16) reaching lag 17 in one hop, not a memory effect.")
+        if rc is None:
+            P("  That sentence rests on the earlier measured control, NOT on this run, which did not")
+            P("  rerun it. Rerun without --no-randctl before quoting it.")
+    else:
+        P("  Single-lag resolution is NOT shown to be architectural by this run, so the claim about")
+        P("  the dilated TCN's receptive field is withheld. The figure and the table above report lag")
+        P("  BANDS only regardless, on the T2 comparison alone; the 20-lag arrays stay in")
+        P("  results/explain/*.npz. Investigate before publishing either reading of the lag profile.")
+
     P("\nIG vs occlusion agreement on the top channel / top lag band, per horizon "
       "(a disagreement is reported, not resolved)")
     # one bool per printed comparison. argmax gives numpy ints, so `okc == oc` is a numpy bool and
     # `okc + okb` would be logical OR, not addition: that silently tallied 1 per cell instead of 2
     # and reported 12 of 24 on a smoke where every cell agreed. Sum Python ints, and tie the total
     # to the number of cells actually printed.
-    marks = []
+    marks, misses = [], []
     for p, a in aggs.items():
         cells = []
         for j, (ic, oc, ib, ob) in enumerate(agreement(a)):
             okc, okb = bool(ic == oc), bool(ib == ob)
             marks += [okc, okb]
+            if not okc:
+                misses.append(f"{p} h{HORIZONS[j]} channel (IG {CHANNELS[ic]} vs occlusion {CHANNELS[oc]})")
+            if not okb:
+                misses.append(f"{p} h{HORIZONS[j]} band (IG {BANDS[ib][0]}-{BANDS[ib][1]} vs "
+                              f"occlusion {BANDS[ob][0]}-{BANDS[ob][1]})")
             cells.append(f"h{HORIZONS[j]}: {CHANNELS[ic][:4]}{'=' if okc else '!='}{CHANNELS[oc][:4]} "
                          f"{BANDS[ib][0]}-{BANDS[ib][1]}{'=' if okb else '!='}{BANDS[ob][0]}-{BANDS[ob][1]}")
         P(f"  {p:22} " + " | ".join(cells))
     n_ok, n_all = sum(int(m) for m in marks), len(marks)
     assert n_all == 2 * H * len(aggs), f"agreement tally counted {n_all}, expected {2 * H * len(aggs)}"
-    P(f"  agreement: {n_ok} of {n_all} (panel x horizon x {{channel, band}})")
+    # the seed mean is a vote of five, so a panel can agree on the mean while single seeds do not.
+    ps = {p: agreement_per_seed(a) for p, a in aggs.items()}
+    ps_ok, ps_all = sum(int(v.sum()) for v in ps.values()), sum(int(v.size) for v in ps.values())
+    P(f"  agreement: seed-mean {n_ok} of {n_all}; per (seed, horizon) {ps_ok} of {ps_all}")
+    P(f"  seed-mean disagreements: {'; '.join(misses) if misses else 'none'}")
+    P("  per-seed disagreements by panel: " + (", ".join(
+        f"{p} {int(v.size - v.sum())}" for p, v in ps.items() if int(v.sum()) < v.size) or "none"))
 
     P("\nfalsification tests, stated in G5_Explainability_Scope.md section 6 before the run")
     t1 = {p: CHANNELS[a["ig_chan"][0].mean(0).argmax()] for p, a in aggs.items()}
-    P(f"  T1 incidence is the top channel on every panel: "
+    P(f"  T1 incidence is the top channel on every panel, seed-mean and horizon-averaged: "
       f"{'PASS' if all(v == 'incidence' for v in t1.values()) else 'FAIL'}  "
       + ", ".join(f"{p}={v}" for p, v in t1.items()))
+    # and the same test at the granularity it was measured at. Averaging over seeds and horizons
+    # first can turn a set of failing cells into a PASS, so both are printed and the misses located.
+    n_cells, by_p, by_h, by_w = 0, {}, {}, {}
+    for p, a in aggs.items():
+        for si in range(a["ig_chan_ps"].shape[0]):
+            for j in range(H):
+                n_cells += 1
+                top = int(a["ig_chan_ps"][si, j].argmax())
+                if top != 0:
+                    by_p[p] = by_p.get(p, 0) + 1
+                    by_h[HORIZONS[j]] = by_h.get(HORIZONS[j], 0) + 1
+                    by_w[CHANNELS[top]] = by_w.get(CHANNELS[top], 0) + 1
+    nbad = sum(by_p.values())
+    srt = lambda d, f=str: ", ".join(f"{f(k)} {v}" for k, v in sorted(d.items(), key=lambda x: -x[1]))
+    P(f"  T1 per (seed, horizon): {'PASS' if nbad == 0 else 'fails'} in {nbad} of {n_cells} cells"
+      + ("" if nbad == 0 else f"; by panel {srt(by_p)}; by horizon {srt(by_h, lambda k: f'h{k}')}; "
+                              f"winner when not incidence {srt(by_w)}"))
     t2 = {p: (a["ig_band"].mean(0).mean(0)[0], a["ig_band"].mean(0).mean(0)[-1]) for p, a in aggs.items()}
     P(f"  T2 lags 1-5 outweigh lags 16-20 on every panel: "
       f"{'PASS' if all(r > f for r, f in t2.values()) else 'FAIL'}  "
@@ -499,6 +665,29 @@ def report(out_txt="explain_report.txt", fig_out="figures/explain"):
         P("  That ablation zeroes the gate, which removes neighbour mixing but KEEPS the LTR degree")
         P("  feature, so the 0 of 40 bounds the value of neighbour information, not of the graph in total.")
 
+    loc = _load("explain__ebola_L12__seed*__local.npz")
+    if loc:
+        assert "truth_count" in loc[0] and "ig_map_pooled" in loc[0], (
+            "stale local archive: rerun `python -m explain --panels ebola_L12 ebola_L12_zeroshot`")
+        # The published map has to be the per-node one. Both targets are archived side by side, so
+        # this is a check on the artifact the figure reads, not only on the selfcheck's fixture. If
+        # they matched, panel C would still be showing the national-sum attribution under a new title.
+        assert not np.allclose(loc[0]["ig_map"], loc[0]["ig_map_pooled"], atol=1e-8), \
+            "local ig_map equals ig_map_pooled, so panel C is still the national-sum map"
+        fc, truth = np.mean([l["f_count"] for l in loc], 0), float(loc[0]["truth_count"])
+        P(f"\nEbola local case, ebola_L12, {len(loc)} seeds. The IG target here is the district's OWN")
+        P("median forecast per horizon, not the sum over every scored node. The encoder mixes across")
+        P("neighbours, so those are different quantities, and the sum-target map answered a different")
+        P("question: how this district's inputs move the national total.")
+        P(f"  {str(loc[0]['name'])}, origin index {int(loc[0]['origin'])}, h3 target week "
+          f"{str(loc[0]['peak_date'])}, the national peak")
+        P("  own forecast, cases/week, seed mean:  "
+          + "  ".join(f"h{HORIZONS[j]}={fc[j]:.1f}" for j in range(H)))
+        P(f"  observed that week: {truth:,.0f} cases. Most of that gap is gap-lumping, not model error")
+        P("  alone: a district that falls silent and then files puts the whole multi-week increment on")
+        P(f"  the reporting week (client_decisions.md A4), and this one carries {truth:,.0f} on")
+        P(f"  {str(loc[0]['peak_date'])}. The peaks are inflated and the quiet weeks either side flattened.")
+
     text = "\n".join(lines)
     print(text)
     rpath(out_txt, make=True).write_text(text, encoding="utf-8")
@@ -538,13 +727,15 @@ def figure(aggs, out="figures/explain"):
     # (zero-shot)") that hang left off its axis and land on panel C if the gap is shared with the top
     # row. Positioning the grids here also means no subplots_adjust later, which is what used to move
     # the panels out from under their colourbars.
-    fig = plt.figure(figsize=(13.0, 8.6))
+    # 9.0 in, not 8.6: the caption is 7 lines now (band-level note, and C's forecast against the
+    # observed truth), and at 8.6 the last line ran into panel C's colourbar label.
+    fig = plt.figure(figsize=(13.0, 9.0))
     # wspace on the top row has to hold BOTH panel A's colourbar and panel B's row labels, which are
     # the same panel names as A's and hang left off B's axis. 0.14 fits the colourbar alone.
-    gs_top = fig.add_gridspec(1, 2, width_ratios=[1, 2.2], wspace=0.40,
-                              left=0.115, right=0.945, top=0.94, bottom=0.60)
+    gs_top = fig.add_gridspec(1, 2, width_ratios=[1, 1], wspace=0.40,
+                              left=0.115, right=0.945, top=0.955, bottom=0.645)
     gs_bot = fig.add_gridspec(1, 2, width_ratios=[1, 1.9], wspace=0.44,
-                              left=0.115, right=0.945, top=0.46, bottom=0.22)
+                              left=0.115, right=0.945, top=0.535, bottom=0.315)
     axA, axB = fig.add_subplot(gs_top[0, 0]), fig.add_subplot(gs_top[0, 1])
     axC, axD = fig.add_subplot(gs_bot[0, 0]), fig.add_subplot(gs_bot[0, 1])
 
@@ -561,28 +752,41 @@ def figure(aggs, out="figures/explain"):
     axA.set_title("A · share of IG attribution by input channel", loc="left", color=INK, pad=8)
     axA.tick_params(length=0)
 
-    # B: lag shares, panels x lags (lag 1 = origin week, at the left). Its OWN colourbar: a share
-    # over 20 lags averages 0.05 where a share over 4 channels averages 0.25, so one bar covering
-    # both would either flatten B or mislabel it. They are the same quantity on different supports.
-    L = np.array([aggs[p]["ig_lag"][0].mean(0)[::-1] for p in panels])      # index -> lag order
-    imB = axB.imshow(L, cmap=seq, vmin=0, vmax=L.max(), aspect="auto")
-    axB.set_xticks(range(W)); axB.set_xticklabels([str(l) for l in range(1, W + 1)], fontsize=7)
+    # B: lag shares at BAND level, panels x 4 bands. NOT single-lag: the 20-lag profile combs with
+    # period 4 on every panel and an untrained encoder reproduces it (the random-weight control in
+    # report()), so single lags read the TCN's dilation pattern, not epidemiology. The 20-lag arrays
+    # stay in results/explain/*.npz. Its OWN colourbar: a share over 4 bands and a share over 4
+    # channels are the same quantity on different supports and land on different scales.
+    L = np.array([aggs[p]["ig_band"].mean(0).mean(0) for p in panels])      # [P, 4], seeds, horizons
+    vB = L.max()
+    imB = axB.imshow(L, cmap=seq, vmin=0, vmax=vB, aspect="auto")
+    for r in range(L.shape[0]):
+        for c in range(len(BANDS)):
+            axB.text(c, r, f"{L[r, c]:.2f}", ha="center", va="center", fontsize=8,
+                     color=SURFACE if L[r, c] > 0.45 * vB else INK)
+    axB.set_xticks(range(len(BANDS)))
+    axB.set_xticklabels([f"{lo}-{hi}" for lo, hi in BANDS], fontsize=8)
     axB.set_yticks(range(len(panels))); axB.set_yticklabels(short, fontsize=8)
-    axB.set_xlabel("weeks before the forecast origin (1 = the origin week)")
-    axB.set_title("B · share of IG attribution by lag, per panel", loc="left", color=INK, pad=8)
+    axB.set_xlabel("weeks before the forecast origin (band 1-5 holds the origin week)")
+    axB.set_title("B · share of IG attribution by lag band, per panel", loc="left", color=INK, pad=8)
     axB.tick_params(length=0)
 
     # C and D: the Ebola local case, few-shot arm, seed-averaged
     loc = _load("explain__ebola_L12__seed*__local.npz")
     if loc:
-        ig = np.mean([l["ig_map"] for l in loc], 0)[0]                     # h3, [W, 4] signed
+        ig = np.mean([l["ig_map"] for l in loc], 0)[0]                     # h3, [W, 4] signed, OWN target
         name, date = str(loc[0]["name"]), str(loc[0]["peak_date"])
+        fc3 = float(np.mean([l["f_count"] for l in loc], 0)[0])            # this district's own h3
+        truth = float(loc[0]["truth_count"])                                # observed, same week
         v = np.abs(ig).max()
         imC = axC.imshow(ig.T[:, ::-1], cmap=div, norm=TwoSlopeNorm(0, -v, v), aspect="auto")
         axC.set_yticks(range(4)); axC.set_yticklabels(CHANNELS, fontsize=8)
         axC.set_xticks(range(0, W, 2)); axC.set_xticklabels([str(l) for l in range(1, W + 1, 2)], fontsize=7)
         axC.set_xlabel("weeks before the origin")
-        axC.set_title(f"C · signed IG, {pretty(name)}, h3 target {date}", loc="left", color=INK, pad=8)
+        # two lines, and the place name on the first: at one line this title reached into panel D's.
+        axC.set_title(f"C · signed IG on {pretty(name)}'s OWN h3 forecast\n"
+                      f"target week {date}: forecast {fc3:.1f} cases/week against {truth:,.0f} observed",
+                      loc="left", color=INK, pad=8)
         axC.tick_params(length=0)
         edges, d = loc[0]["edges"], int(loc[0]["district"])
         ed = np.mean([l["edge_delta"] for l in loc], 0)                     # [E, H, 2]
@@ -595,7 +799,8 @@ def figure(aggs, out="figures/explain"):
         names = [f"{pretty(ids[j])} ({'zero-shot' if zs[j] else 'observed'})" for _, j in inc]
         axD.barh(range(len(vals)), vals, color=BLUE_RAMP[7], height=0.62)
         for k, val in enumerate(vals):
-            # 3 decimals: these run 0.218 down to 0.003, and ".1f" printed three of the four as "0.0"
+            # 3 decimals: on the case district these run 0.920 down to exactly 0, and ".1f" printed
+            # the small ones as "0.0", which is a different statement from a measured zero.
             axD.text(val, k, f"  {val:.3f}", va="center", fontsize=8, color=INK2)
         axD.set_yticks(range(len(vals))); axD.set_yticklabels(names, fontsize=8)
         axD.set_xlabel("absolute change in the h3 forecast when that one edge is dropped, cases/week")
@@ -605,7 +810,20 @@ def figure(aggs, out="figures/explain"):
         axD.xaxis.grid(True); axD.set_axisbelow(True)
         for sp in ("top", "right"):
             axD.spines[sp].set_visible(False)
+        # a bar at exactly 0.000 reads as a broken chart unless the reason is on the page. It is a
+        # neighbour that filed nothing that week: mask_aware_adj weights edge (i, j) by the
+        # neighbour's own observation mask, so that message is already zero before any ablation.
+        zero_txt = ("A bar at exactly zero is a neighbour that filed no report that week: each edge is "
+                    "weighted by the neighbour's own observation mask, so its message is already "
+                    "zero and dropping it changes nothing.\n" if vals and min(vals) == 0 else "")
+        c_txt = (f"C and D are one district at the national peak week. C targets that district's OWN "
+                 f"median forecast, not the national sum: its h3 forecast is {fc3:.1f} cases/week "
+                 f"against {truth:,.0f} observed for {date}.\n"
+                 f"That week carries a whole multi-week reporting increment (gap-lumping, "
+                 f"client_decisions.md A4), so the observed peak is inflated and the quiet weeks either "
+                 f"side are flattened.\n" + zero_txt)
     else:
+        c_txt = "C and D are empty: no Ebola local archive in this run.\n"
         imC = None
         for ax in (axC, axD):
             ax.text(0.5, 0.5, "no Ebola local archive yet", ha="center", va="center", color=MUTED)
@@ -626,15 +844,18 @@ def figure(aggs, out="figures/explain"):
              f"checkpoints: {plural(n_dev, 'development panel')} and {plural(n_ebo, 'Ebola L12 arm')}, "
              f"{seed_txt}. A and B are shares of absolute IG attribution, pooled over scored origins "
              f"and horizons.\n"
+             f"B is reported at lag BAND level: the 20-lag profile combs with period 4 on every panel and "
+             f"untrained encoders reproduce the comb, so single-lag resolution reads the dilated TCN's "
+             f"receptive field, not epidemiology.\n"
              f"obs_mask is constant on the three influenza panels and COVID, so nothing there varies it. Its "
              f"share is still large ({om_txt}) because a zero baseline charges the channel for the whole "
              f"0 -> 1 move: an artefact of the baseline, not a use of observation status.\n"
-             "C and D are one district at the national peak week. Edge ablation holds every degree fixed, "
-             "so only the neighbour message moves.\n"
-             "None of D is a source of accuracy: the gate-off ablation shows neighbour information helps "
-             "error in 0 of 40 cells. That ablation zeroes the gate but keeps the LTR degree feature, so the "
-             "tally bounds the value of neighbour information, not of the graph in total.\n"
-             "D shows where the model draws from, and nothing more.",
+             + c_txt +
+             "Edge ablation holds every degree fixed, so only the neighbour message moves. None of D is a "
+             "source of accuracy: the gate-off ablation shows neighbour information helps error in 0 of 40 "
+             "cells.\n"
+             "That ablation zeroes the gate but keeps the LTR degree feature, so the tally bounds neighbour "
+             "information, not the graph in total. D shows where the model draws from, and nothing more.",
              fontsize=7.5, color=MUTED, va="bottom", linespacing=1.6)
 
     # Colourbars LAST, positioned from the final axes boxes. fig.colorbar(ax=[...]) steals space at
@@ -651,7 +872,7 @@ def figure(aggs, out="figures/explain"):
         # C's bar goes UNDERNEATH it. To the right it lands squarely on panel D's district names,
         # which are long enough ("Gbarpolu, Liberia (zero-shot)") to reach into the column gap.
         pos = axC.get_position()
-        cax = fig.add_axes([pos.x0, pos.y0 - 0.080, pos.width * 0.55, 0.013])
+        cax = fig.add_axes([pos.x0, pos.y0 - 0.075, pos.width * 0.55, 0.013])
         cb = fig.colorbar(imC, cax=cax, orientation="horizontal")
         cb.set_label("signed IG (h3, this district)", color=INK2, fontsize=8)
         cb.ax.tick_params(labelsize=7, length=0)
@@ -749,6 +970,52 @@ def _selfcheck():
     y = np.zeros((2, H, 4)); y[0, :, 0] = 100.0; y[1, :, 1] = 1.0
     assert shares(y)[0, 0] > 0.98, shares(y)[0]
 
+    # (4b) band bookkeeping, now that the figure and the table report bands and NOT single lags.
+    #      Each band must hold exactly the lags it names, and band_shares must route a lag to the
+    #      band that names it. A silent off-by-one here would mislabel the published panel B.
+    for k, (lo, hi) in enumerate(BANDS):
+        assert sorted(LAG_OF_INDEX[BAND_OF_INDEX == k].tolist()) == list(range(lo, hi + 1)), k
+    for lag in (1, 5, 6, 15, 16, 17, 20):
+        one = np.zeros((1, H, W))
+        one[0, :, int(np.nonzero(LAG_OF_INDEX == lag)[0][0])] = 1.0
+        k = next(k for k, (lo, hi) in enumerate(BANDS) if lo <= lag <= hi)
+        got = band_shares(shares(one))
+        assert got[0, k] == 1.0 and np.allclose(got[0].sum(), 1.0), (lag, k, got[0])
+    # a lag-order profile is the index-order profile reversed, which is what figure() and
+    # random_control() both rely on. LAG_OF_INDEX descends, so this is the whole proof.
+    assert (LAG_OF_INDEX[::-1] == np.arange(1, W + 1)).all()
+
+    # (4bb) the random-weight control must be able to say NO. The report's sentence "the comb is
+    #       architectural" is generated by randctl_verdict(), so hand it a failing draw and check
+    #       the wording flips and names the offending r. As inline prose this sentence printed
+    #       whatever the numbers did, which is how a TCN fingerprint got published as memory.
+    assert randctl_verdict([0.912, 0.963], 0.63)[0] is True
+    assert randctl_verdict([0.55, 0.963], 0.63)[0] is False, "control cannot fail, so it checks nothing"
+    assert "0.550" in randctl_verdict([0.55, 0.963], 0.63)[1]
+    assert randctl_verdict([0.63, 0.99], 0.63)[0] is False, "verdict must be strict at the ceiling"
+
+    # (4c) the LOCAL Ebola map targets ONE district's own forecast, not the sum over every scored
+    #      node. This is the assertion that would have caught the published panel C attributing the
+    #      national total to a single district. Two halves: a one-hot target completes against that
+    #      node's own f(x) - f(0), and it does NOT complete against the pooled one, so the check
+    #      can tell the two apart. It also must not reproduce the pooled map for that node.
+    d = 2
+    tm_local = torch.zeros(N, H, device=dev)
+    tm_local[d] = 1.0
+    attr_loc, _, _ = integrated_gradients(enc, ad, Zt, A, Mt_t, tm_local, steps=64)
+    with torch.no_grad():
+        f_all = median(enc, ad, Zt, A, Mt_t)
+        f0_all = median(enc, ad, torch.zeros_like(Zt), A, Mt_t)
+    tot = attr_loc.flatten(1).sum(1)
+    own = (tot - (f_all[d] - f0_all[d])).abs() / (f_all[d].abs() + f0_all[d].abs()).clamp(min=1e-6)
+    pooled = ((tot - ((f_all - f0_all) * tmask).sum(0)).abs()
+              / ((f_all * tmask).sum(0).abs() + (f0_all * tmask).sum(0).abs()).clamp(min=1e-6))
+    assert (own < 1e-3).all(), f"local IG does not complete on the district's own forecast {own.tolist()}"
+    assert pooled.max() > 1e-3, "check is void: the pooled and own-node targets agree on this fixture"
+    attr_pool, _, _ = integrated_gradients(enc, ad, Zt, A, Mt_t, tmask, steps=64)
+    assert not torch.allclose(attr_loc[:, d], attr_pool[:, d], atol=1e-6), \
+        "the local map equals the pooled map for that node, so the local target is not local"
+
     # (5) routing: the archive lands in its own subdir, the text report in reports/. And the
     #     main-archive filter keeps the per-origin archive while rejecting the two Ebola side
     #     archives, which a bare "__seed*.npz" glob would hand to the share reader instead.
@@ -767,7 +1034,9 @@ def _selfcheck():
 
     print("ok  IG completes the path and gradient x input does not, invisible channel gets 0 from "
           "IG and occlusion, forward_fixed_deg == forward and holds degree, gate-off is immune to "
-          "edge ablation, lag/band/share bookkeeping, routing, count inversion")
+          "edge ablation, lag/band/share bookkeeping, the random-weight verdict flips on a failing "
+          "draw, a one-hot target completes on that node's own forecast and not on the pooled one, "
+          "routing, count inversion")
 
 
 def main():
@@ -779,11 +1048,13 @@ def main():
     ap.add_argument("--origins", type=int, default=MAX_ORIGINS)
     ap.add_argument("--steps", type=int, default=IG_STEPS)
     ap.add_argument("--report", action="store_true", help="aggregate the archives, no model")
+    ap.add_argument("--no-randctl", action="store_true",
+                    help="skip the untrained-encoder lag control inside --report (it needs the bundle)")
     a = ap.parse_args()
     if a.selfcheck:
         _selfcheck(); return 0
     if a.report:
-        report(); return 0
+        report(randctl=not a.no_randctl); return 0
     panels = PANELS if a.all or not a.panels else a.panels
     seeds = SEEDS if a.all or not a.seeds else a.seeds
     t0 = time.time()
