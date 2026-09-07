@@ -229,7 +229,8 @@ explicit confirmation.**
 ---
 
 ## D12 · Cross-disease transfer is negative — the Week-3 headline was leakage plus a reference artifact
-2026-07-30, `Reports/Encoder_Results_Consolidated.md`, `Results_Matrix.md`
+2026-07-30, `Reports/Encoder_Results_Consolidated.md`, `Results_Matrix.md` (superseded 2026-09-07;
+the live transfer tables are `progress/outcomes/LDO3_Results.md`)
 
 Under the corrected leave-one-**disease**-out fold (D1): **12 of 16 RMSE cells significantly negative,
 4 within noise, 0 positive**, identical tally on MAE. The three largest LODO gains (+28.0%, +24.0%,

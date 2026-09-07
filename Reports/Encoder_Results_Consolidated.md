@@ -2,8 +2,10 @@
 
 **Phase 3, Week 4 · Prepared 2026-07-30**
 
-**Companion artifacts.** Full numeric matrix: `Results_Matrix.md`. Generator: `results_matrix.py`
-(`--selfcheck` passes). Scoring authority: `score.py` (`_demo()` passes; seven metrics live).
+**Companion artifacts.** Full numeric matrix: `progress/outcomes/Results_Matrix.md` (superseded
+2026-09-07, kept for provenance only, see the banner at the top of that file). Generator:
+`results_matrix.py` (`--selfcheck` passes). Scoring authority: `score.py` (`_demo()` passes; seven
+metrics live).
 
 ---
 
@@ -378,7 +380,7 @@ rather than a demonstrated absence of effect, and the two must not be conflated.
 **Peak-metric deltas can rest on fewer seeds.** A `peak_timing` reference cell of exactly zero has no
 scale to divide by, so that seed is dropped from the pairing rather than producing an infinite
 percentage. A peak_timing delta may therefore carry a smaller `n` than the same cell's RMSE delta;
-the `n` is printed on every cell in `Results_Matrix.md`.
+the `n` is printed on every cell in `progress/outcomes/Results_Matrix.md` (superseded).
 
 **Two isolated positive peak-timing cells** (§4.5) sit inside 32 peak tests of which 28 are within
 noise. They are reported for completeness and are not treated as evidence of transfer.
@@ -425,6 +427,11 @@ python rescore_encoder.py               # backfill nrmse
 python results_matrix.py --selfcheck    # sign, units, noise screen, guards
 python results_matrix.py -o Results_Matrix.md
 ```
+
+The matrix this document was written against, `progress/outcomes/Results_Matrix.md`, was superseded
+on 2026-09-07 and is frozen for provenance. Note that `progress/outcomes/Results_Matrix.md` is also
+the default `-o` path, so send a fresh run somewhere else if you do not want to overwrite the frozen
+copy.
 
 `results_matrix.py --selfcheck` verifies error-metric sign in both directions, pcc reported in points
 and stable near zero, the noise screen both accepting and rejecting, seed-intersection pairing,

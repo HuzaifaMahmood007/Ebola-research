@@ -172,7 +172,10 @@ def main():
     print("\n" + "=" * 78)
     print(f"ALL DONE  baselines {_hr(d1)} | {mode} {_hr(d2)} | total {_hr(time.time()-t0)}")
     print(f"finished {_dt.datetime.now():%Y-%m-%d %H:%M:%S}")
-    print("next: python results_matrix.py -o progress/outcomes/Results_Matrix.md")
+    # Do NOT send this at progress/outcomes/Results_Matrix.md. That file was superseded on
+    # 2026-09-07 and is frozen for provenance, and it is also the default -o path, so a bare
+    # `python results_matrix.py` overwrites it.
+    print("next: python results_matrix.py -o progress/outcomes/Results_Matrix_live.md")
     print("=" * 78)
 
 

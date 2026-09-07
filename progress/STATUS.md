@@ -166,7 +166,7 @@ orphan every one of those comments, so it stays until that rationale is moved in
 | `Phase3_Week3_Results_and_Direction.md` | 2026-07-24 | the Week-3 go/no-go on direction | superseded by the LDO3 verdict, `decisions.md` D12 |
 | `Phase3_Week4_Work_Order.md` | 2026-07-29 | the client's Week-4 orders | **all three deliverables now exist**; orders themselves in `progress/decisions/Review Doc.md` and `client_decisions.md` |
 | `Doubt.md` | 2026-08-03 | the gravity-mobility rejection, the `obs_mask` disease-identifier leak, the LOCF finding | leak recorded in `G5_Explainability_Scope.md` §5.2 and `covid_eda.md`; rejection in `decisions.md` |
-| `Pair_Run_Analysis.md` | 2026-08-04 | the graph-controlled COVID / influenza-US-states pair | `progress/outcomes/Results_Matrix.md`, `Manuscript_v2.md` §9 |
+| `Pair_Run_Analysis.md` | 2026-08-04 | the graph-controlled COVID / influenza-US-states pair | `progress/outcomes/Report_Covid.md` §6, `Manuscript_v2.md` §9. The `PAIR` rows in `progress/outcomes/Results_Matrix.md` are the raw numbers, but that file is **superseded** as of 2026-09-07 and is kept for provenance only |
 | `Day15_Progress.md` | 2026-07-30 | the Week-4 live tracker and the MTGNN degeneracy discovery | `Reports/reproduction_failure_log.md` §C1, `Reports/baseline_reproduction_table.md` |
 | `Priority_Fix_Progress.md` | 2026-08-10 | the ANIL verdict, the conformal packet, pre-registration hardening, the overnight queue | `progress/outcomes/ANIL_Results.md`, `Ebola_Prereg.md`, `Manuscript_v2.md` §9.4 |
 

@@ -1,3 +1,81 @@
+> **SUPERSEDED as of 2026-09-07. Kept for provenance, not for quotation.**
+>
+> Do not lift a number out of this file into a report, a slide, a Slack update or the paper. Use the
+> live document named in the table below. Nothing here has been edited or corrected, which is the
+> whole point of keeping it: it is a record of what we believed on 2026-08-20.
+
+**What this file is.** The output of `results_matrix.py`, last generated on 2026-08-20 (file
+timestamp) from the JSON records in `results/single/`, `results/joint/` and `results/lodo/` as the
+generator read them at that time. It covers our own encoder only. It has never contained baselines,
+Ebola, meta-learning or the shrinkage sweep.
+
+**Why it is superseded.** Three things changed after it was written.
+
+1. **COVID is missing entirely.** COVID is now the third development disease, and this copy has no
+   COVID column anywhere. That is a generator gap and not a data gap. The COVID single-disease
+   records were on disk from 2026-08-03, and `covid_us-states` was only added to the `DATASETS`
+   tuple in `results_matrix.py` afterwards. `progress/outcomes/Report_Covid.md:270` records that
+   fix.
+2. **The transfer arm the project now stands behind is not in here.** The three-disease
+   leave-one-disease-out fold, LDO3, is 3 held-out diseases by 5 seeds, 15 runs
+   (`progress/outcomes/LDO3_Results.md`), and none of it appears below. What this file reports
+   instead is a two-way LDO fold, influenza against dengue, plus a leave-one-dataset-out probe
+   labelled LODO that is seed 42 alone. Its own section 1 coverage table says "LODO adapted: 1
+   seeds" and "LODO zero-shot: 1 seeds" for every panel, and sections 5 and 7 say every LODO delta
+   is untestable. I checked disk on 2026-09-07 and that arm is still 1 seed:
+   `results/lodo/encoder_lodo*__*.json` is 8 files, all seed 42. It was never extended to 5 seeds,
+   it was replaced by LDO3.
+3. **The record counts moved.** Section 1 is a seed census taken before most of the runs existed.
+   Disk now holds 25 single-disease records and 208 transfer records. The current census is
+   `progress/STATUS.md` section 2.
+
+**Where each topic lives now.** Only topics this file actually contains are listed.
+
+| topic in this file | live authority |
+|---|---|
+| section 1, what exists on disk and how many seeds | `progress/STATUS.md` section 2 |
+| section 2, absolute scores for influenza-Japan, influenza-US-regions, influenza-US-states and dengue | no live document holds a per-panel ceiling table, so recompute from `results/single/`. `progress/STATUS.md` section 3 for the verdicts, `Reports/Manuscript_v2.md` section 9 for whatever is published |
+| sections 3, 4 and 5, cross-disease transfer deltas, the LDO rows | `progress/outcomes/LDO3_Results.md` |
+| the `PAIR` rows in sections 1 to 4, the graph-controlled COVID and influenza-US-states pair | `progress/outcomes/Report_Covid.md` section 6 |
+| the COVID panel, which has no column here at all | `progress/outcomes/Report_Covid.md` |
+| any number that goes into the manuscript | `Reports/Manuscript_v2.md` |
+
+Two live documents are deliberately absent from that table. `progress/outcomes/ANIL_Results.md`
+covers meta-learning and `progress/outcomes/Shrinkage_Verdict.md` covers the shrinkage sweep, and
+neither topic ever appeared in this file, so there is nothing here for them to replace.
+
+**The Ebola trap.** There are no Ebola numbers in this file, and there never were, because the
+generator reads only `results/{single,joint,lodo}/`. If you arrived here looking for an Ebola
+figure: the interval the project adjudicates on is the district bootstrap from `ebola_ci.py`, not
+the cell-pooled interval in `analysis.py`. On Ebola RMSE the two differ by 1.5x to 2.0x, and the
+headline point 38.20 sits outside the cell-pooled interval [38.349, 104.537]. They are different
+statistics and must never be quoted against each other. See the `ebola_ci.py` module docstring and
+`progress/STATUS.md` section 4.
+
+**Regenerating a current matrix.** The command is
+
+```
+conda run -n ebola-train python results_matrix.py -o progress/outcomes/Results_Matrix.md
+```
+
+That path is also the default for `-o` (`results_matrix.py:545`), so running the generator with no
+arguments at all overwrites this frozen copy. If you want a live matrix, send it somewhere else, for
+example `-o progress/outcomes/Results_Matrix_live.md`.
+
+**A second reason not to regenerate over the top.** I read `results_matrix.py` and found that the
+regime label comes from the filename prefix alone, so every file starting `encoder_ldo__` is routed
+into the `LDO adapted` row, including the ANIL meta-learning runs and their controls. Files are read
+in sorted order and the last one read wins the `(regime, dataset, horizon, metric, seed)` key, and
+`encoder_ldo__ldo3*-anil-affine-*` sorts after the real `encoder_ldo__<dataset>__seed*` files. Those
+ANIL files were written on 2026-09-04, after this copy was generated, so a fresh run today would
+quietly put meta-learning numbers into the `LDO adapted` rows. The frozen copy below is not
+affected, because the only ANIL files that existed when it ran sort before the real ones. Fix that
+routing before you trust a new matrix.
+
+---
+
+*Everything below this line is the unedited 2026-08-20 output.*
+
 # Encoder Results Matrix — single vs joint vs LODO vs LDO
 
 Generated by `results_matrix.py` from the JSON records in `results/{single,joint,lodo}/`. 

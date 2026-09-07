@@ -200,4 +200,5 @@ strengthens the case for doing it, and we owe you a straight answer on whether i
    the paper — one run is not enough to publish.
 
 Happy to walk through any of this. The underlying numbers, and the code that produced them, are in
-`Results_Matrix.md` and `results_matrix.py`; every figure here can be traced back to a run output.
+`progress/outcomes/Results_Matrix.md` (superseded 2026-09-07, kept for provenance only) and
+`results_matrix.py`; every figure here can be traced back to a run output.

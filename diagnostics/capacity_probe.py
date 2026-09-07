@@ -141,7 +141,9 @@ def n_params(factory):
 
 
 # --------------------------------------------------------------------------- #
-# Reference: the single-disease 5-seed mean, the same reference Results_Matrix.md uses.
+# Reference: the single-disease 5-seed mean, the same reference results_matrix.py calls
+# "reference B". Named against the generator, not against progress/outcomes/Results_Matrix.md,
+# because that document was superseded on 2026-09-07 and is frozen for provenance.
 # --------------------------------------------------------------------------- #
 def single_reference():
     """{(dataset, horizon): mean country_macro rmse over the single-disease seeds}."""

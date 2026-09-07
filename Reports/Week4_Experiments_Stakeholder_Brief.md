@@ -277,6 +277,7 @@ material to tune on at all.
 ---
 
 Every number in this document can be traced to a run output. The detailed tables are in
-`LDO3_Results.md` and `Results_Matrix.md`; the code that produced them, and the automated check that
+`LDO3_Results.md` and `Results_Matrix.md` (superseded 2026-09-07, kept for provenance only; the live
+transfer tables are in `LDO3_Results.md`); the code that produced them, and the automated check that
 verifies each published figure against the raw results, are in `ldo3_report.py` and
 `verify_ldo3_doc.py`.
