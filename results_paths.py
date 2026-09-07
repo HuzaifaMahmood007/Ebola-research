@@ -58,6 +58,9 @@ _ROUTES = (
     ("encoder_joint__", "joint"),
     ("encoder__", "single"),
     ("naive__", "naive"),
+    # G5 attribution archives (explain.py): inference-only reads of existing checkpoints, so they
+    # are not results records and must not land beside any scored family.
+    ("explain__", "explain"),
 )
 
 
@@ -131,6 +134,9 @@ def _demo():
         "naive__dengue.json": "naive",
         "naive__dengue__persistence__perorigin.npz": "naive",
         "naive__ebola_L12__support_mean__pernode.npz": "naive",
+        "explain__dengue__seed42.npz": "explain",
+        "explain__ebola_L12__seed42__edges.npz": "explain",
+        "explain_report.txt": "reports",
         "gated+spatial_Contribution.txt": "reports",
         "lodo_run.log": "reports",
         "encoder__influenza_japan__smoke.json": "misc",
