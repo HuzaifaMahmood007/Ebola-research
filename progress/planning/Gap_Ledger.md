@@ -138,7 +138,7 @@ Notes carried out of B3:
 | C5 | "Run the shrinkage test" still listed as next action #1 | `CLAUDE.md` §9, `Resume.md` §9, both replaced | **DONE** |
 | C6 | M8: three sites still denied COVID enters the schema | `data_audit.md` §2.9, §4.1 table, decision register row | **DONE**, M8 closed |
 | C7 | M7: Ebola cumulative envelope discards cells on a premise false for 69% of them | `data_audit.md` §3.5.1, generated and checked by `diagnostics/ebola_masking_audit.py` | **DONE (disclosure half only)**, the fix half is deliberately not done |
-| C8 | Run the audit's "unsafe to claim" list over every Ebola sentence in the manuscript | `Reports/Phase0_to_Now_Audit.md:246-265` | OPEN *(audit)* |
+| C8 | Run the audit's "unsafe to claim" list over every Ebola sentence in the manuscript | `diagnostics/check_unsafe_claims.py`; 21 mechanical rules plus a manual pass | **DONE**, one finding, fixed |
 | C9 | US-States losses to EpiGNN and HeatGNN appear in no document | `Manuscript_v2.md` §9 results, verified by `diagnostics/verify_usstates_claim.py` | **DONE** |
 
 **C7 carries a warning.** Re-basing would change `data/processed/ebola_L12.npz`, which is a
@@ -240,6 +240,31 @@ Notes carried out of Group C:
   claim that is true one way and false the other cannot be verified one way. It caught my own first
   parse reading the published-delta column instead of the encoder-vs-reproduced column.
 - Manuscript is now **13,812 words** against a 12,000 limit, so the overage is 1,812. E2 absorbs it.
+
+- **C8 found one live unsafe claim, and the paper is otherwise clean.** The introduction said the
+  model learns "from diseases that have plenty of data, such as dengue and influenza", which is the
+  exact phrasing the audit forbids and it primes the reader two hundred lines before §7 corrects it.
+  Now reads "the dengue, influenza and COVID-19 panels used here".
+- **Section 9.5 is the strongest part of the paper against this list.** It heads the section "The
+  pre-registered criterion was not met", says "we report this as a miss", explains the estimand
+  mismatch in its own words, names both naive floors, labels the un-lagged conformal column
+  "+ACI (oracle)" and reports the lagged one as the honest number, and describes WIS as one metric
+  rather than printing it twice beside CRPS. Every item the audit warned about, it had already
+  handled.
+- **I re-derived the quoted Ebola numbers rather than trusting them.** All four Table 8 confirmatory
+  intervals match `ebola_ci.py` exactly, as do the three zero-shot persistence intervals
+  ([-13.33, -1.54], [-13.69, -2.04], [-44.46, -6.08]) and the claim that the adapted arm clears zero
+  only at h15. The WIS "7 of 8" checks out against `diagnostics/ebola_uq.py`, with primary h10 the
+  single exception at 19.77 against 20.50.
+- **One entry on the audit's own unsafe list is now stale, and a future pass must not "fix" the paper
+  back to it.** It says the accurate framing is that all eight confirmed wins sit at h10 or h15. That
+  was true of the cell-pooled interval. On the corrected district bootstrap the wins span h3, h5, h10
+  and h15, and the manuscript correctly claims a zero-shot h3 win. The audit predates `ebola_ci.py`.
+- Two false positives worth knowing: "59 districts" matches a naive `9 districts` rule, and three
+  sentences pass only because they name an unsafe claim in order to refute it. The checker prints
+  those separately instead of hiding them, and lists the four items it cannot check mechanically
+  rather than reporting a clean pass it did not earn.
+- Mutation-tested: reinstating "the criterion was met" and a SHAP claim are both caught.
 
 ---
 
