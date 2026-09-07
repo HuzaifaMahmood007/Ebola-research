@@ -418,3 +418,60 @@ than from the suite.
 (finest-available per country); A2, A3 and A4 are implemented with the reasoning above and remain open
 to your override. The modelling phase is no longer blocked. Parts B, C and D do not block that work;
 they are recorded so that no decision affecting the data is discovered later by reading the code.
+
+---
+
+## Implementation status, added 2026-09-07
+
+**This section says whether each decision is BUILT, not whether the client answered it.** The tick
+boxes above record the client's answer; this records what is actually on disk. Every row marked
+"verified" was recomputed from `data/processed/*.npz` on 2026-09-07.
+
+**Two items the client never marked, and two whose recorded answer the build has since overtaken.**
+Those four are listed first because they need action; everything else is settled.
+
+### Needs attention
+
+| id | what | status |
+|---|---|---|
+| **C2** | Ebola: the first observed week of every district is masked | **NEVER ANSWERED.** The box is still empty. Built as proposed and in every scored number |
+| **C7** | Ebola: three Sierra Leonean labels that are not districts | **NEVER ANSWERED.** The box is still empty. Built as proposed |
+| **A3** | Ebola few-shot protocol | **ANSWER SUPERSEDED.** The ticked option reads "cutoff 2014-05-24 (implemented)". D16 replaced it with a 12-week primary and 20-week secondary arm, and the built support windows are **11 and 13 weeks**. The calendar-prefix *method* survives; the cutoff in the tick box does not |
+| **B2** | Ebola few-shot support window | **ANSWER SUPERSEDED** by the same decision. The client widened to "three or four" weeks; the frozen arms are 11 and 13 |
+
+### Built and verified
+
+| id | decision | evidence |
+|---|---|---|
+| A1 | finest available dengue resolution | **7,165 nodes across 12 countries** (verified) |
+| A2 | accept dengue case definitions as built, disclosed | Mexico and Bolivia both retained (verified) |
+| A4 | Ebola gap-lumping: disclose and proceed | disclosed in `data_audit.md` §3.5 and in the manuscript's Threats |
+| B1 | influenza = the three benchmark datasets only | japan, us-regions, us-states; no global source added (verified) |
+| B3 | dengue coverage thresholds | 52 observed weeks per node, 3 nodes per country, country-level pruning |
+| B4 | GADM 4.1 throughout | `shapefile_source = "GADM 4.1 (gadm.org)"` (verified) |
+| B5 | development set | **AMENDED 2026-09-06**, see the amendment under B5. COVID-19 is a labelled development panel; five panels, three diseases |
+| B6 | no mobility data for any disease | `A_mob_available = False` on every bundle (verified) |
+| C1 | Ebola incidence from the running maximum | built; the masked-week cost is now quantified in `data_audit.md` §3.5.1 |
+| C3 | dengue per-node split fallback removed | built |
+| C4 | Taiwan aggregated to counties | built |
+| C5 | influenza adjacency diagonal zeroed | built |
+| C6 | Ebola graph keeps cross-border edges | built |
+| C8 | dengue splits cut per country | `split_rule = per_country_chronological_50_20_30` (verified) |
+| C9 | geographic covariates withheld from the shared model | `core_feature_idx = [0,1,2,3]` of 5 channels, so `deaths_norm` never reaches the trunk (verified) |
+| D1 | zero-variance normalisation guard | fixed |
+| D2 | 29 Japanese prefectures report zero dengue | disclosed |
+| D3 | two Japanese node identities uncertain | disclosed |
+| D4 | every Ebola district is scored | **61 districts** on the node axis (verified) |
+| D5 | four Ebola districts recorded no new cases | disclosed |
+| D6 | dengue graph forbids cross-border edges, stated reason was wrong | corrected |
+| D7 | the Ebola source file | pinned; sha256 verified against `build_datasets.RAW_SHA256` on 2026-09-07 |
+
+### Still open with the client, from elsewhere
+
+Three decisions sit with the client that are not in this document. They come from
+`progress/decisions/G5_Explainability_Scope.md`:
+
+1. Adopt integrated gradients as G5, or renegotiate the goal.
+2. **Retract the SHAP row** from `Reports/Phase1/RelatedWork_CompetitiveAnalysis_Benchmark.docx`, a
+   comparison table already in the client's hands asserting a capability that does not exist.
+3. Confirm they accept a neighbour-attribution figure that cannot be described as explaining accuracy.

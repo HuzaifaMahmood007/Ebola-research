@@ -1,6 +1,6 @@
 # Decision log — Phase 3 Week 4
 
-**Started:** 2026-07-29 · **Progress:** `Day15_Progress.md` · **Work order:** `Phase3_Week4_Work_Order.md`
+**Started:** 2026-07-29 · **Progress:** `../STATUS.md` · **Work order:** `Phase3_Week4_Work_Order.md`
 
 One row per decision that would be expensive to re-litigate. Client decisions are marked. Earlier
 phases: `decisions_day_13.md`, `Phase3_Week3_Day15_Baselines_Status.md`.

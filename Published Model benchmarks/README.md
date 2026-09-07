@@ -36,7 +36,7 @@ Sources: PDFs 1–3, 7–8 are in [docs/](../docs/). MTGNN, MepoGNN, MSGNN were 
 
 ### 1. STOEP is probably not a failed reproduction — we read the wrong table
 
-`Phase3_Week4_Work_Order.md` §1d records STOEP as *"paper table ≠ shipped dataset/metric. Overall
+`Phase3_Week4_Work_Order.md` §1d (retired 2026-09-07, in git history) recorded STOEP as *"paper table ≠ shipped dataset/metric. Overall
 RMSE 63.5 in paper vs 182.9 on the run … RAE 0.37 vs 0.224. ~⅓ scale → different dataset."*
 
 The paper prints **two** overall rows:

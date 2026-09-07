@@ -1,7 +1,7 @@
 # Resume — session handoff
 
 **Written 2026-09-01.** Everything a fresh chat needs to continue without re-deriving it. Read this
-first, then `progress/summaries/Priority_Fix_Progress.md` §13 for the last engineering session and
+first, then `progress/STATUS.md` for the current verified status and
 `Reports/Phase0_to_Now_Audit.md` for the standing audit findings.
 
 ---

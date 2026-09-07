@@ -235,8 +235,9 @@ wrong.
 
 ## Open items in this log
 
-1. **Correct the STOEP claim wherever it appears.** `Phase3_Week4_Work_Order.md` section 1d records
-   STOEP as a threefold reproduction failure. It is an 8.2 percent reproduction blocked by missing
+1. **Correct the STOEP claim wherever it appears.** `Phase3_Week4_Work_Order.md` section 1d recorded
+   STOEP as a threefold reproduction failure; that document was retired on 2026-09-07 and survives only
+   in git history, but the same claim still stands in the two execution guides. It is an 8.2 percent reproduction blocked by missing
    mobility data. The old sentence must not reach the paper.
 2. **A3, metric.** SMAPE against MAPE is still unsettled. It does not affect the verdict, but do not
    quote a STOEP percentage-error number until it is.

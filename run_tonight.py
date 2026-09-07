@@ -17,7 +17,7 @@ Re-running it would overwrite the single scored record with a second one and nob
 happen. --force-ebola is the deliberate override; there is no accidental path.
 
 WHY THE CEILINGS ARE A RETRAIN. Only covid has a single-disease checkpoint, so the other four panels
-cannot be re-scored, only trained again -- see Priority_Fix_Progress.md section 4. The artifact we
+cannot be re-scored, only trained again (Priority_Fix_Progress.md s4, retired 2026-09-07; see git history). The artifact we
 are actually after is the quantile archive, so that is exactly what the resume check looks for: a
 (dataset, seed) whose __quantiles.npz exists is already done and is skipped. Deriving the work list
 from the artifact rather than from a flag keeps this correct however a previous attempt died.
