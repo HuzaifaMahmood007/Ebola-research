@@ -8,35 +8,35 @@ Read err first. gap's denominator collapses wherever the model's own output bare
 the baseline, which is a flat model, not a broken attribution. `cells` is the scored count.
 
 panel                  seeds orig step  cells  IG err  IG gap       incidence         sin_doy         cos_doy        obs_mask
-dengue                     5   24   32  63753  0.0444  0.7114   0.630 +-0.024   0.043 +-0.004   0.081 +-0.016   0.246 +-0.014
-influenza_japan            5   24   32   4136  0.0032  0.0635   0.461 +-0.033   0.161 +-0.017   0.266 +-0.024   0.112 +-0.050
-influenza_us-regions       5   24   32    920  0.0017  0.0931   0.497 +-0.040   0.227 +-0.031   0.158 +-0.021   0.118 +-0.042
-influenza_us-states        5   24   32   4361  0.0024  0.0505   0.405 +-0.020   0.252 +-0.021   0.230 +-0.033   0.113 +-0.035
-covid_us-states            5   24   32   4018  0.0003  0.0375   0.446 +-0.035   0.210 +-0.030   0.163 +-0.037   0.182 +-0.030
-ebola_L12                  5   18   32   2930  0.0031  0.0333   0.558 +-0.059   0.146 +-0.032   0.125 +-0.026   0.171 +-0.045
-ebola_L12_zeroshot         5   18   32   2930  0.0008  0.0015   0.569 +-0.048   0.144 +-0.022   0.108 +-0.016   0.178 +-0.034
+dengue                     5   24  128  63753  0.0040  0.0514   0.631 +-0.024   0.043 +-0.004   0.081 +-0.017   0.245 +-0.014
+influenza_japan            5   24  128   4136  0.0021  0.0479   0.461 +-0.033   0.161 +-0.017   0.266 +-0.024   0.112 +-0.050
+influenza_us-regions       5   24  128    920  0.0019  0.0866   0.497 +-0.040   0.227 +-0.031   0.158 +-0.021   0.118 +-0.042
+influenza_us-states        5   24  128   4361  0.0022  0.0347   0.405 +-0.020   0.252 +-0.021   0.230 +-0.033   0.113 +-0.035
+covid_us-states            5   24  128   4018  0.0002  0.0127   0.446 +-0.035   0.210 +-0.030   0.163 +-0.037   0.182 +-0.030
+ebola_L12                  5   18   32   2930  0.0017  0.0645   0.564 +-0.050   0.148 +-0.029   0.127 +-0.025   0.161 +-0.039
+ebola_L12_zeroshot         5   18   32   2930  0.0005  0.0016   0.570 +-0.046   0.150 +-0.019   0.116 +-0.016   0.165 +-0.031
 
 lag bands (weeks before the origin), IG share, then occlusion share in brackets
 panel                                1-5              6-10             11-15             16-20
-dengue                   0.507 [ 0.489]   0.223 [ 0.215]   0.131 [ 0.148]   0.140 [ 0.149]
+dengue                   0.507 [ 0.458]   0.223 [ 0.222]   0.131 [ 0.166]   0.140 [ 0.154]
 influenza_japan          0.483 [ 0.558]   0.211 [ 0.183]   0.111 [ 0.060]   0.195 [ 0.199]
 influenza_us-regions     0.698 [ 0.762]   0.134 [ 0.110]   0.051 [ 0.028]   0.117 [ 0.100]
 influenza_us-states      0.643 [ 0.697]   0.154 [ 0.133]   0.065 [ 0.044]   0.138 [ 0.126]
 covid_us-states          0.721 [ 0.714]   0.132 [ 0.117]   0.030 [ 0.029]   0.117 [ 0.140]
-ebola_L12                0.760 [ 0.742]   0.119 [ 0.113]   0.041 [ 0.042]   0.080 [ 0.103]
-ebola_L12_zeroshot       0.794 [ 0.791]   0.112 [ 0.104]   0.036 [ 0.034]   0.058 [ 0.071]
+ebola_L12                0.725 [ 0.697]   0.124 [ 0.122]   0.048 [ 0.052]   0.103 [ 0.129]
+ebola_L12_zeroshot       0.761 [ 0.756]   0.118 [ 0.110]   0.042 [ 0.045]   0.080 [ 0.089]
 
 random-weight control on the per-lag read, and why lags are reported at band level
   IG on UNTRAINED SharedEncoder + Adapter weights (no checkpoint), ebola_L12, 3 origins, 8 IG steps,
   torch seeds 1000, 2000, 3000, 4000, 5000, against the trained 5-seed profile on the same panel-arm.
   pearson r(trained lag profile, untrained lag profile) over the 20 lags, one per draw:
-    0.960, 0.960, 0.946, 0.963, 0.912
+    0.962, 0.963, 0.951, 0.963, 0.912
   For scale, shuffling the trained profile against the same untrained one gives |r| below
-  0.63 in 95 of 200 shuffles. Every draw clears that ceiling, so the comb is architectural, not learned.
+  0.61 in 95 of 200 shuffles. Every draw clears that ceiling, so the comb is architectural, not learned.
   The null on a 20-point vector is not small, which is why the ceiling is printed at all.
   comb teeth, mean share at lags 1, 5, 9, 13, 17 vs lags 4, 8, 12, 16, 20:
-    trained    0.127 vs 0.012   (10.5x)
-    untrained  0.133 vs 0.004   (37.1x, mean over 5 draws)
+    trained    0.123 vs 0.013   (9.3x)
+    untrained  0.132 vs 0.004   (35.4x, mean over 5 draws)
   Every panel's per-lag share combs with period 4, spiking at lags 1, 5, 9, 13 and 17 and
   collapsing at 4, 8, 12, 16 and 20, and untrained encoders reproduce it at r = 0.91 to 0.96 over 5 draws.
   Single-lag resolution therefore reads the dilated TCN's receptive field, not epidemiology,
@@ -52,15 +52,15 @@ IG vs occlusion agreement on the top channel / top lag band, per horizon (a disa
   covid_us-states        h3: inci=inci 1-5=1-5 | h5: inci!=sin_ 1-5=1-5 | h10: sin_=sin_ 1-5=1-5 | h15: inci=inci 1-5=1-5
   ebola_L12              h3: inci=inci 1-5=1-5 | h5: inci=inci 1-5=1-5 | h10: inci=inci 1-5=1-5 | h15: inci=inci 1-5=1-5
   ebola_L12_zeroshot     h3: inci=inci 1-5=1-5 | h5: inci=inci 1-5=1-5 | h10: inci=inci 1-5=1-5 | h15: inci!=sin_ 1-5=1-5
-  agreement: seed-mean 54 of 56; per (seed, horizon) 263 of 280
+  agreement: seed-mean 54 of 56; per (seed, horizon) 264 of 280
   seed-mean disagreements: covid_us-states h5 channel (IG incidence vs occlusion sin_doy); ebola_L12_zeroshot h15 channel (IG incidence vs occlusion sin_doy)
-  per-seed disagreements by panel: dengue 2, influenza_japan 1, influenza_us-regions 1, influenza_us-states 2, covid_us-states 7, ebola_L12_zeroshot 4
+  per-seed disagreements by panel: dengue 1, influenza_japan 1, influenza_us-regions 1, influenza_us-states 2, covid_us-states 7, ebola_L12_zeroshot 4
 
 falsification tests, stated in G5_Explainability_Scope.md section 6 before the run
   T1 incidence is the top channel on every panel, seed-mean and horizon-averaged: PASS  dengue=incidence, influenza_japan=incidence, influenza_us-regions=incidence, influenza_us-states=incidence, covid_us-states=incidence, ebola_L12=incidence, ebola_L12_zeroshot=incidence
   T1 per (seed, horizon): fails in 13 of 140 cells; by panel influenza_us-states 9, covid_us-states 3, influenza_us-regions 1; by horizon h15 7, h10 6; winner when not incidence sin_doy 12, cos_doy 1
-  T2 lags 1-5 outweigh lags 16-20 on every panel: PASS  dengue=0.51>0.14, influenza_japan=0.48>0.19, influenza_us-regions=0.70>0.12, influenza_us-states=0.64>0.14, covid_us-states=0.72>0.12, ebola_L12=0.76>0.08, ebola_L12_zeroshot=0.79>0.06
-  T3 seasonality share (sin+cos) on each influenza panel exceeds each Ebola arm: PASS  influenza_japan=0.427, influenza_us-regions=0.385, influenza_us-states=0.482, ebola_L12=0.271, ebola_L12_zeroshot=0.252
+  T2 lags 1-5 outweigh lags 16-20 on every panel: PASS  dengue=0.51>0.14, influenza_japan=0.48>0.19, influenza_us-regions=0.70>0.12, influenza_us-states=0.64>0.14, covid_us-states=0.72>0.12, ebola_L12=0.72>0.10, ebola_L12_zeroshot=0.76>0.08
+  T3 seasonality share (sin+cos) on each influenza panel exceeds each Ebola arm: PASS  influenza_japan=0.427, influenza_us-regions=0.385, influenza_us-states=0.482, ebola_L12=0.275, ebola_L12_zeroshot=0.266
   obs_mask is constant 1.0 on the three influenza panels and COVID, so nothing in those panels
   varies it and no finding about the model can rest on its share there.
   That share is NOT near zero: up to 0.182 by IG and 0.150 by occlusion on those
@@ -120,6 +120,3 @@ question: how this district's inputs move the national total.
   alone: a district that falls silent and then files puts the whole multi-week increment on
   the reporting week (client_decisions.md A4), and this one carries 1,428 on
   2014-10-25. The peaks are inflated and the quiet weeks either side flattened.
-
-  wrote results\reports\explain_report.txt
-  wrote figures/explain.png and figures/explain.pdf
