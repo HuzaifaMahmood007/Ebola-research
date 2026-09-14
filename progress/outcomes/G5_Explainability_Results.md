@@ -1,6 +1,8 @@
 # G5 Explainability: Results and Verification
 
-**Written 2026-09-10. Rewritten 2026-09-10 after the IG baseline fix and the two reruns.** This is
+**Written 2026-09-10. Rewritten 2026-09-10 after the IG baseline fix and the two reruns. Revised
+2026-09-15 after the four remaining development panels were rerun at 128 steps under the fixed
+baseline; see the revision note below for what moved and what did not.** This is
 the committed verifier document called for in `progress/planning/G5_Explainability_Goals.md`
 section 7, item 3. Gap Ledger row E1 (`progress/planning/Gap_Ledger.md:286`) lists this document as
 one of four blockers keeping G5 at **PARTIAL, not DONE**. This document does not change that status.
@@ -20,7 +22,42 @@ version of this document, from `Reports/explaiability_report.md`, or from pasted
 3. both Ebola arms were rerun under the fixed baseline.
 
 `results/explain/*.npz` (55 files), `results/reports/explain_report.txt`, `figures/explain.png` and
-`figures/explain.pdf` are all regenerated. `Reports/explaiability_report.md` is **not**, see section 9.
+`figures/explain.pdf` are all regenerated.
+
+### Revision note, 2026-09-15
+
+Two things were found and both are now closed. Numbers in the body below are the current ones.
+
+**First, dengue had already moved again and no report said so.** The archives were at **128** steps
+while `results/reports/explain_report.txt` still printed 64. The report was stale against its own
+inputs. Regenerated. Dengue's worst completeness error is **0.0040**, not 0.0155.
+
+**That closes blocker (b), and the answer is that there was never a defect.** The residual falls
+0.0444 at 32 steps, 0.0155 at 64, 0.0040 at 128: ratios of 2.9x and 3.9x for each doubling. The
+midpoint Riemann rule this integrator uses has error of order one over steps squared, which predicts
+4x per doubling. Dengue was under-integrated, not mis-attributed, and it is the panel that would be:
+7,165 nodes and the most curved path in the study. At 128 steps its 0.0040 sits beside
+`influenza_japan` at 0.0021. There is nothing left to fix.
+
+**Second, the four remaining development panels were rerun at 128 steps under the fixed baseline**,
+which closes the split where dengue and the Ebola arms had moved on and they had not. The result is
+the cleanest evidence in this document:
+
+- `mean |baseline_mu|` read straight from the new archives is **exactly 0.0** on all four. The
+  no-op claim for per-node scaling is now measured from the artifact, not argued from the scaler.
+- The whole report diff is **four lines**, and only the step, err and gap columns moved. Every
+  channel share, every lag band, every falsification test and both agreement tallies are
+  byte-identical to the 32-step zero-baseline run.
+
+One honest detail: `influenza_us-regions` err went *up*, 0.0017 to 0.0019. It is a worst case over
+origins, horizons and seeds at the fourth decimal, and it is the only quantity in the entire rerun
+that moved the wrong way. It is noise, and it is recorded rather than dropped.
+
+Both Ebola arms remain at **32** steps, deliberately. Those are the settings their reported numbers
+were produced under, and their err is already 0.0017 and 0.0005.
+
+`Reports/explaiability_report.md` was regenerated from the current archives on 2026-09-15 and now
+matches `results/reports/explain_report.txt` exactly.
 
 ---
 
@@ -105,11 +142,12 @@ section 7 for what that does to the numbers, which is very little.
 | 2 | Faithfulness: IG vs occlusion agreement | printed in `--report` | **built, reverified today** |
 | 3 | Spatial: Ebola edge ablation, degree held fixed | `*__edges.npz`, 10 files | **built, reverified today**, see section 6 |
 | 4 | Local: Montserrado's own h3 forecast at the 2014-10-25 peak | `*__local.npz`, 10 files | **built, reverified today** |
-| 5 | Gate figure placed in a document | `figures/gate.pdf` exists | **exists, still cited nowhere.** I grepped `Reports/Manuscript_v2.md` for `gate.pdf` and `gate.png`: zero hits. Still open. |
+| 5 | Gate figure placed in a document | `figures/gate.png` is **Figure 1**, `Reports/Manuscript_v2.md` section 9.1 | **DONE 2026-09-15.** It replaced Table 3, which held the same four numbers for four panels where the figure covers five, so COVID stops being absent from that readout. Tables renumbered 3 to 8; no prose cross-referenced a table by number. Render verified: the docx carries the `[ INSERT FIGURE HERE ]` marker and the caption, with no literal markdown leaked. |
 | 6 | Paper section, SHAP retracted, IG named throughout | `Reports/Manuscript_v2.md` section 9.8 | **not done.** Line 508 is still `[PENDING. A minimal global attribution ... is scoped and will be reported here. This version claims no attribution result...]` *(checked on disk 2026-09-10)*. Manuscript edit, out of scope for this internal doc. |
 
-Goals 1 through 4 are code-complete and their outputs reverify. Goals 5 and 6 are writing work that
-has not happened.
+Goals 1 through 5 are done and their outputs reverify. Goal 6 is manuscript writing that has not
+happened, and it is blocked behind the client confirming the SHAP-to-IG substitution rather than
+behind any code.
 
 ---
 
@@ -121,11 +159,11 @@ Read `err` first, for the reason section 5 measures.
 
 | panel | steps | cells | IG err (worst) | IG gap (worst) | incidence share |
 |---|---|---|---|---|---|
-| dengue | 64 | 63,753 | 0.0155 | 0.2967 | 0.630 +- 0.024 |
-| influenza_japan | 32 | 4,136 | 0.0032 | 0.0635 | 0.461 +- 0.033 |
-| influenza_us-regions | 32 | 920 | 0.0017 | 0.0931 | 0.497 +- 0.040 |
-| influenza_us-states | 32 | 4,361 | 0.0024 | 0.0505 | 0.405 +- 0.020 |
-| covid_us-states | 32 | 4,018 | 0.0003 | 0.0375 | 0.446 +- 0.035 |
+| dengue | 128 | 63,753 | 0.0040 | 0.0514 | 0.631 +- 0.024 |
+| influenza_japan | 128 | 4,136 | 0.0021 | 0.0479 | 0.461 +- 0.033 |
+| influenza_us-regions | 128 | 920 | 0.0019 | 0.0866 | 0.497 +- 0.040 |
+| influenza_us-states | 128 | 4,361 | 0.0022 | 0.0347 | 0.405 +- 0.020 |
+| covid_us-states | 128 | 4,018 | 0.0002 | 0.0127 | 0.446 +- 0.035 |
 | ebola_L12 | 32 | 2,930 | 0.0017 | 0.0645 | 0.564 +- 0.050 |
 | ebola_L12_zeroshot | 32 | 2,930 | 0.0005 | 0.0016 | 0.570 +- 0.046 |
 
@@ -148,11 +186,14 @@ Ebola lag bands, IG share with the occlusion share beside it: `ebola_L12` 0.725 
   0.275, and the test still passes.
 
 **Faithfulness.** Recomputed: seed-mean **54 of 56** panel-horizon cells agree on both the top channel
-and the top lag band; per (seed, horizon) **263 of 280**. The two seed-mean misses are named, not
+and the top lag band; per (seed, horizon) **264 of 280**. The two seed-mean misses are named, not
 smoothed over: `covid_us-states` h5 and `ebola_L12_zeroshot` h15, both IG picking incidence where
 occlusion picks sin_doy. Per-seed disagreement concentrates on `covid_us-states` (7) and
-`ebola_L12_zeroshot` (4); dengue 2, `influenza_us-states` 2, `influenza_japan` 1,
-`influenza_us-regions` 1. Both tallies are unchanged by the fix.
+`ebola_L12_zeroshot` (4); `influenza_us-states` 2, dengue 1, `influenza_japan` 1,
+`influenza_us-regions` 1. The seed-mean tally is unchanged by the fix. The per-seed tally moved by
+one, 263 to 264, between dengue at 64 steps and dengue at 128: one dengue cell stopped disagreeing.
+Finer integration is the obvious reason and I have not isolated it to that cell, so it is reported
+as what it is, a single cell moving in the direction more steps would predict.
 
 **Random-weight control.** I reran it directly rather than reading it off the report. An untrained
 encoder reproduces the trained lag comb at r = 0.962, 0.963, 0.951, 0.963, 0.912 across the five
@@ -271,16 +312,23 @@ the LTR degree feature live.
 
 ## 7. Blocker status
 
-**(a) Manuscript and figure placement. Open, untouched.** `figures/gate.pdf` is cited in no document,
-and `Reports/Manuscript_v2.md:508` is still a `[PENDING]` placeholder. Both verified on disk today.
+**(a) Manuscript and figure placement. Half closed 2026-09-15.** The gate figure is now placed:
+`figures/gate.png` is **Figure 1** in `Reports/Manuscript_v2.md` section 9.1, where it replaced
+Table 3, and the remaining tables were renumbered 3 to 8. No prose cross-referenced a table by
+number. The render was verified rather than assumed, and `Reports/md_to_docx.py` now intercepts a
+whole-line image as a block and emits a red highlighted `[ INSERT FIGURE HERE: <path> ]` marker with
+the caption beneath it, because figures are pasted into Word by hand here. Still open in this row:
+`Reports/Manuscript_v2.md:508` remains a `[PENDING]` placeholder.
 
-**(b) Dengue IG completeness. PARTIAL, reduced but not closed.** Dengue's worst completeness error
-fell from **0.0444 to 0.0155** (seed 52, origin index 22, h15, recomputed from
-`explain__dengue__seed52.npz`). Its worst gap fell from 0.7114 to 0.2967. That is a 2.9x improvement
-and dengue is still **4.77x the next-worst panel** (`influenza_japan` at 0.0032), so it remains the
-outlier and the cause named in the scope note, under-integration on a 7,165-node surface, is reduced
-rather than removed. Doubling the steps again would presumably help again, at about 10 s per origin
-per seed against 5 s now.
+**(b) Dengue IG completeness. CLOSED 2026-09-15, and it was never a defect.** Dengue's worst
+completeness error fell 0.0444 at 32 steps, to 0.0155 at 64, to **0.0040 at 128** (seed 52, origin
+index 22, h15, recomputed from `explain__dengue__seed52.npz`). Its worst gap fell 0.7114 to 0.2967
+to 0.0514. The two doublings bought 2.9x and 3.9x. The midpoint Riemann rule has error of order one
+over steps squared, so it predicts 4x per doubling, and that is what happened. Dengue was
+**under-integrated, not mis-attributed**, which is exactly the panel where that would show: 7,165
+nodes and the most curved path in the study. At 128 steps dengue's 0.0040 sits beside
+`influenza_japan` at 0.0021, so it is no longer an outlier of any kind and the scope note's stated
+cause is confirmed and removed rather than merely reduced.
 
 **The confound I was told to expect is not there, and the real situation is slightly different.** I
 checked whether the dengue gain belongs to the extra steps or to the new baseline, by rerunning IG on
@@ -364,11 +412,13 @@ anywhere else.
 
 ## 9. What I could not verify, and what is now stale
 
-- **`Reports/explaiability_report.md` is stale.** It is dated 2026-09-08 and predates both reruns. It
-  differs from the regenerated `results/reports/explain_report.txt` on 27 lines. The previous version
-  of this document claimed the two were byte-identical; that claim was true when written and is false
-  now. Regenerate it before anyone quotes it. I did not edit it, since report rendering is not this
-  document's job.
+- **`Reports/explaiability_report.md` was stale. Fixed 2026-09-15.** It was dated 2026-09-08,
+  predated both reruns and differed from the regenerated `results/reports/explain_report.txt` on 27
+  lines. It has been regenerated from the current archives and the two are byte-identical again.
+  **The same trap caught `results/reports/explain_report.txt` itself**, which printed dengue at 64
+  steps while the archives held 128. Two generated reports drifted from their own inputs inside five
+  days. Regenerate both from the archives rather than reading either, and do not trust a number in
+  this family without checking the step count it was produced at.
 - **The 219-check throwaway verification** from `G5_Explainability_Goals.md:93-95` is not in the repo
   and cannot be rerun. My mutation tests in section 1.4 are a real but smaller substitute.
 - **The pre-fix per-cell archives are gone**, overwritten by the reruns. Where I quote a pre-fix
@@ -384,9 +434,15 @@ anywhere else.
 
 **PARTIAL, matching Gap Ledger E1. Not DONE.**
 
-Blocker (c) is closed. Blocker (b) is reduced from 0.0444 to 0.0155 but dengue is still 4.77x every
-other panel, and blocker (d) has not moved at all. Two of four blockers being open is what keeps this
-at PARTIAL. Anyone reading a closed blocker as a closed goal would be reading it wrong.
+**As of 2026-09-15, three of the four blockers are closed and the goal is still not.** Blocker (a),
+this document, is committed. Blocker (b) is closed: dengue's completeness error was quadrature and
+went to 0.0040 at 128 steps, in line with every other panel. Blocker (c), the zero baseline, is
+closed. **Blocker (d), the three client decisions, has not moved at all**, and it is the only one
+left. That is what keeps G5 at PARTIAL, and it is worth being blunt about why: the remaining gap is
+not code, not numbers and not verification. It is that the client has not confirmed we may deliver
+integrated gradients instead of the SHAP the brief tags REQUIRED, and is still holding a document
+that says we did SHAP. Anyone reading three closed blockers as a closed goal would be reading it
+wrong.
 
 What is solid: the code exists, runs, and reverifies clean end to end. `--selfcheck` catches its own
 deliberately-broken inputs, including two new checks aimed at the baseline itself. Every table number
@@ -395,18 +451,21 @@ is 54 of 56 with both disagreements named, the neighbour-hub finding holds under
 mutation-tested check, and the neighbour numbers came out identical across the fix in exactly the way
 the code says they must.
 
-What is still missing, and this document closes none of it:
+What is still missing:
 
-1. Dengue IG completeness at h15 is 0.0155, improved but still the outlier.
-2. `figures/gate.pdf` exists but is cited in no document.
-3. `Reports/Manuscript_v2.md:508` is still a `[PENDING]` placeholder and the SHAP-to-IG correction is
-   not written into it.
-4. The three client decisions in `G5_Explainability_Goals.md` section 8 are unanswered as far as I can
-   find on disk.
-5. `Reports/explaiability_report.md` needs regenerating from the current archives.
-6. The five development panels are still on the old zero baseline while the Ebola arms are on the
-   fixed one. Harmless on influenza and COVID by measurement, near-harmless on dengue by measurement,
-   untidy on paper.
+1. **The three client decisions** in `G5_Explainability_Goals.md` section 8 are unanswered as far as
+   I can find on disk. This is the whole of what is left, and decision 2, retracting the SHAP row
+   from a document the client already holds, is the one with an external cost that grows while it
+   sits.
+2. `Reports/Manuscript_v2.md:508` is still a `[PENDING]` placeholder and the SHAP-to-IG correction is
+   not written into it. That is manuscript work, tracked under Gap Ledger E2.
+
+Closed on 2026-09-15 and listed here so a reader of the previous version knows they moved: dengue IG
+completeness (0.0040 at 128 steps, quadrature not defect); the gate figure, now Figure 1 in
+Manuscript section 9.1 with the render verified; `Reports/explaiability_report.md`, regenerated and
+byte-identical to the archives; and the baseline split, with all five development panels now on the
+fixed baseline at 128 steps and `mean |baseline_mu|` measured at exactly 0.0 on the four per-node
+panels.
 
 None of the findings here should be read against the model's transfer performance. Every
 neighbour-attribution and channel-attribution number in this document describes what the model reads,
