@@ -1,14 +1,26 @@
-"""paper_compare.py -- the three-way picture (Work Order 1c): published | reproduced | our encoder.
+"""paper_compare.py -- published | reproduced | our encoder | our transfer (Work Order 1c).
 
 Client condition, verbatim: "validate each reproduction against the source paper's published numbers
 before using it as a comparator, and show me our reproduction next to their reported figure. If we
 can't get close, that baseline doesn't go in the comparison table."
 
-Three numbers per (model, dataset, horizon), all in ONE metric definition:
+Five numbers per (model, dataset, horizon), all in ONE metric definition:
 
   1. PUBLISHED  -- transcribed from the paper's own table ("Published Model benchmarks/")
   2. REPRODUCED -- that baseline run on our pipeline, from baselines/_preds/*.npz
   3. OUR ENCODER -- results/single/encoder__<ds>__seed*, the thing we are actually claiming
+  4. OUR TRANSFER, FEW-SHOT -- results/lodo/encoder_ldo3__<ds>__seed*
+  5. OUR TRANSFER, ZERO-SHOT -- results/lodo/encoder_ldo3_zeroshot__<ds>__seed*
+
+COLUMNS 4 AND 5 ARE NOT A LIKE-FOR-LIKE RACE. Every baseline here trains on the disease it is scored
+on, and being transductive and node-indexed they cannot be run on a disease they never saw at all,
+so the number simply does not exist for them. Columns 4 and 5 hold the target disease out of
+training entirely. They price what the held-out setting costs OUR model; they are not evidence about
+SOTA in either direction. The prose in Reports/baseline_reproduction_table.md says so, and any
+figure or table that lifts these columns has to carry the same sentence.
+
+COVID has no baseline of any kind, so its four cells are emitted with model "(none)" and "no run" in
+columns 1 and 2. That is an absence being stated, not a run that failed.
 
 WHY THIS IS NOT score_baseline.py's NUMBER. score.py's headline is per-node RMSE averaged over nodes
 (then over countries). Every one of these papers defines RMSE as sqrt(mean over ALL scored cells) --
@@ -120,7 +132,7 @@ def subsample_rows(dataset: str) -> np.ndarray | None:
     return _SUB_ROWS[dataset]
 
 
-def encoder_pooled():
+def encoder_pooled(subdir="single", prefix="encoder"):
     """{(dataset, h): [rmse_per_seed]} -- cell-pooled encoder RMSE, on the baselines' node set.
 
     sqrt(sum(sse)/sum(n)) over every (origin, country) cell IS the cell-pooled RMSE, and the
@@ -128,15 +140,21 @@ def encoder_pooled():
     dataset is pooled from the per-node archive instead as sqrt(sum(n_i * rmse_i^2)/sum(n_i)), which
     is the same quantity node-side. The two routes agree to the printed precision on the full panel;
     the cell-count check below is what holds them together.
+
+    (subdir, prefix) selects the run family. "single"/"encoder" is the single-disease ceiling;
+    "lodo"/"encoder_ldo3" and "lodo"/"encoder_ldo3_zeroshot" are the two LDO3 cross-disease transfer
+    arms. The glob has to stay tight: results/lodo/ also holds ANIL and capacity runs whose stems
+    carry a tag between the prefix and the dataset, so the dataset is read from the END of the stem
+    (<prefix>__<dataset>__seed<S>) rather than from field 1.
     """
     out = collections.defaultdict(list)
-    for po in sorted((RESULTS / "single").glob("encoder__*__perorigin.npz")):
+    for po in sorted((RESULTS / subdir).glob(f"{prefix}__*__perorigin.npz")):
         stem = po.name[: -len("__perorigin.npz")]
         pn = po.with_name(stem + "__pernode.npz")
         if not pn.exists():
             print(f"  ! {stem}: no __pernode.npz to verify against, skipped", file=sys.stderr)
             continue
-        dataset = stem.split("__")[1]
+        dataset = stem.split("__")[-2]
         keep_rows = subsample_rows(dataset)
         zo, zn = np.load(po, allow_pickle=True), np.load(pn, allow_pickle=True)
         for h in (3, 5, 10, 15):
@@ -178,51 +196,88 @@ def _ms(a):
 
 def main(as_md=False):
     acc, enc = collect(), encoder_pooled()
+    # LDO3 cross-disease transfer, both arms, from the records already on disk. These are NOT
+    # like-for-like with the baselines: EpiGNN, Cola-GNN and HeatGNN all train on the target disease,
+    # and being transductive and node-indexed they cannot be run on a disease they never saw at all.
+    # The column prices what the zero-shot setting costs us, it is not a claim that we beat SOTA.
+    tra = encoder_pooled("lodo", "encoder_ldo3")
+    trz = encoder_pooled("lodo", "encoder_ldo3_zeroshot")
     rows = []
-    for (model, ds, h), vals in sorted(acc.items()):
-        r_mean, r_sd = _ms([v[0] for v in vals])
+
+    def _row(model, ds, h, vals):
+        r_mean, r_sd = _ms([v[0] for v in vals]) if vals else (None, None)
         pub = PUBLISHED.get((model, ds), {}).get(h)
-        degen = sum(1 for v in vals if v[3])
         e = enc.get((ds, h))
         e_mean, e_sd = _ms(e) if e else (float("nan"), float("nan"))
-        rows.append(dict(
-            model=model, dataset=ds, h=h, n_seeds=len(vals), degen=degen,
+        a, z = tra.get((ds, h)), trz.get((ds, h))
+        a_mean, a_sd = _ms(a) if a else (float("nan"), float("nan"))
+        z_mean, z_sd = _ms(z) if z else (float("nan"), float("nan"))
+        pc = lambda v: (100.0 * (v - e_mean) / e_mean) if e and not np.isnan(v) else None
+        return dict(
+            model=model, dataset=ds, h=h, n_seeds=len(vals), degen=sum(1 for v in vals if v[3]),
             pub=pub[0] if pub else None,
             repro=r_mean, repro_sd=r_sd,
-            repro_pcc=np.nanmean([v[1] for v in vals]),
+            repro_pcc=np.nanmean([v[1] for v in vals]) if vals else float("nan"),
             enc=e_mean, enc_sd=e_sd, enc_seeds=len(e) if e else 0,
-            d_pub=(100.0 * (r_mean - pub[0]) / pub[0]) if pub else None,
-            d_enc=(100.0 * (e_mean - r_mean) / r_mean) if e and r_mean > 0 else None))
+            tr_a=a_mean, tr_a_sd=a_sd, tr_a_seeds=len(a) if a else 0,
+            tr_z=z_mean, tr_z_sd=z_sd, tr_z_seeds=len(z) if z else 0,
+            d_pub=(100.0 * (r_mean - pub[0]) / pub[0]) if pub and vals else None,
+            d_enc=(100.0 * (e_mean - r_mean) / r_mean) if e and vals and r_mean > 0 else None,
+            d_tr_a=pc(a_mean), d_tr_z=pc(z_mean))
+
+    for (model, ds, h), vals in sorted(acc.items()):
+        rows.append(_row(model, ds, h, vals))
+    # COVID has no baseline of any kind, in any repo. Emit the cells anyway so the absence is stated
+    # rather than looking like four runs that failed.
+    for h in (3, 5, 10, 15):
+        rows.append(_row("(none)", "covid_us-states", h, []))
 
     def f(v, w=".1f", dash="--"):
         return dash if v is None or (isinstance(v, float) and np.isnan(v)) else format(v, w)
 
+    def pm(v, sd):
+        return f"{f(v, '.1f', '—')} ± {f(sd, '.1f', '—')}" if not (
+            v is None or np.isnan(v)) else "no run"
+
     if as_md:
         print("| model | dataset | h | 1. published | 2. reproduced (ours) | Δ% vs published "
-              "| 3. our encoder | encoder vs reproduced | seeds | flag |")
-        print("|---|---|---|---|---|---|---|---|---|---|")
+              "| 3. our encoder | encoder vs reproduced | 4. transfer adapted | adapted vs 3 "
+              "| 5. transfer zero-shot | zero-shot vs 3 | seeds | flag |")
+        print("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
         for x in rows:
             flags = []
+            if x["model"] == "(none)":
+                flags.append("**no baseline exists for COVID**")
             if x["degen"]:
                 flags.append(f"**{x['degen']}/{x['n_seeds']} constant**")
             if subsample_rows(x["dataset"]) is not None:
                 flags.append("both sides on the 2,392-node subsample")
             flag = "; ".join(flags)
             print(f"| {x['model']} | {x['dataset']} | {x['h']} | {f(x['pub'], '.0f', '—')} | "
-                  f"{f(x['repro'])} ± {f(x['repro_sd'])} | "
+                  f"{pm(x['repro'], x['repro_sd'])} | "
                   f"{f(x['d_pub'], '+.1f', '—')}{'%' if x['d_pub'] is not None else ''} | "
                   f"{f(x['enc'], '.1f', '—')} ± {f(x['enc_sd'], '.1f', '—')} | "
                   f"{f(x['d_enc'], '+.1f', '—')}{'%' if x['d_enc'] is not None else ''} | "
-                  f"{x['n_seeds']}/{x['enc_seeds']} | {flag} |")
+                  f"{f(x['tr_a'], '.1f', '—')} ± {f(x['tr_a_sd'], '.1f', '—')} | "
+                  f"{f(x['d_tr_a'], '+.1f', '—')}{'%' if x['d_tr_a'] is not None else ''} | "
+                  f"{f(x['tr_z'], '.1f', '—')} ± {f(x['tr_z_sd'], '.1f', '—')} | "
+                  f"{f(x['d_tr_z'], '+.1f', '—')}{'%' if x['d_tr_z'] is not None else ''} | "
+                  f"{x['n_seeds']}/{x['enc_seeds']}/{x['tr_a_seeds']}/{x['tr_z_seeds']} | {flag} |")
     else:
         print(f"{'model':10} {'dataset':22} {'h':>3} {'1.pub':>8} {'2.reproduced':>18} {'d%pub':>8} "
-              f"{'3.encoder':>18} {'enc-v-rep':>10} {'sd':>5} {'flag':>14}")
+              f"{'3.encoder':>18} {'enc-v-rep':>10} {'4.transfer':>18} {'v-3':>8} "
+              f"{'5.zeroshot':>18} {'v-3':>8} {'flag':>14}")
         for x in rows:
             flag = f"{x['degen']}/{x['n_seeds']} CONST" if x["degen"] else ""
+            rep = ("    no run     " if x["repro"] is None
+                   else f"{f(x['repro'], '10.1f')} +/-{f(x['repro_sd'], '5.1f')}")
             print(f"{x['model']:10} {x['dataset']:22} {x['h']:>3} {f(x['pub'], '8.0f'):>8} "
-                  f"{f(x['repro'], '10.1f')} +/-{f(x['repro_sd'], '5.1f')} {f(x['d_pub'], '+7.1f'):>8} "
+                  f"{rep} {f(x['d_pub'], '+7.1f'):>8} "
                   f"{f(x['enc'], '10.1f')} +/-{f(x['enc_sd'], '5.1f')} "
-                  f"{f(x['d_enc'], '+9.1f'):>10} {'':>5} {flag:>14}")
+                  f"{f(x['d_enc'], '+9.1f'):>10} "
+                  f"{f(x['tr_a'], '10.1f')} +/-{f(x['tr_a_sd'], '5.1f')} {f(x['d_tr_a'], '+7.1f'):>8} "
+                  f"{f(x['tr_z'], '10.1f')} +/-{f(x['tr_z_sd'], '5.1f')} {f(x['d_tr_z'], '+7.1f'):>8} "
+                  f"{flag:>14}")
     return rows
 
 
