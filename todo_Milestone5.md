@@ -3,9 +3,10 @@
 **Scope.** Week 5 of `progress/planning/Final Internal Project Brief.md`, days 21 to 25: the Ebola
 case study, calibrated uncertainty, and explainability. Nothing outside that week is listed here.
 
-**Position.** The compute for this milestone is finished and nothing is queued. What is left is
-explainability closure, one client decision that is overdue, and the milestone report itself. Status
-below is checked against disk on 2026-09-15, not against the progress docs.
+**Position, updated 2026-09-15 after task 3 was worked through.** The compute for this milestone is
+finished and nothing is queued. **Tasks 1, 2 and the whole engineering side of task 3 are done.**
+Two things are left: three client decisions that no amount of code can move, and the milestone
+report, which does not exist. Status below is checked against disk, not against the progress docs.
 
 Brief tasks, and where each one actually stands:
 
@@ -40,10 +41,15 @@ result is written up, which is task 4 below.
 **Nothing to do here either.** This is the strongest result in the milestone and it is already
 machine-verified.
 
-## 3. Explainability, task 3. The real work
+## 3. Explainability, task 3. Engineering done 2026-09-15
 
-Gap Ledger row E1 is **PARTIAL**. Two of its four blockers closed in commit `b9783b5`, two did not,
-and the rerun created three new gaps.
+Gap Ledger row E1 is still **PARTIAL**, but **three of its four blockers are now closed and the
+fourth is not ours**. Commits `b9783b5`, `17aedaa`, `b1d66f6`, `4aab8e6`. Nothing below needs a GPU,
+a rerun or another line of code.
+
+**The one that mattered turned out not to be a bug.** Dengue's completeness error was quadrature,
+not mis-attribution, and it closed by running the integrator properly rather than by fixing
+anything. Two generated reports were also found stale against their own archives on the way.
 
 - [x] Blocker (c), the zero IG baseline. `ig_baseline()` and `baseline_mu()` in `explain.py`
 - [x] Verifier document written and now committed, `progress/outcomes/G5_Explainability_Results.md`
@@ -89,14 +95,34 @@ These are the actual blockers. None of them is code and none of them can be clos
       describes what the model reads, not whether reading it helps. The gate-off ablation already
       answered the accuracy question separately, and negatively, in 0 of 40 cells
 
+**Deferred by you on 2026-09-15**, code items closed first. Nothing further can be done on G5 until
+these are answered, so the honest statement of G5's status is now "blocked on the client", not
+"in progress".
+
+### 3b. Two loose ends the work left behind
+
+- [ ] **Decide what happens to `Reports/md_to_docx_patched.py`.** It embeds figures, which is the
+      behaviour we deliberately replaced with red `[ INSERT FIGURE HERE ]` markers in
+      `Reports/md_to_docx.py`. It is also what rendered `Milestone4_Report.docx` with
+      `framework_v2.png` inside it. Leaving both is a trap: whoever picks the patched one next gets
+      embedded images without meaning to. Delete it, or keep it and say in `REPRODUCIBILITY.md` what
+      it is for
+- [ ] **`Reports/Manuscript_v2.md:508` is still a `[PENDING]` placeholder**, and the SHAP-to-IG
+      correction is not written into it. Tracked as ledger E2, and it cannot honestly be written
+      until decision 1 above comes back
+
 ## 4. Compile the case study, task 4
 
 The brief's Week 5 deliverables are the case-study results with uncertainty, the calibration
 evaluation, and the explainability outputs. The numbers exist. The document does not. Milestone 4 got
 `Milestone4_Report.md`, and there is no Milestone 5 equivalent.
 
+**This is now the only real work left in Milestone 5.**
+
 - [ ] **Write `Milestone5_Report.md`.** Follow the Milestone 4 structure and the house style in
-      `Reports/md_to_docx.py`, Calibri 11, Light Grid Accent 1, 9pt cells
+      `Reports/md_to_docx.py`, Calibri 11, Light Grid Accent 1, 9pt cells. Figures go in as
+      `![caption](../figures/x.png)` on their own line and render as a red INSERT FIGURE marker for
+      manual pasting, so write the caption into the alt text
 - [ ] Section on the case study result, stated without softening: the model beats persistence by
       16 / 15 / 16 / 44 percent at h3/h5/h10/h15 on the primary arm with no Ebola data at all, and
       14 comparisons clear zero on the corrected interval
@@ -105,7 +131,10 @@ evaluation, and the explainability outputs. The numbers exist. The document does
       intervals span zero, closest is h3 RMSE [-11.85, +0.35]. The wins come from the unadapted model
 - [ ] Section on calibration, which is the milestone's strongest result
 - [ ] Section on explainability, marked PARTIAL, naming the SHAP-to-IG substitution rather than
-      hiding it
+      hiding it. The evidence is ready to quote: T1/T2/T3 all PASS, IG-versus-occlusion agreement
+      264 of 280 with both seed-mean disagreements named, worst completeness error 0.0040 on the
+      largest panel, and a random-weight control showing the lag comb is architectural rather than
+      epidemiological, which is why lags are reported at band level only
 - [ ] **Add the normalisation Threats paragraph** using the numbers in `CLAUDE.md` section 6. Ebola
       runs pooled scaling while every training panel runs per-node, district means sit 0.54 to 0.66
       off zero, and pooling HELPS on the matched panel by 6.8 percent. It helps most at h10 and h15,
@@ -131,7 +160,9 @@ Three numbers live near each other and a reader will merge them if we let them.
 
 Listed so they do not leak in and inflate the milestone.
 
-- Manuscript word count, 13,809 against 12,000. That is Week 6
+- Manuscript word count, **13,834** against 12,000, measured 2026-09-15. Up 25 from 13,809: the
+  Figure 1 caption carries the density caveat and costs more than the table it replaced saved. That
+  is Week 6
 - The US-States weak-panel disclosure, ledger C9. Week 6
 - The MTGNN sentence in `Reports/Week4_Experiments_Stakeholder_Brief.md:172-174`. Week 4 debt
 - The retrain-based shuffled-adjacency control, about 6 hours. Optional, and it is an ablation,
@@ -140,6 +171,12 @@ Listed so they do not leak in and inflate the milestone.
 
 ---
 
-**Shortest path to closing Milestone 5:** send decision 2 to the client today, correct the ledger and
-the audit line, regenerate the explainability report, then write `Milestone5_Report.md`. Only the
-last one takes real time, and none of it needs a GPU.
+**Shortest path to closing Milestone 5, as of 2026-09-15.** Two things, in this order.
+
+1. **Send the client the three decisions**, decision 2 first, because they are holding a document
+   that says we delivered SHAP and we did not. Until that comes back, G5 cannot close no matter what
+   we build, and the milestone report cannot honestly describe the explainability section.
+2. **Write `Milestone5_Report.md`.** Every number it needs is on disk and verified. This is the only
+   remaining item that takes real time, and it needs no GPU.
+
+Everything else in this file is done.
