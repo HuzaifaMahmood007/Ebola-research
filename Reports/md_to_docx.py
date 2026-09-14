@@ -23,7 +23,8 @@ from pathlib import Path
 from docx import Document
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
-from docx.shared import Pt, Inches
+from docx.enum.text import WD_COLOR_INDEX
+from docx.shared import Pt, Inches, RGBColor
 
 HERE = Path(__file__).resolve().parent
 DEFAULT = ["Encoder_Results_Consolidated.md", "Encoder_Results_Stakeholder_Brief.md"]
@@ -38,6 +39,34 @@ TABLE_STYLE = "Light Grid Accent 1"
 # inline: **bold**, *italic*, `code`, [text](target). Applied to a JOINED paragraph, never to a
 # single source line -- markdown wraps mid-span, so line-at-a-time parsing leaves stray asterisks.
 _INLINE = re.compile(r"(\*\*.+?\*\*|(?<!\*)\*(?!\s)[^*]+?\*|`[^`]+`|\[[^\]]+\]\([^)]*\))")
+
+# A whole-line image: ![alt](path). Must be intercepted as a BLOCK. _INLINE above matches the
+# [alt](path) half of it, so an image line left to add_runs() renders the alt text italic and
+# leaves a stray "!" behind, which is the leftover-markdown symptom this converter exists to avoid.
+_IMAGE = re.compile(r"^!\[([^\]]*)\]\(([^)]+)\)\s*$")
+
+
+def emit_image_placeholder(doc, alt, target):
+    """Mark where a figure goes; the figure itself is pasted in by hand in Word.
+
+    ponytail: a marker, not an embed. python-docx can place the picture, but the house workflow is
+    manual figure insertion, and a converter that embeds would silently overwrite a hand-placed
+    figure on every re-render. Red bold on a yellow highlight so it cannot be scrolled past, and
+    the path is printed so the person pasting knows which file to reach for. The caption follows
+    as ordinary italic text, so only the marker needs deleting once the image is in.
+    """
+    p = doc.add_paragraph()
+    p.alignment = 1                                        # WD_ALIGN_PARAGRAPH.CENTER
+    p.paragraph_format.space_after = Pt(2)
+    r = p.add_run(f"[ INSERT FIGURE HERE: {target} ]")
+    r.bold = True
+    r.font.color.rgb = RGBColor(0xC0, 0x00, 0x00)
+    r.font.highlight_color = WD_COLOR_INDEX.YELLOW
+    if alt.strip():
+        cap = doc.add_paragraph()
+        cap.alignment = 1
+        cap.paragraph_format.space_after = Pt(10)
+        add_runs(cap, alt.strip(), italic=True)
 
 
 def add_runs(par, text, bold=False, italic=False):
@@ -169,6 +198,13 @@ def convert(md_path, out_path):
             code.append(ln)
             continue
 
+        m_img = _IMAGE.match(s)
+        if m_img:
+            flush_para()
+            flush_table()                           # a figure right after a table must follow it
+            emit_image_placeholder(doc, m_img.group(1), m_img.group(2))
+            continue
+
         if is_table_row(s):
             flush_para()
             if not is_divider(s):
@@ -215,7 +251,8 @@ def _demo():
           "measurable effect, and none is better.** That is the finding.\n\n"
           "Some *italic* and `code` and a [link](x.md).\n\n"
           "**`nrmse` is missing here** — bold wrapping a code span.\n\n"
-          "| a | b |\n|---|---|\n| 1.5 | -2.5 |\n\n"
+          "| a | b |\n|---|---|\n| 1.5 | -2.5 |\n"
+          "![**Figure 1.** *A caption.*](../figures/gate.png)\n\n"
           "- bullet that also wraps\n  onto a second line\n\n"
           "---\n\n1. numbered item\n")
     d = Path(tempfile.mkdtemp())
@@ -255,9 +292,23 @@ def _demo():
     assert nested and nested[0].bold and nested[0].font.name == "Consolas", \
         "a code span inside bold must stay bold AND monospaced, not emit literal backticks"
     assert not any("|" in t for t in texts), "no raw pipe rows may leak as text"
+
+    # 4. an image line becomes a visible placeholder, never an embedded picture and never a stray
+    #    "!" with italic alt text. The junk check above already forbids the raw "](" reaching the
+    #    page; these pin the marker down so it cannot be missed by the person pasting the figure.
+    mark = [r for p in doc.paragraphs for r in p.runs if r.text.startswith("[ INSERT FIGURE HERE")]
+    assert len(mark) == 1, f"expected exactly one figure placeholder, got {[m.text for m in mark]}"
+    assert "../figures/gate.png" in mark[0].text, "the placeholder must name the file to paste in"
+    assert mark[0].bold and mark[0].font.color.rgb == RGBColor(0xC0, 0x00, 0x00) \
+        and mark[0].font.highlight_color == WD_COLOR_INDEX.YELLOW, "the marker must be unmissable"
+    assert not doc.inline_shapes, "figures are pasted in by hand; nothing may be embedded"
+    assert any("A caption." in t for t in texts), "the alt text must survive as a caption"
+    #    and the table it follows must still be a table, i.e. the placeholder did not jump ahead of it
+    assert len(doc.tables) == 1, "an image line straight after a table must not swallow the table"
     os.remove(out)
     print("ok  no literal markdown leaks; wrapped bold/bullets rejoin into single paragraphs; "
-          "title, tables with signed cells, lists and italics all survive")
+          "title, tables with signed cells, lists and italics all survive; figures render as a "
+          "red highlighted INSERT FIGURE marker with the path and caption, nothing embedded")
 
 
 if __name__ == "__main__":

@@ -308,18 +308,11 @@ The protocol was fixed in advance and applies in the same way to every baseline 
 
 Every structural claim in Section 7 holds, and each is checked by machine rather than asserted: the parameter-dimension test, the four-channel test, the covariate test, and *g* ≡ 0 reproducing the graph-free representation to within 10⁻⁶. The same weight set ran at N = 47, 49 and 7,165 with no reshape. No model in our comparison table can do this.
 
-The learned gate is open on every panel, and how far it opens tracks the graph:
+The learned gate is open on every panel, and how far it opens tracks the graph. The mean gate runs from 0.271 on influenza (Japan) to 0.604 on dengue and the normalised spatial contribution from 0.395 to 0.637, with **not one node on any panel sitting below *g* = 0.05**:
 
-| Panel | gate *g* | spatial contribution | fraction with *g* < 0.05 |
-|---|---|---|---|
-| dengue | 0.604 | 0.637 | 0.0% |
-| influenza (Japan) | 0.271 | 0.395 | 0.0% |
-| influenza (US regions) | 0.370 | 0.490 | 0.0% |
-| influenza (US states) | 0.373 | 0.468 | 0.0% |
+![**Figure 1.** *Learned gate and normalised spatial contribution across the five development panels, pooled over seeds and nodes. Panels B and C order those panels by node count and by graph density. Mean degree is near-constant across them, 3.2 to 5.7, so density here is essentially 1/N: the two orderings are one fact shown twice, not two independent pieces of evidence.*](../figures/gate.png)
 
-**Table 3.** *Learned gate and normalised spatial contribution, pooled over seeds and nodes.*
-
-**That table shows the spatial channel is used, not that it is useful.** An open gate is a fact about the model, not about the value of what flows through it. So we ran the ablation. Same trainer, same seeds, same budget, with *g* forced to zero, paired against the released run at the same seed across all five development panels and all four horizons. That gives 60 cells on RMSE, MAE and correlation.
+**That figure shows the spatial channel is used, not that it is useful.** An open gate is a fact about the model, not about the value of what flows through it. So we ran the ablation. Same trainer, same seeds, same budget, with *g* forced to zero, paired against the released run at the same seed across all five development panels and all four horizons. That gives 60 cells on RMSE, MAE and correlation.
 
 The answer is specific, and it splits by what the metric measures:
 
@@ -328,7 +321,7 @@ The answer is specific, and it splits by what the metric measures:
 | Error magnitude (RMSE, MAE) | 40 | **0** | 8 | 32 |
 | Curve shape (PCC) | 20 | **6** | 1 | 13 |
 
-**Table 4.** *Gate-off ablation, paired by seed against the learned gate. "Helps" means removing the spatial mixing made that cell significantly worse.*
+**Table 3.** *Gate-off ablation, paired by seed against the learned gate. "Helps" means removing the spatial mixing made that cell significantly worse.*
 
 **Message passing buys shape, not magnitude.** Switching the graph off costs correlation in 6 of 20 cells and gains it in one, by 0.011. The model tracks an epidemic's rise, turn and fall better when it can see its neighbours. That shows up on US-regions at long horizon (+0.062 at *h* = 10 and +0.107 at *h* = 15), on US-states, and on dengue at three of four horizons. It buys nothing on error. The spatial channel never significantly improves RMSE or MAE on any panel at any horizon, and it makes them worse in 8 of 40 cells. Those are concentrated on influenza-Japan, where removing the graph improves RMSE by 45.3 at *h* = 3 and 61.7 at *h* = 5, and on COVID at *h* = 5. On those panels neighbouring units share a seasonal phase but not a baseline level, so mixing brings in bias along with the timing.
 
@@ -349,7 +342,7 @@ If a new pathogen is a bounded correction to a shared representation, that bound
 | Cross-disease | 36 | **7** | 3 | **+19.8%** |
 | In-domain control | 12 | **0** | 1 | n/a |
 
-**Table 5.** *Adaptation-surface capacity at five seeds, seed-paired against the affine control.*
+**Table 4.** *Adaptation-surface capacity at five seeds, seed-paired against the affine control.*
 
 **The pattern is the finding, not the headline number.** All seven gains fall at *h* = 15: US-regions +19.8%, +14.3% and +12.2%, Japan +6.6%, +6.4% and +6.3%, and US-states +4.5%. All three losses fall at Japan *h* = 3, between −16.6% and −22.5%. The in-domain control gains nothing anywhere. Three things follow. A richer adaptation surface buys accuracy at long horizon and costs it at short horizon. The effect is specific to transfer rather than a sign that the model is too small in general, which the 0 of 12 in the control rules out. And the correction stays a modest fraction of the trunk.
 
@@ -370,7 +363,7 @@ The pattern across horizons is the more useful finding:
 | *h* = 10 | 0 | 1 | 7 |
 | *h* = 15 | 0 | 0 | 8 |
 
-**Table 6.** *Cross-disease transfer against the in-domain ceiling, by horizon.*
+**Table 5.** *Cross-disease transfer against the in-domain ceiling, by horizon.*
 
 At three weeks the transfer arm is close to a model trained on the disease itself, and most cells are within noise. By ten and fifteen weeks it is worse everywhere and by a wide margin, reaching −38% on influenza-Japan RMSE and −51% on influenza-US-regions MAE. **A frozen foreign trunk carries enough short-range structure to match in-domain training for a few weeks ahead, then loses it.** Dengue and influenza drive the pattern, and it does not depend on the COVID cells we excluded.
 
@@ -419,7 +412,7 @@ The corrected results are below. `+λ` is the frozen cross-disease correction, w
 | L12 few-shot | 3 | 0.491 ± .062 | 0.829 ± .055 | **0.859 ± .032** | 0.862 | 15 / 18 |
 | L12 few-shot | 15 | 0.275 ± .103 | 0.651 ± .138 | **0.658 ± .132** | 0.812 | 3 / 18 |
 
-**Table 7.** *Coverage of the nominal 90% interval on the Ebola query set, mean ± sd over five seeds. The secondary L20 arm over-covers throughout, at 0.90 to 0.98 after correction, because its raw intervals are already far too wide.*
+**Table 6.** *Coverage of the nominal 90% interval on the Ebola query set, mean ± sd over five seeds. The secondary L20 arm over-covers throughout, at 0.90 to 0.98 after correction, because its raw intervals are already far too wide.*
 
 **Two things follow, and the first matters more.** The oracle made almost no difference. `+ACI-lag` matches the un-lagged column to within 0.01 in fifteen of sixteen cells. The one exception is the primary arm at *h* = 15, where removing the oracle costs 0.154 of coverage, from 0.812 down to 0.658. That is exactly the arm and horizon where only three of eighteen origins ever adapt, and which has zero adaptation pairs. The concern was real, its effect is limited to one cell, and every other calibrated figure in this paper stands without oracle feedback.
 
@@ -446,7 +439,7 @@ The registered criterion required the adapted arm to beat persistence at *h* = 3
 | *h* = 3 MAE | −1.21 | [−5.45, +2.39] |
 | *h* = 5 MAE | −2.79 | [−8.51, +2.37] |
 
-**Table 8.** *The pre-registered confirmatory family, primary arm, adapted. Negative favours the model.*
+**Table 7.** *The pre-registered confirmatory family, primary arm, adapted. Negative favours the model.*
 
 We report this as a miss. Reaching a *verdict* also meant fixing our own instrument. The headline statistic is a node-averaged country-macro, while the interval originally used to judge it was a cell-pooled quantity rebuilt from per-origin sufficient statistics. On this panel the two differ by a factor of 1.5 to 2.0, far enough that the reported point estimate fell outside its own quoted interval. A point estimate and an interval measuring different things cannot settle anything. The interval above is recomputed on the reported statistic, and it adds the district axis that the registered analysis named first and the original bootstrap left out.
 
@@ -463,7 +456,7 @@ The most interesting finding in the case study is that **the arm given no Ebola 
 | Zero-shot skill vs persistence | +11.8% | +12.4% | +17.5% | +36.9% |
 | Adapted skill vs persistence | +4.7% | +10.2% | within noise | +37.0% |
 
-**Table 9.** *Primary arm, mean ± standard deviation over five seeds. Floors are deterministic, so the dispersion shown is the model's own seed spread.*
+**Table 8.** *Primary arm, mean ± standard deviation over five seeds. Floors are deterministic, so the dispersion shown is the model's own seed spread.*
 
 On the corrected district bootstrap, the wins that survive sit in the zero-shot arm. It beats persistence with intervals excluding zero at *h* = 3 ([−13.33, −1.54]), *h* = 10 ([−13.69, −2.04]) and *h* = 15 ([−44.46, −6.08]), while the adapted arm clears zero only at *h* = 15.
 
