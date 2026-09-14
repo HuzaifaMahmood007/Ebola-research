@@ -35,10 +35,9 @@ Measured on one RTX GPU at the --all settings (24 origins, 32 IG steps), per see
 about 0.4 min, ebola_L12 0.8 min and its zero-shot arm 0.5 min. --all is therefore about 26 min of
 compute plus load/save, so run it in your own shell rather than inside a tool call.
 
-ponytail: zero baseline throughout. In per-node z-space 0 is the node's training mean for
-incidence, "unobserved" for obs_mask, and off the unit circle for sin/cos, which is exactly the
-convention window_slice() already pads with. Upgrade path if a reviewer objects: a per-node
-training-mean baseline, one line in integrated_gradients().
+ponytail: the IG/occlusion reference is built in ONE place, ig_baseline(). Incidence sits at the
+node's own fit-window mean; sin_doy, cos_doy and obs_mask sit at 0. See ig_baseline() for why the
+incidence channel could not just stay at 0 on Ebola.
 """
 from __future__ import annotations
 
@@ -144,8 +143,49 @@ def median(enc, ad, Zt, A, Mt_t):
     return ad(enc(Zt, A, Mt_t))[:, :, MEDIAN_IDX]         # [N, H], model space
 
 
-def integrated_gradients(enc, ad, Zt, A, Mt_t, tmask, steps=IG_STEPS):
-    """Riemann-midpoint IG from a zero baseline, target = sum of the scored median forecasts per
+def baseline_mu(b):
+    """[N] float32: each node's own mean incidence in MODEL space, over the cells its scaler was
+    fit on (train for the development panels, support for Ebola). Nodes with no fit cell keep 0,
+    which is that node's scaler reference and the only thing available for a district we never saw.
+
+    ponytail: this exists only because the scaler scope differs by disease. The development panels
+    use scaler_scope=per_node_train, so scaler["mean"] is each node's OWN mean and z=0 already IS
+    "this node at its typical level" -- measured, the per-node z-mean over train cells is exactly
+    0.0000 on all three influenza panels and on COVID. Ebola uses per_disease_support: ONE pooled
+    (mean, std) broadcast to all 61 districts (bundles.py:134-138, to_schema.fit_scalers_masked
+    per_disease branch), so on Ebola z=0 is the DISEASE mean and the districts sit a long way off
+    it -- mean |z| of 0.70 on ebola_L12 and 0.63 on ebola_L20 over the districts that have support
+    cells. A zero baseline therefore silently asks a different question on Ebola than on every
+    other panel, and the reported attribution reads as if it asked the same one.
+    """
+    ms = b.masks()
+    fm = ms["support" if "support" in ms else "train"].astype(np.float32)
+    z = b.transfer_view()[:, :, 0]                         # 0 at unobserved; fit cells are observed
+    return ((z * fm).sum(1) / np.clip(fm.sum(1), 1.0, None)).astype(np.float32)
+
+
+def ig_baseline(Zt, mu=None):
+    """[N, W, 4] reference input for IG and for occlusion. One helper so the two reads, and the
+    selfcheck's own completeness assertion, cannot drift onto different references.
+
+    Per channel, and each is a decision, not a default:
+      incidence  mu, the node's own fit-window mean (baseline_mu). "This district at its typical
+                 level" is the counterfactual the report claims to be measuring against.
+      sin_doy    0. The centre of the cyclic encoding, i.e. no seasonal phase. Its fit-window mean
+      cos_doy    0. is an arbitrary point that moves with the window length (Ebola's support window
+                 is weeks, not years), so it would encode a phase rather than a neutral reference.
+      obs_mask   0, "not reported". Its fit-window mean is a reporting RATE, about 0.6 on Ebola,
+                 a value the mask itself never takes. 0 is a state the channel actually has, and
+                 it is what window_slice() already pads with.
+    """
+    base = torch.zeros_like(Zt)
+    if mu is not None:
+        base[:, :, 0] = torch.as_tensor(mu, dtype=Zt.dtype, device=Zt.device).view(-1, 1)
+    return base
+
+
+def integrated_gradients(enc, ad, Zt, A, Mt_t, tmask, steps=IG_STEPS, mu=None):
+    """Riemann-midpoint IG from ig_baseline(Zt, mu), target = sum of the scored median forecasts per
     horizon. Returns attr [H, N, W, 4] and TWO completeness numbers per horizon, both measuring the
     same residual |sum(attr) - (f(x) - f(0))| against a different denominator:
 
@@ -158,8 +198,9 @@ def integrated_gradients(enc, ad, Zt, A, Mt_t, tmask, steps=IG_STEPS):
     `err` (8.9e-4) are in line with every other horizon. Reading `gap` alone there would say the
     attribution is broken when what is actually flat is the model. `err` is the one the selfcheck
     asserts on, since it is the scale-invariant statement that the path was integrated rather than
-    approximated by a single gradient."""
-    base = torch.zeros_like(Zt)
+    approximated by a single gradient. Completeness holds for ANY baseline, so `err` staying small
+    is not evidence that the baseline is the right one."""
+    base = ig_baseline(Zt, mu)
     grads = torch.zeros((H,) + tuple(Zt.shape), device=Zt.device)
     for k in range(steps):
         a = (k + 0.5) / steps
@@ -176,11 +217,13 @@ def integrated_gradients(enc, ad, Zt, A, Mt_t, tmask, steps=IG_STEPS):
     return attr, resid / (fx - f0).abs().clamp(min=1e-6), resid / (fx.abs() + f0.abs()).clamp(min=1e-6)
 
 
-def occlusion(enc, ad, Zt, A, Mt_t, tmask):
-    """Zero one channel (4) or one lag (20) at a time; mean |delta median| over the scored cells,
-    per horizon. Same zero reference as IG, so the two reads are comparable. Returns
-    (chan [H, 4], lag [H, W])."""
+def occlusion(enc, ad, Zt, A, Mt_t, tmask, mu=None):
+    """Push one channel (4) or one lag (20) at a time back to the baseline; mean |delta median|
+    over the scored cells, per horizon. Same reference as IG -- the module's faithfulness
+    cross-check compares the two rankings, and that comparison is only meaningful if both reads
+    ask about the same counterfactual. Returns (chan [H, 4], lag [H, W])."""
     with torch.no_grad():
+        base = ig_baseline(Zt, mu)
         f = median(enc, ad, Zt, A, Mt_t)
         n = tmask.sum(0).clamp(min=1)
 
@@ -188,9 +231,9 @@ def occlusion(enc, ad, Zt, A, Mt_t, tmask):
             return ((median(enc, ad, Zo, A, Mt_t) - f).abs() * tmask).sum(0) / n
 
         ch = torch.arange(4, device=Zt.device)
-        chan = torch.stack([delta(Zt * (ch != c).float()) for c in range(4)], 1)
+        chan = torch.stack([delta(torch.where(ch == c, base, Zt)) for c in range(4)], 1)
         wi = torch.arange(W, device=Zt.device).view(1, W, 1)
-        lag = torch.stack([delta(Zt * (wi != w).float()) for w in range(W)], 1)
+        lag = torch.stack([delta(torch.where(wi == w, base, Zt)) for w in range(W)], 1)
     return chan, lag
 
 
@@ -263,13 +306,15 @@ def run_panel(panel, seed, device=DEVICE, max_origins=MAX_ORIGINS, steps=IG_STEP
         if t_case in all_origins and t_case not in origins:
             origins = sorted(set(origins) | {t_case})
     Z, Mt, A = tensors(b, device)
+    mu = torch.tensor(baseline_mu(b), dtype=torch.float32, device=device)
     K, N = len(origins), b.X.shape[0]
     out = dict(origins=np.array(origins, np.int32), horizons=np.array(HORIZONS, np.int32),
                ig_chan=np.zeros((K, H, 4), np.float64), ig_lag=np.zeros((K, H, W), np.float64),
                occ_chan=np.zeros((K, H, 4), np.float64), occ_lag=np.zeros((K, H, W), np.float64),
                gap=np.zeros((K, H), np.float64), err=np.zeros((K, H), np.float64),
                n_scored=np.zeros((K, H), np.int32), ig_steps=steps,
-               checkpoint=str(ck), bundle=bname, panel=panel, seed=seed)
+               checkpoint=str(ck), bundle=bname, panel=panel, seed=seed,
+               baseline_mu=mu.cpu().numpy())          # archived so a reader can see the reference
     if is_ebola:
         edges = undirected_edges(b.A_geo)
         A_edge = [ablated(b.A_geo, [tuple(e)], device) for e in edges]
@@ -286,7 +331,7 @@ def run_panel(panel, seed, device=DEVICE, max_origins=MAX_ORIGINS, steps=IG_STEP
     for k, t in enumerate(origins):
         Zt, Mt_t = window_slice(Z, t), Mt[:, t]
         tmask = target_mask(b, phase, t, device)
-        attr, gap, err = integrated_gradients(enc, ad, Zt, A, Mt_t, tmask, steps)
+        attr, gap, err = integrated_gradients(enc, ad, Zt, A, Mt_t, tmask, steps, mu=mu)
         a = attr.abs()
         out["ig_chan"][k] = a.sum((1, 2)).cpu().numpy()
         out["ig_lag"][k] = a.sum((1, 3)).cpu().numpy()
@@ -294,7 +339,7 @@ def run_panel(panel, seed, device=DEVICE, max_origins=MAX_ORIGINS, steps=IG_STEP
         # how many cells each attribution target summed over, so a share can be read against the
         # amount of data behind it (it swings 13 to 46 across Ebola origins and horizons).
         out["n_scored"][k] = tmask.sum(0).cpu().numpy()
-        oc, ol = occlusion(enc, ad, Zt, A, Mt_t, tmask)
+        oc, ol = occlusion(enc, ad, Zt, A, Mt_t, tmask, mu=mu)
         out["occ_chan"][k], out["occ_lag"][k] = oc.cpu().numpy(), ol.cpu().numpy()
         if is_ebola:
             ed, iso, full = edge_ablation(enc, ad, Zt, A, Mt_t, b.scaler, edges, A_edge, A_iso)
@@ -310,7 +355,7 @@ def run_panel(panel, seed, device=DEVICE, max_origins=MAX_ORIGINS, steps=IG_STEP
                 # attribution API, and no second district gets a local map without editing this.
                 tmask_local = torch.zeros_like(tmask)
                 tmask_local[d_case] = 1.0
-                attr_loc, _, _ = integrated_gradients(enc, ad, Zt, A, Mt_t, tmask_local, steps)
+                attr_loc, _, _ = integrated_gradients(enc, ad, Zt, A, Mt_t, tmask_local, steps, mu=mu)
                 local = dict(origin=t, district=d_case, name=b.meta["node_ids"][d_case], peak_week=peak,
                              peak_date=str(b.meta["dates"][peak])[:10],
                              ig_map=attr_loc[:, d_case].cpu().numpy(),      # [H, W, 4], signed, OWN target
@@ -432,6 +477,7 @@ def random_control(panel=RANDCTL_PANEL, n_origins=RANDCTL_ORIGINS, steps=RANDCTL
     b = bundles.load(bname)
     phase = "query" if bname.startswith("ebola") else "test"
     Z, Mt, A = tensors(b, device)
+    mu = torch.tensor(baseline_mu(b), dtype=torch.float32, device=device)   # same reference as the trained run
     origins = pick_origins([int(t) for t in runs[0]["origins"]], n_origins)
     # index order -> lag order (lag 1 first) is a plain reverse, since LAG_OF_INDEX descends.
     trained = np.mean([shares(r["ig_lag"]).mean(0) for r in runs], 0)[::-1]
@@ -447,7 +493,8 @@ def random_control(panel=RANDCTL_PANEL, n_origins=RANDCTL_ORIGINS, steps=RANDCTL
         lag = np.zeros((len(origins), H, W))
         for k, t in enumerate(origins):
             Zt, Mt_t = window_slice(Z, t), Mt[:, t]
-            attr, _, _ = integrated_gradients(enc, ad, Zt, A, Mt_t, target_mask(b, phase, t, device), steps)
+            attr, _, _ = integrated_gradients(enc, ad, Zt, A, Mt_t, target_mask(b, phase, t, device),
+                                              steps, mu=mu)
             lag[k] = attr.abs().sum((1, 3)).cpu().numpy()
         rnd = shares(lag).mean(0)[::-1]
         rs.append(float(np.corrcoef(trained, rnd)[0, 1]))
@@ -906,19 +953,49 @@ def _selfcheck():
     # (1) IG integrates the path. Assert on `err`, not on `gap`: this net is untrained, so f(x)-f(0)
     #     collapses to 0.002 at h15 while it is 0.36 at h3, and the ratio there is meaningless. The
     #     residual itself is 1e-4 at every horizon and does not move between 8 and 512 steps.
-    attr, gap, err = integrated_gradients(enc, ad, Zt, A, Mt_t, tmask, steps=64)
+    mu_sc = torch.randn(N, device=dev)                    # a NON-zero per-node reference
+    attr, gap, err = integrated_gradients(enc, ad, Zt, A, Mt_t, tmask, steps=64, mu=mu_sc)
     assert attr.shape == (H, N, W, 4), attr.shape
     assert attr.abs().sum() > 0
     assert (err < 1e-3).all(), f"IG completeness error {err.tolist()}"
     #     and the check discriminates: gradient x input, the un-integrated shortcut this whole
-    #     module exists to avoid, must FAIL the same assertion on the same scale.
+    #     module exists to avoid, must FAIL the same assertion on the same scale. Both halves read
+    #     the baseline from ig_baseline(), never from a second hardcoded torch.zeros_like: with the
+    #     old zeros here, ANY change to the function's reference would fail completeness spuriously.
+    base_sc = ig_baseline(Zt, mu_sc)
     with torch.no_grad():
         fx = (median(enc, ad, Zt, A, Mt_t) * tmask).sum(0)
-        f0 = (median(enc, ad, torch.zeros_like(Zt), A, Mt_t) * tmask).sum(0)
+        f0 = (median(enc, ad, base_sc, A, Mt_t) * tmask).sum(0)
     Za = Zt.detach().requires_grad_(True)
     g, = torch.autograd.grad((median(enc, ad, Za, A, Mt_t)[:, 0] * tmask[:, 0]).sum(), Za)
-    shortcut = ((Zt * g).sum() - (fx - f0)[0]).abs() / (fx.abs() + f0.abs())[0]
+    shortcut = (((Zt - base_sc) * g).sum() - (fx - f0)[0]).abs() / (fx.abs() + f0.abs())[0]
     assert shortcut > 1e-3, f"gradient x input passed the completeness check ({shortcut:.2e}), so it cannot discriminate"
+    #     the check must also be able to SEE a wrong baseline. Completeness is baseline-agnostic, so
+    #     it never can; what catches it is the residual against the WRONG f0. Break it on purpose.
+    with torch.no_grad():
+        f0_zero = (median(enc, ad, ig_baseline(Zt), A, Mt_t) * tmask).sum(0)
+    wrong = (attr.flatten(1).sum(1) - (fx - f0_zero)).abs() / (fx.abs() + f0_zero.abs()).clamp(min=1e-6)
+    assert wrong.max() > 1e-3, "zero and per-node baselines agree on this fixture, so the check is void"
+
+    # (1b) ig_baseline's per-channel contract: incidence moves to mu, the other three stay at 0.
+    #      A future edit that "helpfully" pushed obs_mask to its observation rate would trip this.
+    assert torch.allclose(base_sc[:, :, 0], mu_sc.view(-1, 1).expand(N, W))
+    assert base_sc[:, :, 1:].abs().max() == 0.0, "sin/cos/obs_mask baseline is no longer 0"
+    assert ig_baseline(Zt).abs().max() == 0.0, "mu=None must reproduce the old zero baseline exactly"
+
+    # (1c) baseline_mu is a near-no-op where the scaler is already per-node, and is NOT where it is
+    #      pooled. This is the whole reason the fix exists, tested on the scaler primitive itself so
+    #      it needs no bundle on disk. Per-node z has mean 0 over its own fit cells by construction;
+    #      one pooled scale for a panel of unequal nodes does not.
+    from to_schema import apply_scaler, fit_scalers_masked
+    rng = np.random.default_rng(0)
+    raw = rng.poisson(rng.uniform(1, 300, size=12)[:, None] * np.ones((12, 80))).astype(float)
+    fmask = np.zeros(raw.shape, bool); fmask[:, :60] = True
+    for per_disease, want_small in ((False, True), (True, False)):
+        sc2 = fit_scalers_masked(raw, fmask, per_disease=per_disease)
+        z2 = apply_scaler(raw, sc2)
+        m2 = np.abs((z2 * fmask).sum(1) / fmask.sum(1)).max()
+        assert (m2 < 1e-5) == want_small, f"per_disease={per_disease}: max |per-node z-mean| {m2:.4f}"
 
     # (2) a channel the model structurally cannot see gets exactly zero attribution AND zero
     #     occlusion delta, while a visible channel gets both. Control for both reads at once.
@@ -1005,7 +1082,7 @@ def _selfcheck():
     attr_loc, _, _ = integrated_gradients(enc, ad, Zt, A, Mt_t, tm_local, steps=64)
     with torch.no_grad():
         f_all = median(enc, ad, Zt, A, Mt_t)
-        f0_all = median(enc, ad, torch.zeros_like(Zt), A, Mt_t)
+        f0_all = median(enc, ad, ig_baseline(Zt), A, Mt_t)   # matches the mu=None calls just above
     tot = attr_loc.flatten(1).sum(1)
     own = (tot - (f_all[d] - f0_all[d])).abs() / (f_all[d].abs() + f0_all[d].abs()).clamp(min=1e-6)
     pooled = ((tot - ((f_all - f0_all) * tmask).sum(0)).abs()
@@ -1032,7 +1109,10 @@ def _selfcheck():
     sc = {"mean": np.random.rand(N), "std": np.random.rand(N) + 0.5}
     assert np.allclose(to_counts(f, sc).cpu().numpy(), invert_scaler(f.cpu().numpy(), sc), rtol=1e-4)
 
-    print("ok  IG completes the path and gradient x input does not, invisible channel gets 0 from "
+    print("ok  IG completes the path against ig_baseline and gradient x input does not, a zero "
+          "baseline fails the same residual so the check sees the reference, ig_baseline moves "
+          "incidence only, per-node scaling makes baseline_mu a no-op and pooled scaling does not, "
+          "invisible channel gets 0 from "
           "IG and occlusion, forward_fixed_deg == forward and holds degree, gate-off is immune to "
           "edge ablation, lag/band/share bookkeeping, the random-weight verdict flips on a failing "
           "draw, a one-hot target completes on that node's own forecast and not on the pooled one, "
