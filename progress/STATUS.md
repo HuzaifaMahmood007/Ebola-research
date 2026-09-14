@@ -198,7 +198,7 @@ Do not carry any of these forward: a **388-parameter** adapter (it is 1,428), an
 
 | item | state |
 |---|---|
-| **G5 explainability** | code underway in `explain.py`, untracked at the time of writing. The only REQUIRED goal without a delivered result. Scope settled in `progress/decisions/G5_Explainability_Scope.md`: integrated gradients, not SHAP |
+| **G5 explainability** | code built and committed, `explain.py` (1072 lines) plus `Reports/explaiability_report.md`. Not yet closeable: no committed verifier doc, dengue IG completeness error 0.0444 at h15 unfixed, Ebola zero-baseline bug at `explain.py:162` unfixed, three client decisions still open. Scope settled in `progress/decisions/G5_Explainability_Scope.md`: integrated gradients, not SHAP |
 | **Manuscript** | 13,809 words against a 12,000 limit. Nine tables and zero figures, while `figures/gate.pdf` exists and was client-requested. §9.8 is a stub |
 | **The normalisation Threats paragraph** | section 5 above has the numbers; the paragraph is not written |
 | **LDO3 zero-shot calibration gap** | decided not to run (D20). The resulting limitation is **not yet stated in Threats** |

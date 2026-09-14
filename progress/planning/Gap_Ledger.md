@@ -283,7 +283,7 @@ Notes carried out of Group C:
 
 | id | what | note | status |
 |---|---|---|---|
-| E1 | G5 explainability, the only REQUIRED goal with no code | 118 checkpoints on disk means this is pure inference: no retraining, no GPU night. Input surface is exactly `[N, 20, 4]`. Integrated gradients over channels and lags, inference-time occlusion as the faithfulness cross-check, neighbour edge ablation on Ebola only, plus the existing gate figure. Method and falsification test already specified at `Phase3_Developer_Execution_Guide.md:317-325` | OPEN |
+| E1 | G5 explainability, code built and committed but not closeable yet | `explain.py` (1072 lines, committed): integrated gradients, occlusion cross-check, Ebola edge ablation, random-weight control. `Reports/explaiability_report.md` committed with T1/T2/T3 falsification results, IG-vs-occlusion agreement 263/280 per-seed. Not closeable: (a) `progress/outcomes/G5_Explainability_Results.md` verifier doc not committed, (b) dengue IG completeness err 0.0444 at h15, 10x every other panel, unfixed, (c) Ebola zero baseline should be the per-node training mean, not zero, one-line bug at `explain.py:162`, unfixed, (d) three client-facing decisions in `G5_Explainability_Goals.md` §8 still open | **PARTIAL, not DONE** |
 | E2 | Manuscript: cut to 12,000 words, place a figure, replace the §9.8 stub, add the normalisation Threats paragraph | Currently 13,628. Intro 646 + Contributions 523 + Conclusion 525 is ~1,694 words of largely restated material; Related Work 3.1–3.5 another 1,009. **Nine tables and zero figures**, while `figures/gate.pdf` exists and was client-requested | OPEN |
 
 **Two honesty constraints for E1.** The gate-off ablation says the spatial channel does not help
