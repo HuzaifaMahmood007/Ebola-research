@@ -104,15 +104,26 @@ def _precompute_features(enc, Z, A, Mt, origins, device):
 
 
 def _fit_adapter(feats, ymod, Mt, fit_mask, origins, seed, epochs, device,
-                 lr=1e-3, wd=1e-4, batch_origins=8, track_mask=None):
+                 lr=1e-3, wd=1e-4, batch_origins=8, track_mask=None, init_state=None):
     """Fit ONE Adapter on the cells flagged by `fit_mask`. Trunk already frozen and precomputed.
 
     Returns (adapter, curve) where curve[e] is the pooled pinball on `track_mask` after epoch e
     (None when track_mask is None). Optimiser, lr, wd, clip and accumulation match
     lodo._fit_adapter_and_score exactly, so the only thing that differs from a dev-fold adapter fit
-    is the data and the stopping rule."""
+    is the data and the stopping rule.
+
+    `init_state` exists for OFF-PROTOCOL probes only (diagnostics/fewshot_sim.py). The default None is
+    the fresh Adapter the pre-registration fixes at Ebola_Prereg.md:126-127, and the scored Ebola run
+    passes nothing here, so that path is unchanged -- asserted by hash in the probe's selfcheck, not
+    merely asserted in this docstring.
+
+    The seeding stays ABOVE the load on purpose. The RNG is then in an identical state whichever init
+    is used, so the per-epoch origin permutation below draws the same stream across arms and a
+    warm-vs-fresh comparison at one seed differs ONLY in where the optimiser started."""
     torch.manual_seed(seed); np.random.seed(seed)
     ad = Adapter().to(device)
+    if init_state is not None:
+        ad.load_state_dict(init_state)
     opt = torch.optim.AdamW(ad.parameters(), lr=lr, weight_decay=wd)
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=epochs)
     curve = []
@@ -154,7 +165,7 @@ def _pooled_pinball(ad, feats, ymod, Mt, mask, origins, device) -> float:
 
 
 def choose_epochs(feats, ymod, Mt, smask, origins, seed, device, epochs_max=ADAPTER_EPOCHS_MAX,
-                  verbose=True):
+                  verbose=True, init_state=None):
     """Leave-one-district-out CV INSIDE the support set (A2) -> the epoch count for the real fit.
 
     Ebola has no validation split, so without this the epoch count is a free parameter chosen after
@@ -177,8 +188,11 @@ def choose_epochs(feats, ymod, Mt, smask, origins, seed, device, epochs_max=ADAP
     for i in usable:
         fit = smask.clone(); fit[i] = 0.0
         held = torch.zeros_like(smask); held[i] = smask[i]
+        # init_state rides along so a warm-started arm picks its epoch count under the SAME init it
+        # will be refit with; choosing epochs off a fresh-init curve and then refitting warm would
+        # select for the wrong optimisation path.
         _, curve = _fit_adapter(feats, ymod, Mt, fit, origins, seed, epochs_max, device,
-                                track_mask=held)
+                                track_mask=held, init_state=init_state)
         n_held = int(sum(int(targets_and_mask(ymod, Mt, held, t, device)[1].sum()) for t in origins))
         curves.append(curve); weights.append(n_held)
     C = np.array(curves)                                   # [folds, epochs]
