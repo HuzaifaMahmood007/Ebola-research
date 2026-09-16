@@ -2,12 +2,12 @@
 
 **Written 2026-09-10. Rewritten 2026-09-10 after the IG baseline fix and the two reruns. Revised
 2026-09-15 after the four remaining development panels were rerun at 128 steps under the fixed
-baseline; see the revision note below for what moved and what did not.** This is
+baseline. Revised 2026-09-16: the three client decisions closed, so G5 is DONE.** This is
 the committed verifier document called for in `progress/planning/G5_Explainability_Goals.md`
-section 7, item 3. Gap Ledger row E1 (`progress/planning/Gap_Ledger.md:286`) lists this document as
-one of four blockers keeping G5 at **PARTIAL, not DONE**. This document does not change that status.
-It records what was checked, how, and what is still open. Internal engineering doc only, not
-client-facing.
+section 7, item 3. Gap Ledger row E1 (`progress/planning/Gap_Ledger.md:286`) listed this document as
+one of four blockers keeping G5 at PARTIAL. **All four are now closed and E1 reads DONE.** This
+document records what was checked, how, and what remains outside G5. Internal engineering doc only.
+The client-facing evidence pack is `Reports/G5_Method_Decision_Brief.md`.
 
 Every number below was recomputed by me today, straight from the archives in `results/explain/`,
 with a script that re-implements the share, band, agreement and neighbour maths from scratch instead
@@ -367,11 +367,33 @@ reference is archived in every run so a reader can inspect it, and the selfcheck
 deliberate-failure test that a zero baseline must fail. The measured consequence is in section 5:
 err improved, gap rose for a denominator reason that is understood and documented.
 
-**(d) The three client decisions. OPEN, untouched.** `G5_Explainability_Goals.md` section 8 lists
-adopting IG, retracting the SHAP row from the client-held comparison table, and confirming the
-honesty framing on neighbour attribution. I found no newer decision record on disk referencing them,
-so I am treating all three as still open. A missing record is not proof they were not answered, so
-this is a "not found", not a "not answered".
+**(d) The three client decisions. CLOSED 2026-09-16.** All three were answered, and the evidence
+pack that carried them is `Reports/G5_Method_Decision_Brief.md`, written to give the client measured
+grounds rather than our assurance.
+
+- **Adopt IG. ACCEPTED**, on compute and on agreement. `diagnostics/graph_probe/shap_vs_ig.py` runs
+  KernelSHAP and IG against the same baseline, the same target and the same frozen checkpoint. One
+  global read over the grid we publish costs **89,948,160 model evaluations by SHAP against 5,760 by
+  IG** on ebola_L12, and **14,086,963,200 against 7,680** on dengue, ratios of 15,616x and
+  1,834,240x, because SHAP perturbs each node separately while IG returns every node's gradient in
+  one sweep. SHAP is also a sampled estimator: two draws at 256 coalitions agree at **r = 0.68**, at
+  4,096 at r = 0.98, while IG at fixed steps reruns to **r = 1.000000**. And **41.6% to 44.9%** of
+  SHAP's coalitions contain at least one impossible week, obs_mask dropped to "not reported" while
+  that week's incidence is held at its reported value. The decisive control is that they **agree**:
+  on the five busiest Ebola districts both pick the same top channel **5 of 5**, |phi| correlation
+  0.963 to 0.990. One disagreement is on record and disclosed, guinea/beyla, a near-empty district.
+- **Retract the SHAP row. APPROVED AND DONE the same day.** `diagnostics/retract_shap_row.py` wrote
+  `Reports/Phase1/RelatedWork_CompetitiveAnalysis_Benchmark_corrected_2026-09-16.docx`. The original
+  is untouched. Exactly one cell changed and the script verifies that by reading the saved file back
+  and diffing every cell of every table.
+- **Accept the neighbour figure without an accuracy claim. ACCEPTED**, and the client asked for the
+  **mechanism** behind the 0-of-40 gate-off result rather than the result alone. Measured in
+  `diagnostics/graph_probe/why_graph_fails.py`, three steps: the gate is wide open (0.271 to 0.375,
+  **0.0%** of districts near closed), only **3.8% to 12.3%** of a district's summary is
+  district-specific and it uses about **2 of 64** directions, neighbour averaging destroys a further
+  **14% to 60%** of that, and relabelling the adjacency then costs **+0.03% to +1.14%** against seed
+  noise of 0.7% to 4.8%. Scope travels with it: single-disease checkpoints, dengue excluded on
+  runtime, and it tests a trained model rather than one trained on a fake graph.
 
 ---
 
@@ -432,17 +454,17 @@ anywhere else.
 
 ## 10. Overall verdict
 
-**PARTIAL, matching Gap Ledger E1. Not DONE.**
+**DONE 2026-09-16, matching Gap Ledger E1.** Was PARTIAL until the three client decisions closed.
 
-**As of 2026-09-15, three of the four blockers are closed and the goal is still not.** Blocker (a),
-this document, is committed. Blocker (b) is closed: dengue's completeness error was quadrature and
-went to 0.0040 at 128 steps, in line with every other panel. Blocker (c), the zero baseline, is
-closed. **Blocker (d), the three client decisions, has not moved at all**, and it is the only one
-left. That is what keeps G5 at PARTIAL, and it is worth being blunt about why: the remaining gap is
-not code, not numbers and not verification. It is that the client has not confirmed we may deliver
-integrated gradients instead of the SHAP the brief tags REQUIRED, and is still holding a document
-that says we did SHAP. Anyone reading three closed blockers as a closed goal would be reading it
-wrong.
+**All four blockers are now closed.** (a) this document is committed. (b) dengue's completeness
+error was quadrature, not a defect, and went to 0.0040 at 128 steps, in line with every other panel.
+(c) the zero baseline was replaced and every development panel rerun on the fix. (d) the three
+client decisions closed on 2026-09-16, evidenced rather than asserted, detail in section 7.
+
+**What closed (d) was measurement, not persuasion.** The client did not take the substitution on
+trust and should not have. They were given a head-to-head run of both methods on our own model, and
+on the graph question they asked for the mechanism behind the ablation result rather than the result
+by itself. Both now exist as runnable scripts.
 
 What is solid: the code exists, runs, and reverifies clean end to end. `--selfcheck` catches its own
 deliberately-broken inputs, including two new checks aimed at the baseline itself. Every table number
@@ -451,14 +473,11 @@ is 54 of 56 with both disagreements named, the neighbour-hub finding holds under
 mutation-tested check, and the neighbour numbers came out identical across the fix in exactly the way
 the code says they must.
 
-What is still missing:
+What is still missing, and none of it blocks G5:
 
-1. **The three client decisions** in `G5_Explainability_Goals.md` section 8 are unanswered as far as
-   I can find on disk. This is the whole of what is left, and decision 2, retracting the SHAP row
-   from a document the client already holds, is the one with an external cost that grows while it
-   sits.
-2. `Reports/Manuscript_v2.md:508` is still a `[PENDING]` placeholder and the SHAP-to-IG correction is
-   not written into it. That is manuscript work, tracked under Gap Ledger E2.
+1. `Reports/Manuscript_v2.md:508` is still a `[PENDING]` placeholder and the SHAP-to-IG correction is
+   not written into it. That is manuscript work, tracked under Gap Ledger E2, and it is now
+   unblocked because D1 settled what the paragraph should say.
 
 Closed on 2026-09-15 and listed here so a reader of the previous version knows they moved: dengue IG
 completeness (0.0040 at 128 steps, quadrature not defect); the gate figure, now Figure 1 in

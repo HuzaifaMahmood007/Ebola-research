@@ -466,12 +466,26 @@ Those four are listed first because they need action; everything else is settled
 | D6 | dengue graph forbids cross-border edges, stated reason was wrong | corrected |
 | D7 | the Ebola source file | pinned; sha256 verified against `build_datasets.RAW_SHA256` on 2026-09-07 |
 
-### Still open with the client, from elsewhere
+### Closed with the client 2026-09-16, from elsewhere
 
-Three decisions sit with the client that are not in this document. They come from
-`progress/decisions/G5_Explainability_Scope.md`:
+Three decisions sat with the client that are not in this document. They came from
+`progress/decisions/G5_Explainability_Scope.md` and **all three were answered on 2026-09-16**. The
+evidence pack that carried them is `Reports/G5_Method_Decision_Brief.md`. Full text and numbers in
+`progress/planning/G5_Explainability_Goals.md` section 8.
 
-1. Adopt integrated gradients as G5, or renegotiate the goal.
-2. **Retract the SHAP row** from `Reports/Phase1/RelatedWork_CompetitiveAnalysis_Benchmark.docx`, a
-   comparison table already in the client's hands asserting a capability that does not exist.
-3. Confirm they accept a neighbour-attribution figure that cannot be described as explaining accuracy.
+1. **Adopt integrated gradients as G5. ACCEPTED.** On compute cost and on agreement. KernelSHAP
+   needs 12,544x to 1,834,240x more model evaluations for one global read over the grid we publish.
+   Where both can be run, they agree: same top channel on 5 of 5 of the busiest Ebola districts,
+   |phi| correlation 0.963 to 0.990.
+2. **Retract the SHAP row. APPROVED AND DONE the same day.** Corrected copy at
+   `Reports/Phase1/RelatedWork_CompetitiveAnalysis_Benchmark_corrected_2026-09-16.docx`, original
+   left untouched, exactly one cell changed, by `diagnostics/retract_shap_row.py`.
+3. **Accept the neighbour figure without an accuracy claim. ACCEPTED.** The client additionally
+   asked for the mechanism behind the 0-of-40 gate-off result rather than the result alone. It is
+   now measured in `diagnostics/graph_probe/why_graph_fails.py`: the gate is wide open (0.271 to
+   0.375, 0.0% of districts near closed), only 3.8% to 12.3% of a district's summary is
+   district-specific and it occupies about 2 of 64 directions, neighbour averaging destroys a further
+   14% to 60%, and relabelling the graph then costs +0.03% to +1.14% against seed noise of 0.7% to
+   4.8%.
+
+**G5 is therefore closed.** It was the last open REQUIRED goal.

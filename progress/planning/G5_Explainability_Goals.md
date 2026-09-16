@@ -97,13 +97,16 @@ Ledger rule (`Gap_Ledger.md:11-12`): DONE means committed, and a verifier re-der
    report and the outcome document.
 5. The three client decisions recorded, answered or open.
 
-## 8. Open decisions with the client
+## 8. Client decisions. ALL THREE CLOSED 2026-09-16
+
+Evidence pack that carried them: `Reports/G5_Method_Decision_Brief.md`, with
+`figures/shap_vs_ig.png` and `figures/why_graph_fails.png`.
 
 | # | decision | status |
 |---|---|---|
-| 1 | Adopt integrated gradients, or renegotiate G5 | **Open.** Taken internally under C3 |
-| 2 | Retract the SHAP row from `RelatedWork_CompetitiveAnalysis_Benchmark.docx` | **Open, urgent.** It asserts a capability we do not have (M12, `Phase0_to_Now_Audit.md:260`) |
-| 3 | Accept a neighbour figure that cannot be described as explaining accuracy | **Open.** No answer recorded |
+| 1 | Adopt integrated gradients, or renegotiate G5 | **CLOSED, ACCEPTED.** Reasons on record: compute cost, and that the two methods agree where both can be run. KernelSHAP needs 12,544x to 1,834,240x more model evaluations for one global read (89,948,160 against 5,760 on ebola_L12; 14,086,963,200 against 7,680 on dengue). Head to head on the five busiest Ebola districts, IG and SHAP pick the same top channel **5 of 5**, \|phi\| correlation 0.963 to 0.990 |
+| 2 | Retract the SHAP row from `RelatedWork_CompetitiveAnalysis_Benchmark.docx` | **CLOSED, DONE 2026-09-16.** Corrected copy at `Reports/Phase1/RelatedWork_CompetitiveAnalysis_Benchmark_corrected_2026-09-16.docx`, original untouched. Exactly one cell moved, table 0 row 11 ("Ours") column 7: "yes — SHAP (glob.+loc.)" becomes "yes — integrated gradients + occlusion (glob.+loc.)". Edit and verification by `diagnostics/retract_shap_row.py`, which refuses to run on an unexpected row and re-reads the saved file to confirm nothing else changed |
+| 3 | Accept a neighbour figure that cannot be described as explaining accuracy | **CLOSED, ACCEPTED**, with the limitation attached to the figure. The client also asked for the *reason*, not just the result, and it is now measured: `diagnostics/graph_probe/why_graph_fails.py` and `figures/why_graph_fails.png`. Gate open at 0.271 to 0.375 with 0.0% of districts near closed; only 3.8% to 12.3% of a district's summary is district-specific, using about 2 of 64 directions; neighbour averaging destroys a further 14% to 60% of that; relabelling the adjacency then costs +0.03% to +1.14% against seed noise of 0.7% to 4.8% |
 
 ## 9. Review findings (2026-09-07)
 
