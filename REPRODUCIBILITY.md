@@ -227,9 +227,21 @@ both readers and writers follow.
 | **Ebola case study** | `python -m train.ebola --all` | `ebola/encoder_ebola[_zeroshot]__<arm>__seed<S>` — 20 | not recorded · **scored once, see §10** |
 | **Conformal calibration** | `python conformal.py --fit --lopo` then `--apply` | `misc/conformal_config.json`; applied to the archived quantiles | Minutes, CPU only — it reads archived quantiles and costs no GPU |
 | **Baselines** | `python run_baselines.py` then `python score_baseline.py` | `baselines/<Model>__<ds>__h<H>__seed<S>` — 229 | not recorded |
+| **Classical baselines** (GBM on lag features; SARIMA/ARIMA) | `conda run -n ebola python run_classical.py --model gbm --all` then `--model sarima --all` | `results/baselines/{gbm,sarima,arima}__<ds>__h<H>__seed<S>` | GBM ~5–10 min for the whole matrix on CPU; SARIMA ~20–40 min (estimate — see note) |
 | **Capacity probe** | `python -m diagnostics.capacity_probe --seeds 42 52 62 72 82` | `misc/capacity_probe*` | ~15 h (trunk 71 min + arm1 16 min + arm2 96 min per seed) |
 | **Epi-informed ablation** | `python run_epi_night.py` | `ablation/single/encoder__…` | ~2.6 h for the four small panels; ~30 h if dengue is added |
 | **Meta-learning ablation** (ANIL against its ERM control) | `python run_anil_night.py --folds influenza covid dengue` | `misc/anil_[ldo3<fold>_]affine_<arm>` — 16; `lodo/…anil-affine-…` — 80 records, 240 npz, 40 meta-trunks | ~12 h for the three LDO3 folds (dengue ~8 h, influenza ~2.7 h, covid ~1.3 h); the `dengue2flu` fold ~2.75 h |
+
+**The classical baselines run in a different environment from every trainer.** `scikit-learn` (the
+GBM) lives in the `ebola` env, not `ebola-train`, and `statsmodels` (SARIMA/ARIMA) is in neither, so
+`--model gbm` runs today under `conda run -n ebola` and `--model sarima` first needs
+`conda run -n ebola python -m pip install statsmodels`. `run_classical.py` imports no torch and
+writes the same 14-key record schema as the GNN baselines into `results/baselines/`, scored through
+`score.py` over the same test origins and (for dengue) the same 1/3 subsample. GBM is 5 seeds
+(42/52/62/72/82); SARIMA is deterministic and files one record with `seed=null`, the naive-floor
+convention. The SARIMA runtime is an estimate only, because statsmodels is not installed here so it
+has not been timed. Ebola is EXPLORATORY: `conda run -n ebola python run_classical.py --model gbm
+--ebola` writes `experiments/classical__<arm>__<model>.json` and never touches `results/ebola/`.
 
 **The runtimes above are the figures the runner scripts document, measured on the RTX 3060.** They
 are not derived from the records, because **no record carries a wall-clock field** — a gap worth
@@ -253,6 +265,7 @@ conda run -n ebola-train python -m train.loop  --smoke
 conda run -n ebola-train python -m train.joint --smoke
 conda run -n ebola-train python -m train.lodo  --smoke-ldo3
 conda run -n ebola-train python -m train.ebola --dry-run
+conda run -n ebola       python run_classical.py --smoke --model gbm
 ```
 
 `train.anil` has no `--smoke`, because its cheap paths are finer grained. Use all three before a
