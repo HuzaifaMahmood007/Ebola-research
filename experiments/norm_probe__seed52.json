@@ -1,0 +1,94 @@
+{
+  "protocol": "EXPLORATORY",
+  "seed": 52,
+  "rows": [
+    {
+      "exp": "exp2",
+      "seed": 52,
+      "arm": "ebola_L12",
+      "h": 3,
+      "pooled_zero": 23.47331613022692,
+      "pooled_few": 25.417233098386674,
+      "devnorm_zero": 25.531148433357583,
+      "devnorm_few": 26.33724378215688,
+      "adapter_epochs": 26
+    },
+    {
+      "exp": "exp2",
+      "seed": 52,
+      "arm": "ebola_L12",
+      "h": 5,
+      "pooled_zero": 24.092278122632518,
+      "pooled_few": 25.096920579259812,
+      "devnorm_zero": 25.785667308520136,
+      "devnorm_few": 26.381799091862906,
+      "adapter_epochs": 26
+    },
+    {
+      "exp": "exp2",
+      "seed": 52,
+      "arm": "ebola_L12",
+      "h": 10,
+      "pooled_zero": 23.707193767310304,
+      "pooled_few": 24.63268924261854,
+      "devnorm_zero": 25.135624055807153,
+      "devnorm_few": 26.65078784709438,
+      "adapter_epochs": 26
+    },
+    {
+      "exp": "exp2",
+      "seed": 52,
+      "arm": "ebola_L12",
+      "h": 15,
+      "pooled_zero": 20.24434520729012,
+      "pooled_few": 20.07583505076116,
+      "devnorm_zero": 22.116675031291468,
+      "devnorm_few": 20.89137438769269,
+      "adapter_epochs": 26
+    },
+    {
+      "exp": "exp2",
+      "seed": 52,
+      "arm": "ebola_L20",
+      "h": 3,
+      "pooled_zero": 22.36477673960196,
+      "pooled_few": 25.843116491624965,
+      "devnorm_zero": 23.801646768670647,
+      "devnorm_few": 26.157864154204237,
+      "adapter_epochs": 80
+    },
+    {
+      "exp": "exp2",
+      "seed": 52,
+      "arm": "ebola_L20",
+      "h": 5,
+      "pooled_zero": 23.51447183027067,
+      "pooled_few": 25.94082296247396,
+      "devnorm_zero": 25.66289042595478,
+      "devnorm_few": 26.428292402160356,
+      "adapter_epochs": 80
+    },
+    {
+      "exp": "exp2",
+      "seed": 52,
+      "arm": "ebola_L20",
+      "h": 10,
+      "pooled_zero": 24.848427590500275,
+      "pooled_few": 26.11733121126872,
+      "devnorm_zero": 28.38439320114611,
+      "devnorm_few": 25.14742857251932,
+      "adapter_epochs": 80
+    },
+    {
+      "exp": "exp2",
+      "seed": 52,
+      "arm": "ebola_L20",
+      "h": 15,
+      "pooled_zero": 21.969097194262222,
+      "pooled_few": 27.827627870113066,
+      "devnorm_zero": 26.34270834697033,
+      "devnorm_few": 29.44753518927497,
+      "adapter_epochs": 80
+    }
+  ]
+}

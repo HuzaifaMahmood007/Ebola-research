@@ -1,0 +1,238 @@
+{
+  "protocol": "EXPLORATORY",
+  "seed": 42,
+  "rows": [
+    {
+      "exp": "exp1",
+      "seed": 42,
+      "panel": "covid_us-states",
+      "h": 3,
+      "matched": 5193.782110560355,
+      "pooled": 6674.306076866187,
+      "cost_pct": 28.505700369977564
+    },
+    {
+      "exp": "exp1",
+      "seed": 42,
+      "panel": "covid_us-states",
+      "h": 5,
+      "matched": 6162.3372845732065,
+      "pooled": 7524.036337189248,
+      "cost_pct": 22.097119805904146
+    },
+    {
+      "exp": "exp1",
+      "seed": 42,
+      "panel": "covid_us-states",
+      "h": 10,
+      "matched": 8974.518797301183,
+      "pooled": 9699.5234521926,
+      "cost_pct": 8.078479428996676
+    },
+    {
+      "exp": "exp1",
+      "seed": 42,
+      "panel": "covid_us-states",
+      "h": 15,
+      "matched": 11004.858809252271,
+      "pooled": 11980.715246744725,
+      "cost_pct": 8.867505293861724
+    },
+    {
+      "exp": "exp1",
+      "seed": 42,
+      "panel": "influenza_japan",
+      "h": 3,
+      "matched": 213.74378444386636,
+      "pooled": 308.6656401312501,
+      "cost_pct": 44.40917705951455
+    },
+    {
+      "exp": "exp1",
+      "seed": 42,
+      "panel": "influenza_japan",
+      "h": 5,
+      "matched": 396.04478892342854,
+      "pooled": 470.41064780490734,
+      "cost_pct": 18.777133536746703
+    },
+    {
+      "exp": "exp1",
+      "seed": 42,
+      "panel": "influenza_japan",
+      "h": 10,
+      "matched": 635.2284233634181,
+      "pooled": 668.7396277484489,
+      "cost_pct": 5.275457324090627
+    },
+    {
+      "exp": "exp1",
+      "seed": 42,
+      "panel": "influenza_japan",
+      "h": 15,
+      "matched": 612.8626573336797,
+      "pooled": 641.0876465502135,
+      "cost_pct": 4.605434656327314
+    },
+    {
+      "exp": "exp1",
+      "seed": 42,
+      "panel": "influenza_us-regions",
+      "h": 3,
+      "matched": 409.1765339526361,
+      "pooled": 476.26795074437223,
+      "cost_pct": 16.39669219142031
+    },
+    {
+      "exp": "exp1",
+      "seed": 42,
+      "panel": "influenza_us-regions",
+      "h": 5,
+      "matched": 524.8287185605367,
+      "pooled": 612.8745171491835,
+      "cost_pct": 16.776101511771806
+    },
+    {
+      "exp": "exp1",
+      "seed": 42,
+      "panel": "influenza_us-regions",
+      "h": 10,
+      "matched": 724.363234415469,
+      "pooled": 829.4535768591838,
+      "cost_pct": 14.507961952061017
+    },
+    {
+      "exp": "exp1",
+      "seed": 42,
+      "panel": "influenza_us-regions",
+      "h": 15,
+      "matched": 854.2356722730271,
+      "pooled": 1020.2065842214545,
+      "cost_pct": 19.42917128557708
+    },
+    {
+      "exp": "exp1",
+      "seed": 42,
+      "panel": "influenza_us-states",
+      "h": 3,
+      "matched": 68.1982983049151,
+      "pooled": 112.05151216912583,
+      "cost_pct": 64.30250454071843
+    },
+    {
+      "exp": "exp1",
+      "seed": 42,
+      "panel": "influenza_us-states",
+      "h": 5,
+      "matched": 85.62532079141194,
+      "pooled": 142.60335084732648,
+      "cost_pct": 66.54343543391353
+    },
+    {
+      "exp": "exp1",
+      "seed": 42,
+      "panel": "influenza_us-states",
+      "h": 10,
+      "matched": 105.87279255948478,
+      "pooled": 188.64781970710405,
+      "cost_pct": 78.18347390913675
+    },
+    {
+      "exp": "exp1",
+      "seed": 42,
+      "panel": "influenza_us-states",
+      "h": 15,
+      "matched": 111.10597318694107,
+      "pooled": 223.8261814363644,
+      "cost_pct": 101.45287873926117
+    },
+    {
+      "exp": "exp2",
+      "seed": 42,
+      "arm": "ebola_L12",
+      "h": 3,
+      "pooled_zero": 22.99093145139126,
+      "pooled_few": 24.12086333009405,
+      "devnorm_zero": 25.54814305082734,
+      "devnorm_few": 26.645607469046805,
+      "adapter_epochs": 20
+    },
+    {
+      "exp": "exp2",
+      "seed": 42,
+      "arm": "ebola_L12",
+      "h": 5,
+      "pooled_zero": 24.15454451536687,
+      "pooled_few": 24.372918470453886,
+      "devnorm_zero": 25.894128106096478,
+      "devnorm_few": 26.197408999003347,
+      "adapter_epochs": 20
+    },
+    {
+      "exp": "exp2",
+      "seed": 42,
+      "arm": "ebola_L12",
+      "h": 10,
+      "pooled_zero": 23.48667899108419,
+      "pooled_few": 24.254315605656597,
+      "devnorm_zero": 25.26875482226376,
+      "devnorm_few": 25.16792864196817,
+      "adapter_epochs": 20
+    },
+    {
+      "exp": "exp2",
+      "seed": 42,
+      "arm": "ebola_L12",
+      "h": 15,
+      "pooled_zero": 20.13448813724871,
+      "pooled_few": 20.308305106413005,
+      "devnorm_zero": 22.215980101201215,
+      "devnorm_few": 19.89072926882704,
+      "adapter_epochs": 20
+    },
+    {
+      "exp": "exp2",
+      "seed": 42,
+      "arm": "ebola_L20",
+      "h": 3,
+      "pooled_zero": 21.692716821792697,
+      "pooled_few": 23.949047650567692,
+      "devnorm_zero": 23.3251741305502,
+      "devnorm_few": 26.098423514910877,
+      "adapter_epochs": 32
+    },
+    {
+      "exp": "exp2",
+      "seed": 42,
+      "arm": "ebola_L20",
+      "h": 5,
+      "pooled_zero": 23.314184758600266,
+      "pooled_few": 25.655313584943688,
+      "devnorm_zero": 25.04876690048152,
+      "devnorm_few": 25.393872610043115,
+      "adapter_epochs": 32
+    },
+    {
+      "exp": "exp2",
+      "seed": 42,
+      "arm": "ebola_L20",
+      "h": 10,
+      "pooled_zero": 24.303803033856898,
+      "pooled_few": 25.555401236815797,
+      "devnorm_zero": 28.249625583483475,
+      "devnorm_few": 24.92937966512697,
+      "adapter_epochs": 32
+    },
+    {
+      "exp": "exp2",
+      "seed": 42,
+      "arm": "ebola_L20",
+      "h": 15,
+      "pooled_zero": 21.88603594158,
+      "pooled_few": 21.887748787544336,
+      "devnorm_zero": 27.778827692716067,
+      "devnorm_few": 20.279873878646352,
+      "adapter_epochs": 32
+    }
+  ]
+}
