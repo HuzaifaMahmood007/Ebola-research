@@ -273,9 +273,24 @@ Notes carried out of Group C:
 | id | what | decision | status |
 |---|---|---|---|
 | D1 | LDO3 zero-shot quantiles, 0 of 25 present, ~10 h | **Do not run.** Zero-shot is behind its ceiling in 36 of 36 cells; calibrating a uniformly losing arm buys no claim | **DONE**, recorded as decision-log D20 |
-| D2 | Shuffled-adjacency control, ~6 h | **Do not run.** Gate-off already shows 0 of 40 error cells helped; absence already disclosed in Threats | **DONE**, recorded as decision-log D21 |
+| D2 | Shuffled-adjacency control, ~6 h | **Do not run.** Gate-off already shows 0 of 40 error cells helped; absence already disclosed in Threats | ~~**DONE**, recorded as decision-log D21~~ **REOPENED 2026-09-21**, see amendment note below |
 | D3 | Median-to-mean correction into the Ebola path | **Do not.** Prereg amendment log is closed; correction is 8.8-47.3% worse on the most-shifted panel. The documentation fix is already in the manuscript | **DONE**, recorded as decision-log D22, closes M14 |
 | D4 | Baselines | **Nothing pending.** EpiGNN 80/80, MTGNN 80/80, ColaGNN 60/60, HeatGNN 60/60, all scored | closed *(verified)* |
+
+**Amendment to D2, 2026-09-21. The decision was reopened.** The original decided-no record above
+stands and is not deleted: it was declined on the cost-versus-evidence argument, that the gate-off
+ablation already shows the spatial channel helps error in 0 of 40 cells so a six-hour retrain would
+confirm rather than discover, and that its absence is already disclosed in the manuscript's Threats
+section. The user reopened it on 2026-09-21 for the final close of the paper. Two things changed. D2
+is the last remaining spatial test: the gate-off ablation and the inference-only relabelling control
+(`why_graph_fails.py` STEP 3) have both now run, and only the training-time control is left. And the
+standard changed from cost-versus-evidence to a final-close standard under which no gate stays open.
+That final-close standard **supersedes** the original cost-versus-evidence rationale for D2 only. The
+retrain is queued after the three cheaper Milestone 6 runs complete (classical baselines, constrained
+adapter, input-vs-representation), tracked in `todo_Milestone6.md` Task 1 and
+`progress/planning/Milestone6_Plan.md` section 4, and runs in the user's shell at about 6 hours. D1
+and D3 are not spatial tests, their declines rest on evidence that has not changed, and they stay
+closed.
 
 ---
 
