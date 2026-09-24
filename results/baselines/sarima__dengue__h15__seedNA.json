@@ -5,15 +5,16 @@
     "horizon": 15,
     "seed": null,
     "metric": "rmse",
-    "country_macro": 3.3070600367464967e+145,
-    "node_mean": 1.4189238577946938e+144,
+    "country_macro": 78.47202496123118,
+    "node_mean": 46.01332171932891,
     "n_countries": 11,
     "n_nodes": 2051,
     "node_subset": "2392/7165",
     "training_regime": "single",
     "sampler": null,
     "gate_mode": null,
-    "topo_aug": null
+    "topo_aug": null,
+    "fallback_nodes": 792
   },
   {
     "model": "sarima",
@@ -21,15 +22,16 @@
     "horizon": 15,
     "seed": null,
     "metric": "mae",
-    "country_macro": 4.4592388438644035e+144,
-    "node_mean": 1.913276539542016e+143,
+    "country_macro": 44.399787404587485,
+    "node_mean": 23.752968634961153,
     "n_countries": 11,
     "n_nodes": 2051,
     "node_subset": "2392/7165",
     "training_regime": "single",
     "sampler": null,
     "gate_mode": null,
-    "topo_aug": null
+    "topo_aug": null,
+    "fallback_nodes": 792
   },
   {
     "model": "sarima",
@@ -37,15 +39,16 @@
     "horizon": 15,
     "seed": null,
     "metric": "pcc",
-    "country_macro": 0.24833489830260144,
-    "node_mean": 0.357739836274777,
+    "country_macro": -0.032199454084990316,
+    "node_mean": -0.03541049355387292,
     "n_countries": 11,
-    "n_nodes": 1843,
+    "n_nodes": 1822,
     "node_subset": "2392/7165",
     "training_regime": "single",
     "sampler": null,
     "gate_mode": null,
-    "topo_aug": null
+    "topo_aug": null,
+    "fallback_nodes": 792
   },
   {
     "model": "sarima",
@@ -53,15 +56,16 @@
     "horizon": 15,
     "seed": null,
     "metric": "smape",
-    "country_macro": 119.69741559012635,
-    "node_mean": 119.86258241644366,
+    "country_macro": 126.22264093416302,
+    "node_mean": 141.53179647589366,
     "n_countries": 11,
     "n_nodes": 2051,
     "node_subset": "2392/7165",
     "training_regime": "single",
     "sampler": null,
     "gate_mode": null,
-    "topo_aug": null
+    "topo_aug": null,
+    "fallback_nodes": 792
   },
   {
     "model": "sarima",
@@ -69,15 +73,16 @@
     "horizon": 15,
     "seed": null,
     "metric": "peak_intensity",
-    "country_macro": 2.4525813641253892e+146,
-    "node_mean": 1.0523020967480949e+145,
+    "country_macro": 123.85176834628597,
+    "node_mean": 44.13206555480929,
     "n_countries": 11,
     "n_nodes": 2051,
     "node_subset": "2392/7165",
     "training_regime": "single",
     "sampler": null,
     "gate_mode": null,
-    "topo_aug": null
+    "topo_aug": null,
+    "fallback_nodes": 792
   },
   {
     "model": "sarima",
@@ -85,15 +90,16 @@
     "horizon": 15,
     "seed": null,
     "metric": "peak_timing",
-    "country_macro": 17.972200863635052,
-    "node_mean": 9.660653339834226,
+    "country_macro": 17.452261726055415,
+    "node_mean": 14.991711360312044,
     "n_countries": 11,
     "n_nodes": 2051,
     "node_subset": "2392/7165",
     "training_regime": "single",
     "sampler": null,
     "gate_mode": null,
-    "topo_aug": null
+    "topo_aug": null,
+    "fallback_nodes": 792
   },
   {
     "model": "sarima",
@@ -101,14 +107,15 @@
     "horizon": 15,
     "seed": null,
     "metric": "nrmse",
-    "country_macro": 1.1090750123235201e+145,
-    "node_mean": 4.758586108457814e+143,
+    "country_macro": 10.376341212831138,
+    "node_mean": 3.298260381586024,
     "n_countries": 11,
     "n_nodes": 2051,
     "node_subset": "2392/7165",
     "training_regime": "single",
     "sampler": null,
     "gate_mode": null,
-    "topo_aug": null
+    "topo_aug": null,
+    "fallback_nodes": 792
   }
 ]

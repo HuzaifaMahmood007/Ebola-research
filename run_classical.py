@@ -178,34 +178,46 @@ def sarima_run(b, kept, eval_origins, train_phase, order, seasonal):
     tmask = b.masks()[train_phase][kept].astype(bool)
     Nk, T = raw.shape
     pred_by_h = {h: np.zeros((Nk, T)) for h in HORIZONS}
-    fallback_nodes = 0
+    fell_back = set()                                      # nodes that fell back on >=1 origin (any cause)
+
+    def _persist_node(i):
+        for t in eval_origins:
+            for h in HORIZONS:
+                pred_by_h[h][i, t + h] = raw[i, t]
+
     for i in range(Nk):
         tcols = np.where(tmask[i])[0]
         if tcols.size < 8:                                # too few train points to fit anything stable
-            for t in eval_origins:
-                for h in HORIZONS:
-                    pred_by_h[h][i, t + h] = raw[i, t]
-            fallback_nodes += 1
-            continue
+            _persist_node(i); fell_back.add(i); continue
         series = raw[i].copy()
         series[~Mk[i]] = np.nan                            # SARIMAX skips the update step on NaN cells
         train_end = int(tcols.max()) + 1
+        obs = raw[i][Mk[i]]
+        # ponytail: an ARIMA with enforce_stationarity=False can recurse to a finite but absurd value
+        # (dengue produced ~3e145). Cap at 100x the node's own max observed count (+1 for zero nodes).
+        bound = 100.0 * (float(obs.max()) if obs.size else 0.0) + 1.0
         try:
             res = SARIMAX(series[:train_end], order=order, seasonal_order=seasonal,
                           enforce_stationarity=False, enforce_invertibility=False).fit(disp=False)
             res_full = res.apply(series, refit=False)      # fixed params, refilter the whole series
-            for t in eval_origins:
-                fc = np.asarray(res_full.get_prediction(
-                    start=t + 1, end=t + MAX_H, dynamic=t + 1).predicted_mean)
-                for h in HORIZONS:
-                    v = fc[h - 1]
-                    pred_by_h[h][i, t + h] = max(float(v) if np.isfinite(v) else raw[i, t], 0.0)
-        except Exception:                                  # singular fit / LinAlg -> persistence for this node
-            for t in eval_origins:
-                for h in HORIZONS:
+        except Exception:                                  # singular fit / LinAlg -> persistence for the node
+            _persist_node(i); fell_back.add(i); continue
+        for t in eval_origins:
+            # dynamic=0: dynamic prediction begins AT `start` (t+1), so t+1 uses observed data through
+            # t and every later step uses the model's own recursion -- the honest h-step forecast.
+            # (An INTEGER dynamic is an offset relative to start, per the statsmodels docstring, so the
+            # earlier dynamic=t+1 began past `end` and silently degenerated to one-step-ahead.)
+            fc = np.asarray(res_full.get_prediction(
+                start=t + 1, end=t + MAX_H, dynamic=0).predicted_mean)
+            vals = fc[[h - 1 for h in HORIZONS]]
+            if not np.all(np.isfinite(vals)) or np.any(np.abs(vals) > bound):
+                for h in HORIZONS:                         # explosion at this origin -> persistence here
                     pred_by_h[h][i, t + h] = raw[i, t]
-            fallback_nodes += 1
-    return pred_by_h, fallback_nodes
+                fell_back.add(i)
+                continue
+            for j, h in enumerate(HORIZONS):
+                pred_by_h[h][i, t + h] = max(float(vals[j]), 0.0)
+    return pred_by_h, len(fell_back)
 
 
 # --------------------------------------------------------------------------- #
@@ -282,7 +294,8 @@ def run_dev(panel, model, seeds, max_iter, out_dir):
         seasonal = (0, 0, 0, 0) if model == "arima" else SEASONAL[panel]
         t0 = time.time()
         pred, fbn = sarima_run(b, kept, eval_origins, train_phase, SARIMA_ORDER, seasonal)
-        recs = score_records(model, panel, None, pred, b, kept, eval_origins, eval_phase, node_subset)
+        recs = score_records(model, panel, None, pred, b, kept, eval_origins, eval_phase, node_subset,
+                             extra=dict(fallback_nodes=fbn))
         written += _write_baseline(recs, out_dir)
         print(f"    {model} order={SARIMA_ORDER} seasonal={seasonal}: {time.time() - t0:.1f}s "
               f"({fbn}/{kept.size} nodes fell back to persistence)")
@@ -317,7 +330,7 @@ def run_ebola(arm, model, seeds, max_iter):
         seasonal = (0, 0, 0, 0)                              # ebola has no annual cycle to fit
         pred, fbn = sarima_run(b, kept, eval_origins, "support", SARIMA_ORDER, seasonal)
         recs += score_records(model, arm, None, pred, b, kept, eval_origins, "query", None,
-                              extra=dict(protocol="EXPLORATORY", nodes_fell_back=fbn))
+                              extra=dict(protocol="EXPLORATORY", fallback_nodes=fbn))
     p = _write_experiment(recs, arm, model)
     print(f"    wrote {p.relative_to(BASE)}  (EXPLORATORY, {len(recs)} records)")
     return [p]
@@ -345,13 +358,18 @@ def smoke(model):
     else:
         seasonal = (0, 0, 0, 0) if model == "arima" else SEASONAL["influenza_japan"]
         pred, fbn = sarima_run(b, kept, eval_origins, "train", SARIMA_ORDER, seasonal)
-        recs = score_records(model, "influenza_japan", None, pred, b, kept, eval_origins, "test", None)
+        recs = score_records(model, "influenza_japan", None, pred, b, kept, eval_origins, "test", None,
+                             extra=dict(fallback_nodes=fbn))
     written = _write_baseline(recs, tmp)
-    _assert_schema(recs[0])                                  # the emitted record must match a baseline record
+    _assert_schema(recs[0])                                  # the emitted record must carry the baseline keys
     print(f"smoke OK in {time.time() - t0:.1f}s: {len(recs)} records, {len(written)} files -> {tmp}")
-    for r in recs[:2]:
-        print(f"   {r['model']} h{r['horizon']} {r['metric']}={r['country_macro']:.3f} "
-              f"(node_mean={r['node_mean']:.3f}, n_nodes={r['n_nodes']})")
+    # RMSE by horizon: a genuine h-step forecast must DEGRADE as the horizon grows. If SARIMA RMSE is
+    # flat or falling here, the forecast is leaking observed test values -- do not treat that as fixed.
+    rmse = {r["horizon"]: r["country_macro"] for r in recs if r["metric"] == "rmse"}
+    grows = all(rmse[a] <= rmse[b] + 1e-9 for a, b in zip(HORIZONS, HORIZONS[1:]))
+    print(f"   {model} RMSE by horizon (country-macro): "
+          + "  ".join(f"h{h}={rmse[h]:.2f}" for h in HORIZONS)
+          + f"   -> {'GROWS with horizon (forecast, not leak)' if grows else 'NOT monotone -- inspect'}")
 
 
 def _baseline_keys():
@@ -366,35 +384,33 @@ def _baseline_keys():
 
 
 def _assert_schema(rec):
+    """Every emitted record must carry AT LEAST the 14 baseline keys. Model-specific extras are
+    allowed -- SARIMA adds `fallback_nodes`, exactly as the naive floors add `seasonal_fallback_rate`
+    -- so this is a subset (required-keys-present) check, not exact equality."""
     want, src = _baseline_keys()
     got = set(rec)
-    assert got == want, f"schema drift vs {src}: missing {want - got}, extra {got - want}"
+    assert want <= got, f"schema drift vs {src}: missing required keys {want - got}"
 
 
 def selfcheck():
     want, src = _baseline_keys()
-    print(f"schema reference: {src}  ({len(want)} keys)")
+    print(f"schema reference: {src}  ({len(want)} required keys)")
     sample = dict(model="gbm", dataset="influenza_japan", horizon=3, seed=42, metric="rmse",
                   country_macro=1.0, node_mean=1.0, n_countries=1, n_nodes=47,
                   node_subset=None, **NULL_META)
     _assert_schema(sample)
-    print("ok  emitted record matches the baseline key set exactly")
-    # mutation test: drop a key and confirm the check FAILS, so we know it can fail
+    print("ok  a plain GBM record carries every required baseline key")
+    # a SARIMA record with the extra fallback_nodes field must still pass (extras are allowed)
+    _assert_schema(dict(sample, model="sarima", seed=None, fallback_nodes=3))
+    print("ok  a SARIMA record with the extra 'fallback_nodes' field is accepted")
+    # mutation test: drop a REQUIRED key and confirm the check FAILS, so we know it can fail
     broken = dict(sample); broken.pop("node_subset")
     try:
         _assert_schema(broken)
     except AssertionError:
-        print("ok  mutation caught: a record missing 'node_subset' is rejected")
+        print("ok  mutation caught: a record missing required 'node_subset' is rejected")
     else:
         raise SystemExit("FAIL: schema check did not fire on a broken record -- the check is dead")
-    # a second mutation: an extra key must also be caught
-    broken2 = dict(sample); broken2["surprise"] = 1
-    try:
-        _assert_schema(broken2)
-    except AssertionError:
-        print("ok  mutation caught: an unexpected extra key is rejected")
-    else:
-        raise SystemExit("FAIL: schema check ignored an extra key")
 
 
 def main():

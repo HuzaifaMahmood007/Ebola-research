@@ -5,15 +5,16 @@
     "horizon": 5,
     "seed": null,
     "metric": "rmse",
-    "country_macro": 271.0080164721202,
-    "node_mean": 271.0080164721202,
+    "country_macro": 796.0479563167926,
+    "node_mean": 796.0479563167926,
     "n_countries": 1,
     "n_nodes": 10,
     "node_subset": null,
     "training_regime": "single",
     "sampler": null,
     "gate_mode": null,
-    "topo_aug": null
+    "topo_aug": null,
+    "fallback_nodes": 0
   },
   {
     "model": "arima",
@@ -21,15 +22,16 @@
     "horizon": 5,
     "seed": null,
     "metric": "mae",
-    "country_macro": 171.88230278951204,
-    "node_mean": 171.88230278951204,
+    "country_macro": 562.2371070267991,
+    "node_mean": 562.2371070267991,
     "n_countries": 1,
     "n_nodes": 10,
     "node_subset": null,
     "training_regime": "single",
     "sampler": null,
     "gate_mode": null,
-    "topo_aug": null
+    "topo_aug": null,
+    "fallback_nodes": 0
   },
   {
     "model": "arima",
@@ -37,15 +39,16 @@
     "horizon": 5,
     "seed": null,
     "metric": "pcc",
-    "country_macro": 0.953790781598865,
-    "node_mean": 0.953790781598865,
+    "country_macro": 0.5376103548307196,
+    "node_mean": 0.5376103548307196,
     "n_countries": 1,
     "n_nodes": 10,
     "node_subset": null,
     "training_regime": "single",
     "sampler": null,
     "gate_mode": null,
-    "topo_aug": null
+    "topo_aug": null,
+    "fallback_nodes": 0
   },
   {
     "model": "arima",
@@ -53,15 +56,16 @@
     "horizon": 5,
     "seed": null,
     "metric": "smape",
-    "country_macro": 19.356851427697617,
-    "node_mean": 19.356851427697617,
+    "country_macro": 50.468941530246,
+    "node_mean": 50.468941530246,
     "n_countries": 1,
     "n_nodes": 10,
     "node_subset": null,
     "training_regime": "single",
     "sampler": null,
     "gate_mode": null,
-    "topo_aug": null
+    "topo_aug": null,
+    "fallback_nodes": 0
   },
   {
     "model": "arima",
@@ -69,15 +73,16 @@
     "horizon": 5,
     "seed": null,
     "metric": "peak_intensity",
-    "country_macro": 305.4335653461827,
-    "node_mean": 305.4335653461827,
+    "country_macro": 1279.0350708548574,
+    "node_mean": 1279.0350708548574,
     "n_countries": 1,
     "n_nodes": 10,
     "node_subset": null,
     "training_regime": "single",
     "sampler": null,
     "gate_mode": null,
-    "topo_aug": null
+    "topo_aug": null,
+    "fallback_nodes": 0
   },
   {
     "model": "arima",
@@ -85,15 +90,16 @@
     "horizon": 5,
     "seed": null,
     "metric": "peak_timing",
-    "country_macro": 12.0,
-    "node_mean": 12.0,
+    "country_macro": 25.5,
+    "node_mean": 25.5,
     "n_countries": 1,
     "n_nodes": 10,
     "node_subset": null,
     "training_regime": "single",
     "sampler": null,
     "gate_mode": null,
-    "topo_aug": null
+    "topo_aug": null,
+    "fallback_nodes": 0
   },
   {
     "model": "arima",
@@ -101,14 +107,15 @@
     "horizon": 5,
     "seed": null,
     "metric": "nrmse",
-    "country_macro": 0.23277756647825734,
-    "node_mean": 0.23277756647825734,
+    "country_macro": 0.6671105406542079,
+    "node_mean": 0.6671105406542079,
     "n_countries": 1,
     "n_nodes": 10,
     "node_subset": null,
     "training_regime": "single",
     "sampler": null,
     "gate_mode": null,
-    "topo_aug": null
+    "topo_aug": null,
+    "fallback_nodes": 0
   }
 ]
