@@ -1,0 +1,158 @@
+{
+  "script": "diagnostics/graph_probe/t6c_level_check.py",
+  "date": "2026-09-24",
+  "reference": "results/misc/t6_neighbour_signal.json",
+  "level_feature": "district mean train-phase deviation, added to A and B",
+  "panels": {
+    "influenza_japan": {
+      "level_sd": 2.9732295742508932e-08,
+      "level_max_abs": 1.077053012575203e-07,
+      "nodes_level_nonzero": 0,
+      "N": 47,
+      "max_abs_change_pct_points": 1.3455903058456897e-13,
+      "horizons": {
+        "3": {
+          "gain_pct": 1.2142655057532343,
+          "gain_level_pct": 1.214265505753109,
+          "change_pct_points": -1.2523315717771766e-13
+        },
+        "5": {
+          "gain_pct": 1.0072609319399404,
+          "gain_level_pct": 1.007260931939891,
+          "change_pct_points": -4.929390229335695e-14
+        },
+        "10": {
+          "gain_pct": 0.2841255144376293,
+          "gain_level_pct": 0.2841255144377154,
+          "change_pct_points": 8.609779555968089e-14
+        },
+        "15": {
+          "gain_pct": 0.6980433364958064,
+          "gain_level_pct": 0.698043336495941,
+          "change_pct_points": 1.3455903058456897e-13
+        }
+      },
+      "seconds": 0.0
+    },
+    "influenza_us-regions": {
+      "level_sd": 9.834779928056092e-08,
+      "level_max_abs": 1.6578918321632542e-07,
+      "nodes_level_nonzero": 0,
+      "N": 10,
+      "max_abs_change_pct_points": 1.6293633109398797e-12,
+      "horizons": {
+        "3": {
+          "gain_pct": -0.6242912299587793,
+          "gain_level_pct": -0.6242912299588115,
+          "change_pct_points": -3.219646771412954e-14
+        },
+        "5": {
+          "gain_pct": -1.70800974833785,
+          "gain_level_pct": -1.7080097483376055,
+          "change_pct_points": 2.4447111002245947e-13
+        },
+        "10": {
+          "gain_pct": -2.1090639268707734,
+          "gain_level_pct": -2.109063926869144,
+          "change_pct_points": 1.6293633109398797e-12
+        },
+        "15": {
+          "gain_pct": -0.5866558144085949,
+          "gain_level_pct": -0.5866558144076486,
+          "change_pct_points": 9.463541061904834e-13
+        }
+      },
+      "seconds": 0.0
+    },
+    "influenza_us-states": {
+      "level_sd": 1.193945535448053e-07,
+      "level_max_abs": 3.74866486493566e-07,
+      "nodes_level_nonzero": 0,
+      "N": 49,
+      "max_abs_change_pct_points": 1.0733636202076013e-12,
+      "horizons": {
+        "3": {
+          "gain_pct": 0.3040702975922952,
+          "gain_level_pct": 0.3040702975918144,
+          "change_pct_points": -4.80782080813924e-13
+        },
+        "5": {
+          "gain_pct": 0.5809534148551092,
+          "gain_level_pct": 0.5809534148540358,
+          "change_pct_points": -1.0733636202076013e-12
+        },
+        "10": {
+          "gain_pct": 0.6271677355989075,
+          "gain_level_pct": 0.6271677355980058,
+          "change_pct_points": -9.017231406005521e-13
+        },
+        "15": {
+          "gain_pct": 0.2485344521884842,
+          "gain_level_pct": 0.248534452188716,
+          "change_pct_points": 2.318145675417327e-13
+        }
+      },
+      "seconds": 0.0
+    },
+    "covid_us-states": {
+      "level_sd": 6.449048193657958e-08,
+      "level_max_abs": 1.4518707671472862e-07,
+      "nodes_level_nonzero": 0,
+      "N": 49,
+      "max_abs_change_pct_points": 9.301448500309561e-13,
+      "horizons": {
+        "3": {
+          "gain_pct": 8.054249186768622,
+          "gain_level_pct": 8.054249186768718,
+          "change_pct_points": 9.592326932761353e-14
+        },
+        "5": {
+          "gain_pct": 3.044437180285814,
+          "gain_level_pct": 3.044437180285781,
+          "change_pct_points": -3.3306690738754696e-14
+        },
+        "10": {
+          "gain_pct": -0.7538861374067052,
+          "gain_level_pct": -0.7538861374072552,
+          "change_pct_points": -5.500044863993026e-13
+        },
+        "15": {
+          "gain_pct": 1.3210808407867516,
+          "gain_level_pct": 1.3210808407858214,
+          "change_pct_points": -9.301448500309561e-13
+        }
+      },
+      "seconds": 0.0
+    },
+    "dengue": {
+      "level_sd": 0.23165646984529445,
+      "level_max_abs": 1.892367907108799,
+      "nodes_level_nonzero": 6662,
+      "N": 7165,
+      "max_abs_change_pct_points": 0.05876116918262664,
+      "horizons": {
+        "3": {
+          "gain_pct": 5.543165694406325,
+          "gain_level_pct": 5.601926863588951,
+          "change_pct_points": 0.05876116918262664
+        },
+        "5": {
+          "gain_pct": 5.281288823143853,
+          "gain_level_pct": 5.335002422535273,
+          "change_pct_points": 0.053713599391420175
+        },
+        "10": {
+          "gain_pct": 2.8653408411641945,
+          "gain_level_pct": 2.917285654920439,
+          "change_pct_points": 0.05194481375624438
+        },
+        "15": {
+          "gain_pct": 0.6734211869539123,
+          "gain_level_pct": 0.7262330872603207,
+          "change_pct_points": 0.052811900306408366
+        }
+      },
+      "seconds": 15.3
+    }
+  }
+}
