@@ -1,0 +1,118 @@
+{
+  "script": "diagnostics/graph_probe/t5_input_energy.py",
+  "date": "2026-09-22",
+  "seed": 42,
+  "statistic": "per-origin district-specific share of energy (t4.distinct_pct) and participation-ratio effective dimensionality (t1b), mean over test origins",
+  "panels": {
+    "influenza_japan": {
+      "N": 47,
+      "n_origins_used": 104,
+      "origin_subsample_stride": 1,
+      "dims": {
+        "input_full": 80,
+        "input_incidence": 20,
+        "representation": 64
+      },
+      "distinct_pct": {
+        "input_full": 3.191019155258797,
+        "input_incidence": 13.757557784222673,
+        "representation_h": 3.8307061659812423,
+        "representation_h_published": 3.8
+      },
+      "effective_dim": {
+        "input_full": 3.941250524029426,
+        "input_incidence": 3.9412505240294258,
+        "representation_h": 2.298351600240444
+      },
+      "seconds": 0.7
+    },
+    "influenza_us-regions": {
+      "N": 10,
+      "n_origins_used": 235,
+      "origin_subsample_stride": 1,
+      "dims": {
+        "input_full": 80,
+        "input_incidence": 20,
+        "representation": 64
+      },
+      "distinct_pct": {
+        "input_full": 6.240037799394855,
+        "input_incidence": 27.530691342425726,
+        "representation_h": 8.550181624531543,
+        "representation_h_published": 8.6
+      },
+      "effective_dim": {
+        "input_full": 1.4599860801563092,
+        "input_incidence": 1.4599860801563092,
+        "representation_h": 1.7572952847685321
+      },
+      "seconds": 0.9
+    },
+    "influenza_us-states": {
+      "N": 49,
+      "n_origins_used": 108,
+      "origin_subsample_stride": 1,
+      "dims": {
+        "input_full": 80,
+        "input_incidence": 20,
+        "representation": 64
+      },
+      "distinct_pct": {
+        "input_full": 18.31851800115108,
+        "input_incidence": 49.28577930594195,
+        "representation_h": 12.321898839231803,
+        "representation_h_published": 12.3
+      },
+      "effective_dim": {
+        "input_full": 1.808512314227724,
+        "input_incidence": 1.808512314227724,
+        "representation_h": 2.4957146669284005
+      },
+      "seconds": 0.6
+    },
+    "covid_us-states": {
+      "N": 49,
+      "n_origins_used": 49,
+      "origin_subsample_stride": 1,
+      "dims": {
+        "input_full": 80,
+        "input_incidence": 20,
+        "representation": 64
+      },
+      "distinct_pct": {
+        "input_full": 5.036101265596604,
+        "input_incidence": 23.842047953395134,
+        "representation_h": 4.779268772286399,
+        "representation_h_published": 4.8
+      },
+      "effective_dim": {
+        "input_full": 2.7800700134726037,
+        "input_incidence": 2.7800700134726033,
+        "representation_h": 1.9488275359839835
+      },
+      "seconds": 0.3
+    },
+    "dengue": {
+      "N": 7165,
+      "n_origins_used": 158,
+      "origin_subsample_stride": 4,
+      "dims": {
+        "input_full": 80,
+        "input_incidence": 20,
+        "representation": 64
+      },
+      "distinct_pct": {
+        "input_full": 40.79885182794549,
+        "input_incidence": 93.5078608303892,
+        "representation_h": 22.389900521237035,
+        "representation_h_published": 22.4
+      },
+      "effective_dim": {
+        "input_full": 4.078963031003386,
+        "input_incidence": 3.9620247232117864,
+        "representation_h": 4.592250258652949
+      },
+      "seconds": 74.0
+    }
+  }
+}
