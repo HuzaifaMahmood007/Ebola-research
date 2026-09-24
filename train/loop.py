@@ -154,7 +154,8 @@ def permute_adjacency(A_np, perm_seed):
 def train_one(name, seed, epochs=80, lr=1e-3, wd=1e-4, batch_origins=8, patience=15,
               device=DEVICE, verbose=True, zero_channels=None,
               training_regime="single", sampler=None, gate_mode="learned", topo_aug="none",
-              gate_read=True, quant_out=None, run_out=None, epi=None, shuffle_adj_seed=None):
+              gate_read=True, quant_out=None, run_out=None, epi=None, shuffle_adj_seed=None,
+              encoder_factory=None):
     assert not name.startswith("ebola"), \
         "ebola must never enter trunk training/selection (§0.5, C8); Week-5 few-shot is a separate path"
     torch.manual_seed(seed)
@@ -175,7 +176,12 @@ def train_one(name, seed, epochs=80, lr=1e-3, wd=1e-4, batch_origins=8, patience
     masks = {p: torch.tensor(m, dtype=torch.float32, device=device) for p, m in b.masks().items()}
     tr, va, te = (b.origins(phase="train"), b.origins(phase="val"), b.origins(phase="test"))
 
-    enc, ad = SharedEncoder(gate_mode=gate_mode).to(device), Adapter().to(device)
+    # encoder_factory(b, gate_mode, device) -> (enc, meta) swaps in a variant trunk, e.g. the v2
+    # deviation arms (ablation/run_v2_deviation.py). Still built BEFORE the Adapter, so the RNG order of
+    # the default path is unchanged; meta is stamped into every record.
+    enc, enc_meta = (encoder_factory(b, gate_mode, device) if encoder_factory is not None
+                     else (SharedEncoder(gate_mode=gate_mode).to(device), {}))
+    ad = Adapter().to(device)
     opt = torch.optim.AdamW(list(enc.parameters()) + list(ad.parameters()), lr=lr, weight_decay=wd)
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=epochs)
 
@@ -269,6 +275,7 @@ def train_one(name, seed, epochs=80, lr=1e-3, wd=1e-4, batch_origins=8, patience
     run_meta = dict(training_regime=training_regime, sampler=sampler,
                     gate_mode=gate_mode, topo_aug=topo_aug)
     run_meta.update(shuf_meta)                          # shuffle_adj_seed/hash/frac when the arm is on
+    run_meta.update(enc_meta)                           # variant-trunk meta, empty on the default path
     gate = gate_spatial_readout(enc, ad, Z, A, Mt, va, device) if gate_read else None
     recs, pernode, perorigin = score_predictions("encoder", name, seed, pred_by_h, b, te,
                                                  run_meta=run_meta)
