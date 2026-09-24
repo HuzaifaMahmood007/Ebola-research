@@ -22,6 +22,7 @@ import os
 os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
 
 import argparse
+import hashlib
 import json
 import time
 from pathlib import Path
@@ -115,10 +116,45 @@ def _fit_bias_correction(enc, ad, Z, A, Mt, b, origins, val_mask, grid=None):
             for h in bundles.HORIZONS}
 
 
+def permute_adjacency(A_np, perm_seed):
+    """Relabel the adjacency's node identities: same topology, same degree sequence, WRONG districts.
+
+    The shuffled-adjacency control (ledger D2). A symmetric row+column permutation A[p][:, p] keeps
+    every edge and every node's degree exactly, but moves each district's neighbourhood onto some
+    other district. Node features, targets and masks are left in their ORIGINAL order, so node i keeps
+    its own history and gets a stranger's neighbours -- which is the whole point: if a model trained on
+    this fake graph matches the real-graph run, the graph carried no district information at any stage,
+    learning included.
+
+    Seeded so the run reproduces. Identity is REFUSED: a permutation that happens to leave the labels in
+    place would silently retrain the real-graph model and fake a null result, so we assert at least one
+    node moved and return the displaced fraction for the record. Mirrors the inference-only relabel in
+    diagnostics/graph_probe/why_graph_fails.py (`A_np[np.ix_(p, p)]`), lifted to train time."""
+    N = A_np.shape[0]
+    rng = np.random.default_rng(perm_seed)
+    p = rng.permutation(N)
+    frac = float((p != np.arange(N)).mean())
+    assert frac > 0.0, (f"permutation seed {perm_seed} is the identity on N={N}: refusing a silent "
+                        f"no-op that would reproduce the real-graph run and fake a null result")
+    A_perm = A_np[np.ix_(p, p)]
+    # A symmetric relabel cannot change the edge count or the multiset of degrees; assert it, because
+    # a broken permutation that dropped or duplicated edges would make the arm a different experiment.
+    assert int((A_perm != 0).sum()) == int((A_np != 0).sum()), \
+        "edge count changed under permutation -- the shuffle is not a pure relabel"
+    d0 = np.sort((A_np != 0).sum(1)); d1 = np.sort((A_perm != 0).sum(1))
+    assert np.array_equal(d0, d1), "unweighted degree sequence changed under permutation"
+    w0 = np.sort(A_np.sum(1)); w1 = np.sort(A_perm.sum(1))
+    assert np.array_equal(w0, w1), "weighted degree sequence changed under permutation"
+    h = hashlib.sha1(p.astype(np.int64).tobytes()).hexdigest()[:12]
+    meta = dict(shuffle_adj_seed=int(perm_seed), shuffle_adj_hash=h,
+                shuffle_adj_frac_displaced=round(frac, 6))
+    return A_perm, meta
+
+
 def train_one(name, seed, epochs=80, lr=1e-3, wd=1e-4, batch_origins=8, patience=15,
               device=DEVICE, verbose=True, zero_channels=None,
               training_regime="single", sampler=None, gate_mode="learned", topo_aug="none",
-              gate_read=True, quant_out=None, run_out=None, epi=None):
+              gate_read=True, quant_out=None, run_out=None, epi=None, shuffle_adj_seed=None):
     assert not name.startswith("ebola"), \
         "ebola must never enter trunk training/selection (§0.5, C8); Week-5 few-shot is a separate path"
     torch.manual_seed(seed)
@@ -131,7 +167,11 @@ def train_one(name, seed, epochs=80, lr=1e-3, wd=1e-4, batch_origins=8, patience
         Z[:, :, list(zero_channels)] = 0.0  # e.g. (1,2) = drop sin_doy/cos_doy seasonal phase
     ymod = torch.tensor(b.y, dtype=torch.float32, device=device)                 # [N,T] model space
     Mt = torch.tensor(b.M, dtype=torch.float32, device=device)                  # [N,T]
-    A = sparse_from_dense_np(b.A_geo).to(device)
+    # Shuffled-adjacency arm (D2): relabel the graph's nodes before it ever enters training, so the
+    # model LEARNS on the fake graph, not just infers on it. Features/targets/masks stay in node order.
+    A_geo, shuf_meta = (permute_adjacency(b.A_geo, shuffle_adj_seed) if shuffle_adj_seed is not None
+                        else (b.A_geo, {}))
+    A = sparse_from_dense_np(A_geo).to(device)
     masks = {p: torch.tensor(m, dtype=torch.float32, device=device) for p, m in b.masks().items()}
     tr, va, te = (b.origins(phase="train"), b.origins(phase="val"), b.origins(phase="test"))
 
@@ -228,6 +268,7 @@ def train_one(name, seed, epochs=80, lr=1e-3, wd=1e-4, batch_origins=8, patience
                         quant_out[h][:, k, qi] = invert_scaler(out[:, j, qi:qi + 1], b.scaler)[:, 0]
     run_meta = dict(training_regime=training_regime, sampler=sampler,
                     gate_mode=gate_mode, topo_aug=topo_aug)
+    run_meta.update(shuf_meta)                          # shuffle_adj_seed/hash/frac when the arm is on
     gate = gate_spatial_readout(enc, ad, Z, A, Mt, va, device) if gate_read else None
     recs, pernode, perorigin = score_predictions("encoder", name, seed, pred_by_h, b, te,
                                                  run_meta=run_meta)

@@ -273,7 +273,7 @@ Notes carried out of Group C:
 | id | what | decision | status |
 |---|---|---|---|
 | D1 | LDO3 zero-shot quantiles, 0 of 25 present, ~10 h | **Do not run.** Zero-shot is behind its ceiling in 36 of 36 cells; calibrating a uniformly losing arm buys no claim | **DONE**, recorded as decision-log D20 |
-| D2 | Shuffled-adjacency control, ~6 h | **Do not run.** Gate-off already shows 0 of 40 error cells helped; absence already disclosed in Threats | ~~**DONE**, recorded as decision-log D21~~ **REOPENED 2026-09-21**, see amendment note below |
+| D2 | Shuffled-adjacency control, ~6 h | **Do not run.** Gate-off already shows 0 of 40 error cells helped; absence already disclosed in Threats | ~~**DONE**, recorded as decision-log D21~~ **REOPENED 2026-09-21**, then **RUN and SCORED 2026-09-23**, see amendment note below |
 | D3 | Median-to-mean correction into the Ebola path | **Do not.** Prereg amendment log is closed; correction is 8.8-47.3% worse on the most-shifted panel. The documentation fix is already in the manuscript | **DONE**, recorded as decision-log D22, closes M14 |
 | D4 | Baselines | **Nothing pending.** EpiGNN 80/80, MTGNN 80/80, ColaGNN 60/60, HeatGNN 60/60, all scored | closed *(verified)* |
 
@@ -291,6 +291,22 @@ adapter, input-vs-representation), tracked in `todo_Milestone6.md` Task 1 and
 `progress/planning/Milestone6_Plan.md` section 4, and runs in the user's shell at about 6 hours. D1
 and D3 are not spatial tests, their declines rest on evidence that has not changed, and they stay
 closed.
+
+**D2 RUN and SCORED, 2026-09-23.** The retrain finished overnight, 25 records (5 panels x 5 seeds,
+dengue included) at `ablation/single/encoder__<ds>__seed<S>__shufadj.json`, and I scored it from disk
+and cross-checked it independently. The runtime was ~9.7 h, not the ~6 h estimated, dengue dominating.
+**Verdict over 60 cells (5 panels x 4 horizons x 3 metrics): 9 the real graph helps, 2 the real graph
+hurts, 49 within noise.** Training on the wrong districts matches training on the real map almost
+everywhere. The exception is dengue, our densest graph and highest gate, where the real map earns a
+small seed-stable advantage: correlation at all four horizons (PCC deltas 0.034 to 0.042) and error at
+the two long horizons (RMSE +2.31 at h10, +1.27 at h15; MAE +0.94 and +0.78), about 2 to 4 percent.
+The four small panels are within noise on error, and influenza-Japan at h10 even favours the shuffled
+model. This does NOT license "the graph contributed nothing at any stage"; it sharpens the existing
+"graph helps shape not magnitude" finding and stays consistent with gate-off. Full write-up
+`progress/outcomes/Shuffled_Adjacency_2026-09-23.md`, verifier `diagnostics/verify_shufadj_doc.py`
+(mutation-tested). Runner `ablation/run_shuffle_adjacency.py`, hook `train.loop.permute_adjacency`.
+D2 is now closed as run. The two manuscript sentences at `Reports/Manuscript_v2.md:332` and `:525`
+still need updating and are the only open follow-up.
 
 ---
 
