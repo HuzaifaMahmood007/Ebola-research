@@ -63,10 +63,86 @@ The adapter mechanism doc names its own gap. `progress/outcomes/Adapter_Mechanis
 outside where it was determined; they do not prove that each percentage point of extrapolation costs
 a measurable amount of MAE. The link to the scored outcome is by argument, not by regression."
 
-- [ ] Refit the Ebola adapter ridge-regularised toward identity, selected on support only
-- [ ] Exploratory, in `experiments/`, minutes per seed
-- [ ] Report whether pulling the adapter toward identity recovers error, which is the causal step the
-      geometric measurement cannot take on its own
+**Progress 2026-09-22. Script built and self-checked. The five-seed run is with the user.**
+
+Script `experiments/adapter_constraint.py` (EXPLORATORY, stamped `protocol="EXPLORATORY"`, an assert
+confines writes to `experiments/`, `load_manifest(verify=True)` checks the frozen arm hashes before and
+after, nothing under `results/` or `data/` is touched, the pre-registration is never re-scored). It
+follows the `experiments/norm_probe.py` pattern and reuses its plumbing.
+
+**The instrument, and why it is shrinkage rather than a literal ridge.** With the trunk frozen the
+adapter is exactly affine (`models/adapters.py:14-16`): `pred = h A^T + c`. The zero-shot borrowed-mean
+adapter is a second affine map `(A_z, c_z)`, the one that adds no Ebola-specific change, so the
+few-shot-specific change the mechanism doc calls D is exactly `A_few - A_z`. A ridge penalty
+`lam * ||A - A_z||^2` shrinks the fitted map along the segment to `A_z`, which in closed form is
+`A(t) = A_z + t (A_few - A_z)` with `t = 1 / (1 + lam*k)`. So `t` is a reparametrisation of the ridge
+strength: `t=1` is unconstrained few-shot (D untouched), `t=0` is the zero-effect map (D fully removed),
+`t<1` shrinks D by the factor t. I use the closed-form shrinkage because a literal ridge run through the
+pre-registration's own optimiser SATURATES: with the gradient norm clipped to 1.0, cranking lam only
+shrinks D by about 64% of the way to `A_z` and never reaches it (measured on seed 42: relative distance
+to `A_z` falls from 1.914 at lam=0 to a floor of 0.688, and the error effect is non-monotone), so a
+literal-ridge grid cannot span the few-to-zero range and cannot cleanly reference full recovery.
+Shrinkage spans it exactly and its two ends are the archived arms.
+
+**No Ebola query outcome touches any fitting choice.** The shrinkage strength `t` is selected on SUPPORT
+ONLY by leave-one-district-out CV inside the support set, the machinery the pre-registration uses to
+pick the adapter epoch (`train.ebola.choose_epochs` / `_fit_adapter`). Per held-out district I refit the
+few-shot adapter on the remaining support at that arm-and-seed's pre-registered epoch count, interpolate
+that fold map toward `A_z` over `t` in {0.0, 0.1, ..., 1.0}, and score the held-out district's pinball.
+Curves are pooled weighted by held-out cells and the `t` minimising the pooled held-out pinball is
+selected. The REPORTED cell is the support-selected `t`; the full grid is context, and a query-oracle
+best-over-grid is reported too, labelled as context that peeks at the answer and is never a selection.
+
+**A second, parameter-free instrument (the clip).** Restrict the few-shot change to the per-horizon
+support span: `A_clip = A_z + (A_few - A_z) @ P_h` per horizon block, where `P_h` projects onto the span
+of the support feature rows the fit consumed at horizon h (`diagnostics.adapter_mechanism.design_rows`,
+the same rows the mechanism doc measured). This deletes exactly the part of D acting on directions the
+support never constrained. A horizon with 0 support rows (L12 h15) has an empty span, so its whole block
+collapses to the zero-effect map. Done per horizon on purpose: pooling all origins spans the full 64
+dims and the clip is a no-op.
+
+**Verdict framework (one of three honest forms, with numbers).** `recovery = (few - constrained) /
+(few - zero)` at the support-selected `t`, seed-mean country-macro MAE. Extrapolation is causal if
+constraining recovers most of the damage, partially causal if it recovers some, not supported if it
+recovers none. `recovery_clip` reports the same fraction for the parameter-free clip. Never "THE cause";
+this is one mechanism test.
+
+**Validated (selfcheck passes).** The adapter is exactly affine and the affine reconstruction round-trips
+to deviation 0.0; `t=1` reproduces the archived few-shot MAE exactly and `t=0` reproduces the archived
+zero-shot MAE exactly on both arms at seed 42; the frozen arm hashes are intact before and after. Cost:
+seed 42 both arms about 110s (L12 ~30s, L20 ~79s), so about 2 minutes per seed, well under the 10-minute
+per-step budget; five seeds about 10 minutes total.
+
+**Early single-seed signal, NOT the result.** Seed 42 alone selected `t=0.2` on L12 (strong shrinkage
+toward the zero-effect map) and `t=0.8` on L20 (mild). This is one seed and carries no verdict; the
+reported result needs all five seeds paired.
+
+**DONE 2026-09-22. Verdict: PARTIALLY CAUSAL, arm-dependent.** Constraining the adapter toward the
+zero-effect map, at a strength chosen on support alone, recovers about 45% of the few-shot damage over
+the 7 damaged cells: 77 to 90% on the primary L12 arm at h3/h5/h10 (support-selected t about 0.34) and 9
+to 19% on the secondary L20 arm (support-selected t about 0.88). Removing the whole few-shot change (t=0,
+the oracle end) recovers about 100% on every damaged cell, so the damage lives in the few-shot-specific
+change, of which the extrapolation is the bulk. The parameter-free strictly-out-of-span clip recovers
+almost nothing (+1% on average), which locates the damage in under-constrained in-span directions rather
+than strictly-out-of-span ones. This is one mechanism test and never "THE cause".
+
+- [x] Script `experiments/adapter_constraint.py` written, EXPLORATORY, selfcheck passes, both anchors
+      exact, hashes intact
+- [x] **User ran the five-seed sweep**
+      (`conda run -n ebola-train python -m experiments.adapter_constraint --seeds 42 52 62 72 82`);
+      `experiments/adapter_constraint__seed{42,52,62,72,82}.json` and `__summary.json` on disk, complete
+      (2 arms, 5 seeds, full 11-point t-grid), anchors t=1/t=0 match the archived arms to 6e-06
+- [x] Wrote `progress/outcomes/Adapter_Constraint_2026-09-22.md` in the `Norm_Probe_2026-09-16.md` style,
+      with the paired numbers, the support-selected `t` per arm, the causal verdict, and its limits
+- [x] Wrote `diagnostics/verify_adapter_constraint_doc.py`; it passes on the clean doc and its `--mutate`
+      sweep catches all 11 planted defects
+- [x] Reported the verdict above: pulling the adapter toward the zero-effect map recovers the damage
+      partly, more on L12 than L20, which is the causal step the geometric measurement could not take
+      alone
+
+**Untracked, awaiting the Housekeeping commit:** `experiments/adapter_constraint.py`, the six sweep
+JSONs, `progress/outcomes/Adapter_Constraint_2026-09-22.md`, `diagnostics/verify_adapter_constraint_doc.py`.
+None are gitignored.
 
 **What it buys the paper.** It moves the adaptation-failure story from geometric ("the map is applied
 far outside its fitted range") toward causal ("constraining it back recovers error"). Until this
@@ -101,25 +177,35 @@ and it is inference-only.
 only (`Reports/Manuscript_v2.md:521`). A named Bonferroni sensitivity on the wider exploratory grid
 answers the reviewer who asks what happens when you correct the whole family.
 
-### 1.5 D2 shuffled-adjacency RETRAIN, gated on 1.1 to 1.3
+### 1.5 D2 shuffled-adjacency RETRAIN, gated on 1.1 to 1.3 -- DONE 2026-09-23
 
-**This reopens a decided-no item.** `progress/planning/Gap_Ledger.md:276` records D2 as "Do not run"
+**This reopened a decided-no item.** `progress/planning/Gap_Ledger.md:276` records D2 as "Do not run"
 (recorded as decision-log D21). The user reopened it on 2026-09-21 for the final close, because it is
 the last remaining spatial test. The gate-off ablation and the inference-only relabelling control both
 already ran; this is the retrain version, which asks whether a model *trained* on a fake graph would
 do as well, and it is the stronger of the two.
 
-- [ ] **Do NOT start until runs 1.1, 1.2 and 1.3 have completed.**
-- [ ] About 6 hours, user's shell
-- [ ] Retrain on relabelled adjacency (same topology, same degrees, wrong districts), compare error to
-      the real-graph trunk
-- [ ] Update the ledger D2 entry (already done in this milestone, see Housekeeping) and update the two
-      manuscript sentences that currently say we did not run a shuffled-adjacency arm
+- [x] Ran overnight in the user's shell, finished 2026-09-23. 25 records (5 panels x 5 seeds, dengue
+      included), `ablation/single/encoder__<ds>__seed<S>__shufadj.json`.
+- [x] Retrained on relabelled adjacency (same topology, same degrees, wrong districts), compared error
+      to the real-graph trunk in `results/single/`, paired per seed.
+- [x] Scored from disk and cross-checked independently. **Verdict over 60 cells: 9 the real graph
+      helps, 2 the real graph hurts, 49 within noise.** The real map earns a small, seed-stable
+      advantage almost entirely on dengue (correlation at all four horizons, error at h10 and h15, 2 to
+      4 percent). The four small panels are within noise on error. Full write-up:
+      `progress/outcomes/Shuffled_Adjacency_2026-09-23.md`, verifier
+      `diagnostics/verify_shufadj_doc.py` (mutation-tested, 4 of 4 caught).
+- [x] Ledger D2 updated below to RUN with the verdict and date.
+- [ ] Update the two manuscript sentences (`Reports/Manuscript_v2.md:332`, `:525`) that currently say
+      we did not run a shuffled-adjacency arm. Replacement text drafted in the outcome doc scoring
+      handoff; not yet applied to the manuscript.
 
-**What it buys the paper.** It converts "we did not run a shuffled-adjacency arm"
-(`Reports/Manuscript_v2.md:332`, `:525`) from a disclosed gap into a closed test. If a fake-graph
-retrain matches the real-graph trunk, the "the graph does not help error" finding gets its strongest
-evidence. That is the whole point of the final close.
+**What it bought the paper.** It converts "we did not run a shuffled-adjacency arm"
+(`Reports/Manuscript_v2.md:332`, `:525`) from a disclosed gap into a closed test. The result does NOT
+support the strongest form ("the graph contributed nothing at any stage"): dengue shows a small
+seed-stable advantage for the real map. It DOES support the sharper, honest form that lines up with
+gate-off: the graph is about shape not magnitude, and even a from-scratch retrain on the real map only
+buys a small correlation advantage plus a few percent on dengue's long horizons.
 
 ### 1.6 Close-by-wording items (no compute)
 
@@ -146,6 +232,57 @@ Listed so they do not leak back in.
   does not contain (`Adapter_Mechanism_2026-09-16.md:125-126`).
 - **D1** (LDO3 zero-shot quantiles, ~10 h) and **D3** (median-to-mean into the Ebola path) stay closed
   (`Gap_Ledger.md:275,277`).
+
+### 1.8 Run 5: auxiliary district-identity objective (added 2026-09-23)
+
+Rationale in `progress/planning/Milestone6_Plan.md` section 4A. Two stages with a hard gate between
+them. The idea is a second encoder head that classifies "which district is this?" on the
+representation `h`, trained with weight `lambda_aux` alongside the forecast loss, meant to stop the
+encoder squashing district-specific structure (input 14 to 94 percent district-specific energy
+compressed to 3.8 to 22.4 percent in `h`, `Input_Energy_2026-09-22.md`). **User's stated risk:** if
+the squashed component was noise, forcing it back in makes forecasts worse.
+
+**Stage 1: the gate probe (cheap, I run it). DONE 2026-09-24. Verdict: NO-GO.**
+
+- [x] Question the probe answers: is the discarded district information forecast-relevant at all?
+- [x] Instrument: on each frozen `results/single/` checkpoint, fit per-node corrections (a per-node
+      additive bias, and a per-node affine slope+intercept) on the model's own residuals, then apply
+      them on the test period. To separate real district signal from the known lognormal
+      median-vs-mean gap (`loop._fit_bias_correction` already fixes that with ONE global scalar per
+      horizon), every per-node correction is contrasted against a district-AGNOSTIC (pooled)
+      correction of the SAME form. The decisive contrast is a node variant beating BOTH baseline AND
+      the matching global variant, because beating global alone can just mean overfitting less than a
+      global correction that is itself worse than doing nothing.
+- [x] **Leakage rule:** corrections fit ONLY on train-phase origins and train-phase observed target
+      cells; test origins never touched during fitting; checkpoint frozen, no retrain, no gradient. A
+      node needs at least 8 observed train target cells to earn a correction, else it keeps baseline.
+- [x] Metrics: country-macro RMSE and MAE (`score.score_bundle`). dengue uses `origins[::4]`.
+- [x] Verdict rule, same as gate-off / shufadj (sample sd, paired by seed).
+- [x] Script `diagnostics/graph_probe/aux_gate_probe.py`, output `results/misc/aux_gate_probe.json`,
+      write-up `progress/outcomes/AuxGate_Probe_2026-09-23.md`, verifier
+      `diagnostics/verify_auxgate_doc.py` (passes, mutation-tested 3 of 3).
+
+**THE GATE: NO-GO.** The decisive node-beats-BOTH-baseline-and-global contrast fires in 2 of 40 bias
+cells (both covid_us-states at h10: node vs baseline +9.95% RMSE / +9.48% MAE, node vs global +3.30% /
++3.72%) and 0 of 36 affine cells. The 18-of-40 node-beats-global count is an artifact (on dengue and
+us-regions the global correction is worse than baseline, so node beating it just means less overfit;
+baseline wins). The richer affine_node instrument, the true analogue of an aux head, never beats
+baseline, hurts on 8 cells, and blows up numerically on dengue (up to 3.07e7 error) on quiet z-scored
+nodes, which is the user's stated risk made concrete. The one real district gain (covid h10) is a
+per-district level offset achievable for free post-hoc, not a reason to retrain. Borderline defaults to
+NO-GO. The user may overrule.
+
+- [x] Gate outcome recorded in this doc and the plan doc (`Milestone6_Plan.md` section 4A).
+- Separate observation, not a decision: a post-hoc recalibration helps COVID (global level offset
+  +6.88% RMSE / +5.98% MAE at h10, clears noise; short horizons positive but not seed-stable). Worth a
+  cheap post-hoc per-node/global recalibration follow-up on COVID (the closest Ebola analogue), NOT the
+  aux objective. Limits in the outcome doc.
+
+**Stage 2: the overnight retrain. NOT WRITTEN (gate is NO-GO).** The runner
+`ablation/run_aux_district.py` and the `train/loop.py` aux hook are not written, per the gate rule. If
+the user overrules the NO-GO, the design is: aux head + loss weighted `lambda_aux`, runner mirroring
+`ablation/run_shuffle_adjacency.py` with a `--smoke`, schema assert, resumable, paired vs
+`results/single/`. Runtime estimate for the full run: small panels ~45 min each, dengue ~12.7 h.
 
 ---
 
@@ -354,3 +491,6 @@ Version-control and correctness debt found on disk 2026-09-21.
 6. **Final verification pass** on the manuscript: recompute every number from disk, break one input to
    confirm the check works, check every Ebola sentence against the unsafe-to-claim list. Then render
    the docx and fix the repo URL.
+
+
+

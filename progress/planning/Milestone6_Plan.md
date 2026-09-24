@@ -49,10 +49,11 @@ Two standing constraints carry over unchanged:
   the check catches it. This is the repo's standing rule and it has caught six stale numbers in a
   single brief.
 
-## 4. The four queued runs
+## 4. The queued runs
 
-Queued by the user's decision on 2026-09-21, in this order. Runs 1 to 3 are cheap and independent.
-Run 4 is gated on runs 1 to 3 completing.
+Queued by the user's decision on 2026-09-21 (runs 1 to 4), plus run 5 added 2026-09-23. Runs 1 to 3
+are cheap and independent. Run 4 is gated on runs 1 to 3 completing. Run 5 is itself two-staged with
+its own hard gate, described in section 4A.
 
 | # | run | cost | who runs it | goes where |
 |---|---|---|---|---|
@@ -60,6 +61,7 @@ Run 4 is gated on runs 1 to 3 completing.
 | 2 | Constrained-adapter causal test: refit the Ebola adapter ridge-regularised toward identity, selected on support only | minutes per seed | I run it | `experiments/`, exploratory |
 | 3 | Input-vs-representation district-energy check | inference-only, minutes | I run it | machine-readable output plus a verifier |
 | 4 | D2 shuffled-adjacency RETRAIN, gated on 1 to 3 | ~6 h | user's shell | ablation record plus manuscript update |
+| 5 | Auxiliary district-identity objective: a gate probe first, then an overnight retrain only if the probe passes | probe minutes; retrain ~14 h if it runs | probe I run, retrain user's shell | probe to `results/misc/`, retrain to `ablation/` |
 
 Plus a free add-on riding on run 3's cycle: rerun `ebola_ci.py` at Bonferroni percentiles
 `[0.156, 99.844]` for a family of m = 16, as a multiplicity sensitivity.
@@ -89,6 +91,70 @@ Plus a free add-on riding on run 3's cycle: rerun `ebola_ci.py` at Bonferroni pe
   what happens under a 16-cell correction. A crude Gaussian estimate says the "14 comparisons clear
   zero" count thins to roughly 8, but the exact number needs the rerun and only the rerun's number is
   quotable.
+
+## 4A. Run 5: the auxiliary district-identity objective
+
+**Added 2026-09-23, on the user's order.** This is the one run in the milestone that could still add a
+mechanism to the encoder rather than only document one, so it is fenced tightly.
+
+**The idea.** Add a second head to the encoder, a district classifier ("which district is this?")
+trained on the representation `h` alongside the forecast loss, with weight `lambda_aux`. The forecast
+loss and adapter are unchanged; the aux loss is the only new term. The bet is that this stops the
+encoder collapsing district-specific structure. `progress/outcomes/Input_Energy_2026-09-22.md`
+measured that collapse: the raw incidence input windows are 14 to 94 percent district-specific in
+energy, and the encoder output `h` keeps only 3.8 to 22.4 percent, a three to five fold squash on
+every one of the five panels. Forcing `h` to stay district-identifiable is meant to hold some of that
+structure open for the spatial layer and the forecast head to use.
+
+**The user's stated risk, kept verbatim in spirit.** If the squashed component was noise, forcing it
+back in makes forecasts worse. Energy is not usefulness. A high-variance district channel can be
+noise that per-node z-scoring amplified on small quiet nodes, and the encoder may have been right to
+throw it away. The aux objective would then trade forecast accuracy for a district-classification
+score nobody asked for.
+
+**What bounds the upside, stated honestly.** D2 (`progress/outcomes/Shuffled_Adjacency_2026-09-23.md`)
+measured that even the REAL adjacency, learned from scratch, earns only 2 to 4 percent and only on
+dengue; the four small panels are within noise on error. The aux objective bets that a richer, more
+district-specific `h` would raise that ceiling. That bet is untested, and D2 is the reason the ceiling
+looks low.
+
+**Two-stage structure with a hard gate.**
+
+1. **Stage 1, the gate probe (cheap, minutes, I run it).** Before spending an overnight retrain, ask
+   the cheaper question the probe can answer: is the discarded district information forecast-relevant
+   at all? I fit per-node corrections on the FROZEN `results/single/` checkpoints, on the train period
+   only, and check whether giving the model district identity post-hoc lowers TEST error beyond seed
+   noise, contrasted against a district-agnostic correction of the same form. If a per-node correction
+   beats the district-agnostic one beyond seed noise on any panel, the discarded structure is
+   forecast-relevant and the retrain has a target. If nothing clears noise, the squash was justified
+   and the overnight is not worth running. Design and leakage rule in `todo_Milestone6.md` section 1.6
+   and in the script docstring (`diagnostics/graph_probe/aux_gate_probe.py`).
+
+2. **Stage 2, the overnight retrain (only if the gate says GO).** Add the aux head and loss to
+   `train/loop.py` behind a flag, mirror the sibling runner `ablation/run_shuffle_adjacency.py`, sweep
+   a small `lambda_aux` grid or one justified value, and compare paired against `results/single/` under
+   the same within-noise rule. The user runs it.
+
+**The gate is decided on the probe numbers, not on judgement.** GO if the probe shows a beyond-noise
+improvement from district identity on at least one panel, named with its size. NO-GO if nothing clears
+noise, in which case the runner is NOT written; the no-go is recorded with numbers here and in the
+todo, and the user decides whether to overrule. A single marginal cell is reported as borderline and
+defaults to NO-GO, again with the user free to overrule. The gate outcome is recorded in both docs
+either way.
+
+**GATE OUTCOME: NO-GO (probe run 2026-09-23, scored 2026-09-24).** Full write-up and verifier:
+`progress/outcomes/AuxGate_Probe_2026-09-23.md`, `diagnostics/verify_auxgate_doc.py` (passes,
+mutation-tested 3 of 3). The decisive contrast is a per-node correction beating BOTH the baseline and
+a district-agnostic global correction beyond seed noise. It fires in 2 of 40 bias cells (both
+covid_us-states at h10) and 0 of 36 affine cells. The larger "node beats global" count (18 of 40 for
+bias) is an artifact: on dengue and us-regions the global correction is itself worse than baseline, so
+a per-node correction beating it just means it overfits less, while doing nothing beats both. The
+richer per-district instrument (affine_node), the true analogue of what an aux head would produce,
+never beats baseline, hurts on 8 cells, and blows up numerically on dengue's quiet z-scored nodes (up
+to 3.07e7 error), a live instance of the user's stated risk. The one real district gain, covid h10, is
+a per-district level offset achievable for free post-hoc, not a reason to retrain. Runner NOT written.
+A separate, non-deciding observation: a post-hoc recalibration helps COVID (global level offset
++6.88% RMSE / +5.98% MAE at h10, clearing noise), worth a cheap follow-up but not the aux objective.
 
 ## 5. The manuscript
 
