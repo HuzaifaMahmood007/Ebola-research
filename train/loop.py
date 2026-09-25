@@ -217,8 +217,14 @@ def train_one(name, seed, epochs=80, lr=1e-3, wd=1e-4, batch_origins=8, patience
                 loss = pinball_loss(pred, tgt, msk)
                 if epi and train_mode:
                     pen = growth_penalty(pred, msk, ymod[:, t], Mt[:, t], sd_t, epi["r_max"])
-                    epi.setdefault("_seen", [0.0, 0])
+                    # [penalty, count, pinball]. The third slot is the DENOMINATOR of the inertness
+                    # gate: lam * penalty / pinball says whether the term is a real fraction of the
+                    # objective, which is what separates "the component does not help" from "the term
+                    # was a thousand times too weak to test". Accumulated BEFORE the penalty is folded
+                    # in, so it is pinball alone.
+                    epi.setdefault("_seen", [0.0, 0, 0.0])
                     epi["_seen"][0] += float(pen); epi["_seen"][1] += 1
+                    epi["_seen"][2] += float(loss)
                     loss = loss + epi["lam"] * pen
             if train_mode:
                 loss.backward()
