@@ -81,6 +81,10 @@ noise, 25 worse. The verdict survived making the opponent stronger.
 error in **0 of 40** and hurts in 8. It helps correlation in 6 of 20. Negative result for the
 component the architecture was chosen for.
 
+**Removing the whole graph, degree feature included, moves no error cell either** (exploratory,
+COVID and Japan only, 2026-09-28): 0 of 16 error cells beyond seed noise, and at h5 the mixing cost
+and the degree-feature gain cancel. `progress/outcomes/Pure_TCN_Graph_Removal_2026-09-28.md`.
+
 **Meta-learning does not help, across four folds.** ANIL against its own seed-matched control is
 better in 0 of 32 cells, worse in 1, within noise in 31. The one significant cell is in the original
 `dengue2flu` fold; all three LDO3 folds are entirely within noise.

@@ -226,6 +226,27 @@ the three candidate mechanisms (short-train overfit, a train-to-test COVID regim
 interference) are not separated by this test. Do not write "the compression is a defence against
 noise-dominated deviations" as an established fact.
 
+## 4C. Exploratory follow-up: removing the whole graph. No error cell moves
+
+**Run 2026-09-25 to 2026-09-28 on the user's order. EXPLORATORY, not pre-registered.** The gate-off
+ablation keeps the LTR degree feature, so it bounds neighbour information, not the graph in total
+(its own CEILING line says so). The pure-TCN arm (`experiments/pure_tcn.py`) removes the degree
+feature too, leaving only the temporal convolution. A fresh gate-off (`experiments/gateoff_fresh.py`)
+retrains the gate-off arm on today's code as a reproduction check. COVID and influenza_japan, five
+seeds, the gate-off verdict rule.
+
+**Outcome.** The fresh gate-off reproduces the 2026-08-17 records exactly (60 of 60 values per
+panel), so Table 3's gate-off cells for these two panels stand. Removing the whole graph moves 0 of
+16 error cells beyond seed noise (COVID 1 / 0 / 11 with one PCC flag, Japan 0 / 0 / 12). At h5 only,
+on both panels, mixing raises error and the degree feature lowers it by about the same amount, so the
+two cancel in the full model. No cause is established for the h5 pattern.
+
+**Fences.** Two panels only, and they are the panels where mixing never helped correlation, so
+"message passing buys shape" is untouched. Five seeds and a weak within-noise rule. The split runs
+along one path only. Full record, decisions and caveats in
+`progress/outcomes/Pure_TCN_Graph_Removal_2026-09-28.md`, verifier `diagnostics/verify_pure_tcn_doc.py`
+(36 of 36 mutations caught). Manuscript consequence in section 5B.
+
 ## 5. The manuscript
 
 `Reports/Manuscript_v2.md` is 13,834 words against a 12,000 internal target that no journal has
@@ -327,6 +348,17 @@ joins spatial message passing, few-shot adaptation and meta-learning in the did-
 unfiltered grep returns zero hits in `train/ebola.py`, `configs/ebola_arms.json` and
 `progress/decisions/Ebola_Prereg.md`, and none of the 20 scored records in `results/ebola/` carries an
 epi field. It is a dev-panel ablation only.
+
+### 5B. The gate-off sentence at `:326`, found 2026-09-29
+
+`Manuscript_v2.md:326` says removing "the graph" improves influenza-Japan RMSE by 45.3 at h3 and 61.7
+at h5. Those are gate-off numbers, so what was removed is neighbour mixing. With the whole graph
+removed (section 4C) Japan moves -52.6 (sd 114.7) at h3 and -2.9 (sd 53.9) at h5, both within noise.
+Fix the noun, and replace the untested "seasonal phase but not a baseline level" explanation with the
+measured result. The drafted replacement adds 8 words net and is in
+`progress/outcomes/Pure_TCN_Graph_Removal_2026-09-28.md`. The first sentence of `:332`, the
+degree-feature limit, can be narrowed in the same pass as EDIT 1a. Tracked in `todo_Milestone6.md`
+section 2.2.
 
 ## 6. Decline list, with reasons
 
@@ -458,6 +490,12 @@ the new `--bonferroni` and `--floor` options on `ebola_ci.py`: the divisor-16 co
 documented 7 of 14, and divisor 32 gives the same 7 of 14, 5 on RMSE and 2 on MAE. Logs at
 `results/reports/ebola_district_ci_bonferroni32.log` and `..._bonferroni16.log`. One clause needed
 narrowing: h15 against persistence survives on both arms **on RMSE only**, not on MAE.
+
+**Pure-TCN and fresh gate-off, EXPLORATORY, 2026-09-25 to 2026-09-28.** Section 4C. Removing the
+whole graph, degree feature included, moves 0 of 16 error cells beyond seed noise on COVID and Japan;
+at h5 the mixing cost and the degree-feature gain cancel. The fresh gate-off reproduces the archived
+records bit for bit. Code and records committed `e59b231`; write-up and verifier (36 of 36 mutations
+caught) written 2026-09-29, `progress/outcomes/Pure_TCN_Graph_Removal_2026-09-28.md`.
 
 **Also produced this window:** figures F1 to F6 with the generator `paper_figures.py`
 (mutation-tested asserts); the verified manuscript edit list

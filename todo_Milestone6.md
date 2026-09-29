@@ -337,6 +337,38 @@ is CONSISTENT WITH the deviations being noise-dominated at learned-model capacit
 but the exact failure mechanism (short-train overfit, COVID regime shift, or optimisation interference)
 is NOT established. Do not write any one as the reason.
 
+### 1.10 Pure-TCN and fresh gate-off -- DONE 2026-09-28
+
+**EXPLORATORY, not pre-registered, user-ordered 2026-09-25.** The gate-off ablation (Table 3) sets
+g = 0 but keeps the LTR degree feature (`models/encoder.py:60`), so it bounds neighbour information,
+not the whole graph. This run removes the degree feature too, on the two cheapest panels, COVID and
+influenza_japan.
+
+- [x] Pure-TCN arm `experiments/pure_tcn.py`: the gate-off trunk with LTR swapped for a
+      parameter-free zero module through the `encoder_factory` hook, so `models/encoder.py` and
+      `train/loop.py` (both in the V2 protocol code hash) stay untouched. Its selfcheck proves the
+      output ignores the graph and the starting weights match gate-off; rerun 2026-09-29, passes.
+- [x] User ran it in their own shell: COVID five seeds 2026-09-25, Japan five seeds 2026-09-28.
+      Records only, `experiments/pure_tcn__{panel}__seed{S}.json`.
+- [x] Fresh gate-off `experiments/gateoff_fresh.py`: the exact `ablation/run_gate_ablation.py:153`
+      call, written to `experiments/`, so the untracked archived gate-off records were never exposed
+      to `--force`. Ran 2026-09-28. It reproduces the archived records bit for bit: 60 of 60 values
+      per panel, 140 of 140 across all seven metrics.
+- [x] **Verdict: removing the whole graph moves 0 of 16 error cells beyond seed noise.** COVID
+      1 / 0 / 11 (one PCC flag, about what chance produces under this rule), Japan 0 / 0 / 12. At h5
+      on both panels mixing raises error and the degree feature lowers it by about the same amount
+      (degree test 2 / 0 / 10 per panel, all 20 per-seed h5 differences positive), so the two cancel.
+      Cause of the h5-only pattern unknown.
+- [x] Code and records committed `e59b231`. Write-up `progress/outcomes/Pure_TCN_Graph_Removal_2026-09-28.md`,
+      verifier `diagnostics/verify_pure_tcn_doc.py` (passes clean, mutation-tested 36 of 36). Both
+      untracked until committed.
+- The manuscript sentence this changes is tracked in 2.2 below.
+
+**Fences kept.** Two panels only, and they are the ones where mixing never helped correlation, so
+"message passing buys shape" is untouched. Five seeds and the |mean| < sd rule, which flags about 9
+percent of cells by chance; no significance claim. The split runs along one path only (mixing
+measured with the degree feature present, the degree feature with mixing absent). No mechanism for h5.
+
 ---
 
 ## Task 2. Manuscript
@@ -400,6 +432,13 @@ Measure after each edit; do not trust the estimate.
       fitted range (`Adapter_Mechanism_2026-09-16.md`). It is **geometric, not causal** until Run 1.2
       lands. Rewrite to name the mechanism as geometric. (Fact-sheet cited `:467`; on disk the exact
       phrase sits at `:465`, and `:467` is the follow-on caveat paragraph. Read both.)
+- [ ] **`:326` says removing "the graph" improves influenza-Japan RMSE by 45.3 at h3 and 61.7 at
+      h5.** Those are gate-off numbers, so what was removed is neighbour MIXING. With the whole graph
+      removed (pure-TCN, 1.10) Japan moves -52.6 (sd 114.7) at h3 and -2.9 (sd 53.9) at h5, both within
+      noise. Change the noun, and replace the untested "seasonal phase but not a baseline level"
+      explanation with the measured result. Drafted text, +8 words net, in
+      `progress/outcomes/Pure_TCN_Graph_Removal_2026-09-28.md` ("What it means for the manuscript").
+      Narrow the first sentence of `:332` (the degree-feature limit) in the same pass as EDIT 1a.
 
 ### 2.3 Pre-registration compliance
 

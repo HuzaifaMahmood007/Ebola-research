@@ -1,3 +1,6 @@
+> **SUPERSEDED 2026-09-29 by `progress/outcomes/Pure_TCN_Graph_Removal_2026-09-28.md`. The work is finished: both panels and the fresh gate-off ran,**
+> **and the result is recorded and verified there. Kept for provenance, not for quotation.**
+
 # Handoff 2026-09-26: extend the pure-TCN probe to influenza_japan
 
 What I am doing, where I stopped, and how to pick it up. Everything below was measured from disk
