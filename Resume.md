@@ -13,8 +13,16 @@ Milestone 6 (Week 6: ablations, manuscript, reproducibility package). **All comp
 Every planned run finished, plus a full spatial mechanism investigation that ended tonight with
 a pre-registered negative. Remaining work is writing and housekeeping only.
 
-## 2. What happened 2026-09-21 to 25, newest first
+## 2. What happened 2026-09-21 to 28, newest first
 
+- **Epi bound and lambda sweep: pre-registered, no PASS, 2026-09-28.** Added 2026-09-29. New shared
+  bound p99 median plus lambda 10 and 100, six arms, 90 cells, four small panels. 6 FAIL, 12
+  INCONCLUSIVE. Where the term had weight (3 to 31 percent of the loss) it helped nothing, and it made
+  influenza_japan h10 significantly worse in all four new Japan arms (drift ruled out). US panels never
+  reached the 1 percent gate. Protocol `b24063f`, results `a0052b9`, doc
+  `progress/outcomes/Epi_Bound_Lambda_2026-09-28.md` with verifier. Full process, decisions and
+  caveats in `progress/Session_Progress_2026-09-21_to_23.md`. Records in
+  `experiments/epi_bound_lambda/`; the released `ablation/single/` epi records are untouched.
 - **V2 deviation channel: pre-registered FAIL, 2026-09-25.** The one live-tested spatial fix.
   Two-stage protocol committed BEFORE any COVID number (`progress/decisions/V2_Deviation_Protocol.md`,
   commit 39ecf34, sha256 82069f41...). N=15 seeds, power 0.822 for the +3.3% target. Result:
@@ -75,6 +83,8 @@ CAN use the deviations, a 10k-parameter branch cannot.
 5. Reproducibility package: README rewrite (stale, denies COVID), LICENSE, CITATION, env spec,
    repo URL placeholder.
 6. Slack updates were posted through Thursday 2026-09-25 evening (V2 result included).
+7. Epi follow-ups: rewrite `Manuscript_v2.md:497` (no longer "a null"), and update figure F3 or
+   scope its caption (it plots only the lambda 1 arms under the old rule).
 
 ## 5. Standing rules that bit us this week (do not relearn)
 

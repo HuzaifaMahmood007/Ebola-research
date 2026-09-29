@@ -267,6 +267,11 @@ Specific sentences that must not appear:
 - **Any Ebola PCC (0.157) or sMAPE (111.2)** — out of protocol against `score.py:55-65`.
 - **"The New cases series is adopted as a cross-check"** (`data_audit.md:993-996`) and **"nothing is written if any gate fails / all raw inputs checksummed"** as unqualified statements — true of five of six bundles.
 - **Ebola mask density 0.5255; Ebola support = 27 cells / 9 districts; adapter = 388 parameters.** All superseded.
+- **"The epidemiology-informed ablation is a null" / "changes no cell beyond seed noise."** Added 2026-09-29. False since the pre-registered sweep of 2026-09-28 (`progress/outcomes/Epi_Bound_Lambda_2026-09-28.md`): at lambda 10 and 100 the penalty made influenza_japan h10 significantly worse on RMSE and MAE in all four new Japan arms. It was also false before that, for the released p90max arm, whose own report flags three cells. Write: it did not help where it had weight, and it hurt one panel.
+- **"The forecasts are already smoother than the data at every bound we calibrated."** True of p99 only. At p90 the train penalty was non-zero on all four panels (`results/reports/epi_p90max.log`); that arm was null because the term was about 0.005 to 0.1 percent of the loss.
+- **"The epi prior is wrong" / "no plausibility bound can help."** Not tested. Two bounds, up to three lambdas, four panels. A per-panel bound was excluded by design, not by a result.
+- **The US panels as evidence that the epi component does nothing.** The term never reached 1 percent of the loss on influenza_us-regions or influenza_us-states, even at lambda 100. They are INCONCLUSIVE, a statement about lambda.
+- **Any sentence placing the epi penalty in the Ebola forecast.** It is absent from the Ebola path: `train/ebola.py`, `configs/ebola_arms.json`, the pre-registration and all 20 scored Ebola records carry no epi field.
 
 ## What to do next, ordered by what unblocks the most
 

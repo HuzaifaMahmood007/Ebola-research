@@ -148,6 +148,99 @@ the images can carry history once committed.
 
 Session dashboard (classical baselines, live): https://claude.ai/artifact/AWXHQSfJxqqTauRbVLYtcW
 
+## Epi bound and lambda sweep. DONE 2026-09-28. Verdict: no PASS in 18 units
+
+User-ordered 2026-09-25. Result `progress/outcomes/Epi_Bound_Lambda_2026-09-28.md`, verifier
+`diagnostics/verify_epi_bound_doc.py` (393 checks, 45 of 45 mutations caught). Protocol
+`progress/decisions/Epi_Bound_Lambda_Protocol.md`, sha256 `458184bc...b7f3`, commit `b24063f`,
+verifier `diagnostics/verify_epi_bound_protocol.py` (185 checks, 31 of 31). Results commit `a0052b9`.
+Records `experiments/epi_bound_lambda/single/`, 90 JSON plus 90 per-node archives.
+
+**Why it ran.** The two released lambda-1 arms (p99max, p90max) were null for arithmetic reasons,
+not measured ones. I found the p90 penalty was only 0.005 to 0.1 percent of the loss, and that "max
+across datasets" made r_max COVID's own number, so at p99 the hinge never fired on either US panel.
+The user ordered (1) a better disease-agnostic bound at lambda 1 and (2) lambda 10 and 100 at a
+fixed bound.
+
+**Process, in order.**
+
+1. **Free sweep before any GPU** (`ablation/epi_penalty.py --sweep`). I fixed three defects in it
+   first: `min` was missing from the grid; `bundles.load` has no cache, so every row reloaded every
+   bundle (now 6 seconds for 18 rows); and the pooled percentages were a dengue statistic, because
+   dengue carries about 97 percent of transition pairs (now calibrated on all five panels, scored on
+   the four that train).
+2. **Runner fixes.** Lambda is now in the filename, and lambda 1 stays byte-identical, so the 40
+   released records still resolve. The selfcheck covers it and is mutation-tested, 3 of 3 caught; the
+   mutation test first caught a bug in itself (it patched a second copy of the module). I found the
+   skip-if-finished check had never worked: it looked in `ablation/` while records route to
+   `ablation/single/`, so every earlier run retrained every cell. New arms write to `experiments/`.
+   Records now carry bound, lambda, penalty share and protocol sha256. `train/loop.py` gained 2 code
+   lines inside the epi branch to accumulate the pinball loss, the share's denominator.
+3. **Protocol, checked before it was frozen.** An independently written verifier caught 4 wrong
+   numbers of mine (a table cell on a different seed basis, a range's low end, a line citation, a
+   runtime off by 4.7x) and 4 loose wordings. All were fixed before the commit.
+4. **Smoke cell**, COVID seed 42 at p99 median lambda 100, to confirm the provenance fields. Then 89
+   cells run overnight by the user.
+5. **Scoring and write-up.** Verdicts computed from the raw records, because the runner's report does
+   not apply the pre-registered rule (caveats below). A second independent verifier caught 3 prose
+   errors in the results doc, all fixed before commit. No verdict or table cell changed.
+
+**Decisions.**
+
+- **Bound: p99 median** (user, from the sweep). It is one shared number that is not any single
+  panel's statistic, and on the sweep it strictly beat the released p90max: more bite (1.626 vs 1.279
+  percent of model intervals) with fewer false positives (4.157 vs 4.936 percent of real
+  transitions). That contradicted the handoff's warning that it would fire less: gap 5 carries two
+  of the four constrained intervals. p95 median was rejected at 12.4 percent false positives. A
+  per-panel bound was ruled out because it carries disease identity into the trunk.
+- **Arm set.** The user proposed p99max and p90max at lambda 10 and 100. I found p99max is
+  identically zero on both US panels, so those 20 cells were guaranteed nulls. I cut p99max to COVID
+  only and spent the time on the new bound. Final: six arms, 90 cells, about 6 h, dengue excluded.
+- **Inertness gate at 1 percent of the objective** (user). A null under 1 percent is INCONCLUSIVE,
+  a statement about lambda rather than the component.
+- **Decision rule.** Paired 95 percent t-interval, replacing `|mean| >= sd` (about p = 0.09 at five
+  seeds). Multiplicity handled structurally: a win on both RMSE and MAE at one horizon, plus no
+  significant harm anywhere.
+- **New records go to `experiments/`, not `ablation/`** (user), so the released runs stay untouched.
+
+**Results.**
+
+- **No PASS in 18 arm-panel units:** 6 FAIL, 12 INCONCLUSIVE. Of 144 deciding cells, 8 are worse, 4
+  better and 132 within noise, and the 4 better cells never pair up on both metrics.
+- Where the term was a real part of the loss, 3.244 to 30.654 percent (Japan and COVID at p90max
+  lambda 10 and 100, and at p99median lambda 100), it improved nothing on both error metrics.
+- **influenza_japan h10 got significantly worse on RMSE and MAE in all four new Japan arms,** up to
+  about 12 percent RMSE. I ruled out trainer drift: the seed 42 baseline reproduces exactly and still
+  shows the damage, and the near-inert released p99max arm moves Japan h10 by only about 7.
+- **Likely cause, a hypothesis:** the shared bound calls 8.3 to 10.0 percent of Japan's own real
+  training transitions implausible, so the penalty fights real flu seasons. It does not explain why
+  the damage lands at h10 rather than h3 or h5.
+- **US panels:** they never reached 1 percent even at lambda 100 (highest 0.904 percent), so they
+  are INCONCLUSIVE, as the sweep predicted. us-regions exceeds no defensible bound at all.
+
+**Caveats, all stated in the result doc.**
+
+- The runner's `--report` still prints the old `|mean| < sd` rule and has no completeness check. The
+  verdicts come from the raw records and were re-derived by the independent verifier.
+- The protocol does not say how the share is averaged over seeds. I used the mean. The minimum
+  changes nothing; the maximum flips 2 units from INCONCLUSIVE to FAIL. No reading gives a PASS.
+- p99 median lambda 1 on Japan is INCONCLUSIVE by the rule (0.282 percent share), yet it caused
+  significant h10 harm, which contradicts the gate's premise for Japan.
+- The four new arms share one baseline, so the Japan harm is not four independent confirmations. The
+  dose pattern and the near-inert control carry the argument.
+- The probe reads the final model while the train penalty averages over all epochs: the penalty
+  acts early and then goes quiet.
+- Four of the five Japan baselines are cleared by file date and code diff, not by retraining.
+- Dengue and Ebola are out of scope. The component is absent from the Ebola path.
+
+**Open from this thread.**
+
+- Rewrite `Reports/Manuscript_v2.md:497`: it calls the ablation a null. Manuscript session.
+- Figure F3 plots only the lambda 1 arms under the old rule. Update it, or scope its caption.
+- Fix the runner's `--report` only if this test is ever rerun.
+- The result doc's "7 lines" in the drift paragraph: 5 of them are comments. Tighten it the next
+  time the doc is touched.
+
 ## In flight at the pause point
 
 Two agents were mid-task when the user paused; their results land in their own docs:

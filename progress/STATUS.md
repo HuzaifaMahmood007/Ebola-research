@@ -7,6 +7,10 @@ had accumulated claims that are no longer true.
 **Every number here was recomputed from the artifacts on 2026-09-07.** Where a retired document said
 something different, the difference is recorded in section 6 rather than quietly dropped.
 
+**Added 2026-09-29: the epi bound and lambda result**, in sections 2, 3 and 7. The rest of this
+document still predates Milestone 6; `progress/Session_Progress_2026-09-21_to_23.md` is the run record
+since then.
+
 Read this, then `progress/planning/Gap_Ledger.md` for what is open and
 `progress/decisions/decisions.md` for why each call was made.
 
@@ -37,6 +41,7 @@ environment.
 | joint multi-disease | 24 | n/a | does training everything at once help |
 | naive floors | 7 | n/a | the honest reference |
 | misc, including ANIL | 31 | n/a | meta-learning and probes |
+| epi bound and lambda sweep, `experiments/epi_bound_lambda/` | 90 | n/a (90 per-node) | does a growth-plausibility penalty help (2026-09-28) |
 
 **118 trained checkpoints**, which is what makes G5 attribution inference-only.
 **32 decision-bearing run logs** now under version control (`results/reports/*.log`, carved out of
@@ -80,6 +85,16 @@ component the architecture was chosen for.
 better in 0 of 32 cells, worse in 1, within noise in 31. The one significant cell is in the original
 `dengue2flu` fold; all three LDO3 folds are entirely within noise.
 
+**The epidemiology-informed penalty does not help, and it hurts one panel.** This was a
+pre-registered sweep on 2026-09-28 (`progress/outcomes/Epi_Bound_Lambda_2026-09-28.md`, protocol
+commit `b24063f`): a new shared bound, p99 median, plus lambda 10 and 100, 90 cells on the four small
+panels. There is no PASS in 18 arm-panel units, with 6 FAIL and 12 INCONCLUSIVE. Where the term was a
+real part of the loss (3 to 31 percent, Japan and COVID), it improved nothing on both error metrics.
+influenza_japan h10 got significantly worse in all four new Japan arms, up to about 12 percent RMSE,
+and trainer drift is ruled out. The two US panels never reached the 1 percent gate even at lambda 100,
+so they are untestable at these strengths, not null. Dengue and Ebola are out of scope; the
+component is absent from the Ebola path.
+
 **Calibration transfers, and that is the strong result.** The frozen cross-disease correction, which
 reads no Ebola outcome whatsoever, lifts coverage from 0.28-0.70 to 0.65-0.98. Online adaptation adds
 about 0.03 at short horizons and nothing at long ones.
@@ -91,8 +106,8 @@ cell-pooled RMSE we are behind at every horizon by 2.8 to 13.1 percent.
 
 **The honest thesis.** A shared representation transfers to an unseen pathogen well enough to beat
 naive floors and carries its uncertainty calibration with it, but every mechanism added to *improve*
-transfer, meaning spatial message passing, few-shot adaptation and meta-learning, fails to help. That
-is a boundary-conditions paper and it is publishable as one.
+transfer, meaning spatial message passing, few-shot adaptation, meta-learning and a growth-plausibility
+penalty, fails to help. That is a boundary-conditions paper and it is publishable as one.
 
 ---
 
@@ -203,6 +218,7 @@ Do not carry any of these forward: a **388-parameter** adapter (it is 1,428), an
 | **The normalisation Threats paragraph** | section 5 above has the numbers; the paragraph is not written |
 | **LDO3 zero-shot calibration gap** | decided not to run (D20). The resulting limitation is **not yet stated in Threats** |
 | **Three client decisions** | listed in section 8 |
+| **Epi sentence and figure F3** | `Reports/Manuscript_v2.md:497` calls the epi ablation "a null"; since 2026-09-28 it did not help where it had weight and hurt Japan h10. F3 plots only the lambda 1 arms under the old rule. Both need the new result |
 
 Everything in Gap Ledger Groups A to D is closed. Group E is E1 and E2 above.
 
