@@ -22,7 +22,7 @@ Brief tasks, and where each one stands:
 
 | # | brief task | status |
 |---|---|---|
-| 1 | Ablations and robustness / sensitivity analysis | **PARTIAL.** Gate-off and epi-informed ablations already ran (`ablation/single/`, 210 records). Four confirmatory runs queued 2026-09-21, none run yet |
+| 1 | Ablations and robustness / sensitivity analysis | **PARTIAL.** Gate-off and epi-informed ablations already ran (`ablation/single/`, 210 records). Four confirmatory runs queued 2026-09-21, none run yet. **Epi bound and lambda sweep DONE 2026-09-28** (`a0052b9`): no PASS in 18 units, Japan h10 hurt, see 1.6 |
 | 2 | Finalise all tables and figures, draft the full manuscript | **OPEN.** 13,834 words vs a 12,000 internal target (`wc -w Reports/Manuscript_v2.md`, disk 2026-09-21). Eight tables, one figure, nine figure-ready artifacts unused. Section 9.8 is a PENDING stub. Multiple sentences now false against disk |
 | 3 | Finalise source code, README, reproducibility package | **OPEN.** README a month stale, no LICENSE, no CITATION, no installable env spec, three stale record counts, placeholder repo URL |
 
@@ -164,14 +164,19 @@ inputs carry 5%, it was never there to throw away. I did not run it."
 directions. A reviewer will ask whether the data ever had more. This settles that one way or the other
 and it is inference-only.
 
-### 1.4 Bonferroni multiplicity sensitivity (free add-on)
+### 1.4 Bonferroni multiplicity sensitivity (free add-on) -- DONE 2026-09-28
 
-- [ ] Rerun `ebola_ci.py` at Bonferroni percentiles `[0.156, 99.844]` for a family of m = 16
-- [ ] Report how the "14 comparisons clear zero" count thins under a 16-cell family correction. A
-      crude Gaussian estimate says it drops to roughly 8, with the wide h15 intervals least robust.
-      **The exact number needs the rerun. Do not write "roughly 8" as a result.**
-- [ ] Read-only, no re-scoring of the pre-registration. `ebola_ci.py` rebuilds the macro from
-      `*__pernode.npz` and asserts it matches the scored JSON before printing
+- [x] `ebola_ci.py` gained `--bonferroni M` and `--floor`. Default is off, so every pre-existing
+      number is unchanged and the uncorrected run is bit-identical to
+      `results/reports/ebola_district_ci.log`
+- [x] The canonical family is **persistence only**, RMSE and MAE, both arms, both regimes, four
+      horizons, 32 cells, 14 clearing zero at 95 percent (`Reports/Phase0_to_Now_Audit.md:257`).
+      The divisor is **32**, not 16
+- [x] Control at divisor 16 reproduced the documented 7 of 14 (5 RMSE, 2 MAE). Divisor 32 gives the
+      same 7 of 14, the same seven cells. The "roughly 8" Gaussian estimate is retired
+- [x] Read-only, no re-scoring. Logs: `results/reports/ebola_district_ci_bonferroni32.log` and
+      `..._bonferroni16.log`. Replacement sentence in
+      `progress/outcomes/Manuscript_Correctness_Pass_2026-09-23.md` EDIT 6
 
 **What it buys the paper.** The manuscript already controls multiplicity on the confirmatory family
 only (`Reports/Manuscript_v2.md:521`). A named Bonferroni sensitivity on the wider exploratory grid
@@ -218,8 +223,18 @@ sentence, not a run.
 - [ ] **Block bootstrap.** The `:519` disclosure stands. Ebola's 18 origins make blocks weak there, so
       say the block-bootstrap sensitivity was checked and leaves the long-horizon conclusions intact
       rather than applying it throughout.
+- [x] **Epi bound and lambda sweep, run 2026-09-28.** Pre-registered (`b24063f`), 90 cells, result
+      `progress/outcomes/Epi_Bound_Lambda_2026-09-28.md` with verifier `diagnostics/verify_epi_bound_doc.py`
+      (`a0052b9`). No PASS in 18 units; Japan h10 significantly worse in all four new Japan arms; US
+      panels never reach the 1 percent gate. Records in `experiments/epi_bound_lambda/single/`.
+- [ ] **Rewrite `Manuscript_v2.md:497`** from the result above (plan section 5A). It is no longer a
+      null: say it did not help where it had weight and hurt Japan h10. Handled in the manuscript session.
 - [ ] **Epi-ablation scope.** The epidemiology-informed ablation ran on 4 of 5 panels. State that
-      dengue at 7,165 nodes was excluded for cost, so a reader knows the null is on the four small panels.
+      dengue at 7,165 nodes was excluded for cost, so a reader knows the result is on the four small
+      panels. Per the protocol, dengue is not run because there was no PASS.
+- [ ] **Small, not blocking.** `ablation/run_epi_ablation.py --report` still applies the old
+      `|mean| >= sd` rule and has no completeness check. The result doc discloses it. Fix only if the
+      test is ever rerun.
 
 ### 1.7 Declined, with recorded reason
 
@@ -284,6 +299,44 @@ the user overrules the NO-GO, the design is: aux head + loss weighted `lambda_au
 `ablation/run_shuffle_adjacency.py` with a `--smoke`, schema assert, resumable, paired vs
 `results/single/`. Runtime estimate for the full run: small panels ~45 min each, dengue ~12.7 h.
 
+### 1.9 V2 deviation channel: mechanism test -- DONE 2026-09-25. Verdict: pre-registered FAIL
+
+**This closes the spatial-redesign question for this paper.** The aux-gate probe (1.8) said the
+discarded district signal is not forecast-relevant post-hoc. The V2 test asked the sharper version by
+retraining: route the district deviations directly to a learned spatial branch and see if the real map
+then earns accuracy. It was run under a hash-frozen pre-registration
+(`progress/decisions/V2_Deviation_Protocol.md`, sha256 `82069f41...`, committed at `39ecf34` before any
+COVID number), scored once from disk by `ablation/run_v2_deviation.py --report`.
+
+- [x] Two-stage design. Stage 1 (5 seeds, validation only) measured the paired noise s = 0.0412 and
+      the formula set **N = 15 seeds** (power 0.822 for the probe-implied 3.3 percent h3 RMSE effect).
+      Stage 2 trained all four arms (v1ref plus v2graph, v2nograph, v2shuffled) at those 15 seeds on
+      covid_us-states.
+- [x] **Verdict: FAIL, criterion (a) not met.** v2graph is significantly worse than v1 at 7 of 8
+      decisive RMSE/MAE cells and within noise at the 8th (MAE h15); better at none. Short-horizon
+      error roughly doubles (h3 RMSE +96.8 percent, h5 +137.6 percent). PCC h3 collapses 0.436 to
+      -0.014.
+- [x] **Attribution: the deviation input itself causes the damage, the graph adds nothing.** v2nograph
+      and v2shuffled degrade nearly identically to v2graph, and every v2graph-vs-v2nograph and
+      v2graph-vs-v2shuffled comparison is within noise on RMSE and MAE at every horizon.
+- [x] Per protocol criterion (c): **no dengue run** (dengue was gated behind a COVID PASS). There will
+      not be one under this protocol.
+- [x] Write-up `progress/outcomes/V2_Deviation_Result_2026-09-25.md`, verifier
+      `diagnostics/verify_v2_result_doc.py` (passes clean, mutation-tested 11 of 11).
+- [x] Read-only val-vs-test check: on the **validation** split the three v2 arms BEAT v1 by 10 to 20
+      percent at h3/h5, while on **test** they lose by 73 to 138 percent. Validation did not warn, which
+      favours a train-to-test regime shift over a val-blind overfit but does not settle the mechanism.
+- [ ] Manuscript gains one paragraph closing the graph-failure mechanism chain (drafted in
+      `Milestone6_Plan.md` section 4B, fenced against overclaiming causation). Not applied to the
+      manuscript yet.
+
+**Fences kept.** The FAIL row licenses "no effect found at N seeds"; what we saw is stronger (the
+channel measurably hurt), so we may say that, but NOT "the deviation channel has no effect" or "the
+graph is useless in general". The linear-probe-gains-5.3-percent versus learned-branch-doubles-error gap
+is CONSISTENT WITH the deviations being noise-dominated at learned-model capacity (the pre-stated risk),
+but the exact failure mechanism (short-train overfit, COVID regime shift, or optimisation interference)
+is NOT established. Do not write any one as the reason.
+
 ---
 
 ## Task 2. Manuscript
@@ -327,6 +380,14 @@ Measure after each edit; do not trust the estimate.
       relabelling the adjacency at inference costs under 1% against seed noise of 8 to 14%, so the
       trained model gains almost nothing from knowing its real neighbours. State the scope limits with
       it (single-checkpoint, not the transfer trunk; dengue one seed).
+- [ ] **End the graph-mechanism chain with the V2 result** (`progress/outcomes/V2_Deviation_Result_2026-09-25.md`).
+      One paragraph: the obvious remedy (route district deviations to a learned spatial branch) was
+      tested under a pre-registered protocol on COVID and roughly doubled the short-horizon error, with
+      a wrong map and no map doing equal damage, so the harm came from the deviation input, not the
+      graph. Drafted text and fences in `Milestone6_Plan.md` section 4B. **Do not claim causation:** it
+      is CONSISTENT WITH the deviations being noise-dominated at learned-model capacity, but the exact
+      failure mechanism is not established. Do not write "the compression is a defence against
+      noise-dominated deviations" as a fact.
 
 ### 2.2 Sentences now false against disk
 
@@ -469,8 +530,9 @@ Version-control and correctness debt found on disk 2026-09-21.
    macro against the scored JSON before printing. The Bonferroni sensitivity (Run 1.4) is a
    percentile change on the same read, not a re-score.
 
-5. **The "roughly 8" Bonferroni count is an estimate, not a result.** Write the number only after the
-   rerun produces it.
+5. **The "roughly 8" Bonferroni count was an estimate and is now retired.** The rerun produced
+   **7 of 14** at divisor 32 over the persistence family, both metrics (2026-09-28). Never quote a
+   survivor count without naming the floor family in the same sentence.
 
 ---
 
