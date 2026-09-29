@@ -1,0 +1,47 @@
+{
+  "measured": "2026-09-29",
+  "definition": "participation ratio (sum s^2)^2 / sum s^4 of the centred trunk output, pooled over nodes x train origins; dengue on every 10th train origin",
+  "trunks": [
+    "encoder_ldo__dengue2flu-cap__seed42__ckpt.pt",
+    "encoder_ldo__dengue2flu-cap__seed52__ckpt.pt",
+    "encoder_ldo__dengue2flu-cap__seed62__ckpt.pt",
+    "encoder_ldo__dengue2flu-cap__seed72__ckpt.pt",
+    "encoder_ldo__dengue2flu-cap__seed82__ckpt.pt"
+  ],
+  "pr": {
+    "influenza_japan": {
+      "42": 2.5210873936956903,
+      "52": 1.8503647245806234,
+      "62": 1.93146172331434,
+      "72": 2.0310968683926327,
+      "82": 1.8524069314923686
+    },
+    "influenza_us-regions": {
+      "42": 3.5150780661226437,
+      "52": 2.509375369938091,
+      "62": 2.952435817790748,
+      "72": 2.81188721151031,
+      "82": 2.7447446120667025
+    },
+    "influenza_us-states": {
+      "42": 3.8166072162475886,
+      "52": 2.5181009365047924,
+      "62": 3.0320071738176,
+      "72": 2.9497648014683158,
+      "82": 2.728616105767976
+    },
+    "dengue": {
+      "42": 9.017292957087953,
+      "52": 6.608402765785177,
+      "62": 6.913702563023904,
+      "72": 6.208055910369455,
+      "82": 6.72425774340521
+    }
+  },
+  "max": 9.017292957087953,
+  "max_at": {
+    "seed": 42,
+    "panel": "dengue"
+  },
+  "r_star": 10
+}
