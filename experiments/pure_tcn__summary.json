@@ -1,0 +1,1050 @@
+{
+  "covid_us-states": {
+    "protocol": "EXPLORATORY",
+    "dataset": "covid_us-states",
+    "model": "encoder",
+    "field": "node_mean",
+    "seeds": {
+      "pure": [
+        42,
+        52,
+        62,
+        72,
+        82
+      ],
+      "learned": [
+        42,
+        52,
+        62,
+        72,
+        82
+      ],
+      "gate-off": [
+        42,
+        52,
+        62,
+        72,
+        82
+      ]
+    },
+    "tallies": {
+      "learned": {
+        "GRAPH HELPS": 1,
+        "graph HURTS": 0,
+        "within noise": 11
+      },
+      "gate-off": {
+        "DEGREE HELPS": 2,
+        "degree HURTS": 0,
+        "within noise": 10
+      }
+    },
+    "cells": [
+      {
+        "reference": "learned",
+        "metric": "rmse",
+        "horizon": 3,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 5565.754556634847,
+        "ref_sd": 915.0336099989863,
+        "pure_mean": 5405.94184063901,
+        "pure_sd": 213.9682347513368,
+        "d_mean": -159.8127159958387,
+        "d_sd": 1023.3060106903583,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "rmse",
+        "horizon": 5,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 8798.301671119349,
+        "ref_sd": 841.6973317450322,
+        "pure_mean": 8697.706493276823,
+        "pure_sd": 701.1170744121569,
+        "d_mean": -100.59517784252621,
+        "d_sd": 1077.099617807564,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "rmse",
+        "horizon": 10,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 12263.816215244604,
+        "ref_sd": 1858.9770901398242,
+        "pure_mean": 12573.753083865591,
+        "pure_sd": 832.5541511725131,
+        "d_mean": 309.93686862098656,
+        "d_sd": 2530.404437674699,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "rmse",
+        "horizon": 15,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 11343.23136098126,
+        "ref_sd": 1464.610094355799,
+        "pure_mean": 11959.436387934158,
+        "pure_sd": 1115.1191832048985,
+        "d_mean": 616.2050269528954,
+        "d_sd": 2159.810347882541,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "mae",
+        "horizon": 3,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 4352.599590534855,
+        "ref_sd": 806.4046646956944,
+        "pure_mean": 4108.505606333274,
+        "pure_sd": 263.4881308409286,
+        "d_mean": -244.09398420158178,
+        "d_sd": 980.9075512227822,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "mae",
+        "horizon": 5,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 7129.291865189021,
+        "ref_sd": 639.9306179579356,
+        "pure_mean": 7118.292085261322,
+        "pure_sd": 649.8407161718458,
+        "d_mean": -10.999779927699638,
+        "d_sd": 877.5032837785491,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "mae",
+        "horizon": 10,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 9973.489424726384,
+        "ref_sd": 1461.9834142791203,
+        "pure_mean": 10429.56621526106,
+        "pure_sd": 483.95343591617006,
+        "d_mean": 456.07679053467564,
+        "d_sd": 1851.7670139495813,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "mae",
+        "horizon": 15,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 9676.30903797523,
+        "ref_sd": 1301.5821966331512,
+        "pure_mean": 10313.567587098516,
+        "pure_sd": 896.3944911231424,
+        "d_mean": 637.2585491232861,
+        "d_sd": 1861.6888642671593,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "pcc",
+        "horizon": 3,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 0.4252312723360099,
+        "ref_sd": 0.12783263307324266,
+        "pure_mean": 0.3839060570505275,
+        "pure_sd": 0.08396027950295697,
+        "d_mean": -0.04132521528548247,
+        "d_sd": 0.1596756384742318,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "pcc",
+        "horizon": 5,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": -0.17614137077550465,
+        "ref_sd": 0.09061247409366854,
+        "pure_mean": -0.21236439203594154,
+        "pure_sd": 0.06180643239315011,
+        "d_mean": -0.03622302126043688,
+        "d_sd": 0.05876933779814862,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "pcc",
+        "horizon": 10,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": -0.3569272224355115,
+        "ref_sd": 0.03314002112038091,
+        "pure_mean": -0.3944763627631256,
+        "pure_sd": 0.016617982002826413,
+        "d_mean": -0.037549140327614125,
+        "d_sd": 0.025416076591956212,
+        "n": 5,
+        "verdict": "GRAPH HELPS"
+      },
+      {
+        "reference": "learned",
+        "metric": "pcc",
+        "horizon": 15,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": -0.323530197343816,
+        "ref_sd": 0.08747084061734132,
+        "pure_mean": -0.3776976821597991,
+        "pure_sd": 0.03697179997061363,
+        "d_mean": -0.0541674848159831,
+        "d_sd": 0.05970577521919771,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "rmse",
+        "horizon": 3,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 5435.617662927145,
+        "ref_sd": 531.6703646162201,
+        "pure_mean": 5405.94184063901,
+        "pure_sd": 213.9682347513368,
+        "d_mean": -29.67582228813408,
+        "d_sd": 612.8379436548832,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "rmse",
+        "horizon": 5,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 7835.384145971044,
+        "ref_sd": 640.4305416058517,
+        "pure_mean": 8697.706493276823,
+        "pure_sd": 701.1170744121569,
+        "d_mean": 862.3223473057778,
+        "d_sd": 349.1805666447237,
+        "n": 5,
+        "verdict": "DEGREE HELPS"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "rmse",
+        "horizon": 10,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 11949.106800211423,
+        "ref_sd": 2022.0171528233357,
+        "pure_mean": 12573.753083865591,
+        "pure_sd": 832.5541511725131,
+        "d_mean": 624.646283654168,
+        "d_sd": 2498.8090791256473,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "rmse",
+        "horizon": 15,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 11903.546345645205,
+        "ref_sd": 1012.856724401298,
+        "pure_mean": 11959.436387934158,
+        "pure_sd": 1115.1191832048985,
+        "d_mean": 55.890042288952465,
+        "d_sd": 1304.1653320684502,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "mae",
+        "horizon": 3,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 4271.301569968432,
+        "ref_sd": 427.6494286935617,
+        "pure_mean": 4108.505606333274,
+        "pure_sd": 263.4881308409286,
+        "d_mean": -162.79596363515802,
+        "d_sd": 541.6205938242518,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "mae",
+        "horizon": 5,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 6392.531156513966,
+        "ref_sd": 652.2998006693366,
+        "pure_mean": 7118.292085261322,
+        "pure_sd": 649.8407161718458,
+        "d_mean": 725.7609287473555,
+        "d_sd": 288.6214623894256,
+        "n": 5,
+        "verdict": "DEGREE HELPS"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "mae",
+        "horizon": 10,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 9723.604256461149,
+        "ref_sd": 1642.0974876792134,
+        "pure_mean": 10429.56621526106,
+        "pure_sd": 483.95343591617006,
+        "d_mean": 705.961958799911,
+        "d_sd": 1903.6390307433865,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "mae",
+        "horizon": 15,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 10077.97008689712,
+        "ref_sd": 854.8233294855372,
+        "pure_mean": 10313.567587098516,
+        "pure_sd": 896.3944911231424,
+        "d_mean": 235.59750020139654,
+        "d_sd": 1217.2228407350315,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "pcc",
+        "horizon": 3,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 0.36749335165522934,
+        "ref_sd": 0.08871171785736906,
+        "pure_mean": 0.3839060570505275,
+        "pure_sd": 0.08396027950295697,
+        "d_mean": 0.01641270539529812,
+        "d_sd": 0.10292618317984419,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "pcc",
+        "horizon": 5,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": -0.11531064543144494,
+        "ref_sd": 0.18509966448607207,
+        "pure_mean": -0.21236439203594154,
+        "pure_sd": 0.06180643239315011,
+        "d_mean": -0.09705374660449659,
+        "d_sd": 0.14672009711756265,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "pcc",
+        "horizon": 10,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": -0.3488991667416436,
+        "ref_sd": 0.07185888629597113,
+        "pure_mean": -0.3944763627631256,
+        "pure_sd": 0.016617982002826413,
+        "d_mean": -0.04557719602148198,
+        "d_sd": 0.06305738646954664,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "pcc",
+        "horizon": 15,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": -0.31318257963636864,
+        "ref_sd": 0.14976320720492725,
+        "pure_mean": -0.3776976821597991,
+        "pure_sd": 0.03697179997061363,
+        "d_mean": -0.06451510252343046,
+        "d_sd": 0.12851149293691463,
+        "n": 5,
+        "verdict": "within noise"
+      }
+    ],
+    "ceiling": "CEILING: at most 5 paired seeds on covid_us-states, and seed sd is the only noise scale, so |mean| < sd is a weak rule. Sign and spread only, no significance claim."
+  },
+  "influenza_japan": {
+    "protocol": "EXPLORATORY",
+    "dataset": "influenza_japan",
+    "model": "encoder",
+    "field": "node_mean",
+    "seeds": {
+      "pure": [
+        42,
+        52,
+        62,
+        72,
+        82
+      ],
+      "learned": [
+        42,
+        52,
+        62,
+        72,
+        82
+      ],
+      "gate-off": [
+        42,
+        52,
+        62,
+        72,
+        82
+      ]
+    },
+    "tallies": {
+      "learned": {
+        "GRAPH HELPS": 0,
+        "graph HURTS": 0,
+        "within noise": 12
+      },
+      "gate-off": {
+        "DEGREE HELPS": 2,
+        "degree HURTS": 0,
+        "within noise": 10
+      }
+    },
+    "cells": [
+      {
+        "reference": "learned",
+        "metric": "rmse",
+        "horizon": 3,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 734.8880581756626,
+        "ref_sd": 58.527407488405,
+        "pure_mean": 682.2447297653282,
+        "pure_sd": 68.48767364377842,
+        "d_mean": -52.643328410334426,
+        "d_sd": 114.71279774074452,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "rmse",
+        "horizon": 5,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 841.1061074712665,
+        "ref_sd": 35.41735078330132,
+        "pure_mean": 838.1794206182873,
+        "pure_sd": 71.76726481308769,
+        "d_mean": -2.9266868529791963,
+        "d_sd": 53.85758553311319,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "rmse",
+        "horizon": 10,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 1063.0173758061098,
+        "ref_sd": 74.93067120041644,
+        "pure_mean": 1032.3561827783428,
+        "pure_sd": 75.20010705036069,
+        "d_mean": -30.661193027767013,
+        "d_sd": 103.8248308296897,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "rmse",
+        "horizon": 15,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 1031.3864622449273,
+        "ref_sd": 121.01867806123174,
+        "pure_mean": 1023.4610140425673,
+        "pure_sd": 53.18562720219376,
+        "d_mean": -7.925448202359962,
+        "d_sd": 160.64902485723513,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "mae",
+        "horizon": 3,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 261.5264545720089,
+        "ref_sd": 22.74888246971412,
+        "pure_mean": 242.36139386317208,
+        "pure_sd": 22.4919949707108,
+        "d_mean": -19.165060708836865,
+        "d_sd": 35.92898801686375,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "mae",
+        "horizon": 5,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 323.4612614748147,
+        "ref_sd": 10.447232217454177,
+        "pure_mean": 323.95888371384257,
+        "pure_sd": 29.403151269008145,
+        "d_mean": 0.49762223902789626,
+        "d_sd": 23.634777202553025,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "mae",
+        "horizon": 10,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 444.9628136606533,
+        "ref_sd": 28.834477166050032,
+        "pure_mean": 432.8035291358513,
+        "pure_sd": 26.742335005706764,
+        "d_mean": -12.15928452480198,
+        "d_sd": 38.25864206187584,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "mae",
+        "horizon": 15,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 443.76380143154313,
+        "ref_sd": 43.631996598979626,
+        "pure_mean": 439.4613248914795,
+        "pure_sd": 18.647861906723342,
+        "d_mean": -4.302476540063549,
+        "d_sd": 56.493760539394096,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "pcc",
+        "horizon": 3,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 0.8723236217982068,
+        "ref_sd": 0.039692322496265434,
+        "pure_mean": 0.8893629901486471,
+        "pure_sd": 0.02361738701477743,
+        "d_mean": 0.017039368350440197,
+        "d_sd": 0.04037494607529434,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "pcc",
+        "horizon": 5,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 0.8986719507681112,
+        "ref_sd": 0.02210471054184016,
+        "pure_mean": 0.9135798777274428,
+        "pure_sd": 0.014999254905390533,
+        "d_mean": 0.01490792695933132,
+        "d_sd": 0.01815464961441239,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "pcc",
+        "horizon": 10,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 0.843928347321504,
+        "ref_sd": 0.006038750326398962,
+        "pure_mean": 0.8458387959515188,
+        "pure_sd": 0.016405644601436575,
+        "d_mean": 0.0019104486300146161,
+        "d_sd": 0.021112050654335614,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "learned",
+        "metric": "pcc",
+        "horizon": 15,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 0.8369257607826063,
+        "ref_sd": 0.0204351545839773,
+        "pure_mean": 0.8363090786628149,
+        "pure_sd": 0.022480733096895685,
+        "d_mean": -0.0006166821197914451,
+        "d_sd": 0.035101284531521726,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "rmse",
+        "horizon": 3,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 689.622591424593,
+        "ref_sd": 23.549313660676326,
+        "pure_mean": 682.2447297653282,
+        "pure_sd": 68.48767364377842,
+        "d_mean": -7.377861659264818,
+        "d_sd": 91.27674019841177,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "rmse",
+        "horizon": 5,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 779.4484063194558,
+        "ref_sd": 39.17881275037424,
+        "pure_mean": 838.1794206182873,
+        "pure_sd": 71.76726481308769,
+        "d_mean": 58.73101429883138,
+        "d_sd": 43.271610720378895,
+        "n": 5,
+        "verdict": "DEGREE HELPS"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "rmse",
+        "horizon": 10,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 1001.6098345655124,
+        "ref_sd": 52.003958785744906,
+        "pure_mean": 1032.3561827783428,
+        "pure_sd": 75.20010705036069,
+        "d_mean": 30.746348212830345,
+        "d_sd": 71.93402681661836,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "rmse",
+        "horizon": 15,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 999.9158265660824,
+        "ref_sd": 44.263999871020836,
+        "pure_mean": 1023.4610140425673,
+        "pure_sd": 53.18562720219376,
+        "d_mean": 23.545187476485033,
+        "d_sd": 78.23608274857651,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "mae",
+        "horizon": 3,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 243.9625952187877,
+        "ref_sd": 12.032411997645564,
+        "pure_mean": 242.36139386317208,
+        "pure_sd": 22.4919949707108,
+        "d_mean": -1.6012013556156206,
+        "d_sd": 33.59803876478496,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "mae",
+        "horizon": 5,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 301.33505216027567,
+        "ref_sd": 13.961489437809535,
+        "pure_mean": 323.95888371384257,
+        "pure_sd": 29.403151269008145,
+        "d_mean": 22.623831553566923,
+        "d_sd": 18.018905354583524,
+        "n": 5,
+        "verdict": "DEGREE HELPS"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "mae",
+        "horizon": 10,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 420.956220611671,
+        "ref_sd": 17.019224301015313,
+        "pure_mean": 432.8035291358513,
+        "pure_sd": 26.742335005706764,
+        "d_mean": 11.847308524180324,
+        "d_sd": 25.378428394402935,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "mae",
+        "horizon": 15,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 431.89577131682563,
+        "ref_sd": 17.417622297601152,
+        "pure_mean": 439.4613248914795,
+        "pure_sd": 18.647861906723342,
+        "d_mean": 7.565553574653848,
+        "d_sd": 28.20575923413194,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "pcc",
+        "horizon": 3,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 0.8786713202082709,
+        "ref_sd": 0.020116088600923388,
+        "pure_mean": 0.8893629901486471,
+        "pure_sd": 0.02361738701477743,
+        "d_mean": 0.010691669940376203,
+        "d_sd": 0.03548330509967369,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "pcc",
+        "horizon": 5,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 0.9064877392851663,
+        "ref_sd": 0.018780923772555524,
+        "pure_mean": 0.9135798777274428,
+        "pure_sd": 0.014999254905390533,
+        "d_mean": 0.007092138442276519,
+        "d_sd": 0.022084524486131775,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "pcc",
+        "horizon": 10,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 0.8553959672130913,
+        "ref_sd": 0.00212598954000164,
+        "pure_mean": 0.8458387959515188,
+        "pure_sd": 0.016405644601436575,
+        "d_mean": -0.009557171261572716,
+        "d_sd": 0.01661863679811153,
+        "n": 5,
+        "verdict": "within noise"
+      },
+      {
+        "reference": "gate-off",
+        "metric": "pcc",
+        "horizon": 15,
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "ref_mean": 0.8442826542471951,
+        "ref_sd": 0.017727403338496782,
+        "pure_mean": 0.8363090786628149,
+        "pure_sd": 0.022480733096895685,
+        "d_mean": -0.007973575584380343,
+        "d_sd": 0.029949741740499646,
+        "n": 5,
+        "verdict": "within noise"
+      }
+    ],
+    "ceiling": "CEILING: at most 5 paired seeds on influenza_japan, and seed sd is the only noise scale, so |mean| < sd is a weak rule. Sign and spread only, no significance claim."
+  }
+}

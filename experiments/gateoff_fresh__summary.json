@@ -1,0 +1,1222 @@
+{
+  "covid_us-states": {
+    "protocol": "EXPLORATORY",
+    "dataset": "covid_us-states",
+    "model": "encoder",
+    "field": "node_mean",
+    "seeds": {
+      "learned": [
+        42,
+        52,
+        62,
+        72,
+        82
+      ],
+      "archived gate-off": [
+        42,
+        52,
+        62,
+        72,
+        82
+      ],
+      "fresh gate-off": [
+        42,
+        52,
+        62,
+        72,
+        82
+      ],
+      "pure-TCN": [
+        42,
+        52,
+        62,
+        72,
+        82
+      ]
+    },
+    "reproduction": {
+      "cells": [
+        {
+          "metric": "rmse",
+          "horizon": 3,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 5435.617662927145,
+          "ref_sd": 531.6703646162201,
+          "arm_mean": 5435.617662927145,
+          "arm_sd": 531.6703646162201,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "rmse",
+          "horizon": 5,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 7835.384145971044,
+          "ref_sd": 640.4305416058517,
+          "arm_mean": 7835.384145971044,
+          "arm_sd": 640.4305416058517,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "rmse",
+          "horizon": 10,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 11949.106800211423,
+          "ref_sd": 2022.0171528233357,
+          "arm_mean": 11949.106800211423,
+          "arm_sd": 2022.0171528233357,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "rmse",
+          "horizon": 15,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 11903.546345645205,
+          "ref_sd": 1012.856724401298,
+          "arm_mean": 11903.546345645205,
+          "arm_sd": 1012.856724401298,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "mae",
+          "horizon": 3,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 4271.301569968432,
+          "ref_sd": 427.6494286935617,
+          "arm_mean": 4271.301569968432,
+          "arm_sd": 427.6494286935617,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "mae",
+          "horizon": 5,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 6392.531156513966,
+          "ref_sd": 652.2998006693366,
+          "arm_mean": 6392.531156513966,
+          "arm_sd": 652.2998006693366,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "mae",
+          "horizon": 10,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 9723.604256461149,
+          "ref_sd": 1642.0974876792134,
+          "arm_mean": 9723.604256461149,
+          "arm_sd": 1642.0974876792134,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "mae",
+          "horizon": 15,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 10077.97008689712,
+          "ref_sd": 854.8233294855372,
+          "arm_mean": 10077.97008689712,
+          "arm_sd": 854.8233294855372,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "pcc",
+          "horizon": 3,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 0.36749335165522934,
+          "ref_sd": 0.08871171785736906,
+          "arm_mean": 0.36749335165522934,
+          "arm_sd": 0.08871171785736906,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "pcc",
+          "horizon": 5,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": -0.11531064543144494,
+          "ref_sd": 0.18509966448607207,
+          "arm_mean": -0.11531064543144494,
+          "arm_sd": 0.18509966448607207,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "pcc",
+          "horizon": 10,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": -0.3488991667416436,
+          "ref_sd": 0.07185888629597113,
+          "arm_mean": -0.3488991667416436,
+          "arm_sd": 0.07185888629597113,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "pcc",
+          "horizon": 15,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": -0.31318257963636864,
+          "ref_sd": 0.14976320720492725,
+          "arm_mean": -0.31318257963636864,
+          "arm_sd": 0.14976320720492725,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        }
+      ],
+      "max_rel": 0.0,
+      "max_rel_at": [
+        "rmse",
+        3,
+        42
+      ],
+      "max_rel_rmse_mae": 0.0,
+      "max_rel_rmse_mae_at": [
+        "rmse",
+        3,
+        42
+      ],
+      "seed_spread_rmse_mae": [
+        0.08173569153404701,
+        0.1692191045432416
+      ]
+    },
+    "degree": {
+      "cells": [
+        {
+          "metric": "rmse",
+          "horizon": 3,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 5435.617662927145,
+          "ref_sd": 531.6703646162201,
+          "arm_mean": 5405.94184063901,
+          "arm_sd": 213.9682347513368,
+          "d_mean": -29.67582228813408,
+          "d_sd": 612.8379436548832,
+          "n": 5,
+          "max_rel": 0.14862402375510528,
+          "max_rel_seed": 72,
+          "identical": 0,
+          "verdict": "within noise"
+        },
+        {
+          "metric": "rmse",
+          "horizon": 5,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 7835.384145971044,
+          "ref_sd": 640.4305416058517,
+          "arm_mean": 8697.706493276823,
+          "arm_sd": 701.1170744121569,
+          "d_mean": 862.3223473057778,
+          "d_sd": 349.1805666447237,
+          "n": 5,
+          "max_rel": 0.1557211178559415,
+          "max_rel_seed": 62,
+          "identical": 0,
+          "verdict": "DEGREE HELPS"
+        },
+        {
+          "metric": "rmse",
+          "horizon": 10,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 11949.106800211423,
+          "ref_sd": 2022.0171528233357,
+          "arm_mean": 12573.753083865591,
+          "arm_sd": 832.5541511725131,
+          "d_mean": 624.646283654168,
+          "d_sd": 2498.8090791256473,
+          "n": 5,
+          "max_rel": 0.520834137547782,
+          "max_rel_seed": 42,
+          "identical": 0,
+          "verdict": "within noise"
+        },
+        {
+          "metric": "rmse",
+          "horizon": 15,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 11903.546345645205,
+          "ref_sd": 1012.856724401298,
+          "arm_mean": 11959.436387934158,
+          "arm_sd": 1115.1191832048985,
+          "d_mean": 55.890042288952465,
+          "d_sd": 1304.1653320684502,
+          "n": 5,
+          "max_rel": 0.16360360631498147,
+          "max_rel_seed": 52,
+          "identical": 0,
+          "verdict": "within noise"
+        },
+        {
+          "metric": "mae",
+          "horizon": 3,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 4271.301569968432,
+          "ref_sd": 427.6494286935617,
+          "arm_mean": 4108.505606333274,
+          "arm_sd": 263.4881308409286,
+          "d_mean": -162.79596363515802,
+          "d_sd": 541.6205938242518,
+          "n": 5,
+          "max_rel": 0.18793967695798305,
+          "max_rel_seed": 42,
+          "identical": 0,
+          "verdict": "within noise"
+        },
+        {
+          "metric": "mae",
+          "horizon": 5,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 6392.531156513966,
+          "ref_sd": 652.2998006693366,
+          "arm_mean": 7118.292085261322,
+          "arm_sd": 649.8407161718458,
+          "d_mean": 725.7609287473555,
+          "d_sd": 288.6214623894256,
+          "n": 5,
+          "max_rel": 0.15679646361084787,
+          "max_rel_seed": 72,
+          "identical": 0,
+          "verdict": "DEGREE HELPS"
+        },
+        {
+          "metric": "mae",
+          "horizon": 10,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 9723.604256461149,
+          "ref_sd": 1642.0974876792134,
+          "arm_mean": 10429.56621526106,
+          "arm_sd": 483.95343591617006,
+          "d_mean": 705.961958799911,
+          "d_sd": 1903.6390307433865,
+          "n": 5,
+          "max_rel": 0.5406571905573326,
+          "max_rel_seed": 42,
+          "identical": 0,
+          "verdict": "within noise"
+        },
+        {
+          "metric": "mae",
+          "horizon": 15,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 10077.97008689712,
+          "ref_sd": 854.8233294855372,
+          "arm_mean": 10313.567587098516,
+          "arm_sd": 896.3944911231424,
+          "d_mean": 235.59750020139654,
+          "d_sd": 1217.2228407350315,
+          "n": 5,
+          "max_rel": 0.15667703811668734,
+          "max_rel_seed": 52,
+          "identical": 0,
+          "verdict": "within noise"
+        },
+        {
+          "metric": "pcc",
+          "horizon": 3,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 0.36749335165522934,
+          "ref_sd": 0.08871171785736906,
+          "arm_mean": 0.3839060570505275,
+          "arm_sd": 0.08396027950295697,
+          "d_mean": 0.01641270539529812,
+          "d_sd": 0.10292618317984419,
+          "n": 5,
+          "max_rel": 0.4181292185462905,
+          "max_rel_seed": 42,
+          "identical": 0,
+          "verdict": "within noise"
+        },
+        {
+          "metric": "pcc",
+          "horizon": 5,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": -0.11531064543144494,
+          "ref_sd": 0.18509966448607207,
+          "arm_mean": -0.21236439203594154,
+          "arm_sd": 0.06180643239315011,
+          "d_mean": -0.09705374660449659,
+          "d_sd": 0.14672009711756265,
+          "n": 5,
+          "max_rel": 1.8548450241421681,
+          "max_rel_seed": 42,
+          "identical": 0,
+          "verdict": "within noise"
+        },
+        {
+          "metric": "pcc",
+          "horizon": 10,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": -0.3488991667416436,
+          "ref_sd": 0.07185888629597113,
+          "arm_mean": -0.3944763627631256,
+          "arm_sd": 0.016617982002826413,
+          "d_mean": -0.04557719602148198,
+          "d_sd": 0.06305738646954664,
+          "n": 5,
+          "max_rel": 0.7026310252689199,
+          "max_rel_seed": 42,
+          "identical": 0,
+          "verdict": "within noise"
+        },
+        {
+          "metric": "pcc",
+          "horizon": 15,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": -0.31318257963636864,
+          "ref_sd": 0.14976320720492725,
+          "arm_mean": -0.3776976821597991,
+          "arm_sd": 0.03697179997061363,
+          "d_mean": -0.06451510252343046,
+          "d_sd": 0.12851149293691463,
+          "n": 5,
+          "max_rel": 1.5415579412308547,
+          "max_rel_seed": 72,
+          "identical": 0,
+          "verdict": "within noise"
+        }
+      ],
+      "tally": {
+        "DEGREE HELPS": 2,
+        "degree HURTS": 0,
+        "within noise": 10
+      }
+    },
+    "h5": {
+      "rmse": {
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "learned": 8798.301671119349,
+        "archived gate-off": 7835.384145971044,
+        "fresh gate-off": 7835.384145971044,
+        "pure-TCN": 8697.706493276823
+      },
+      "mae": {
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "learned": 7129.291865189021,
+        "archived gate-off": 6392.531156513966,
+        "fresh gate-off": 6392.531156513966,
+        "pure-TCN": 7118.292085261322
+      }
+    },
+    "ceiling": "CEILING: at most 5 paired seeds on covid_us-states, and seed sd is the only noise scale, so |mean| < sd is a weak rule. Sign and spread only, no significance claim."
+  },
+  "influenza_japan": {
+    "protocol": "EXPLORATORY",
+    "dataset": "influenza_japan",
+    "model": "encoder",
+    "field": "node_mean",
+    "seeds": {
+      "learned": [
+        42,
+        52,
+        62,
+        72,
+        82
+      ],
+      "archived gate-off": [
+        42,
+        52,
+        62,
+        72,
+        82
+      ],
+      "fresh gate-off": [
+        42,
+        52,
+        62,
+        72,
+        82
+      ],
+      "pure-TCN": [
+        42,
+        52,
+        62,
+        72,
+        82
+      ]
+    },
+    "reproduction": {
+      "cells": [
+        {
+          "metric": "rmse",
+          "horizon": 3,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 689.622591424593,
+          "ref_sd": 23.549313660676326,
+          "arm_mean": 689.622591424593,
+          "arm_sd": 23.549313660676326,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "rmse",
+          "horizon": 5,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 779.4484063194558,
+          "ref_sd": 39.17881275037424,
+          "arm_mean": 779.4484063194558,
+          "arm_sd": 39.17881275037424,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "rmse",
+          "horizon": 10,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 1001.6098345655124,
+          "ref_sd": 52.003958785744906,
+          "arm_mean": 1001.6098345655124,
+          "arm_sd": 52.003958785744906,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "rmse",
+          "horizon": 15,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 999.9158265660824,
+          "ref_sd": 44.263999871020836,
+          "arm_mean": 999.9158265660824,
+          "arm_sd": 44.263999871020836,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "mae",
+          "horizon": 3,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 243.9625952187877,
+          "ref_sd": 12.032411997645564,
+          "arm_mean": 243.9625952187877,
+          "arm_sd": 12.032411997645564,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "mae",
+          "horizon": 5,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 301.33505216027567,
+          "ref_sd": 13.961489437809535,
+          "arm_mean": 301.33505216027567,
+          "arm_sd": 13.961489437809535,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "mae",
+          "horizon": 10,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 420.956220611671,
+          "ref_sd": 17.019224301015313,
+          "arm_mean": 420.956220611671,
+          "arm_sd": 17.019224301015313,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "mae",
+          "horizon": 15,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 431.89577131682563,
+          "ref_sd": 17.417622297601152,
+          "arm_mean": 431.89577131682563,
+          "arm_sd": 17.417622297601152,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "pcc",
+          "horizon": 3,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 0.8786713202082709,
+          "ref_sd": 0.020116088600923388,
+          "arm_mean": 0.8786713202082709,
+          "arm_sd": 0.020116088600923388,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "pcc",
+          "horizon": 5,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 0.9064877392851663,
+          "ref_sd": 0.018780923772555524,
+          "arm_mean": 0.9064877392851663,
+          "arm_sd": 0.018780923772555524,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "pcc",
+          "horizon": 10,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 0.8553959672130913,
+          "ref_sd": 0.00212598954000164,
+          "arm_mean": 0.8553959672130913,
+          "arm_sd": 0.00212598954000164,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        },
+        {
+          "metric": "pcc",
+          "horizon": 15,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 0.8442826542471951,
+          "ref_sd": 0.017727403338496782,
+          "arm_mean": 0.8442826542471951,
+          "arm_sd": 0.017727403338496782,
+          "d_mean": 0.0,
+          "d_sd": 0.0,
+          "n": 5,
+          "max_rel": 0.0,
+          "max_rel_seed": 42,
+          "identical": 5
+        }
+      ],
+      "max_rel": 0.0,
+      "max_rel_at": [
+        "rmse",
+        3,
+        42
+      ],
+      "max_rel_rmse_mae": 0.0,
+      "max_rel_rmse_mae_at": [
+        "rmse",
+        3,
+        42
+      ],
+      "seed_spread_rmse_mae": [
+        0.0341481180482054,
+        0.05192037557049713
+      ]
+    },
+    "degree": {
+      "cells": [
+        {
+          "metric": "rmse",
+          "horizon": 3,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 689.622591424593,
+          "ref_sd": 23.549313660676326,
+          "arm_mean": 682.2447297653282,
+          "arm_sd": 68.48767364377842,
+          "d_mean": -7.377861659264818,
+          "d_sd": 91.27674019841177,
+          "n": 5,
+          "max_rel": 0.21104393561151602,
+          "max_rel_seed": 82,
+          "identical": 0,
+          "verdict": "within noise"
+        },
+        {
+          "metric": "rmse",
+          "horizon": 5,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 779.4484063194558,
+          "ref_sd": 39.17881275037424,
+          "arm_mean": 838.1794206182873,
+          "arm_sd": 71.76726481308769,
+          "d_mean": 58.73101429883138,
+          "d_sd": 43.271610720378895,
+          "n": 5,
+          "max_rel": 0.1407208508023503,
+          "max_rel_seed": 82,
+          "identical": 0,
+          "verdict": "DEGREE HELPS"
+        },
+        {
+          "metric": "rmse",
+          "horizon": 10,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 1001.6098345655124,
+          "ref_sd": 52.003958785744906,
+          "arm_mean": 1032.3561827783428,
+          "arm_sd": 75.20010705036069,
+          "d_mean": 30.746348212830345,
+          "d_sd": 71.93402681661836,
+          "n": 5,
+          "max_rel": 0.1405120794595688,
+          "max_rel_seed": 82,
+          "identical": 0,
+          "verdict": "within noise"
+        },
+        {
+          "metric": "rmse",
+          "horizon": 15,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 999.9158265660824,
+          "ref_sd": 44.263999871020836,
+          "arm_mean": 1023.4610140425673,
+          "arm_sd": 53.18562720219376,
+          "d_mean": 23.545187476485033,
+          "d_sd": 78.23608274857651,
+          "n": 5,
+          "max_rel": 0.13154626530215788,
+          "max_rel_seed": 82,
+          "identical": 0,
+          "verdict": "within noise"
+        },
+        {
+          "metric": "mae",
+          "horizon": 3,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 243.9625952187877,
+          "ref_sd": 12.032411997645564,
+          "arm_mean": 242.36139386317208,
+          "arm_sd": 22.4919949707108,
+          "d_mean": -1.6012013556156206,
+          "d_sd": 33.59803876478496,
+          "n": 5,
+          "max_rel": 0.2175100340881058,
+          "max_rel_seed": 82,
+          "identical": 0,
+          "verdict": "within noise"
+        },
+        {
+          "metric": "mae",
+          "horizon": 5,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 301.33505216027567,
+          "ref_sd": 13.961489437809535,
+          "arm_mean": 323.95888371384257,
+          "arm_sd": 29.403151269008145,
+          "d_mean": 22.623831553566923,
+          "d_sd": 18.018905354583524,
+          "n": 5,
+          "max_rel": 0.1373453172135396,
+          "max_rel_seed": 82,
+          "identical": 0,
+          "verdict": "DEGREE HELPS"
+        },
+        {
+          "metric": "mae",
+          "horizon": 10,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 420.956220611671,
+          "ref_sd": 17.019224301015313,
+          "arm_mean": 432.8035291358513,
+          "arm_sd": 26.742335005706764,
+          "d_mean": 11.847308524180324,
+          "d_sd": 25.378428394402935,
+          "n": 5,
+          "max_rel": 0.12253341280150365,
+          "max_rel_seed": 82,
+          "identical": 0,
+          "verdict": "within noise"
+        },
+        {
+          "metric": "mae",
+          "horizon": 15,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 431.89577131682563,
+          "ref_sd": 17.417622297601152,
+          "arm_mean": 439.4613248914795,
+          "arm_sd": 18.647861906723342,
+          "d_mean": 7.565553574653848,
+          "d_sd": 28.20575923413194,
+          "n": 5,
+          "max_rel": 0.10997220783930874,
+          "max_rel_seed": 82,
+          "identical": 0,
+          "verdict": "within noise"
+        },
+        {
+          "metric": "pcc",
+          "horizon": 3,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 0.8786713202082709,
+          "ref_sd": 0.020116088600923388,
+          "arm_mean": 0.8893629901486471,
+          "arm_sd": 0.02361738701477743,
+          "d_mean": 0.010691669940376203,
+          "d_sd": 0.03548330509967369,
+          "n": 5,
+          "max_rel": 0.08681572860764597,
+          "max_rel_seed": 82,
+          "identical": 0,
+          "verdict": "within noise"
+        },
+        {
+          "metric": "pcc",
+          "horizon": 5,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 0.9064877392851663,
+          "ref_sd": 0.018780923772555524,
+          "arm_mean": 0.9135798777274428,
+          "arm_sd": 0.014999254905390533,
+          "d_mean": 0.007092138442276519,
+          "d_sd": 0.022084524486131775,
+          "n": 5,
+          "max_rel": 0.051607643651875236,
+          "max_rel_seed": 82,
+          "identical": 0,
+          "verdict": "within noise"
+        },
+        {
+          "metric": "pcc",
+          "horizon": 10,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 0.8553959672130913,
+          "ref_sd": 0.00212598954000164,
+          "arm_mean": 0.8458387959515188,
+          "arm_sd": 0.016405644601436575,
+          "d_mean": -0.009557171261572716,
+          "d_sd": 0.01661863679811153,
+          "n": 5,
+          "max_rel": 0.044528661546647454,
+          "max_rel_seed": 82,
+          "identical": 0,
+          "verdict": "within noise"
+        },
+        {
+          "metric": "pcc",
+          "horizon": 15,
+          "seeds": [
+            42,
+            52,
+            62,
+            72,
+            82
+          ],
+          "ref_mean": 0.8442826542471951,
+          "ref_sd": 0.017727403338496782,
+          "arm_mean": 0.8363090786628149,
+          "arm_sd": 0.022480733096895685,
+          "d_mean": -0.007973575584380343,
+          "d_sd": 0.029949741740499646,
+          "n": 5,
+          "max_rel": 0.05839397634844886,
+          "max_rel_seed": 82,
+          "identical": 0,
+          "verdict": "within noise"
+        }
+      ],
+      "tally": {
+        "DEGREE HELPS": 2,
+        "degree HURTS": 0,
+        "within noise": 10
+      }
+    },
+    "h5": {
+      "rmse": {
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "learned": 841.1061074712665,
+        "archived gate-off": 779.4484063194558,
+        "fresh gate-off": 779.4484063194558,
+        "pure-TCN": 838.1794206182873
+      },
+      "mae": {
+        "seeds": [
+          42,
+          52,
+          62,
+          72,
+          82
+        ],
+        "learned": 323.4612614748147,
+        "archived gate-off": 301.33505216027567,
+        "fresh gate-off": 301.33505216027567,
+        "pure-TCN": 323.95888371384257
+      }
+    },
+    "ceiling": "CEILING: at most 5 paired seeds on influenza_japan, and seed sd is the only noise scale, so |mean| < sd is a weak rule. Sign and spread only, no significance claim."
+  }
+}
