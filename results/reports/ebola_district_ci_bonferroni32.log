@@ -1,0 +1,65 @@
+
+====================================================================================================
+EBOLA RMSE -- paired DISTRICT bootstrap on the node-averaged country-macro (B=10000, stratified by country, Bonferroni pct [0.078125, 99.9219])
+  floor family: persistence
+====================================================================================================
+
+  ebola_L12 (PRIMARY)  few-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  -5.210 CI [ -16.921,   +2.723] n.s.  N=51
+    h5   vs persistence   d=  -6.356 CI [ -20.134,   +5.610] n.s.  N=52
+    h10  vs persistence   d=  -4.815 CI [ -17.926,  +10.299] n.s.  N=53
+    h15  vs persistence   d= -22.158 CI [ -61.709,   -2.449] WIN   N=50
+
+  ebola_L12 (PRIMARY)  zero-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  -6.858 CI [ -18.205,   +0.591] n.s.  N=51
+    h5   vs persistence   d=  -6.749 CI [ -20.279,   +4.988] n.s.  N=52
+    h10  vs persistence   d=  -7.139 CI [ -18.138,   -0.266] WIN   N=53
+    h15  vs persistence   d= -22.394 CI [ -61.936,   -2.568] WIN   N=50
+
+  ebola_L20 (secondary)  few-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  +3.630 CI [ -16.515,  +45.471] n.s.  N=51
+    h5   vs persistence   d=  -5.419 CI [ -19.068,   +6.295] n.s.  N=52
+    h10  vs persistence   d=  +5.574 CI [ -16.008,  +38.074] n.s.  N=53
+    h15  vs persistence   d=  -9.832 CI [ -57.611,  +26.883] n.s.  N=50
+
+  ebola_L20 (secondary)  zero-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  -8.169 CI [ -20.370,   -0.449] WIN   N=51
+    h5   vs persistence   d=  -7.653 CI [ -21.084,   +3.869] n.s.  N=52
+    h10  vs persistence   d=  -6.633 CI [ -17.970,   +0.473] n.s.  N=53
+    h15  vs persistence   d= -21.141 CI [ -60.714,   -0.939] WIN   N=50
+
+  RMSE vs persistence: 5 of 16 cells clear zero at Bonferroni pct [0.078125, 99.9219].
+
+====================================================================================================
+EBOLA MAE -- paired DISTRICT bootstrap on the node-averaged country-macro (B=10000, stratified by country, Bonferroni pct [0.078125, 99.9219])
+  floor family: persistence
+====================================================================================================
+
+  ebola_L12 (PRIMARY)  few-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  -1.212 CI [  -8.584,   +4.319] n.s.  N=51
+    h5   vs persistence   d=  -2.793 CI [ -12.146,   +5.234] n.s.  N=52
+    h10  vs persistence   d=  -2.477 CI [ -13.755,  +11.166] n.s.  N=53
+    h15  vs persistence   d= -11.814 CI [ -29.811,   -1.092] WIN   N=50
+
+  ebola_L12 (PRIMARY)  zero-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  -3.053 CI [ -10.195,   +1.878] n.s.  N=51
+    h5   vs persistence   d=  -3.402 CI [ -12.535,   +4.162] n.s.  N=52
+    h10  vs persistence   d=  -4.981 CI [ -13.366,   +0.325] n.s.  N=53
+    h15  vs persistence   d= -11.771 CI [ -29.949,   -1.208] WIN   N=50
+
+  ebola_L20 (secondary)  few-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  +6.037 CI [  -8.206,  +39.618] n.s.  N=51
+    h5   vs persistence   d=  -1.655 CI [ -10.765,   +6.048] n.s.  N=52
+    h10  vs persistence   d=  +6.618 CI [ -12.696,  +34.886] n.s.  N=53
+    h15  vs persistence   d=  -0.375 CI [ -27.126,  +25.145] n.s.  N=50
+
+  ebola_L20 (secondary)  zero-shot   [estimand verified against all 5 scored JSONs]
+    h3   vs persistence   d=  -4.239 CI [ -11.387,   +0.710] n.s.  N=51
+    h5   vs persistence   d=  -4.168 CI [ -12.866,   +2.908] n.s.  N=52
+    h10  vs persistence   d=  -4.123 CI [ -13.548,   +1.607] n.s.  N=53
+    h15  vs persistence   d= -10.126 CI [ -29.394,   +0.885] n.s.  N=50
+
+  MAE vs persistence: 2 of 16 cells clear zero at Bonferroni pct [0.078125, 99.9219].
+
+  SENSITIVITY TOTAL: 7 cells clear zero across metrics rmse+mae vs persistence at Bonferroni divisor 32.
+  The frozen pre-registration is adjudicated at 95% and is NOT rescored here, so the verdict block is skipped under --bonferroni.

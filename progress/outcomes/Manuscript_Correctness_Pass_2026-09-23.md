@@ -10,8 +10,9 @@ Baseline before any of these edits: `wc -w Reports/Manuscript_v2.md` = **13834 w
 (3 refutation-exempt lines, all legitimate; 4 manual items). No em dashes anywhere in the new text.
 
 Every number below was recomputed from its disk artifact before I wrote it. Sources and reproduce
-commands are named per edit. Two items did not reproduce as briefed and are flagged: EDIT 6 (the
-Bonferroni count) and nothing else.
+commands are named per edit. One item did not reproduce as briefed: EDIT 6, the Bonferroni count.
+**EDIT 6 was updated 2026-09-28**: the disputed family is settled as persistence only, the divisor
+is 32 rather than 16, and the survivor count is 7 of 14 at both divisors.
 
 ---
 
@@ -175,37 +176,74 @@ ADD THIS PARAGRAPH (place it in section 10, after the transfer-folds threat, bef
 
 ## EDIT 6. Multiplicity sensitivity sentence (section 10, next to the existing policy, ~line 521)
 
-**FLAG: the briefed numbers did not reproduce. Use the verified numbers below.**
+**RESOLVED 2026-09-28. The divisor is now 32 and the count is 7. Use the sentence at the bottom of
+this section, not the divisor-16 draft that stood here before.**
 
-**Reason.** The task asked to add: "under a Bonferroni correction for the 16-cell exploratory family,
-9 of the 14 zero-clearing RMSE comparisons remain clear of zero, including the long-horizon
-persistence comparisons on both arms."
+**What was disputed.** Two passes computed a Bonferroni survivor count and disagreed, 9 against 7,
+because they built two different 32-cell families and both called the answer "the 14". Pass A used
+RMSE only across both naive floors. Pass B used both metrics against persistence only. Pass B was
+right. `Reports/Phase0_to_Now_Audit.md:257` defines the canonical family: against persistence, 14 of
+32 cells clear zero; against support_mean it is 13 of 32; all 64 together give 27. The same line says
+the unadapted arm wins 12 of 16 and the adapted arm 2 of 16, which sums to exactly 14. So the
+canonical family is **persistence only, both metrics (RMSE and MAE), both arms (ebola_L12 and
+ebola_L20), both regimes, four horizons = 32 cells, 14 of which clear zero at 95 percent.**
 
-**What I found on disk.** I recomputed the Ebola district-bootstrap intervals at the briefed
-percentiles [0.15625, 99.84375] (Bonferroni at divisor 16) using `ebola_ci.py`'s own loaders and
-`country_macro`, B=10000, seed 0, stratified, reproducing the 95 percent intervals exactly (e.g. L12
-few-shot h3 RMSE [-11.847, +0.351], matching Table 7). Counts:
+**The divisor is 32**, matching that full family, not the 16 the old draft used. That is the
+conservative choice and it is deliberate: buying extra survivors with a soft divisor would be a bad
+trade for a paper whose credibility rests on reporting its nulls straight.
 
-| family | clear at 95% | clear at Bonferroni |
-|---|---|---|
-| RMSE vs persistence (2 arms x 2 regimes x 4 h = 16) | 8 | 5 |
-| MAE vs persistence (16) | 6 | 2 |
-| RMSE + MAE vs persistence (32) | **14** | **7** |
+**What I found on disk.** I added `--bonferroni M` and `--floor` to `ebola_ci.py` and recomputed,
+B=10000, seed 0, stratified. The uncorrected run is bit-identical to the archived
+`results/reports/ebola_district_ci.log` on every persistence line, so nothing existing moved.
 
-So the "14 zero-clearing" figure is RMSE **and** MAE against persistence (8 + 6 = 14 at 95%), not
-RMSE alone. Under the divisor-16 Bonferroni, 7 remain (5 RMSE + 2 MAE), **not 9**. RMSE alone gives
-8 clearing at 95% and 5 at Bonferroni. The five RMSE cells that survive are: L12 few-shot h15, L12
-zero-shot h10, L12 zero-shot h15, L20 zero-shot h3, L20 zero-shot h15. The long-horizon (h15)
-persistence comparisons DO survive on both arms, which is the load-bearing part of the sentence.
+| family | clear at 95% | divisor 16 | divisor 32 |
+|---|---|---|---|
+| RMSE vs persistence (2 arms x 2 regimes x 4 h = 16) | 8 | 5 | 5 |
+| MAE vs persistence (16) | 6 | 2 | 2 |
+| **RMSE + MAE vs persistence (32), the canonical family** | **14** | **7** | **7** |
 
-Reproduce: the scratch script reusing `ebola_ci` is at the session scratchpad; the core is
-`np.nanpercentile(diffs, [0.15625, 99.84375])` inside `ebola_ci.paired_ci`'s bootstrap loop.
+The same seven cells survive at both divisors, so the count does not depend on the choice between
+them. The seven are, with the divisor-32 interval:
 
-**Proposed sentence (verified), to add after the existing multiplicity policy:**
+| metric | arm | regime | h | interval at divisor 32 |
+|---|---|---|---|---|
+| RMSE | ebola_L12 (primary) | adapted † | 15 | [-61.709, -2.449] |
+| RMSE | ebola_L12 (primary) | zero-shot | 10 | [-18.138, -0.266] |
+| RMSE | ebola_L12 (primary) | zero-shot | 15 | [-61.936, -2.568] |
+| RMSE | ebola_L20 (secondary) | zero-shot | 3 | [-20.370, -0.449] |
+| RMSE | ebola_L20 (secondary) | zero-shot | 15 | [-60.714, -0.939] |
+| MAE | ebola_L12 (primary) | adapted † | 15 | [-29.811, -1.092] |
+| MAE | ebola_L12 (primary) | zero-shot | 15 | [-29.949, -1.208] |
 
-> As a sensitivity check, applying a Bonferroni correction across the persistence family at the divisor of sixteen (percentiles 0.15625 and 99.84375) leaves 7 of the 14 comparisons that clear zero at 95 percent still clear, 5 of them on RMSE and 2 on MAE, and it keeps the long-horizon persistence comparisons at h15 on both arms.
+† Pre-registration E6 binds h10 and h15 on the primary arm to the zero-shot label, never few-shot,
+because L12 has 0 fitted adaptation pairs at h15. Both adapted-named survivors sit in exactly that
+cell, so under E6 neither may be reported as a few-shot win. Apply the same dagger footnote used for
+Tables 6 and 8.
 
-Do NOT write "9 of the 14 RMSE comparisons"; that number does not reproduce from disk.
+**The two clauses that were being treated as safe, rechecked at divisor 32.** The h15 against
+persistence comparison survives on both arms **on RMSE only**: L12 at [-61.936, -2.568] and L20 at
+[-60.714, -0.939]. On MAE only the primary arm's h15 survives, because L20 zero-shot h15 MAE widens
+to [-29.394, +0.885] and no longer clears. Write "on RMSE", never the bare "on both arms". The
+second clause holds and is stronger than before: 5 of the 7 survivors are zero-shot, and the other
+2 are the primary-arm h15 cell that E6 labels zero-shot anyway, so no survivor comes from a cell the
+pre-registration would count as an adapted win.
+
+Reproduce, about 70 seconds per run:
+
+```
+conda run -n ebola-train python ebola_ci.py --metric rmse mae --floor persistence --no-crosstab --bonferroni 32
+```
+
+Archived at `results/reports/ebola_district_ci_bonferroni32.log`, with the divisor-16 control at
+`results/reports/ebola_district_ci_bonferroni16.log`.
+
+**Replacement sentence (verified), to add after the existing multiplicity policy:**
+
+> As a sensitivity check, applying a Bonferroni correction across the full family of thirty-two comparisons against the persistence floor, which is two arms by two regimes by four horizons on RMSE and MAE (percentiles 0.078125 and 99.921875), leaves 7 of the 14 comparisons that clear zero at 95 percent still clear, 5 of them on RMSE and 2 on MAE. The h15 comparisons against persistence survive on both arms on RMSE, and every surviving cell is one the pre-registration labels unadapted.
+
+Do NOT write "9 of the 14 RMSE comparisons"; that number does not reproduce from disk. Do not quote
+any survivor count without naming the floor family in the same sentence, because the unnamed count
+is half of why this went stale twice.
 
 ---
 

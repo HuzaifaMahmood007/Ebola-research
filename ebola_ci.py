@@ -3,6 +3,17 @@
     conda run -n ebola-train python ebola_ci.py                 # both arms, both regimes, RMSE+MAE
     conda run -n ebola-train python ebola_ci.py --metric rmse
     conda run -n ebola-train python ebola_ci.py --selfcheck     # logic only, no data, seconds
+    conda run -n ebola-train python ebola_ci.py --floor persistence --bonferroni 32   # sensitivity
+
+MULTIPLICITY, AND WHY THE FLOOR FAMILY HAS TO BE NAMED. `--bonferroni M` widens the percentiles to
+2.5/M and 100-2.5/M, an overall alpha of 0.05 spread over M cells. It defaults to off, so every
+number produced before it existed is unchanged. The canonical family is PERSISTENCE ONLY, both
+metrics, both arms, both regimes, four horizons = 32 cells, of which 14 clear zero at 95 percent
+(`Reports/Phase0_to_Now_Audit.md:257`). Against support_mean it is 13 of 32 and all 64 together give
+27, so a count quoted without its floor family is unreadable: that ambiguity is what produced two
+passes disagreeing 9 against 7 on "the 14". Pass `--floor persistence` whenever you quote a count.
+This is a sensitivity check on an already-scored frozen pre-registration. It does not rescore Ebola,
+which is why the verdict block is skipped under --bonferroni.
 
 WHY THIS EXISTS -- audit findings M1, M2, M3 (Reports/Phase0_to_Now_Audit.md).
 
@@ -54,6 +65,7 @@ FLOORS = ("persistence", "support_mean")          # prereg A5 dropped seasonal-n
 HORIZONS = (3, 5, 10, 15)
 SEEDS = (42, 52, 62, 72, 82)                      # the frozen five
 B_DEFAULT = 10_000
+PCT_DEFAULT = (2.5, 97.5)                         # uncorrected 95%; --bonferroni M overrides it
 
 
 def load_pernode(path, h, metric):
@@ -114,7 +126,19 @@ def assert_reproduces_headline(arm, family, seed, metric, tol=2e-3):
     return got
 
 
-def paired_ci(arm, family, metric, floor, h, B=B_DEFAULT, seed=0, stratified=True, seeds=SEEDS):
+def bonferroni_pct(m):
+    """Two-sided bootstrap percentiles for a Bonferroni family of size m at overall alpha=0.05.
+
+    m=16 -> [0.15625, 99.84375], m=32 -> [0.078125, 99.921875]. m=1 returns the uncorrected
+    [2.5, 97.5], which is the anchor that shows the formula is the plain one."""
+    if m < 1:
+        raise SystemExit(f"--bonferroni needs a family size of at least 1, got {m}")
+    half = 2.5 / m
+    return (half, 100.0 - half)
+
+
+def paired_ci(arm, family, metric, floor, h, B=B_DEFAULT, seed=0, stratified=True, seeds=SEEDS,
+              pct=PCT_DEFAULT):
     """Pooled district bootstrap of (encoder - floor) on the node-averaged country-macro.
 
     One district resample per draw, shared across all five seeds (paired against the floor and
@@ -140,17 +164,22 @@ def paired_ci(arm, family, metric, floor, h, B=B_DEFAULT, seed=0, stratified=Tru
         for v in enc:
             diffs[k] = country_macro(v, fl_c, idx) - base
             k += 1
-    lo, hi = np.nanpercentile(diffs, [2.5, 97.5])
+    lo, hi = np.nanpercentile(diffs, list(pct))
     return dict(point=point, lo=float(lo), hi=float(hi), n_nodes=len(fl_i),
                 wins=bool(hi < 0), loses=bool(lo > 0))
 
 
-def report(metric, B, stratified, crosstab):
+def report(metric, B, stratified, crosstab, levels=PCT_DEFAULT, floor_names=FLOORS):
+    # NOTE the names: `pct` and `floors` are already taken inside this function by a percentage and
+    # by ER.naive_floors, so the two new arguments must not reuse either word.
+    label_lv = "95%" if levels == PCT_DEFAULT else f"Bonferroni pct [{levels[0]:g}, {levels[1]:g}]"
     print(f"\n{'=' * 100}")
     print(f"EBOLA {metric.upper()} -- paired DISTRICT bootstrap on the node-averaged country-macro "
-          f"(B={B}, {'stratified by country' if stratified else 'UNSTRATIFIED'})")
+          f"(B={B}, {'stratified by country' if stratified else 'UNSTRATIFIED'}, {label_lv})")
+    print(f"  floor family: {', '.join(floor_names)}")
     print(f"{'=' * 100}")
     disagree = same = 0
+    wins = 0
     for arm in ARMS:
         floors = ER.naive_floors(arm, metric)
         for family, label in REGIMES:
@@ -162,8 +191,10 @@ def report(metric, B, stratified, crosstab):
             print(f"\n  {arm} ({role})  {label}   [estimand verified against all 5 scored JSONs]")
             for h in HORIZONS:
                 seed_vals = vals_by_h.get(h)
-                for floor in FLOORS:
-                    r = paired_ci(arm, family, metric, floor, h, B=B, stratified=stratified)
+                for floor in floor_names:
+                    r = paired_ci(arm, family, metric, floor, h, B=B, stratified=stratified,
+                                  pct=levels)
+                    wins += int(r["wins"])
                     flag = "WIN " if r["wins"] else ("LOSE" if r["loses"] else "n.s.")
                     line = (f"    h{h:<3} vs {floor:13s} d={r['point']:+8.3f} "
                             f"CI [{r['lo']:+8.3f}, {r['hi']:+8.3f}] {flag}  N={r['n_nodes']}")
@@ -176,9 +207,13 @@ def report(metric, B, stratified, crosstab):
                         same, disagree = (same + 1, disagree) if agrees else (same, disagree + 1)
                         line += f"   | seed-sd rule: {rule_a:>13s} {'ok' if agrees else 'DISAGREES'}"
                     print(line)
+    n_cells = len(ARMS) * len(REGIMES) * len(HORIZONS) * len(floor_names)
+    print(f"\n  {metric.upper()} vs {'+'.join(floor_names)}: {wins} of {n_cells} cells clear zero "
+          f"at {label_lv}.")
     if crosstab:
-        print(f"\n  M2 cross-tab: the seed-sd rule and this interval disagree on "
+        print(f"  M2 cross-tab: the seed-sd rule and this interval disagree on "
               f"{disagree} of {same + disagree} cells.")
+    return wins, n_cells
 
 
 def prereg_verdict(B, stratified):
@@ -228,6 +263,18 @@ def _selfcheck():
     print("ok  country_macro reproduces score.py aggregate(): equal weight per country, NaN dropped")
     print("ok  an all-NaN country drops out rather than poisoning the macro")
     print("ok  stratified draws preserve all three countries; unstratified can lose one")
+    # 4. Bonferroni percentiles: the anchor M=16 must reproduce the documented pair, and the
+    #    default path must be untouched so every existing number stays bit-identical.
+    assert bonferroni_pct(1) == PCT_DEFAULT, "M=1 must be the uncorrected 95% interval"
+    assert bonferroni_pct(16) == (0.15625, 99.84375), "M=16 anchor from the 2026-09-23 pass"
+    assert bonferroni_pct(32) == (0.078125, 99.921875), "M=32, the canonical persistence family"
+    # CONTROL: correcting must WIDEN the interval, never narrow it.
+    d = np.random.default_rng(0).normal(size=200_000)
+    w16, w32 = (np.diff(np.percentile(d, list(bonferroni_pct(m))))[0] for m in (16, 32))
+    w95 = np.diff(np.percentile(d, list(PCT_DEFAULT)))[0]
+    assert w95 < w16 < w32, "a bigger family must give a wider interval, so fewer survivors"
+    print("ok  bonferroni_pct: M=1 is the plain 95%, M=16 and M=32 match the documented levels")
+    print("ok  CONTROL: a larger family widens the interval (16 then 32), it never narrows it")
 
 
 def main():
@@ -237,12 +284,25 @@ def main():
     ap.add_argument("--unstratified", action="store_true",
                     help="resample districts globally; sensitivity only, see the module docstring")
     ap.add_argument("--no-crosstab", action="store_true", help="skip the M2 seed-sd comparison")
+    ap.add_argument("--bonferroni", type=int, default=None, metavar="M",
+                    help="sensitivity only: Bonferroni-correct the interval for a family of M "
+                         "cells (M=32 is the canonical persistence family). Omit for plain 95%%.")
+    ap.add_argument("--floor", nargs="+", default=list(FLOORS), choices=list(FLOORS),
+                    help="which naive floors to score; the canonical family is persistence alone")
     ap.add_argument("--selfcheck", action="store_true")
     a = ap.parse_args()
     if a.selfcheck:
         _selfcheck(); return
+    pct = PCT_DEFAULT if a.bonferroni is None else bonferroni_pct(a.bonferroni)
+    total = 0
     for m in a.metric:
-        report(m, a.B, not a.unstratified, not a.no_crosstab)
+        total += report(m, a.B, not a.unstratified, not a.no_crosstab, pct, tuple(a.floor))[0]
+    if a.bonferroni is not None:
+        print(f"\n  SENSITIVITY TOTAL: {total} cells clear zero across metrics "
+              f"{'+'.join(a.metric)} vs {'+'.join(a.floor)} at Bonferroni divisor {a.bonferroni}.")
+        print("  The frozen pre-registration is adjudicated at 95% and is NOT rescored here, so "
+              "the verdict block is skipped under --bonferroni.")
+        return
     prereg_verdict(a.B, not a.unstratified)
     print("\nNOTE: this interval resamples DISTRICTS. The origin axis needs per-(origin,node) "
           "sufficient stats, which the archives do not carry; E6 names both and this delivers one.")

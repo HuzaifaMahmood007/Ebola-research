@@ -99,19 +99,40 @@ non-trivial (70 to 100 percent of nodes displaced; identity permutations are ref
 - The two false manuscript sentences (":332 and :525, "we did not run a shuffled-adjacency
   arm") have exact replacements drafted and are being applied in the manuscript pass.
 
-## Multiplicity sensitivity. RUN, but the survivor count is DISPUTED and not yet quotable
+## Multiplicity sensitivity. RESOLVED 2026-09-28. Quotable
 
-`ebola_ci.py` rerun at Bonferroni percentiles for a 16-cell family ([0.15625, 99.84375]) by two
-independent passes that disagree on the survivor count because they built different families
-called "14": one counted 9 of 14 (RMSE-only, floors including support_mean); the other,
-recomputing with ebola_ci's own loaders, counted 7 of 14 (5 RMSE + 2 MAE, persistence only,
-reading the canonical 14 as 8 RMSE + 6 MAE vs persistence). This is the
-three-numbers-near-each-other trap again. What both passes agree on, and what is safe to
-carry: the long-horizon h15-versus-persistence intervals survive the correction on both arms,
-and survivors are dominated by the unadapted zero-shot arm. BLOCKED before the manuscript
-sentence: pin the canonical 14 to its defining artifact (which comparisons, which metric,
-which floors) and recompute once. Do not write "9 of 14" or "7 of 14" until then; the
-correctness-pass doc carries the same flag.
+The dispute was two passes building two different 32-cell families and both calling the answer
+"the 14". Pass A used RMSE only across both naive floors. Pass B used both metrics against
+persistence only. Pass B was right, and the deciding artifact is
+`Reports/Phase0_to_Now_Audit.md:257`: against persistence 14 of 32 cells clear zero, against
+support_mean 13 of 32, all 64 together 27, and the 12-of-16 unadapted plus 2-of-16 adapted split
+on that same line sums to exactly 14. So the canonical family is **persistence only, RMSE and
+MAE, both arms, both regimes, four horizons, 32 cells, 14 clearing zero at 95 percent.**
+
+The divisor is **32**, matching the full family, not the 16 the earlier draft used. That is the
+user's call and it is the conservative one: buying extra survivors with a soft divisor would be a
+bad trade for a paper that rests on reporting its nulls straight.
+
+I added `--bonferroni M` and `--floor` to `ebola_ci.py` and recomputed, B=10000, seed 0,
+stratified. The uncorrected run is bit-identical to the archived
+`results/reports/ebola_district_ci.log` on every persistence line, so no existing number moved.
+The divisor-16 control reproduced the documented 7 of 14 (5 RMSE, 2 MAE) exactly, which is what
+licensed the divisor-32 run. At divisor 32 the answer is again **7 of 14, 5 RMSE and 2 MAE**, the
+same seven cells, so the count does not depend on the choice of divisor. Logs:
+`results/reports/ebola_district_ci_bonferroni32.log` and `..._bonferroni16.log`.
+
+I mutation-tested the check three ways before believing it: disabling the correction moves the
+RMSE count from 5 back to 8, adding 5 cases per district to the encoder drops it to 0, and the
+estimand gate refuses a perturbed rebuild. All three were caught.
+
+Both clauses that were being carried as safe, rechecked. The h15-versus-persistence comparison
+survives on both arms **on RMSE only**, L12 [-61.936, -2.568] and L20 [-60.714, -0.939]; on MAE
+only the primary arm survives, because L20 zero-shot h15 MAE widens to [-29.394, +0.885]. Write
+"on RMSE", never the bare "on both arms". The unadapted-dominance clause holds and is stronger:
+5 of 7 survivors are zero-shot and the other 2 are the primary-arm h15 cell that pre-registration
+E6 labels zero-shot anyway, so no survivor is an adapted win. The replacement manuscript sentence
+is in `progress/outcomes/Manuscript_Correctness_Pass_2026-09-23.md` EDIT 6, and it names the floor
+family inside the sentence, which is the rule this dispute produced.
 
 ## Figures. DONE
 
