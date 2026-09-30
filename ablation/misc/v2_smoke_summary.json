@@ -1,0 +1,31 @@
+{
+ "dataset": "influenza_japan",
+ "seed": 42,
+ "epochs": 3,
+ "device": "cuda",
+ "superset_raw_identical": false,
+ "superset_raw_max_rel_diff": 0.0023208867592812163,
+ "superset_equalised_identical": true,
+ "superset_equalised_max_rel_diff": 0.0,
+ "v2_run_to_run_identical": true,
+ "v2_run_to_run_max_rel_diff": 0.0,
+ "cudnn_flag_moves_v1_max_rel_diff": 0.0014938542518981787,
+ "deviation_origins_tested": 41,
+ "deviation_varying_index_add": 41,
+ "deviation_varying_matmul": 0,
+ "grad_tensors_v1": 58,
+ "grad_tensors_v2": 108,
+ "clip_norm_v1": 1.2907837629318237,
+ "clip_norm_v2_gain0": 1.2907838821411133,
+ "arm_seconds": {
+  "v2graph": 24.228879928588867,
+  "v2nograph": 23.386494874954224,
+  "v2shuffled": 24.10089874267578
+ },
+ "v1_seconds": 12.550297737121582,
+ "v2_over_v1_time": 1.9047695135310005,
+ "v1_covid_run_seconds_median": 29.510929226875305,
+ "v2_covid_run_seconds": 56.21151830732306,
+ "branch_params": 10224,
+ "protocol_sha256": "2d1393254b77002084ddf1888eb6c184121063c0c960602fe95a28b01a90a23c"
+}

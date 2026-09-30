@@ -1,0 +1,25 @@
+{
+ "identical": true,
+ "max_rel_diff": 0.0,
+ "dataset": "influenza_japan",
+ "seed": 42,
+ "epochs": 80,
+ "device": "cuda",
+ "protocol_sha256": "82069f4138099ae154b30e4c20e214ac3181b2975e2d9c9f5349cf091c8189ef",
+ "protocol_commit": "39ecf345abc0fcc7d1029d8a8b63d6faef6ca7c8",
+ "code_sha256": {
+  "train/loop.py": "f4b4e1ee43d94b8ec1486aa8275388d97741c4886bd56e38c853bc96d843b8ac",
+  "models/config.py": "8b3e1a49229c2f04fd4a4e5a8404705dc0a696940bd63246dfb1b238303a2413",
+  "models/encoder.py": "6c5c25b3243b387d80bc23acc78e589c70d73eee3dea0104b515639a60f89267",
+  "models/encoder_v2.py": "814a44ed89cd0573bb243f9fac5b9e7d079912837ede1228dacab63407609ade",
+  "models/spatial.py": "a2df2471d75ecaa5c0aed785689a243c3db01a20fcc105079e4cfbb871cf29f7",
+  "models/temporal.py": "e5072d874329eec972a93bb5fb96aac39d7041868767ae9f8cb357aeedac12f6",
+  "models/adapters.py": "af924dc01fd8aed28d8f58f070a1714269f30ec7e98cb72921868e8169f7c656",
+  "models/windows.py": "f487555f1f7cf498fa86217fe86425d5aedbed745d136d527b78ea4aa54a7d1d",
+  "bundles.py": "c1b13a2b6d7a349e078d4d4b389f52cd86383c6f049b7a09bc2a009385a04cef",
+  "score.py": "95540b766bc7e170dca82609d3024659df99f601181c1d84b2d9f6d43cc89211",
+  "to_schema.py": "ebc7a94126549704d9b461169961aaf040e625f2e65c3c6b307d91bf50968920",
+  "ablation/run_v2_deviation.py": "134b9b0480c6b60222a4d5d811b3da87833792630cdeb13af6e37f2fe282d70c"
+ },
+ "seconds": 172.7
+}

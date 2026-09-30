@@ -1,0 +1,34 @@
+{
+ "dataset": "covid_us-states",
+ "split": "val",
+ "horizon": 3,
+ "metric": "rmse",
+ "field": "country_macro",
+ "model": "encoder",
+ "seeds": [
+  42,
+  52,
+  62,
+  72,
+  82
+ ],
+ "v1_val_mean": 26161.266576947477,
+ "comparisons": {
+  "v2graph_vs_v1": {
+   "sd": 555.7347016401285,
+   "rel_sd": 0.02124265275939756
+  },
+  "v2graph_vs_v2nograph": {
+   "sd": 647.7423595915369,
+   "rel_sd": 0.02475959478820907
+  },
+  "v2graph_vs_v2shuffled": {
+   "sd": 1078.7126937573803,
+   "rel_sd": 0.04123319834628762
+  }
+ },
+ "s": 0.04123319834628762,
+ "s_from": "v2graph_vs_v2shuffled",
+ "delta": 0.033,
+ "protocol_sha256": "82069f4138099ae154b30e4c20e214ac3181b2975e2d9c9f5349cf091c8189ef"
+}
