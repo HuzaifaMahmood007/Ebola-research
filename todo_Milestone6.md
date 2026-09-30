@@ -369,6 +369,46 @@ influenza_japan.
 percent of cells by chance; no significance claim. The split runs along one path only (mixing
 measured with the degree feature present, the degree feature with mixing absent). No mechanism for h5.
 
+### 1.11 Downward adapter capacity -- DONE 2026-09-30. No smaller surface wins
+
+- [x] Protocol `progress/decisions/Capacity_Down_Protocol.md`, verifier
+      `diagnostics/verify_capacity_down.py` (152 checks, 33 of 33 mutations caught) and runner
+      `diagnostics/capacity_probe.py --down`, committed `ed32765` before the run.
+- [x] Step 0: r* = ceil(9.017) = 10, set by dengue; flu maximum 3.817.
+      `results/misc/capacity_probe_rank.json`.
+- [x] User ran five seeds 2026-09-29 to 2026-09-30, about 8.0 h total.
+- [x] Verdicts: rank-10 COSTS, head-only SAME, recal-int COSTS (L12, L20), recal-budget COSTS
+      (L12, L20), shrink-t COSTS (L12) and NULL (L20). Upward half re-read: all three MIXED.
+      Frozen t* 0.1 (L12), 0.2 (L20).
+- [x] shrink-t significantly better than the fresh affine on us-states (L12 h3/h5, L20 all four
+      horizons), never on japan. recal-budget L20 japan blows up in counts (seed 82 h3 RMSE
+      2,623,157).
+- [x] The fitted affine is worse than the unchanged anchor on us-states and better on japan, so
+      the damage pattern reproduced on one panel only.
+- [x] Records, report and log committed with this update. Plan section 4D carries the numbers.
+
+**Fences kept.** Dengue-to-flu only, single-disease anchor, per-node scaling in the simulation,
+seed-paired t at n=5. Pre-registration untouched.
+
+### 1.12 Model-space rescore of archived predictions -- DONE 2026-09-30. EXPLORATORY
+
+- [x] `diagnostics/model_space_rescore.py` (selfcheck: round trip exact including counts in
+      (-1, 0); a planted clip at 0 breaks it). 70 archives, every family reproduced its scored
+      count-space numbers to 1e-6 before any model-space number was kept. 72.8 s.
+- [x] Single-disease vs persistence: RMSE 13/4/3 in counts, 16/2/2 in model space; MAE 14/2/4 and
+      15/2/3.
+- [x] LDO3 adapted vs single, 36 cells: 0/19/17 in counts, 2/12/22 in model space (seed-paired t,
+      not the documented bootstrap instrument).
+- [x] Ebola: zero-shot significantly better than few-shot in 4 of 16 cells in counts, 10 of 16 in
+      model space. Against persistence in model space, zero-shot RMSE 6/1/1 and MAE 1/3/4, few-shot
+      RMSE 0/3/5 and MAE 0/2/6 (win/noise/loss). Zero-case cells (22.5 to 28.5%) carry the
+      difference; on cells with cases the encoders beat persistence.
+- [x] Not rescored: LDO3 zero-shot, joint, ldo3full, capacity probe, baselines.
+- [x] Output `results/misc/model_space_rescore.json`, committed with this update. Plan section 4E.
+
+**Fences kept.** Seed-noise intervals only, not the `ebola_ci.py` district interval, not a
+pre-registered result. Ebola's pooled scale is not comparable with the dev panels.
+
 ---
 
 ## Task 2. Manuscript

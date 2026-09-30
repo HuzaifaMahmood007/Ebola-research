@@ -247,6 +247,99 @@ along one path only. Full record, decisions and caveats in
 `progress/outcomes/Pure_TCN_Graph_Removal_2026-09-28.md`, verifier `diagnostics/verify_pure_tcn_doc.py`
 (36 of 36 mutations caught). Manuscript consequence in section 5B.
 
+## 4D. Downward adapter capacity. No smaller surface wins
+
+**Run 2026-09-29 to 2026-09-30, user-launched, about 8.0 h over five seeds.** Protocol
+`progress/decisions/Capacity_Down_Protocol.md` (sha256 `07961d3f...`, committed `ed32765` before the
+run), runner `diagnostics/capacity_probe.py --down`, report `Reports/Capacity_Probe_Down.md`,
+records `results/misc/capacity_probe_down__seed{42,52,62,72,82}.json`. Seed-paired improvement over
+each seed's affine control, two-sided 95% t at n=5, country-macro RMSE decides, 70 deciding cells,
+8 verdicts.
+
+**Outcome.**
+
+| surface | params | regime | verdict |
+|---|---|---|---|
+| rank-10 | 860 | full train fold, cross-disease | COSTS |
+| head-only | 1,300 | full train fold, cross-disease | SAME |
+| recal-int | 4 | Ebola L12 support pattern | COSTS |
+| recal-budget | 5 | Ebola L12 support pattern | COSTS |
+| shrink-t | t x 1,300 | Ebola L12 support pattern | COSTS |
+| recal-int | 4 | Ebola L20 support pattern | COSTS |
+| recal-budget | 8 | Ebola L20 support pattern | COSTS |
+| shrink-t | t x 1,300 | Ebola L20 support pattern | NULL |
+
+- r* = 10 came from the frozen rule (max participation ratio over 5 trunks x 4 panels, dengue seed
+  42 at 9.017); flu alone tops out at 3.817.
+- rank-10: one significant gain (us-regions h10, +2.5%) and one significant loss (us-states h15,
+  -2.2%), no japan agreement, so COSTS. In-domain dengue all within noise.
+- head-only: all 16 cells within noise, so FiLM's redundant parameters do not change the fit.
+- Regime S: shrink-t is significantly better than the fresh affine on us-states at h3/h5 on L12
+  (+44.2%, +39.0%) and at all four horizons on L20 (+43.3% to +55.6%), and never on japan, so no
+  both-panel agreement. The recalibrations lose heavily on most cells; recal-budget on L20 japan
+  reaches mean deltas of -66,973.8% (h3) and -155,788.7% (h5), from single-seed count blow-ups such
+  as 2,623,157 RMSE at seed 82 h3.
+- Simulation fidelity (the fitted affine against the unchanged dengue anchor, descriptive): on
+  japan the affine is significantly better than the anchor at L12 h5/h15 and L20 h15; on us-states
+  it is significantly worse at L12 h3/h5 and L20 h5/h10/h15. The few-shot damage pattern appeared on
+  us-states and not on japan.
+- Frozen t*: 0.1 (L12) and 0.2 (L20), `results/misc/capacity_probe_tstar.json`.
+- Upward half re-read under the same rule: mlp-64, film+mlp-64 and mlp-256 all MIXED.
+- Control drift (refit against archived affine, reported, not gated): median within 1.6% on
+  every cell except japan h3 (+6.9%) and japan h5 (+3.0%); worst single seed japan h3 +23.7%.
+- S2 fit checks passed on all 20 fits; the largest doubling move was 8.8e-05 against the 1e-4 limit.
+
+**Fences.** One direction (dengue to flu), a single-disease dengue anchor rather than Ebola's
+three-disease mean, per-node scaling on the flu simulation, t transferred across two panels of one
+disease. Nothing here touches the pre-registration.
+
+## 4E. Exploratory rescore of archived predictions in model space
+
+**Run 2026-09-30, EXPLORATORY, inference only, 72.8 s.** `diagnostics/model_space_rescore.py`,
+output `results/misc/model_space_rescore.json`. Converts the 70 archived count-space quantile
+archives back to model space (log1p then z-score, the bundle's own scaler, no clipping) and repeats
+three comparisons in both spaces with the same country-macro aggregation. Seed-paired two-sided 95%
+t at n=5. Every family first reproduced its scored count-space RMSE, MAE and node count to 1e-6
+relative (14 encoder families, 7 floor sets); worst float32 round-trip error 5.9e-6 z.
+
+**Single-disease encoder vs persistence, 20 cells (win / noise / loss).**
+
+| metric | count space | model space |
+|---|---|---|
+| RMSE | 13 / 4 / 3 | 16 / 2 / 2 |
+| MAE | 14 / 2 / 4 | 15 / 2 / 3 |
+
+Dengue h3/h5 move from a count-space loss or noise to a model-space win; COVID h15 RMSE gain shrinks
+from -58.7% to -8.0%.
+
+**LDO3 adapted vs single-disease, 36 attributable cells (better / noise / worse).** Count space
+0 / 19 / 17, model space 2 / 12 / 22. The documented 1 / 10 / 25 (`LDO3_Results.md:9`) used an origin
+bootstrap on seed-ensembled cell-pooled macros, a different instrument, so the counts do not line
+up. The two model-space "better" cells are influenza_japan h3 RMSE and MAE.
+
+**Ebola, 5-seed means, seed noise only (not the `ebola_ci.py` district interval, not a
+pre-registered result).**
+
+| comparison | count space RMSE / MAE | model space RMSE / MAE |
+|---|---|---|
+| zero-shot significantly better than few-shot, of 8 | 2 / 2 | 5 / 5 |
+| zero-shot vs persistence, win / noise / loss of 8 | 8/0/0 / 8/0/0 | 6/1/1 / 1/3/4 |
+| few-shot vs persistence, win / noise / loss of 8 | 4/4/0 / 4/4/0 | 0/3/5 / 0/2/6 |
+
+Zero-shot point means lead few-shot in 15 of 16 cells in count space and 16 of 16 in model space.
+Pinball wins over persistence 8 of 8 in both spaces for both regimes (persistence as a zero-spread
+forecast). Of the scored Ebola cells, 22.5 to 28.5% have zero cases, and persistence predicts
+exactly 0 on 52 to 72% of those; on those cells model-space error is 0.29 to 0.77 for persistence
+against 1.03 to 1.96 for the encoders. On cells with cases, zero-shot beats persistence in 8 of 8
+and few-shot in 7 of 8 (cell-pooled diagnostic).
+
+**Not rescored.** LDO3 zero-shot (no quantile archive), joint (none), ldo3full (one seed), capacity
+probe (no per-cell predictions), published and classical baselines (own scalers, not attempted).
+
+**Fences.** Model space weights every district equally, count space weights large districts.
+Ebola's pooled scale makes its model-space units not comparable with the dev panels. Across all 70
+archives, 12.9% of scored medians are negative counts in (-1, 0).
+
 ## 5. The manuscript
 
 `Reports/Manuscript_v2.md` is 13,834 words against a 12,000 internal target that no journal has
